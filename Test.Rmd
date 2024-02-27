@@ -1,0 +1,50 @@
+---
+title: "Seminarska"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+date: "2024-02-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# install.packages("rjson")
+library("rjson")
+```
+
+```{r}
+podatki = read.csv("podatki.csv", sep=';')
+
+# ime stolpca Vzork.smrti --> stevilo
+colnames(podatki)[5] = "stevilo"
+
+# ime stolpca Vzrok.smrti.na.1000.prebivalcev --> stevilo1000
+colnames(podatki)[6] = "stevilo1000"
+
+# Vzrok smrti - SKUPAJ --> skupaj
+podatki[podatki$VZROK.SMRTI=="Vzrok smrti - SKUPAJ", "VZROK.SMRTI"] = "skupaj"
+
+# Nekatere infekcijske in parazitske bolezni (A00-B99) --> vzrok1
+podatki[podatki$VZROK.SMRTI=="Nekatere infekcijske in parazitske bolezni (A00-B99)", "VZROK.SMRTI"] = "vzrok1"
+
+# Neoplazme (C00-D48) --> vzrok2
+podatki[podatki$VZROK.SMRTI=="Neoplazme (C00-D48)", "VZROK.SMRTI"] = "vzrok2"
+
+# Bolezni obtocil (I00-I99) --> vzrok3
+podatki[podatki$VZROK.SMRTI=="Bolezni obtocil (I00-I99)", "VZROK.SMRTI"] = "vzrok3"
+
+# Bolezni dihal (J00-J99) --> vzrok4
+podatki[podatki$VZROK.SMRTI=="Bolezni dihal (J00-J99)", "VZROK.SMRTI"] = "vzrok4"
+
+# Bolezni prebavil (K00-K93) --> vzrok5
+podatki[podatki$VZROK.SMRTI=="Bolezni prebavil (K00-K93)", "VZROK.SMRTI"] = "vzrok5"
+
+# Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98) --> vzrok6
+podatki[podatki$VZROK.SMRTI=="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "VZROK.SMRTI"] = "vzrok6"
+```
+
+```{r}
+# primer iskanja
+podatki[c(podatki$VZROK.SMRTI=="skupaj" & podatki$LETO=="2002"),]
+```
+
