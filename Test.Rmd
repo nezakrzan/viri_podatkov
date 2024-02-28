@@ -44,7 +44,46 @@ podatki[podatki$VZROK.SMRTI=="Poskodbe, zastrupitve in nekatere druge posledice 
 ```
 
 ```{r}
+# zapomnimo si indeks vrstic, ki nimajo stevila umrlih
+katere_prazne = NULL
+for(i in 1:nrow(podatki)){
+  if(podatki[i,]$stevilo == "..."){
+    katere_prazne = c(katere_prazne,i)
+  }
+}
+
+# vrstice, ki nimajo podatka(stevila)
+vrstice_brez = podatki[katere_prazne,]
+
+# vrstice, ki imajo podatek(stevilo)
+vrstice_dobre = podatki[-katere_prazne,]
+# leto spremenimo iz chr v int
+vrstice_dobre$stevilo = as.integer(vrstice_dobre$stevilo)
+vrstice_dobre$stevilo1000 = as.double(vrstice_dobre$stevilo1000)
+```
+
+
+```{r}
 # primer iskanja
 podatki[c(podatki$VZROK.SMRTI=="skupaj" & podatki$LETO=="2002"),]
+```
+
+```{r}
+iskanje_vrstic = function(vzrok, regija, spol, leto){
+  # iscemo le po "dobrih" vrsticah
+  podatki_dobri = vrstice_dobre
+  
+  rezultat = podatki_dobri[c(podatki_dobri$VZROK.SMRTI %in% vzrok &
+                       podatki_dobri$KOHEZIJSKA.REGIJA %in% regija &
+                       podatki_dobri$SPOL %in% spol &
+                       podatki_dobri$LETO %in% leto),]
+  
+  rezultat = data.frame(rezultat)
+  return(rezultat)
+}
+
+
+# primer iskanja podatkov
+aa = iskanje_vrstic(c("skupaj", "vzrok1"), "SLOVENIJA", "Spol - SKUPAJ", c(2002:2022))
 ```
 
