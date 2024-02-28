@@ -15,6 +15,12 @@ library("rjson")
 ```{r}
 podatki = read.csv("podatki.csv", sep=';')
 
+# spremebna ... v NA
+# druzga nisem nc spremenila, se vedno so tvoji podatki povsod
+# mogoce odstranva vrstice z NA vrednostmi za naprej?
+# pa potem ne rabva v funkcijah da isce vrstice z NA vrednostmi?
+#podatki2 = read.csv("podatki.csv", sep=';', na.strings = "...")
+
 # ime stolpca Vzork.smrti --> stevilo
 colnames(podatki)[5] = "stevilo"
 
@@ -60,6 +66,10 @@ vrstice_dobre = podatki[-katere_prazne,]
 # leto spremenimo iz chr v int
 vrstice_dobre$stevilo = as.integer(vrstice_dobre$stevilo)
 vrstice_dobre$stevilo1000 = as.double(vrstice_dobre$stevilo1000)
+
+# krajse?
+#tabela_mankajoce_vrednosti = podatki2[!complete.cases(podatki2), ]
+#tabela_brez_na = na.omit(podatki2)
 ```
 
 
