@@ -2,6 +2,7 @@
 title: "Seminarska"
 author: "Neža Kržan, Tom Rupnik Medjedovič"
 date: "2024-02-27"
+runtime: shiny
 output: html_document
 ---
 
@@ -141,7 +142,27 @@ h
 ```
 
 
+```{r echo = F}
+selectInput("izbrano_leto", label="Izberite leto", choices = unique(podatki$LETO), selected = 2002)
 
+selectInput("izbran_spol", label="Izberite spol", choices = c("Moski", "Zenske"), selected = "Moski")
 
+df2 = podatki[podatki$KOHEZIJSKA.REGIJA %in% c("Vzhodna Slovenija", "Zahodna Slovenija") & podatki$SPOL %in% c("Moski", "Zenske") &
+              podatki$VZROK.SMRTI %in% unique(podatki$VZROK.SMRTI)[2:7],]
+
+renderPlot({
+  df2.1 = na.omit(df2[df2$SPOL == input$izbran_spol &
+              df2$LETO == as.numeric(input$izbrano_leto),])
+  df2.1 = df2.1[order(-df2.1$stevilo),]
+  
+  ggplot(df2.1, aes(x="", y=stevilo,
+                   fill= reorder(VZROK.SMRTI, order(-stevilo)))) +
+ geom_bar(stat="identity", width=1, color="white", position = "fill") +
+     facet_grid(~KOHEZIJSKA.REGIJA) +
+  coord_polar("y", start=0) + theme_void() +  labs(fill='Vzrok smrti') 
+
+})
+
+```
 
 
