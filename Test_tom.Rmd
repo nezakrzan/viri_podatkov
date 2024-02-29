@@ -1,0 +1,182 @@
+---
+title: "Seminarska"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+date: "2024-02-27"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# install.packages("rjson")
+library("rjson")
+```
+
+```{r}
+podatki = read.csv("podatki.csv", sep=';')
+
+# ime stolpca Vzork.smrti --> stevilo
+colnames(podatki)[5] = "stevilo"
+
+# ime stolpca Vzrok.smrti.na.1000.prebivalcev --> stevilo1000
+colnames(podatki)[6] = "stevilo1000"
+
+# Vzrok smrti - SKUPAJ --> skupaj
+podatki[podatki$VZROK.SMRTI=="Vzrok smrti - SKUPAJ", "VZROK.SMRTI"] = "skupaj"
+
+# Nekatere infekcijske in parazitske bolezni (A00-B99) --> vzrok1
+podatki[podatki$VZROK.SMRTI=="Nekatere infekcijske in parazitske bolezni (A00-B99)", "VZROK.SMRTI"] = "vzrok1"
+
+# Neoplazme (C00-D48) --> vzrok2
+podatki[podatki$VZROK.SMRTI=="Neoplazme (C00-D48)", "VZROK.SMRTI"] = "vzrok2"
+
+# Bolezni obtocil (I00-I99) --> vzrok3
+podatki[podatki$VZROK.SMRTI=="Bolezni obtocil (I00-I99)", "VZROK.SMRTI"] = "vzrok3"
+
+# Bolezni dihal (J00-J99) --> vzrok4
+podatki[podatki$VZROK.SMRTI=="Bolezni dihal (J00-J99)", "VZROK.SMRTI"] = "vzrok4"
+
+# Bolezni prebavil (K00-K93) --> vzrok5
+podatki[podatki$VZROK.SMRTI=="Bolezni prebavil (K00-K93)", "VZROK.SMRTI"] = "vzrok5"
+
+# Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98) --> vzrok6
+podatki[podatki$VZROK.SMRTI=="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "VZROK.SMRTI"] = "vzrok6"
+```
+
+```{r}
+# zapomnimo si indeks vrstic, ki nimajo stevila umrlih
+katere_prazne = NULL
+for(i in 1:nrow(podatki)){
+  if(podatki[i,]$stevilo == "..."){
+    katere_prazne = c(katere_prazne,i)
+  }
+}
+
+# vrstice, ki nimajo podatka(stevila)
+vrstice_brez = podatki[katere_prazne,]
+
+# vrstice, ki imajo podatek(stevilo)
+vrstice_dobre = podatki[-katere_prazne,]
+# leto spremenimo iz chr v int
+vrstice_dobre$stevilo = as.integer(vrstice_dobre$stevilo)
+vrstice_dobre$stevilo1000 = as.double(vrstice_dobre$stevilo1000)
+```
+
+
+```{r}
+# primer iskanja
+podatki[c(podatki$VZROK.SMRTI=="skupaj" & podatki$LETO=="2002"),]
+```
+
+```{r}
+iskanje_vrstic = function(vzrok, regija, spol, leto){
+  # iscemo le po "dobrih" vrsticah
+  podatki_dobri = vrstice_dobre
+  
+  rezultat = podatki_dobri[c(podatki_dobri$VZROK.SMRTI %in% vzrok &
+                       podatki_dobri$KOHEZIJSKA.REGIJA %in% regija &
+                       podatki_dobri$SPOL %in% spol &
+                       podatki_dobri$LETO %in% leto),]
+  
+  rezultat = data.frame(rezultat)
+  return(rezultat)
+}
+
+
+# primer iskanja podatkov
+aa = iskanje_vrstic(c("skupaj", "vzrok1"), "SLOVENIJA", "Spol - SKUPAJ", c(2002:2022))
+```
+
+```{r echo=FALSE}
+library(shiny)
+library(ggplot2)
+library(gghighlight)
+library(gridExtra)
+
+selectInput("izbrano_leto", label="Izberite leto", choices = unique(podatki$LETO),
+            selected = 2002)
+
+aa = iskanje_vrstic(c("vzrok1","vzrok2","vzrok3","vzrok4","vzrok5","vzrok6"), "SLOVENIJA", "Spol - SKUPAJ", c(2002:2022))
+
+
+renderPlot({
+  bb = aa[aa$LETO==as.numeric(input$izbrano_leto),]
+  ggplot(bb, aes(x=VZROK.SMRTI, y=stevilo1000)) + geom_col()
+})
+```
+
+```{r}
+selectInput("izbran_vzrok", label="Izberite vzrok", choices = unique(podatki$VZROK.SMRTI)[2:7],
+            selected = "vzrok1")
+
+aa = iskanje_vrstic(c("vzrok1","vzrok2","vzrok3","vzrok4","vzrok5","vzrok6"), c("Vzhodna Slovenija", "Zahodna Slovenija"), "Spol - SKUPAJ", c(2002:2022))
+
+
+
+renderPlot({
+  ggplot(aa) + geom_line(aes(x=LETO, y = stevilo1000, color = interaction(VZROK.SMRTI, KOHEZIJSKA.REGIJA),group = interaction(VZROK.SMRTI, KOHEZIJSKA.REGIJA))) +
+    gghighlight(VZROK.SMRTI == input$izbran_vzrok) +
+    theme_minimal() + theme(legend.position = "none") 
+})
+```
+
+
+```{r}
+library(streamgraph)
+
+data <- data.frame(
+  year=rep(seq(1990,2016) , each=10),
+  name=rep(letters[1:10] , 27),
+  value=sample( seq(0,1,0.0001) , 270)
+)
+
+aa = iskanje_vrstic(c("vzrok1","vzrok2","vzrok3","vzrok4","vzrok5","vzrok6"), "SLOVENIJA", "Spol - SKUPAJ", c(2002:2022))
+
+data2 = data.frame(leto = aa$LETO,
+                   vzrok = aa$VZROK.SMRTI,
+                   vred = aa$stevilo1000)
+
+pp <- streamgraph(data2, key="vzrok", value="vred", date="leto", height="300px", width="1000px") %>%
+  sg_legend(show=TRUE, label="Vzrok: ")
+
+library(htmlwidgets)
+saveWidget(pp, file="test.html")
+```
+
+```{r}
+library(hrbrthemes)
+library(ggplot2)
+
+aa = iskanje_vrstic(c("vzrok1","vzrok2","vzrok3","vzrok4","vzrok5","vzrok6"), c("Vzhodna Slovenija", "Zahodna Slovenija"), c("Moski", "Zenski"), c(2002:2022))
+
+aa = iskanje_vrstic(c("skupaj"), c("Vzhodna Slovenija", "Zahodna Slovenija"), c("Moski", "zenske"), c(2002:2022))
+
+
+ggplot(aa, aes(x=LETO)) +
+  geom_col(data=aa[aa$KOHEZIJSKA.REGIJA=="Vzhodna Slovenija",],
+           aes(y=stevilo1000, fill=SPOL)) +
+  geom_col(data=aa[aa$KOHEZIJSKA.REGIJA=="Zahodna Slovenija",],
+           aes(y=-stevilo1000, fill=SPOL))  +
+  coord_flip() + geom_hline(yintercept=0)
+
+```
+
+```{r}
+library(ggplot2)
+library(gganimate)
+
+aa = iskanje_vrstic(c("vzrok1","vzrok2","vzrok3","vzrok4","vzrok5","vzrok6"), c("Vzhodna Slovenija", "Zahodna Slovenija"), c("Moski", "Zenski"), c(2002:2022))
+
+ggplot(aa, aes(VZROK.SMRTI)) +
+  geom_col(aes(y = stevilo1000)) +
+  facet_wrap(~KOHEZIJSKA.REGIJA) +
+  labs(title = 'Leto: {frame_time}', 
+       x = 'GDP per capita', 
+       y = 'life expectancy') +
+  transition_time(LETO) +
+  ease_aes('linear')
+
+anim_save("test.gif")
+```
+
