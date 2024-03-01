@@ -1,0 +1,174 @@
+---
+title: "Seminarska"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+date: "2024-02-27"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+# install.packages("rjson")
+library("rjson")
+```
+
+```{r include=FALSE}
+#podatki = read.csv("podatki.csv", sep=';')
+
+podatki = read.csv("podatki.csv", sep=';', na.strings = "...")
+
+# ime stolpca Vzork.smrti --> stevilo
+colnames(podatki)[5] = "stevilo"
+
+# ime stolpca Vzrok.smrti.na.1000.prebivalcev --> stevilo1000
+colnames(podatki)[6] = "stevilo1000"
+
+# Vzrok smrti - SKUPAJ --> skupaj
+# podatki[podatki$VZROK.SMRTI=="Vzrok smrti - SKUPAJ", "VZROK.SMRTI"] = "skupaj"
+
+# Nekatere infekcijske in parazitske bolezni (A00-B99) --> vzrok1
+# podatki[podatki$VZROK.SMRTI=="Nekatere infekcijske in parazitske bolezni (A00-B99)", "VZROK.SMRTI"] = "vzrok1"
+
+# Neoplazme (C00-D48) --> vzrok2
+# podatki[podatki$VZROK.SMRTI=="Neoplazme (C00-D48)", "VZROK.SMRTI"] = "vzrok2"
+
+# Bolezni obtocil (I00-I99) --> vzrok3
+# podatki[podatki$VZROK.SMRTI=="Bolezni obtocil (I00-I99)", "VZROK.SMRTI"] = "vzrok3"
+
+# Bolezni dihal (J00-J99) --> vzrok4
+# podatki[podatki$VZROK.SMRTI=="Bolezni dihal (J00-J99)", "VZROK.SMRTI"] = "vzrok4"
+
+# Bolezni prebavil (K00-K93) --> vzrok5
+# podatki[podatki$VZROK.SMRTI=="Bolezni prebavil (K00-K93)", "VZROK.SMRTI"] = "vzrok5"
+
+# Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98) --> vzrok6
+# podatki[podatki$VZROK.SMRTI=="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "VZROK.SMRTI"] = "vzrok6"
+```
+
+```{r include=FALSE}
+# zapomnimo si indeks vrstic, ki nimajo stevila umrlih
+# katere_prazne = NULL
+# for(i in 1:nrow(podatki)){
+  # if(podatki[i,]$stevilo == "..."){
+    # katere_prazne = c(katere_prazne,i)
+  # }
+# }
+
+# vrstice, ki nimajo podatka(stevila)
+# vrstice_brez = podatki[katere_prazne,]
+
+# vrstice, ki imajo podatek(stevilo)
+# vrstice_dobre = podatki[-katere_prazne,]
+# leto spremenimo iz chr v int
+# vrstice_dobre$stevilo = as.integer(vrstice_dobre$stevilo)
+# vrstice_dobre$stevilo1000 = as.double(vrstice_dobre$stevilo1000)
+
+df_mankajoce_vrednosti = podatki[!complete.cases(podatki), ]
+df = na.omit(podatki)
+```
+
+
+```{r include=FALSE}
+# primer iskanja
+#podatki[c(podatki$VZROK.SMRTI=="skupaj" & podatki$LETO=="2002"),]
+```
+
+```{r include=FALSE}
+iskanje_vrstic = function(vzrok, regija, spol, leto){
+  # iscemo le po "dobrih" vrsticah
+  podatki_dobri = vrstice_dobre
+  
+  rezultat = podatki_dobri[c(podatki_dobri$VZROK.SMRTI %in% vzrok &
+                       podatki_dobri$KOHEZIJSKA.REGIJA %in% regija &
+                       podatki_dobri$SPOL %in% spol &
+                       podatki_dobri$LETO %in% leto),]
+  
+  rezultat = data.frame(rezultat)
+  return(rezultat)
+}
+
+#podatki = read.csv("podatki.csv", sep=';', na.strings = "...")
+
+# primer iskanja podatkov
+#aa = iskanje_vrstic(c("skupaj", "vzrok1"), "SLOVENIJA", "Spol - SKUPAJ", c(2002:2022))
+```
+
+
+```{r include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(dplyr)
+library(highcharter)
+library(tidyr)
+```
+
+
+### Stevilo smrti glede na vzrok
+#### od 2002 do 2022
+
+```{r echo=FALSE, fig.align='center', fig.height=5, fig.width=10}
+df1 = podatki[podatki$KOHEZIJSKA.REGIJA == "SLOVENIJA" & podatki$SPOL == "Spol - SKUPAJ", 1:5]
+df1.1 = spread(df1, VZROK.SMRTI, stevilo)
+
+h <- highchart() %>% 
+  hc_xAxis(categories = df1.1$LETO) %>% 
+  hc_add_series(name = "Bolezni dihal (J00-J99)", 
+                data = df1.1$`Bolezni dihal (J00-J99)`) %>% 
+  hc_add_series(name = "Bolezni obtocil (I00-I99)", 
+                data = df1.1$`Bolezni obtocil (I00-I99)`) %>%
+  hc_add_series(name = "Bolezni prebavil (K00-K93)", 
+                data = df1.1$`Bolezni prebavil (K00-K93)`) %>%
+  hc_add_series(name = "Nekatere infekcijske in parazitske bolezni (A00-B99)", 
+                data = df1.1$`Nekatere infekcijske in parazitske bolezni (A00-B99)`) %>%
+  hc_add_series(name = "Neoplazme (C00-D48)", 
+                data = df1.1$`Neoplazme (C00-D48)`) %>%
+  hc_add_series(name = "Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", 
+                data = df1.1$`Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)`)
+
+h <- h %>%
+  hc_tooltip(crosshairs = TRUE, 
+             backgroundColor = "white",
+             borderWidth = 2) %>% 
+  hc_exporting(enabled = TRUE)
+
+h
+```
+
+
+<<<<<<< HEAD
+### Stevilo umrlih zensk in moskih po vzroku
+#### od leta 2002 do 2022
+
+```{r echo=FALSE, fig.height=10, fig.width=14, message=FALSE, warning=FALSE}
+# devtools::install_github("teunbrand/ggh4x")
+library(tidyverse)
+library(geofacet)
+library(ggh4x)
+library(streamgraph)
+library(hrbrthemes)
+library(ggtext)
+
+df1 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Moski" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ",]
+df2 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Zenske" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ",]
+
+df = na.omit(data.frame(moski.s = df1$stevilo, zenske.s = df2$stevilo, leto = df1$LETO, vzrok = df1$VZROK.SMRTI))
+
+df[df$vzrok =="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "vzrok"] = "Poskodbe, zastrupitve, zunanji vzroki (S00-T98)"
+
+ggplot(df, aes(x = leto)) +
+  geom_line(aes(y = zenske.s, color = "zenske"), size=1.1) +
+  geom_line(aes(y = moski.s, color = "moski"), size=1.1) +
+  scale_color_manual(values = c('zenske' = 'pink', 'moski' = 'lightblue')) +
+  scale_x_continuous(breaks=seq(2002, 2022, 3)) +
+  scale_y_continuous(breaks=seq(500, 5000, 600)) +
+  labs(color = 'SPOL') +
+  theme_ipsum(grid="Y", strip_text_size = 14) +
+  xlab("leto") + ylab("stevilo umrlih") +
+  facet_wrap(~vzrok) +
+  theme(plot.title = element_text(color = "black", size = 20, face = "bold"),
+        plot.subtitle = element_markdown(color = "grey", size = 16),
+        legend.position="bottom",
+        legend.text=element_text(size=16),
+        legend.title=element_text(size=16))
+```

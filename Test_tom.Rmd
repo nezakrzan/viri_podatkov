@@ -162,7 +162,7 @@ ggplot(aa, aes(x=LETO)) +
 
 ```
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 library(ggplot2)
 library(gganimate)
 
