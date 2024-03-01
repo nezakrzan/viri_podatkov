@@ -104,7 +104,10 @@ library(tidyr)
 ```
 
 
-```{r echo=FALSE, fig.align='center'}
+### Stevilo smrti glede na vzrok
+#### od 2002 do 2022
+
+```{r echo=FALSE, fig.align='center', fig.height=5, fig.width=10}
 df1 = podatki[podatki$KOHEZIJSKA.REGIJA == "SLOVENIJA" & podatki$SPOL == "Spol - SKUPAJ", 1:5]
 df1.1 = spread(df1, VZROK.SMRTI, stevilo)
 
@@ -125,20 +128,48 @@ h <- highchart() %>%
 
 # customize interactive line chart
 h <- h %>%
-  hc_title(text = "Stevilo smrti glede na vzrok",
-           margin = 20, 
-           align = "left",
-           style = list(color = "black")) %>% 
-  hc_subtitle(text = "od 2002 do 2022",
-              align = "left",
-              style = list(color = "grey", 
-                           fontWeight = "bold")) %>% 
   hc_tooltip(crosshairs = TRUE, 
              backgroundColor = "white",
              borderWidth = 2) %>% 
   hc_exporting(enabled = TRUE)
 
 h
+```
+
+### Stevilo umrlih zensk in moskih po vzroku
+#### od leta 2002 do 2022
+
+```{r echo=FALSE, fig.height=10, fig.width=14, message=FALSE, warning=FALSE}
+# devtools::install_github("teunbrand/ggh4x")
+library(tidyverse)
+library(geofacet)
+library(ggh4x)
+library(streamgraph)
+library(hrbrthemes)
+library(ggtext)
+
+df1 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Moski" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ",]
+df2 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Zenske" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ",]
+
+df = na.omit(data.frame(moski.s = df1$stevilo, zenske.s = df2$stevilo, leto = df1$LETO, vzrok = df1$VZROK.SMRTI))
+
+df[df$vzrok =="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "vzrok"] = "Poskodbe, zastrupitve, zunanji vzroki (S00-T98)"
+
+ggplot(df, aes(x = leto)) +
+  geom_line(aes(y = zenske.s, color = "zenske"), size=1.1) +
+  geom_line(aes(y = moski.s, color = "moski"), size=1.1) +
+  scale_color_manual(values = c('zenske' = 'pink', 'moski' = 'lightblue')) +
+  scale_x_continuous(breaks=seq(2002, 2022, 3)) +
+  scale_y_continuous(breaks=seq(500, 5000, 600)) +
+  labs(color = 'SPOL') +
+  theme_ipsum(grid="Y", strip_text_size = 14, axis_text_size = 12, axis_title_size = 12) +
+  xlab("leto") + ylab("stevilo umrlih") +
+  facet_wrap(~vzrok) +
+  theme(plot.title = element_text(color = "black", size = 20, face = "bold"),
+        plot.subtitle = element_markdown(color = "grey", size = 16),
+        legend.position="bottom",
+        legend.text=element_text(size=16),
+        legend.title=element_text(size=16))
 ```
 
 
