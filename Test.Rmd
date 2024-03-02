@@ -11,6 +11,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # install.packages("rjson")
 library("rjson")
+library(shiny)
+library(plotly)
+library(dplyr)
+library(tidyverse)
+library(highcharter)
+library(tidyr)
 ```
 
 ```{r include=FALSE}
@@ -94,16 +100,6 @@ iskanje_vrstic = function(vzrok, regija, spol, leto){
 #aa = iskanje_vrstic(c("skupaj", "vzrok1"), "SLOVENIJA", "Spol - SKUPAJ", c(2002:2022))
 ```
 
-
-```{r include=FALSE}
-library(tidyverse)
-library(dplyr)
-library(dplyr)
-library(highcharter)
-library(tidyr)
-```
-
-
 ### Stevilo smrti glede na vzrok
 #### od 2002 do 2022
 
@@ -172,8 +168,9 @@ ggplot(df, aes(x = leto)) +
         legend.title=element_text(size=16))
 ```
 
+### Delež smrti glede na vzrok po kohezijskih regijah
 
-```{r echo = F}
+```{r eval=FALSE, fig.align="center", include=FALSE}
 selectInput("izbrano_leto", label="Izberite leto", choices = unique(podatki$LETO), selected = 2002)
 
 selectInput("izbran_spol", label="Izberite spol", choices = c("Moski", "Zenske"), selected = "Moski")
@@ -186,16 +183,67 @@ renderPlot({
               df2$LETO == as.numeric(input$izbrano_leto),])
   df2.1 = df2.1[order(-df2.1$stevilo),]
   
-  ggplot(df2.1, aes(x="", y=stevilo,
-                   fill= reorder(VZROK.SMRTI, order(-stevilo)))) +
- geom_bar(stat="identity", width=1, color="white", position = "fill") +
-     facet_grid(~KOHEZIJSKA.REGIJA) +
-  coord_polar("y", start=0) + theme_void() +  labs(fill='Vzrok smrti') 
+  ggplot(df2.1, aes(x="", y=stevilo, fill= reorder(VZROK.SMRTI, order(-stevilo)))) +
+    geom_bar(stat="identity", width=1, color="white", position = "fill", border="white") +
+    facet_grid(~KOHEZIJSKA.REGIJA) +
+    coord_polar(theta="y") + 
+    theme_void() +  labs(fill='Vzrok smrti') +
+    theme(axis.text.x = element_text(angle=-20)) 
 
 })
-
 ```
 
 
+```{r message=FALSE, warning=FALSE, include=FALSE}
+mz = podatki[podatki$SPOL == "Moski" & podatki$KOHEZIJSKA.REGIJA == "Zahodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
+mv = podatki[podatki$SPOL == "Moski" & podatki$KOHEZIJSKA.REGIJA == "Vzhodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
+zz = podatki[podatki$SPOL == "Zenske" & podatki$KOHEZIJSKA.REGIJA == "Zahodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
+zv = podatki[podatki$SPOL == "Zenske" & podatki$KOHEZIJSKA.REGIJA == "Vzhodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
 
+df = na.omit(data.frame(leto = mz$LETO,
+                stevilo.v = c(mv$stevilo,zv$stevilo),
+                stevilo.z = c(mz$stevilo, zz$stevilo),
+                vzrok = c(mz$VZROK.SMRTI,zz$VZROK.SMRTI),
+                spol = c(mz$SPOL, zz$SPOL)))
+```
 
+```{r echo=FALSE, fig.height=7, fig.width=11, message=FALSE, warning=FALSE, fig.align="center"}
+ui <- fluidPage(
+  headerPanel(''),
+  sidebarPanel(
+    selectInput("izbrano_leto", label="Izberite leto", choices = unique(df$leto), selected = 2002),
+    selectInput("izbran_spol", label="Izberite spol", choices = c("Moski", "Zenske"), selected = "Moski")
+    #selected = names(mtcars)[[2]]
+    ),
+  mainPanel(
+    plotlyOutput('plot')
+  )
+)
+
+server <- function(input, output) {
+  
+  data <- reactive({
+
+    req(input$izbrano_leto,input$izbran_spol)
+    
+    df %>% 
+      select(leto, stevilo.v, stevilo.z, spol, vzrok) %>%
+      filter(leto %in% input$izbrano_leto, spol %in% input$izbran_spol)
+  })
+  
+  output$plot <- renderPlotly(
+    plot_ly(marker = list(line = list(color = 'white', width = 1)),) %>%
+      add_pie(data = data(), labels = ~vzrok, values = ~stevilo.z,
+              name = "Zahodna Slovenija", domain = list(x = c(0, 0.4), y = c(0.4, 1))) %>% 
+      add_pie(data = data(), labels = ~vzrok, values = ~stevilo.v,
+              name = "Vzhodna Slovenija", domain = list(x = c(0.6, 1), y = c(0.4, 1))) %>% 
+      layout(title = "", showlegend = F,
+             xaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE)) %>%
+      add_annotations(x=c(0.082, 0.7), y=0.3, text = c("Zahodna Slovenija", "Vzhodna Slovenija"), 
+                      xref = "paper", yref = "paper", xanchor = "left", showarrow = FALSE)
+  )
+}
+
+shinyApp(ui,server)
+```
