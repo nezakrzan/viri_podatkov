@@ -2,7 +2,7 @@
 title: "Seminarska"
 author: "Neža Kržan, Tom Rupnik Medjedovič"
 date: "2024-02-27"
-runtime: shiny
+#runtime: shiny
 output: html_document
 ---
 
