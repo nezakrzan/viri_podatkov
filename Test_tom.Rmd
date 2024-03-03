@@ -1,5 +1,6 @@
 ---
-title: "Seminarska"
+title: "Seminarska naloga"
+subtitle: "vizualizacija podatkov"
 author: "Neža Kržan, Tom Rupnik Medjedovič"
 date: "2024-02-27"
 #runtime: shiny
@@ -99,6 +100,10 @@ iskanje_vrstic = function(vzrok, regija, spol, leto){
 # primer iskanja podatkov
 #aa = iskanje_vrstic(c("skupaj", "vzrok1"), "SLOVENIJA", "Spol - SKUPAJ", c(2002:2022))
 ```
+
+**Predstavitev stevila umrlih glede na različne vzroke po kohezijskih regijah v Sloveniji.** 
+
+**Podatki so pridobljeni od leta 2002 do leta 2022, razen pri enem vzroku so belezeni sele od leta 2020 naprej.Vsebujejo stevilo umrlih glede na celotno Slovenijo, Vzhodni in Zahodni del ter so loceni tudi glede na spol. Vsebujejo skupno stevilo umrlih in glede na 6 razlicnih vzrokov.**
 
 ### Stevilo smrti glede na vzrok
 #### od 2002 do 2022
