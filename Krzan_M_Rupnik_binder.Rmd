@@ -1,0 +1,195 @@
+---
+title: "Seminarska naloga - vizualizacija podatkov"
+subtitle: "vizualizacija podatkov"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+date: "2024-02-27"
+#runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# devtools::install_github("teunbrand/ggh4x")
+library(shiny)
+library(plotly)
+library(dplyr)
+library(tidyverse)
+library(highcharter)
+library(tidyr)
+library(geofacet)
+library(ggh4x)
+library(streamgraph)
+library(hrbrthemes)
+library(ggtext)
+```
+
+
+```{r include=FALSE}
+#podatki = read.csv("podatki.csv", sep=';')
+
+podatki = read.csv("podatki.csv", sep=';', na.strings = "...")
+
+# ime stolpca Vzork.smrti --> stevilo
+colnames(podatki)[5] = "stevilo"
+
+# ime stolpca Vzrok.smrti.na.1000.prebivalcev --> stevilo1000
+colnames(podatki)[6] = "stevilo1000"
+```
+
+```{r include=FALSE}
+df_mankajoce_vrednosti = podatki[!complete.cases(podatki), ]
+df = na.omit(podatki)
+```
+
+**Predstavitev stevila umrlih glede na različne vzroke po kohezijskih regijah v Sloveniji.** 
+
+**Podatki so pridobljeni od leta 2002 do leta 2022, razen pri enem vzroku so belezeni sele od leta 2020 naprej.Vsebujejo stevilo umrlih glede na celotno Slovenijo, Vzhodni in Zahodni del ter so loceni tudi glede na spol. Vsebujejo skupno stevilo umrlih in glede na 6 razlicnih vzrokov.**
+
+### Stevilo smrti glede na vzrok
+#### od 2002 do 2022
+
+```{r echo=FALSE, fig.align='center', fig.height=5, fig.width=10}
+df1 = podatki[podatki$KOHEZIJSKA.REGIJA == "SLOVENIJA" & podatki$SPOL == "Spol - SKUPAJ", 1:5]
+df1.1 = spread(df1, VZROK.SMRTI, stevilo)
+
+h <- highchart() %>% 
+  hc_xAxis(categories = df1.1$LETO) %>% 
+  hc_add_series(name = "Bolezni dihal (J00-J99)", 
+                data = df1.1$`Bolezni dihal (J00-J99)`) %>% 
+  hc_add_series(name = "Bolezni obtocil (I00-I99)", 
+                data = df1.1$`Bolezni obtocil (I00-I99)`) %>%
+  hc_add_series(name = "Bolezni prebavil (K00-K93)", 
+                data = df1.1$`Bolezni prebavil (K00-K93)`) %>%
+  hc_add_series(name = "Nekatere infekcijske in parazitske bolezni (A00-B99)", 
+                data = df1.1$`Nekatere infekcijske in parazitske bolezni (A00-B99)`) %>%
+  hc_add_series(name = "Neoplazme (C00-D48)", 
+                data = df1.1$`Neoplazme (C00-D48)`) %>%
+  hc_add_series(name = "Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", 
+                data = df1.1$`Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)`)
+
+# customize interactive line chart
+h <- h %>%
+  hc_tooltip(crosshairs = TRUE, 
+             backgroundColor = "white",
+             borderWidth = 2) %>% 
+  hc_exporting(enabled = TRUE)
+
+h
+```
+
+### Stevilo umrlih zensk in moskih po vzroku
+#### od leta 2002 do 2022
+
+```{r echo=FALSE, fig.height=10, fig.width=14, message=FALSE, warning=FALSE}
+df1 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Moski" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ",]
+df2 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Zenske" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ",]
+
+df = data.frame(moski.s = df1$stevilo, zenske.s = df2$stevilo, leto = df1$LETO, vzrok = df1$VZROK.SMRTI)
+
+df[df$vzrok =="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "vzrok"] = "Poskodbe, zastrupitve, zunanji vzroki (S00-T98)"
+
+ggplot(df, aes(x = leto)) +
+  geom_line(aes(y = zenske.s, color = "zenske"), size=1.2) +
+  geom_line(aes(y = moski.s, color = "moski"), size=1.2) +
+  scale_color_manual(values = c('zenske' = 'pink', 'moski' = 'lightblue')) +
+  scale_x_continuous(breaks=seq(2002, 2022, 3)) +
+  scale_y_continuous(breaks=seq(100, 5000, 500)) +
+  labs(color = 'SPOL') +
+  theme_ipsum(grid="Y", strip_text_size = 14, axis_text_size = 12, axis_title_size = 12) +
+  xlab("leto") + ylab("stevilo umrlih") +
+  facet_wrap(~vzrok, scale = "free_x") +
+  theme(plot.title = element_text(color = "black", size = 20, face = "bold"),
+        plot.subtitle = element_markdown(color = "grey", size = 16),
+        legend.position="bottom",
+        legend.text=element_text(size=16),
+        legend.title=element_text(size=16))
+```
+
+### Delež smrti glede na vzrok po kohezijskih regijah
+#### za leto 2022 pri moskih
+
+![](slika_graf.png)
+
+Za interaktivni graf kliknite 
+[POVEZAVO](https://mybinder.org/v2/gh/tomrupnik/grafi_binder/main?urlpath=shiny/prikaz_graf3.Rmd)
+
+```{r eval=FALSE, fig.align="center", include=FALSE}
+# selectInput("izbrano_leto", label="Izberite leto", choices = unique(podatki$LETO), selected = 2002)
+# 
+# selectInput("izbran_spol", label="Izberite spol", choices = c("Moski", "Zenske"), selected = "Moski")
+# 
+# df2 = podatki[podatki$KOHEZIJSKA.REGIJA %in% c("Vzhodna Slovenija", "Zahodna Slovenija") & podatki$SPOL %in% c("Moski", "Zenske") &
+#               podatki$VZROK.SMRTI %in% unique(podatki$VZROK.SMRTI)[2:7],]
+# 
+# renderPlot({
+#   df2.1 = na.omit(df2[df2$SPOL == input$izbran_spol &
+#               df2$LETO == as.numeric(input$izbrano_leto),])
+#   df2.1 = df2.1[order(-df2.1$stevilo),]
+#   
+#   ggplot(df2.1, aes(x="", y=stevilo, fill= reorder(VZROK.SMRTI, order(-stevilo)))) +
+#     geom_bar(stat="identity", width=1, color="white", position = "fill", border="white") +
+#     facet_grid(~KOHEZIJSKA.REGIJA) +
+#     coord_polar(theta="y") + 
+#     theme_void() +  labs(fill='Vzrok smrti') +
+#     theme(axis.text.x = element_text(angle=-20)) 
+# 
+# })
+```
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+# mz = podatki[podatki$SPOL == "Moski" & podatki$KOHEZIJSKA.REGIJA == "Zahodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
+# mv = podatki[podatki$SPOL == "Moski" & podatki$KOHEZIJSKA.REGIJA == "Vzhodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
+# zz = podatki[podatki$SPOL == "Zenske" & podatki$KOHEZIJSKA.REGIJA == "Zahodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
+# zv = podatki[podatki$SPOL == "Zenske" & podatki$KOHEZIJSKA.REGIJA == "Vzhodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
+# 
+# df = na.omit(data.frame(leto = mz$LETO,
+#                 stevilo.v = c(mv$stevilo,zv$stevilo),
+#                 stevilo.z = c(mz$stevilo, zz$stevilo),
+#                 vzrok = c(mz$VZROK.SMRTI,zz$VZROK.SMRTI),
+#                 spol = c(mz$SPOL, zz$SPOL)))
+```
+
+```{r echo=FALSE, fig.height=7, fig.width=11, message=FALSE, warning=FALSE, fig.align="center"}
+# ui <- fluidPage(
+#   headerPanel(''),
+#   sidebarPanel(
+#     selectInput("izbrano_leto", label="Izberite leto", choices = sort(unique(df$leto)), selected = 2002),
+#     selectInput("izbran_spol", label="Izberite spol", choices = c("Moski", "Zenske"), selected = "Moski")
+#     #selected = names(mtcars)[[2]]
+#     ),
+#   mainPanel(
+#     plotlyOutput('plot')
+#   )
+# )
+# 
+# server <- function(input, output) {
+#   
+#   data <- reactive({
+# 
+#     req(input$izbrano_leto,input$izbran_spol)
+#     
+#     df %>% 
+#       select(leto, stevilo.v, stevilo.z, spol, vzrok) %>%
+#       filter(leto %in% input$izbrano_leto, spol %in% input$izbran_spol)
+#   })
+#   
+#   output$plot <- renderPlotly(
+#     plot_ly(marker = list(line = list(color = 'white', width = 1)),) %>%
+#       add_pie(data = data(), labels = ~vzrok, values = ~stevilo.z,
+#               name = "Zahodna Slovenija", 
+#               domain = list(x = c(0, 0.4), y = c(0.1, 0.92))) %>% 
+#       add_pie(data = data(), labels = ~vzrok, values = ~stevilo.v,
+#               name = "Vzhodna Slovenija", 
+#               domain = list(x = c(0.58, 0.98), y = c(0.1, 0.92))) %>% 
+#       layout(title = "", showlegend = T,
+#              xaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
+#              yaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
+#              legend = list(x = 0, y = 0.05, orientation = "h")) %>%
+#       add_annotations(x=c(0.082, 0.68), y=1, text = c("Zahodna Slovenija", "Vzhodna Slovenija"), 
+#                       xref = "paper", yref = "paper", xanchor = "left", showarrow = FALSE)
+#   )
+# }
+# 
+# shinyApp(ui,server)
+```
