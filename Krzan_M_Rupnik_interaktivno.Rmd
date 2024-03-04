@@ -90,7 +90,7 @@ df[df$vzrok =="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzroko
 ggplot(df, aes(x = leto)) +
   geom_line(aes(y = zenske.s, color = "zenske"), size=1.1) +
   geom_line(aes(y = moski.s, color = "moski"), size=1.1) +
-  scale_color_manual(values = c('zenske' = '#FF007F', 'moski' = '#9ae9ef')) +
+  scale_color_manual(values = c('zenske' = 'red', 'moski' = 'lightgreen')) +
   scale_x_continuous(breaks=seq(2002, 2022, 3)) +
   scale_y_continuous(breaks=seq(100, 5000, 400)) +
   labs(color = 'SPOL') +
