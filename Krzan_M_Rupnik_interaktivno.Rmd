@@ -34,6 +34,9 @@ colnames(podatki)[5] = "stevilo"
 # ime stolpca Vzrok.smrti.na.1000.prebivalcev --> stevilo1000
 colnames(podatki)[6] = "stevilo1000"
 
+podatki$VZROK.SMRTI[podatki$VZROK.SMRTI == "Bolezni obtocil (I00-I99)"] = "Bolezni obtočil (I00-I99)"
+
+podatki$VZROK.SMRTI[podatki$VZROK.SMRTI == "Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)"] = "Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)"
 ```
 
 ```{r include=FALSE}
@@ -54,17 +57,23 @@ df1.1 = spread(df1, VZROK.SMRTI, stevilo)
 
 h <- highchart() %>% 
   hc_xAxis(categories = df1.1$LETO) %>% 
-  hc_add_series(name = "Bolezni obtočil (I00-I99)", 
-                data = df1.1$`Bolezni obtocil (I00-I99)`) %>%
-  hc_add_series(name = "Neoplazme (C00-D48)", 
+  hc_add_series(name = "Bolezni obtočil 
+                <p style='color:#808080'>(I00-I99)</p>", 
+                data = df1.1$`Bolezni obtočil (I00-I99)`) %>%
+  hc_add_series(name = "Neoplazme 
+                <p style='color:#808080'>(C00-D48)</p>", 
                 data = df1.1$`Neoplazme (C00-D48)`) %>%
-  hc_add_series(name = "Nekatere infekcijske, parazitske bolezni (A00-B99)", 
+  hc_add_series(name = "Nekatere infekcijske, parazitske bolezni
+                <p style='color:#808080'>(A00-B99)</p>", 
                 data = df1.1$`Nekatere infekcijske in parazitske bolezni (A00-B99)`) %>%
-  hc_add_series(name = "Poskodbe, zastrupitve, zunanji vzroki (S00-T98)", 
-                data = df1.1$`Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)`) %>%
-  hc_add_series(name = "Bolezni prebavil (K00-K93)", 
+  hc_add_series(name = "Poškodbe, zastrupitve, zunanji vzroki
+                <p style='color:#808080'>(S00-T98)</p>", 
+                data = df1.1$`Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)`) %>%
+  hc_add_series(name = "Bolezni prebavil 
+                <p style='color:#808080'>(K00-K93)</p>", 
                 data = df1.1$`Bolezni prebavil (K00-K93)`) %>%
-  hc_add_series(name = "Bolezni dihal (J00-J99)", 
+  hc_add_series(name = "Bolezni dihal 
+                <p style='color:#808080'>(J00-J99)</p>", 
                 data = df1.1$`Bolezni dihal (J00-J99)`)
 
 # barvna paleta
@@ -85,8 +94,8 @@ h
 
 # šumniki DONE
 # staticno?
-# legenda na desni stran -> na desno in da je v enakem zaporedju kot zadnje leto
-# sigre lahko dava stran, lahko so samo na legendi(v sivi barvi)
+# legenda na desni stran -> na desno in da je v enakem zaporedju kot zadnje leto DONE
+# sigre lahko dava stran, lahko so samo na legendi(v sivi barvi) DONE
 ```
 
 ### Stevilo umrlih zensk in moskih po vzroku
@@ -98,12 +107,12 @@ df2 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Zenske"
 
 df = data.frame(moski.s = df1$stevilo, zenske.s = df2$stevilo, leto = df1$LETO, vzrok = df1$VZROK.SMRTI)
 
-df[df$vzrok =="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "vzrok"] = "Poskodbe, zastrupitve, zunanji vzroki (S00-T98)"
+df[df$vzrok =="Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "vzrok"] = "Poškodbe, zastrupitve, zunanji vzroki (S00-T98)"
 
 ggplot(df, aes(x = leto)) +
-  geom_line(aes(y = zenske.s, color = "zenske"), size=1.1) +
-  geom_line(aes(y = moski.s, color = "moski"), size=1.1) +
-  scale_color_manual(values = c('zenske' = 'orange', 'moski' = 'purple')) +
+  geom_line(aes(y = zenske.s, color = "ženske"), size=1.1) +
+  geom_line(aes(y = moski.s, color = "moški"), size=1.1) +
+  scale_color_manual(values = c('ženske' = 'orange', 'moški' = 'purple')) +
   scale_x_continuous(breaks=seq(2002, 2022, 3)) +
   scale_y_continuous(breaks=seq(100, 5000, 400)) +
   labs(color = 'SPOL') +
@@ -118,7 +127,7 @@ ggplot(df, aes(x = leto)) +
         legend.title=element_text(size=16),
         axis.title.y = element_text(angle=0)) 
 
-# zamenjamo barve
+# zamenjamo barve DONE
 ```
 
 ### Delež smrti glede na vzrok po kohezijskih regijah
@@ -162,11 +171,90 @@ df = na.omit(data.frame(leto = mz$LETO,
 ```
 
 ```{r echo=FALSE, fig.height=7, fig.width=11, message=FALSE, warning=FALSE, fig.align="center"}
+# ui <- fluidPage(
+#   headerPanel(''),
+#   sidebarPanel(
+#     selectInput("izbrano_leto", label="Izberite leto", choices = sort(unique(df$leto)), selected = 2002),
+#     selectInput("izbran_spol", label="Izberite spol", choices = c("Moški", "Ženske"), selected = "Moški")
+#     #selected = names(mtcars)[[2]]
+#     ),
+#   mainPanel(
+#     plotlyOutput('plot')
+#   )
+# )
+# 
+# server <- function(input, output) {
+#   
+#   barve = reactive({
+#     
+#     req(input$izbrano_leto)
+#     
+#     if (input$izbrano_leto %in% c("2020","2021","2022")){
+#       c("#0072B2","#E69F00","#56B4E9","#009E73", "#D55E00","#000000")
+#     } else {
+#       c("#E69F00","#56B4E9","#009E73","#D55E00","#000000")
+#     }
+#     })
+#   
+#   
+#   data <- reactive({
+# 
+#     req(input$izbrano_leto,input$izbran_spol)
+#     
+#     spol_izbira = ifelse(input$izbran_spol == "Moški", "Moski", "Zenske")
+#     
+#     df %>% 
+#       select(leto, stevilo.v, stevilo.z, spol, vzrok) %>%
+#       filter(leto %in% input$izbrano_leto, spol %in% spol_izbira)
+#     })
+#   
+#   
+#   output$plot <- renderPlotly(
+#     plot_ly(marker = list(line = list(color = 'white', width = 1), colors=barve())) %>%
+#       add_pie(data = data(), labels = ~vzrok, values = ~stevilo.z,
+#               name = "Zahodna Slovenija", 
+#               domain = list(x = c(0, 0.4), y = c(0.1, 0.92))) %>% 
+#       add_pie(data = data(), labels = ~vzrok, values = ~stevilo.v,
+#               name = "Vzhodna Slovenija", 
+#               domain = list(x = c(0.55, 0.95), y = c(0.1, 0.92))) %>% 
+#       layout(title = "", showlegend = T,
+#              xaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
+#              yaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
+#              legend = list(x = 0, y = 0, orientation = "h")) %>%
+#       add_annotations(x=c(0.082, 0.65), y=1, text = c("Zahodna Slovenija", "Vzhodna Slovenija"), 
+#                       xref = "paper", yref = "paper", xanchor = "left", showarrow = FALSE)
+#   )
+# }
+# 
+# shinyApp(ui,server)
+# 
+# # uskladitev barvu glede na vzrok DONE
+# # primerjave med leti in spolu?
+
+```
+
+
+```{r echo=FALSE, fig.height=7, fig.width=11, message=FALSE, warning=FALSE, fig.align="center"}
 ui <- fluidPage(
   headerPanel(''),
   sidebarPanel(
-    selectInput("izbrano_leto", label="Izberite leto", choices = sort(unique(df$leto)), selected = 2002),
-    selectInput("izbran_spol", label="Izberite spol", choices = c("Moski", "Zenske"), selected = "Moski")
+    fluidRow(
+      column(width = 6,
+             selectInput("izbrano_leto1", label="Izberite leto",
+                         choices = sort(unique(df$leto)), selected = 2002)),
+      column(width = 6,
+             selectInput("izbran_spol1", label="Izberite spol",
+                         choices = c("Moški", "Ženske"), selected = "Moški"))
+      ),
+    # druga vrstica
+    fluidRow(
+      column(width = 6,
+             selectInput("izbrano_leto2", label="Izberite leto",
+                         choices = sort(unique(df$leto)), selected = 2002)),
+      column(width = 6,
+             selectInput("izbran_spol2", label="Izberite spol",
+                         choices = c("Moški", "Ženske"), selected = "Moški"))
+      )
     #selected = names(mtcars)[[2]]
     ),
   mainPanel(
@@ -174,50 +262,88 @@ ui <- fluidPage(
   )
 )
 
+
 server <- function(input, output) {
   
-  barve = reactive({
+  barve1 = reactive({
     
-    req(input$izbrano_leto,input$izbran_spol)
+    req(input$izbrano_leto1)
     
-    if (input$izbrano_leto %in% c("2020")){
-      c("#56B4E9","#E69F00","#0072B2", "#000000","#D55E00","#009E73")
+    if (input$izbrano_leto1 %in% c("2020","2021","2022")){
+      c("#0072B2","#E69F00","#56B4E9","#009E73", "#D55E00","#000000")
     } else {
-      c("#56B4E9","#E69F00","#0072B2", "#000000","#D55E00")
+      c("#E69F00","#56B4E9","#009E73","#D55E00","#000000")
+    }
+    })
+  
+  barve2 = reactive({
+    
+    req(input$izbrano_leto2)
+    
+    if (input$izbrano_leto2 %in% c("2020","2021","2022")){
+      c("#0072B2","#E69F00","#56B4E9","#009E73", "#D55E00","#000000")
+    } else {
+      c("#E69F00","#56B4E9","#009E73","#D55E00","#000000")
     }
     })
   
   
-  data <- reactive({
+  data1 <- reactive({
 
-    req(input$izbrano_leto,input$izbran_spol)
+    req(input$izbrano_leto1,input$izbran_spol1)
+    
+    spol_izbira = ifelse(input$izbran_spol1 == "Moški", "Moski", "Zenske")
     
     df %>% 
       select(leto, stevilo.v, stevilo.z, spol, vzrok) %>%
-      filter(leto %in% input$izbrano_leto, spol %in% input$izbran_spol)
+      filter(leto %in% input$izbrano_leto1, spol %in% spol_izbira)
+    })
+  
+  data2 <- reactive({
+
+    req(input$izbrano_leto2,input$izbran_spol2)
+    
+    spol_izbira = ifelse(input$izbran_spol2 == "Moški", "Moski", "Zenske")
+    
+    df %>% 
+      select(leto, stevilo.v, stevilo.z, spol, vzrok) %>%
+      filter(leto %in% input$izbrano_leto2, spol %in% spol_izbira)
     })
   
   
   output$plot <- renderPlotly(
-    plot_ly(marker = list(line = list(color = 'white', width = 1), colors=barve())) %>%
-      add_pie(data = data(), labels = ~vzrok, values = ~stevilo.z,
+    subplot(
+    plot_ly(marker = list(line = list(color = 'white', width = 1), colors=barve1())) %>%
+      add_pie(data = data1(), labels = ~vzrok, values = ~stevilo.z,
               name = "Zahodna Slovenija", 
-              domain = list(x = c(0, 0.4), y = c(0.1, 0.92))) %>% 
-      add_pie(data = data(), labels = ~vzrok, values = ~stevilo.v,
+              domain = list(row = 0, column = 0)) %>% 
+      add_pie(data = data1(), labels = ~vzrok, values = ~stevilo.v,
               name = "Vzhodna Slovenija", 
-              domain = list(x = c(0.58, 0.98), y = c(0.1, 0.92))) %>% 
-      layout(title = "", showlegend = T,
+              domain = list(row = 0, column = 1)) %>%
+      layout(title = "", showlegend = F, grid=list(rows=2, columns=2),
+             xaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
+             yaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE)),
+      # druga vrstica
+    p2 = plot_ly(marker = list(line = list(color = 'white', width = 1), colors=barve2())) %>%
+      add_pie(data = data2(), labels = ~vzrok, values = ~stevilo.z,
+              name = "Zahodna Slovenija", 
+              domain = list(row = 1, column = 0)) %>% 
+      add_pie(data = data2(), labels = ~vzrok, values = ~stevilo.v,
+              name = "Vzhodna Slovenija", 
+              domain = list(row = 1, column = 1)) %>% 
+      layout(title = "", showlegend = T, grid=list(rows=2, columns=2),
              xaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
-             legend = list(x = 0, y = 0.05, orientation = "h")) %>%
-      add_annotations(x=c(0.082, 0.68), y=1, text = c("Zahodna Slovenija", "Vzhodna Slovenija"), 
+             legend = list(x = 0, y = -0.1, orientation = "h"),
+             width = 550, height = 450) %>%
+      add_annotations(x=c(-0.85, 0.2), y=1.07, text = c("Zahodna Slovenija", "Vzhodna Slovenija"), 
                       xref = "paper", yref = "paper", xanchor = "left", showarrow = FALSE)
-  )
+  ))
 }
 
 shinyApp(ui,server)
 
-# uskladitev barvu glede na vzrok
-# primerjave med leti in spolu?
+# uskladitev barvu glede na vzrok DONE
+# primerjave med leti in spolu? DONE
 
 ```
