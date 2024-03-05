@@ -20,6 +20,7 @@ library(ggh4x)
 library(streamgraph)
 library(hrbrthemes)
 library(ggtext)
+library(viridis)
 ```
 
 ```{r include=FALSE}
@@ -53,29 +54,33 @@ df1.1 = spread(df1, VZROK.SMRTI, stevilo)
 
 h <- highchart() %>% 
   hc_xAxis(categories = df1.1$LETO) %>% 
-  hc_add_series(name = "Bolezni dihal (J00-J99)", 
-                data = df1.1$`Bolezni dihal (J00-J99)`) %>% 
-  hc_add_series(name = "Bolezni obtocil (I00-I99)", 
+  hc_add_series(name = "Bolezni obtočil (I00-I99)", 
                 data = df1.1$`Bolezni obtocil (I00-I99)`) %>%
-  hc_add_series(name = "Bolezni prebavil (K00-K93)", 
-                data = df1.1$`Bolezni prebavil (K00-K93)`) %>%
-  hc_add_series(name = "Nekatere infekcijske in parazitske bolezni (A00-B99)", 
-                data = df1.1$`Nekatere infekcijske in parazitske bolezni (A00-B99)`) %>%
   hc_add_series(name = "Neoplazme (C00-D48)", 
                 data = df1.1$`Neoplazme (C00-D48)`) %>%
-  hc_add_series(name = "Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", 
-                data = df1.1$`Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)`)
+  hc_add_series(name = "Nekatere infekcijske, parazitske bolezni (A00-B99)", 
+                data = df1.1$`Nekatere infekcijske in parazitske bolezni (A00-B99)`) %>%
+  hc_add_series(name = "Poskodbe, zastrupitve, zunanji vzroki (S00-T98)", 
+                data = df1.1$`Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)`) %>%
+  hc_add_series(name = "Bolezni prebavil (K00-K93)", 
+                data = df1.1$`Bolezni prebavil (K00-K93)`) %>%
+  hc_add_series(name = "Bolezni dihal (J00-J99)", 
+                data = df1.1$`Bolezni dihal (J00-J99)`)
 
 # customize interactive line chart
 h <- h %>%
   hc_tooltip(crosshairs = TRUE, 
              backgroundColor = "white",
              borderWidth = 2) %>% 
-  hc_exporting(enabled = TRUE)
+  hc_legend(align = "right", verticalAlign = "top", layout = "vertical",
+            y = 150) %>%
+  hc_colors(viridis(6,option = "turbo")) %>%
+
+  hc_exporting(enabled = TRUE) 
 
 h
 
-# šumniki
+# šumniki DONE
 # staticno?
 # legenda na desni stran -> na desno in da je v enakem zaporedju kot zadnje leto
 # sigre lahko dava stran, lahko so samo na legendi(v sivi barvi)
@@ -95,7 +100,7 @@ df[df$vzrok =="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzroko
 ggplot(df, aes(x = leto)) +
   geom_line(aes(y = zenske.s, color = "zenske"), size=1.1) +
   geom_line(aes(y = moski.s, color = "moski"), size=1.1) +
-  scale_color_manual(values = c('zenske' = 'red', 'moski' = 'lightgreen')) +
+  scale_color_manual(values = c('zenske' = 'orange', 'moski' = 'purple')) +
   scale_x_continuous(breaks=seq(2002, 2022, 3)) +
   scale_y_continuous(breaks=seq(100, 5000, 400)) +
   labs(color = 'SPOL') +
