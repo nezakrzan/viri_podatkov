@@ -74,6 +74,11 @@ h <- h %>%
   hc_exporting(enabled = TRUE)
 
 h
+
+# šumniki
+# staticno?
+# legenda na desni stran -> na desno in da je v enakem zaporedju kot zadnje leto
+# sigre lahko dava stran, lahko so samo na legendi(v sivi barvi)
 ```
 
 ### Stevilo umrlih zensk in moskih po vzroku
@@ -104,6 +109,8 @@ ggplot(df, aes(x = leto)) +
         legend.text=element_text(size=16),
         legend.title=element_text(size=16),
         axis.title.y = element_text(angle=0)) 
+
+# zamenjamo barve
 ```
 
 ### Delež smrti glede na vzrok po kohezijskih regijah
@@ -188,4 +195,8 @@ server <- function(input, output) {
 }
 
 shinyApp(ui,server)
+
+# uskladitev barvu glede na vzrok
+# primerjave med leti in spolu?
+
 ```
