@@ -67,6 +67,9 @@ h <- highchart() %>%
   hc_add_series(name = "Bolezni dihal (J00-J99)", 
                 data = df1.1$`Bolezni dihal (J00-J99)`)
 
+# barvna paleta
+cPalette <- c("#56B4E9","#E69F00","#0072B2", "#000000","#D55E00","#009E73")
+
 # customize interactive line chart
 h <- h %>%
   hc_tooltip(crosshairs = TRUE, 
@@ -74,7 +77,7 @@ h <- h %>%
              borderWidth = 2) %>% 
   hc_legend(align = "right", verticalAlign = "top", layout = "vertical",
             y = 150) %>%
-  hc_colors(viridis(6,option = "turbo")) %>%
+  hc_colors(cPalette) %>%
 
   hc_exporting(enabled = TRUE) 
 
@@ -173,6 +176,18 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
+  barve = reactive({
+    
+    req(input$izbrano_leto,input$izbran_spol)
+    
+    if (input$izbrano_leto %in% c("2020")){
+      c("#56B4E9","#E69F00","#0072B2", "#000000","#D55E00","#009E73")
+    } else {
+      c("#56B4E9","#E69F00","#0072B2", "#000000","#D55E00")
+    }
+    })
+  
+  
   data <- reactive({
 
     req(input$izbrano_leto,input$izbran_spol)
@@ -180,10 +195,11 @@ server <- function(input, output) {
     df %>% 
       select(leto, stevilo.v, stevilo.z, spol, vzrok) %>%
       filter(leto %in% input$izbrano_leto, spol %in% input$izbran_spol)
-  })
+    })
+  
   
   output$plot <- renderPlotly(
-    plot_ly(marker = list(line = list(color = 'white', width = 1)),) %>%
+    plot_ly(marker = list(line = list(color = 'white', width = 1), colors=barve())) %>%
       add_pie(data = data(), labels = ~vzrok, values = ~stevilo.z,
               name = "Zahodna Slovenija", 
               domain = list(x = c(0, 0.4), y = c(0.1, 0.92))) %>% 
