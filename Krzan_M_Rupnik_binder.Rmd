@@ -1,9 +1,7 @@
 ---
 title: "Seminarska naloga - vizualizacija podatkov"
-subtitle: "vizualizacija podatkov"
 author: "Neža Kržan, Tom Rupnik Medjedovič"
-date: "2024-02-27"
-#runtime: shiny
+runtime: shiny
 output: html_document
 ---
 
@@ -21,8 +19,8 @@ library(ggh4x)
 library(streamgraph)
 library(hrbrthemes)
 library(ggtext)
+library(viridis)
 ```
-
 
 ```{r include=FALSE}
 #podatki = read.csv("podatki.csv", sep=';')
@@ -34,6 +32,10 @@ colnames(podatki)[5] = "stevilo"
 
 # ime stolpca Vzrok.smrti.na.1000.prebivalcev --> stevilo1000
 colnames(podatki)[6] = "stevilo1000"
+
+podatki$VZROK.SMRTI[podatki$VZROK.SMRTI == "Bolezni obtocil (I00-I99)"] = "Bolezni obtočil (I00-I99)"
+
+podatki$VZROK.SMRTI[podatki$VZROK.SMRTI == "Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)"] = "Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)"
 ```
 
 ```{r include=FALSE}
@@ -48,71 +50,93 @@ df = na.omit(podatki)
 ### Stevilo smrti glede na vzrok
 #### od 2002 do 2022
 
+**Graf je namenjen splošnemu pregledu umrljivosti v Sloveniji glede na vzrok smrti.**
+
 ```{r echo=FALSE, fig.align='center', fig.height=5, fig.width=10}
 df1 = podatki[podatki$KOHEZIJSKA.REGIJA == "SLOVENIJA" & podatki$SPOL == "Spol - SKUPAJ", 1:5]
 df1.1 = spread(df1, VZROK.SMRTI, stevilo)
 
 h <- highchart() %>% 
   hc_xAxis(categories = df1.1$LETO) %>% 
-  hc_add_series(name = "Bolezni dihal (J00-J99)", 
-                data = df1.1$`Bolezni dihal (J00-J99)`) %>% 
-  hc_add_series(name = "Bolezni obtocil (I00-I99)", 
-                data = df1.1$`Bolezni obtocil (I00-I99)`) %>%
-  hc_add_series(name = "Bolezni prebavil (K00-K93)", 
-                data = df1.1$`Bolezni prebavil (K00-K93)`) %>%
-  hc_add_series(name = "Nekatere infekcijske in parazitske bolezni (A00-B99)", 
-                data = df1.1$`Nekatere infekcijske in parazitske bolezni (A00-B99)`) %>%
-  hc_add_series(name = "Neoplazme (C00-D48)", 
+  hc_add_series(name = "Bolezni obtočil 
+                <p style='color:#808080'>(I00-I99)</p>", 
+                data = df1.1$`Bolezni obtočil (I00-I99)`) %>%
+  hc_add_series(name = "Neoplazme 
+                <p style='color:#808080'>(C00-D48)</p>", 
                 data = df1.1$`Neoplazme (C00-D48)`) %>%
-  hc_add_series(name = "Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", 
-                data = df1.1$`Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)`)
+  hc_add_series(name = "Nekatere infekcijske, parazitske bolezni
+                <p style='color:#808080'>(A00-B99)</p>", 
+                data = df1.1$`Nekatere infekcijske in parazitske bolezni (A00-B99)`) %>%
+  hc_add_series(name = "Poškodbe, zastrupitve, zunanji vzroki
+                <p style='color:#808080'>(S00-T98)</p>", 
+                data = df1.1$`Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)`) %>%
+  hc_add_series(name = "Bolezni prebavil 
+                <p style='color:#808080'>(K00-K93)</p>", 
+                data = df1.1$`Bolezni prebavil (K00-K93)`) %>%
+  hc_add_series(name = "Bolezni dihal 
+                <p style='color:#808080'>(J00-J99)</p>", 
+                data = df1.1$`Bolezni dihal (J00-J99)`)
+
+# barvna paleta
+cPalette <- c("#56B4E9","#E69F00","#0072B2", "#000000","#D55E00","#009E73")
 
 # customize interactive line chart
 h <- h %>%
   hc_tooltip(crosshairs = TRUE, 
              backgroundColor = "white",
              borderWidth = 2) %>% 
-  hc_exporting(enabled = TRUE)
+  hc_legend(align = "right", verticalAlign = "top", layout = "vertical",
+            y = 150) %>%
+  hc_colors(cPalette) %>%
+  hc_exporting(enabled = TRUE) 
 
 h
+
 ```
+
 
 ### Stevilo umrlih zensk in moskih po vzroku
 #### od leta 2002 do 2022
 
-```{r echo=FALSE, fig.height=10, fig.width=14, message=FALSE, warning=FALSE}
+**Graf je namenjen prikazu razlik števila umrlih med moškimi in ženskami, glede na vzrok.**
+
+```{r echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
 df1 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Moski" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ",]
 df2 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Zenske" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ",]
 
 df = data.frame(moski.s = df1$stevilo, zenske.s = df2$stevilo, leto = df1$LETO, vzrok = df1$VZROK.SMRTI)
 
-df[df$vzrok =="Poskodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "vzrok"] = "Poskodbe, zastrupitve, zunanji vzroki (S00-T98)"
+df[df$vzrok =="Poškodbe, zastrupitve in nekatere druge posledice zunanjih vzrokov (S00-T98)", "vzrok"] = "Poškodbe, zastrupitve, zunanji vzroki (S00-T98)"
 
 ggplot(df, aes(x = leto)) +
-  geom_line(aes(y = zenske.s, color = "zenske"), size=1.2) +
-  geom_line(aes(y = moski.s, color = "moski"), size=1.2) +
-  scale_color_manual(values = c('zenske' = 'red', 'moski' = 'lightgreen')) +
+  geom_line(aes(y = zenske.s, color = "ženske"), size=1.1) +
+  geom_line(aes(y = moski.s, color = "moški"), size=1.1) +
+  scale_color_manual(values = c('ženske' = 'orange', 'moški' = 'purple')) +
   scale_x_continuous(breaks=seq(2002, 2022, 3)) +
-  scale_y_continuous(breaks=seq(100, 5000, 500)) +
+  scale_y_continuous(breaks=seq(100, 5000, 400)) +
   labs(color = 'SPOL') +
-  theme_ipsum(grid="Y", strip_text_size = 14, axis_text_size = 12, axis_title_size = 12) +
+  theme_ipsum(grid="Y", strip_text_size = 15, axis_text_size = 12, axis_title_size = 12,
+              ) +
   xlab("leto") + ylab("stevilo umrlih") +
-  facet_wrap(~vzrok, scale = "free_x") +
+  facet_wrap(~vzrok, scales='free_x') +
   theme(plot.title = element_text(color = "black", size = 20, face = "bold"),
         plot.subtitle = element_markdown(color = "grey", size = 16),
         legend.position="bottom",
         legend.text=element_text(size=16),
         legend.title=element_text(size=16),
-        axis.title.y = element_text(angle=0))
+        axis.title.y = element_text(angle=0)) 
+
 ```
 
 ### Delež smrti glede na vzrok po kohezijskih regijah
 #### za leto 2022 pri moskih
 
+**Graf je namenjen podrobnejšemu pregledu deleža umrlih glede na vzrok po kohezijskih Regijah. Graf lahko spreminjamo glede na leta in glede na spol.**
+
 ![](slika_graf.png)
 
 Za interaktivni graf kliknite 
-[POVEZAVO](https://mybinder.org/v2/gh/tomrupnik/grafi_binder/main?urlpath=shiny/prikaz_graf3.Rmd)
+[POVEZAVO](https://mybinder.org/v2/gh/tomrupnik/grafi_binder/main?urlpath=shiny/prikaz_graf3.Rmd) .
 
 ```{r eval=FALSE, fig.align="center", include=FALSE}
 # selectInput("izbrano_leto", label="Izberite leto", choices = unique(podatki$LETO), selected = 2002)

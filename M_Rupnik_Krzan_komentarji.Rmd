@@ -1,5 +1,6 @@
 ---
 title: "Seminarska naloga - vizualizacija podatkov"
+subtitle: "s komentarji"
 author: "Neža Kržan, Tom Rupnik Medjedovič"
 runtime: shiny
 output: html_document
@@ -7,7 +8,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-# devtools::install_github("teunbrand/ggh4x")
+#devtools::install_github("teunbrand/ggh4x")
 library(shiny)
 library(plotly)
 library(dplyr)
@@ -52,6 +53,15 @@ df = na.omit(podatki)
 
 **Graf je namenjen splošnemu pregledu umrljivosti v Sloveniji glede na vzrok smrti.**
 
+- barvna usklajenost vzrokov umrljivosti s spodnjim grafom
+- barve prilagojene barvni slepoti
+- vzroki v legendi po vrsti glede na podatek v zadnjem letu(strokovna oznaka vzroka obarvana sivo)
+- interaktiven graf: splošen pregled šetvila umrlih glede na vzrok in podroben pregled za vsako leto posebaj
+- mere skozi celoten graf označene le na y osi
+- poševen zapis letnic na x osi za lažjo berljivost
+- belo ozadje grafa
+- sivo obarvane črte za druge vzroke, ko se postavimo na točno določen vzrok smrti
+
 ```{r echo=FALSE, fig.align='center', fig.height=5, fig.width=10}
 df1 = podatki[podatki$KOHEZIJSKA.REGIJA == "SLOVENIJA" & podatki$SPOL == "Spol - SKUPAJ", 1:5]
 df1.1 = spread(df1, VZROK.SMRTI, stevilo)
@@ -91,13 +101,20 @@ h <- h %>%
   hc_exporting(enabled = TRUE) 
 
 h
-
 ```
+
 
 ### Stevilo umrlih zensk in moskih po vzroku
 #### od leta 2002 do 2022
 
 **Graf je namenjen prikazu razlik števila umrlih med moškimi in ženskami, glede na vzrok.**
+
+- grafi natančno eden poleg drugega in eden nad drugim za lažje primerjanje
+- označena skala na y osi le na začetku posamezne vrste grafov in zato skala v vseh grafih
+- enako razdeljena skala na x osi
+- belo ozadje grafa
+- barve prilagojene barvni slepoti
+- oznake osi v vodoravni legi
 
 ```{r echo=FALSE, fig.height=8, fig.width=14, message=FALSE, warning=FALSE}
 df1 <- podatki[podatki$KOHEZIJSKA.REGIJA =="SLOVENIJA" & podatki$SPOL =="Moski" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ",]
@@ -112,7 +129,7 @@ ggplot(df, aes(x = leto)) +
   geom_line(aes(y = moski.s, color = "moški"), size=1.1) +
   scale_color_manual(values = c('ženske' = 'orange', 'moški' = 'purple')) +
   scale_x_continuous(breaks=seq(2002, 2022, 3)) +
-  scale_y_continuous(breaks=seq(100, 5000, 400)) +
+  scale_y_continuous(breaks=seq(100, 5000, 500)) +
   labs(color = 'SPOL') +
   theme_ipsum(grid="Y", strip_text_size = 15, axis_text_size = 12, axis_title_size = 12,
               ) +
@@ -124,14 +141,23 @@ ggplot(df, aes(x = leto)) +
         legend.text=element_text(size=16),
         legend.title=element_text(size=16),
         axis.title.y = element_text(angle=0)) 
-
 ```
+
 
 ### Delež smrti glede na vzrok po kohezijskih regijah
 #### od leta 2002 do 2022
 
 **Graf je namenjen podrobnejšemu pregledu deleža umrlih glede na vzrok po kohezijskih Regijah. Graf lahko spreminjamo glede na leta in glede na spol.**
 
+- barvna usklajenost vzrokov umrljivosti s spodnjim grafom
+- barve prilagojene barvni slepoti
+- deleži razvrščeni glede na polovico, četrtino kroga za lažjo predstavo
+- zapisani odstotki pri posameznem vzroku
+- interaktiven graf: podroben izpis vzroka, deleža in števila umrlih 
+- omogoča podrobnejšo primerjavo deležev med dvema letoma, kohezijskima regijama ali glede na spol
+- poleg interaktivnega izpisa vzrokov tudi legenda
+
+<!--
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 mz = podatki[podatki$SPOL == "Moski" & podatki$KOHEZIJSKA.REGIJA == "Zahodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
 mv = podatki[podatki$SPOL == "Moski" & podatki$KOHEZIJSKA.REGIJA == "Vzhodna Slovenija" & podatki$VZROK.SMRTI != "Vzrok smrti - SKUPAJ", ]
@@ -145,7 +171,7 @@ df = na.omit(data.frame(leto = mz$LETO,
                 spol = c(mz$SPOL, zz$SPOL)))
 ```
 
-```{r echo=FALSE, fig.height=15, fig.width=15, message=FALSE, warning=FALSE, fig.align="center"}
+```{r echo=FALSE, fig.height=7, fig.width=11, message=FALSE, warning=FALSE, fig.align="center"}
 ui <- fluidPage(
   headerPanel(''),
   sidebarPanel(
@@ -226,10 +252,10 @@ server <- function(input, output) {
     subplot(
     plot_ly(marker = list(line = list(color = 'white', width = 1), colors=barve1())) %>%
       add_pie(data = data1(), labels = ~vzrok, values = ~stevilo.z,
-              name = "ZS", 
+              #name = "Zahodna Slovenija", 
               domain = list(row = 0, column = 0)) %>% 
       add_pie(data = data1(), labels = ~vzrok, values = ~stevilo.v,
-              name = "VS", 
+              #name = "Vzhodna Slovenija", 
               domain = list(row = 0, column = 1)) %>%
       layout(title = "", showlegend = F, grid=list(rows=2, columns=2),
              xaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
@@ -237,10 +263,10 @@ server <- function(input, output) {
       # druga vrstica
     p2 = plot_ly(marker = list(line = list(color = 'white', width = 1), colors=barve2())) %>%
       add_pie(data = data2(), labels = ~vzrok, values = ~stevilo.z,
-              name = "ZS", 
+              #name = "Zahodna Slovenija", 
               domain = list(row = 1, column = 0)) %>% 
       add_pie(data = data2(), labels = ~vzrok, values = ~stevilo.v,
-              name = "VS", 
+              #name = "Vzhodna Slovenija", 
               domain = list(row = 1, column = 1)) %>% 
       layout(title = "", showlegend = T, grid=list(rows=2, columns=2),
              xaxis = list(showgrid = F, zeroline = FALSE, showticklabels = FALSE),
@@ -254,3 +280,10 @@ server <- function(input, output) {
 
 shinyApp(ui,server)
 ```
+
+-->
+
+![](slika_graf.png)
+
+Za interaktivni graf kliknite 
+[POVEZAVO](https://mybinder.org/v2/gh/tomrupnik/grafi_binder/main?urlpath=shiny/prikaz_graf3.Rmd) .
