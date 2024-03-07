@@ -48,6 +48,8 @@ df = na.omit(podatki)
 
 **Podatki so pridobljeni od leta 2002 do leta 2022, razen pri enem vzroku so belezeni sele od leta 2020 naprej.Vsebujejo stevilo umrlih glede na celotno Slovenijo, Vzhodni in Zahodni del ter so loceni tudi glede na spol. Vsebujejo skupno stevilo umrlih in glede na 6 razlicnih vzrokov.**
 
+_Predlagam, da greste najprej na konec dokumenta in odprete povezavo(v novem oknu), da se graf, med pregledom prvih dveh grafov, naloži._
+
 ### Stevilo smrti glede na vzrok
 #### od 2002 do 2022
 
