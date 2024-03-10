@@ -43,11 +43,11 @@ df_mankajoce_vrednosti = podatki[!complete.cases(podatki), ]
 df = na.omit(podatki)
 ```
 
-**Predstavitev stevila umrlih glede na različne vzroke po kohezijskih regijah v Sloveniji.** 
+**Predstavitev števila umrlih glede na različne vzroke po kohezijskih regijah v Sloveniji.** 
 
-**Podatki so pridobljeni od leta 2002 do leta 2022, razen pri enem vzroku so belezeni sele od leta 2020 naprej.Vsebujejo stevilo umrlih glede na celotno Slovenijo, Vzhodni in Zahodni del ter so loceni tudi glede na spol. Vsebujejo skupno stevilo umrlih in glede na 6 razlicnih vzrokov.**
+**Podatki so pridobljeni od leta 2002 do leta 2022, razen pri enem vzroku so beleženi šele od leta 2020 naprej. Vsebujejo število umrlih glede na celotno Slovenijo, Vzhodni in Zahodni del ter so ločeni tudi glede na spol. Vsebujejo skupno število umrlih in glede na 6 različnih vzrokov.**
 
-### Stevilo smrti glede na vzrok
+### Število smrti glede na vzrok
 #### od 2002 do 2022
 
 **Graf je namenjen splošnemu pregledu umrljivosti v Sloveniji glede na vzrok smrti.**
@@ -95,7 +95,7 @@ h
 ```
 
 
-### Stevilo umrlih zensk in moskih po vzroku
+### Število umrlih žensk in moških po vzroku
 #### od leta 2002 do 2022
 
 **Graf je namenjen prikazu razlik števila umrlih med moškimi in ženskami, glede na vzrok.**
