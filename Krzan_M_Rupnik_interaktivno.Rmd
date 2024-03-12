@@ -48,7 +48,6 @@ df = na.omit(podatki)
 **Podatki so pridobljeni od leta 2002 do leta 2022, razen pri enem vzroku so beleženi šele od leta 2020 naprej. Vsebujejo število umrlih glede na celotno Slovenijo, Vzhodni in Zahodni del ter so ločeni tudi glede na spol. Vsebujejo skupno število umrlih in glede na 6 različnih vzrokov.**
 
 ### Število smrti glede na vzrok
-#### od 2002 do 2022
 
 **Graf je namenjen splošnemu pregledu umrljivosti v Sloveniji glede na vzrok smrti.**
 
@@ -93,9 +92,9 @@ h <- h %>%
 h
 
 ```
+<font size="1"> Vir: Podatkovna baza SiStat. Prebivalstvo/Rojeni in umrli/Vzrok smrti. Dostopno na URL: https://pxweb.stat.si/SiStatData/pxweb/sl/Data/-/05L3013S.px. </font>
 
 ### Število umrlih žensk in moških po vzroku
-#### od leta 2002 do 2022
 
 **Graf je namenjen prikazu razlik števila umrlih med moškimi in ženskami, glede na vzrok.**
 
@@ -126,6 +125,7 @@ ggplot(df, aes(x = leto)) +
         axis.title.y = element_text(angle=0)) 
 
 ```
+<font size="1"> Vir: Podatkovna baza SiStat. Prebivalstvo/Rojeni in umrli/Vzrok smrti. Dostopno na URL: https://pxweb.stat.si/SiStatData/pxweb/sl/Data/-/05L3013S.px. </font>
 
 ### Delež smrti glede na vzrok po kohezijskih regijah
 #### od leta 2002 do 2022
@@ -254,3 +254,5 @@ server <- function(input, output) {
 
 shinyApp(ui,server)
 ```
+
+<font size="1"> Vir: Podatkovna baza SiStat. Prebivalstvo/Rojeni in umrli/Vzrok smrti. Dostopno na URL: https://pxweb.stat.si/SiStatData/pxweb/sl/Data/-/05L3013S.px. </font>
