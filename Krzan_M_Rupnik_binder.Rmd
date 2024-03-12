@@ -1,7 +1,7 @@
 ---
 title: "Seminarska naloga - vizualizacija podatkov"
 author: "Neža Kržan, Tom Rupnik Medjedovič"
-runtime: shiny
+# runtime: shiny
 output: html_document
 ---
 
@@ -111,7 +111,7 @@ ggplot(df, aes(x = leto)) +
   geom_line(aes(y = moski.s, color = "moški"), size=1.1) +
   scale_color_manual(values = c('ženske' = 'orange', 'moški' = 'purple')) +
   scale_x_continuous(breaks=seq(2002, 2022, 3)) +
-  scale_y_continuous(breaks=seq(100, 5000, 400)) +
+  scale_y_continuous(breaks=seq(0, 5000, 400)) +
   labs(color = 'SPOL') +
   theme_ipsum(grid="Y", strip_text_size = 15, axis_text_size = 12, axis_title_size = 12,
               ) +
