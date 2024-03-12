@@ -2,7 +2,7 @@
 title: "Seminarska naloga - vizualizacija podatkov"
 subtitle: "s komentarji"
 author: "Neža Kržan, Tom Rupnik Medjedovič"
-runtime: shiny
+#runtime: shiny
 output: html_document
 ---
 
@@ -51,14 +51,13 @@ df = na.omit(podatki)
 _Predlagam, da greste najprej na konec dokumenta in odprete povezavo(v novem oknu), da se graf, med pregledom prvih dveh grafov, naloži._
 
 ### Število smrti glede na vzrok
-#### od 2002 do 2022
 
 **Graf je namenjen splošnemu pregledu umrljivosti v Sloveniji glede na vzrok smrti.**
 
 - barvna usklajenost vzrokov umrljivosti s spodnjim grafom
 - barve prilagojene barvni slepoti
 - vzroki v legendi po vrsti glede na podatek v zadnjem letu(strokovna oznaka vzroka obarvana sivo)
-- interaktiven graf: splošen pregled števila umrlih glede na vzrok in podroben pregled za vsako leto posebaj
+- interaktiven graf: splošen pregled števila umrlih glede na vzrok in podroben pregled za vsako leto posebaj, lahko se tudi odstranja vzroke na grafu s klikom na vzrok v legendi 
 - mere skozi celoten graf označene le na y osi
 - poševen zapis letnic na x osi za lažjo berljivost
 - belo ozadje grafa
@@ -104,10 +103,9 @@ h <- h %>%
 
 h
 ```
-
+<font size="1"> Vir: Podatkovna baza SiStat. Prebivalstvo/Rojeni in umrli/Vzrok smrti. Dostopno na URL: https://pxweb.stat.si/SiStatData/pxweb/sl/Data/-/05L3013S.px. </font>
 
 ### Število umrlih žensk in moških po vzroku
-#### od leta 2002 do 2022
 
 **Graf je namenjen prikazu razlik števila umrlih med moškimi in ženskami, glede na vzrok.**
 
@@ -144,7 +142,7 @@ ggplot(df, aes(x = leto)) +
         legend.title=element_text(size=16),
         axis.title.y = element_text(angle=0)) 
 ```
-
+<font size="1"> Vir: Podatkovna baza SiStat. Prebivalstvo/Rojeni in umrli/Vzrok smrti. Dostopno na URL: https://pxweb.stat.si/SiStatData/pxweb/sl/Data/-/05L3013S.px. </font>
 
 ### Delež smrti glede na vzrok po kohezijskih regijah
 #### od leta 2002 do 2022
@@ -155,7 +153,7 @@ ggplot(df, aes(x = leto)) +
 - barve prilagojene barvni slepoti
 - deleži razvrščeni glede na polovico, četrtino kroga za lažjo predstavo
 - zapisani odstotki pri posameznem vzroku
-- interaktiven graf: podroben izpis vzroka, deleža in števila umrlih 
+- interaktiven graf: podroben izpis vzroka, deleža in števila umrlih, lahko se odstranja vzroke s klikom na vzrok v legendi 
 - omogoča podrobnejšo primerjavo deležev med dvema letoma, kohezijskima regijama ali glede na spol
 - poleg interaktivnega izpisa vzrokov tudi legenda
 
