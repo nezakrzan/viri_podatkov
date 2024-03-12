@@ -44,15 +44,15 @@ df_mankajoce_vrednosti = podatki[!complete.cases(podatki), ]
 df = na.omit(podatki)
 ```
 
-**Predstavitev števila umrlih glede na različne vzroke po kohezijskih regijah v Sloveniji.** 
+**Predstavitev števila umrlih glede na najpogostejše vzroke po kohezijskih regijah v Sloveniji.** 
 
 **Podatki so pridobljeni od leta 2002 do leta 2022, razen pri enem vzroku so beleženi šele od leta 2020 naprej. Vsebujejo število umrlih glede na celotno Slovenijo, Vzhodni in Zahodni del ter so ločeni tudi glede na spol. Vsebujejo skupno število umrlih in glede na 6 različnih vzrokov.**
 
 _Predlagam, da greste najprej na konec dokumenta in odprete povezavo(v novem oknu), da se graf, med pregledom prvih dveh grafov, naloži._
 
-### Število smrti glede na vzrok
+### Število umrlih glede na vzrok
 
-**Graf je namenjen splošnemu pregledu umrljivosti v Sloveniji glede na vzrok smrti.**
+**Graf je namenjen splošnemu pregledu umrljivosti v Sloveniji glede na najpogostejše vzrok smrti.**
 
 - barvna usklajenost vzrokov umrljivosti s spodnjim grafom
 - barve prilagojene barvni slepoti
@@ -107,7 +107,7 @@ h
 
 ### Število umrlih žensk in moških po vzroku
 
-**Graf je namenjen prikazu razlik števila umrlih med moškimi in ženskami, glede na vzrok.**
+**Graf je namenjen prikazu razlik števila umrlih med moškimi in ženskami, glede na najpogostejše vzroke.**
 
 - grafi natančno eden poleg drugega in eden nad drugim za lažje primerjanje
 - označena skala na y osi le na začetku posamezne vrste grafov in zato skala v vseh grafih
@@ -147,13 +147,13 @@ ggplot(df, aes(x = leto)) +
 ### Delež smrti glede na vzrok po kohezijskih regijah
 #### od leta 2002 do 2022
 
-**Graf je namenjen podrobnejšemu pregledu deleža umrlih glede na vzrok po kohezijskih Regijah. Graf lahko spreminjamo glede na leta in glede na spol.**
+**Graf je namenjen podrobnejšemu pregledu deleža umrlih glede na najpogostejše vzroke po kohezijskih regijah. Graf lahko spreminjamo glede na leta in glede na spol.**
 
 - barvna usklajenost vzrokov umrljivosti z zgornjim grafom
 - barve prilagojene barvni slepoti
 - deleži razvrščeni glede na polovico, četrtino kroga za lažjo predstavo
 - zapisani odstotki pri posameznem vzroku
-- interaktiven graf: podroben izpis vzroka, deleža in števila umrlih, lahko se odstranja vzroke s klikom na vzrok v legendi 
+- interaktiven graf: podroben izpis vzroka, deleža in števila umrlih
 - omogoča podrobnejšo primerjavo deležev med dvema letoma, kohezijskima regijama ali glede na spol
 - poleg interaktivnega izpisa vzrokov tudi legenda
 
