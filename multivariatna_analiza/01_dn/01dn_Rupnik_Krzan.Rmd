@@ -1,0 +1,130 @@
+---
+title: "Domača naloga 1"
+author: "Neza Krzan, Tom Rupnik"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Podatki
+
+<!--
+Ime raziskave oziroma podatkov. Leto in kraj/država, če je to za podatke
+smiselno. Enota analize. Velikost vzorca. Uporabljene spremenljivke (ime v datoteki in
+vsebinski pomen). Ostale posebnosti, za katere menite, da so vredne omembe (obravnava
+manjkajočih vrednosti, rekodirane spremenljivke ...). Zapišite, katere spremenljivke boste
+uporabili za razvrščanje in ali jih boste za ta namen standardizirali.
+-->
+
+Uporabila bova podatke _Swiss banknotes data_, ki vsebujejo šest meritev, opravljenih na 100 pravih in 100 ponarejenih starih švicarskih bankovcih za 1000 frankov. 
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+data = read.table("data.txt", header = T, sep = "", dec = ".")
+str(data)
+nrow(data)
+colnames(data)
+```
+
+
+Podatki vsebujejo 7 spremenljivk - 6 številskih in eno opisno. Vsebujejo različne izmerjene dolžine in širine bankovca v milimetrih:
+
+- `length`: dolžina bankovca(na sliki $x_1$), 
+- `left`: dolžina levega roba(na sliki $x_2$), 
+- `right`: dolžina desnega roba(na sliki $x_3$), 
+- `bottom`: dolžina spodnjega roba(na sliki $x_4$) in 
+- `top`: dolžina zornjega roba(na sliki $x_5$) ter 
+- `diag`: dolžina diagonale bankovca(na sliki $x_6$). 
+
+```{r echo=FALSE, fig.align='center', fig.cap="Označene mere na bankovcu.", fig.show='hold', out.width="70%"}
+knitr::include_graphics("ban.png")
+```
+
+Opisna spremenlivka `status` pa določa ali je bankovec pravi(`genuine`) ali ponarejen(`counterfeit`). V tabeli imamo torej meritve za 200 različnih bankovcev.
+
+## Urejanje podatkov
+
+Imena spremenljivk in vrednosti kategorične spremenljivke sva preimenovala v slovenska imena ter, kot sva že napisala zgoraj, sva podatke skalirala.
+
+Preimenovane spremenljivke:
+
+- `length`: `dolžina`, 
+- `left`: `levi.rob`, 
+- `right`: `desni.rob`, 
+- `bottom`: `spodnji.rob`,
+- `top`: `zgornji.rob`, 
+- `diag`: `diagonala` in
+- `status` : `tip`, kjer je potem `counterfeit`:`ponarejen bankovec` in `genuine`:`pravi bankovec`. 
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+# preimenovanje stolpcev
+colnames(data) <- c('dolzina','levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob', 'diagonala', 'tip')
+
+# nastavim stolpec kot faktor
+data$tip <- as.factor(data$tip)
+levels(data$tip)
+# prevedem v slovenščino
+levels(data$tip) <- c("ponarejen bankovec", "pravi bankovec")
+levels(data$tip)
+```
+
+Za lažjo predstavo si poglejmo opisne statistike številskih spremenljivk, da bomo vedeli s kakšnimi podatki imamo opravka.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(vtable)
+#napovedne spremenljivke
+pred <- c('dolzina','levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob', 'diagonala')
+sumtable(data[,pred], add.median = T, digits = 1, 
+         title = "Opisne statistike za števillske spremenljivke v podatkovnem okviru \\texttt{Swiss banknotes data}.")
+```
+
+Spremenljivke imajo različen razpon vrednosti, zato jih bova, za lažjo analizo, skalirala; vidimo pa tudi, da nimamo mankajočih vrednosti v podatkih.
+
+Poglejmo si še porazdelitve spremenljivk.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Porazdelitve spremenljivk v podatkovnem okviru \\texttt{Swiss banknotes data}."}
+library(reshape2)
+library(ggplot2)
+data_long <- melt(data[, c('dolzina','levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob', 'diagonala', "tip")])
+
+qplot(value, data = data_long, fill=tip, geom = "density", linetype = tip) + 
+  facet_wrap(~variable, scales = "free") + 
+  theme_bw() + 
+  xlab("mm")
+```
+
+Opazna je razlika med pravimi bankovci in ponarejenimi pri vseh spremenljivkah.
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+# skaliranje podatkov
+# vprasanje: misls da skalirava tud diagonalo k jo uporabva za analizo?, zdej ni skalirana
+dfz <- scale(x=data[1:5])
+```
+
+Za razvrščanje bova uporabljala samo številske spremenljivke, in sicer `dolzina`, `levi.rob`, `desni.rob`, `spodnji.rob`, `zgornji.rob`; za analizo pa spremenljivki `tip` in `diagonala`.
+
+# Hierarhično razvršanje
+
+<!-- Primerjajte tri različne metode (pri vsaki zapišite ime metode in
+uporabljeno razdaljo). Uporabite Wardovo metodo s kvadrirano Evklidsko razdaljo in še dve
+drugi metodi. Izberite najbolj primerno razvrstitev (metoda in število skupin). Vašo izbiro
+utemeljite.
+-->
+
+Torej za razvrščanje uporabljava spremenljivke `dolzina`, `levi.rob`, `desni.rob`, `spodnji.rob` in `zgornji.rob` ter primerjala bova tri različne metode in sicer, Wardovo metodo, minimalno metoda (single linkage) in maksimalno metoda (complete linkage).
+
+## Wardowa metoda
+
+```{r}
+# matrika razliznosti na standardiziranih podatkih (Evklidska razdalja)
+dz <- dist(x=dfz, method="euclidean")
+
+hc.ward <- hclust(d=dz, method="ward.D2")
+oldpar <- par(las=1, mfrow=c(1, 3))
+barplot(hc.ward$height)
+barplot(tail(x=hc.ward$height, n=10), names.arg=rev(seq_len(10)))
+plot(hc.ward, labels=F, hang=-1, main="Ward", sub="", xlab="", ylab="")
+par(oldpar)
+```
+
