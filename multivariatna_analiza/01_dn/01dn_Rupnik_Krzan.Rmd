@@ -79,7 +79,7 @@ sumtable(data[,pred], add.median = T, digits = 1,
          title = "Opisne statistike za števillske spremenljivke v podatkovnem okviru \\texttt{Swiss banknotes data}.")
 ```
 
-Spremenljivke imajo različen razpon vrednosti, zato jih bova, za lažjo analizo, skalirala; vidimo pa tudi, da nimamo mankajočih vrednosti v podatkih.
+Spremenljivke imajo različen razpon vrednosti, zato jih bova, skalirala; vidimo pa tudi, da nimamo mankajočih vrednosti v podatkih.
 
 Poglejmo si še porazdelitve spremenljivk.
 
@@ -102,7 +102,7 @@ Opazna je razlika med pravimi bankovci in ponarejenimi pri vseh spremenljivkah.
 dfz <- scale(x=data[1:5])
 ```
 
-Za razvrščanje bova uporabljala samo številske spremenljivke, in sicer `dolzina`, `levi.rob`, `desni.rob`, `spodnji.rob`, `zgornji.rob`; za analizo pa spremenljivki `tip` in `diagonala`.
+Za razvrščanje bova uporabljala samo številske spremenljivke, in sicer `dolzina`, `levi.rob`, `desni.rob`, `spodnji.rob`, `zgornji.rob`; za analizo pa spremenljivki `tip` in `diagonala`. Ker je `diagonala` edina številska spremenljivka pri analizi, le ta ne bo skalirana.
 
 # Hierarhično razvršanje
 
