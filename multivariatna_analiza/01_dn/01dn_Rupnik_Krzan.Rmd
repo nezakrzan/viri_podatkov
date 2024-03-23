@@ -2,17 +2,17 @@
 title: "Domača naloga 1"
 author: "Neza Krzan, Tom Rupnik"
 output:
-  pdf_document: 
-    fig_caption: yes
-    
+  pdf_document:
+    fig_caption: true
+    number_sections: true
 header-includes:
-  - \usepackage[slovene]{babel}
-  - \usepackage{float}
-  - \usepackage[T1]{fontenc}
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.pos = 'H', fig.align="center")
+knitr::opts_chunk$set(echo = TRUE, fig.pos = 'H', fig.align="center", echo=FALSE, results = F)
 library(cluster)
 library(mclust)
 library(foreign)
@@ -110,18 +110,13 @@ Poglejmo si še porazdelitve spremenljivk.
 <!-- 
 tuki nevem al so bols boxploti al tko k sva mela na zacetku?
 TOM: teli boxploti so mi kr vsec k se takoj vid da je razlika 
+Neza: okej pustim pol boxplote
 -->
 
 ```{r echo=FALSE, fig.cap="Porazdelitve spremenljivk v podatkovnem okviru \\texttt{Swiss banknotes data}.", fig.height=8, message=FALSE, warning=FALSE, fig.show='hold', out.width="50%"}
 library(reshape2)
 library(ggplot2)
 library(gridExtra)
-#data_long <- melt(data[, c('dolzina','levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob', 'diagonala', "tip")])
-
-#qplot(value, data = data_long, fill=tip, geom = "density", linetype = tip) + 
-#  facet_wrap(~variable, scales = "free") + 
-#  theme_bw() + 
-#  xlab("mm")
 
 g1 = ggplot(data, aes(x = tip, y= dolzina, fill=tip)) +
   geom_boxplot() +
@@ -157,6 +152,8 @@ combined + plot_layout(guides = "collect", nrow = 3)
 
 Opazna je razlika med pravimi bankovci in ponarejenimi pri vseh spremenljivkah.
 
+Za razvrščanje bova uporabljala samo številske spremenljivke, in sicer `dolzina`, `levi.rob`, `desni.rob`, `spodnji.rob`, `zgornji.rob`; za analizo pa spremenljivki `tip` in `diagonala`. Ker je `diagonala` edina številska spremenljivka pri analizi, le ta ne bo skalirana.
+
 ## Analiza povezanosti med spremenljivkami
 
 <!-- ker nimava tolk spremenljivk kokr jih mamo na vajah niti ne vem kako nej to sploh nardim
@@ -168,43 +165,16 @@ okej jst kle nevem cist tocno kaj hoce....
 <!-- 
 TOM: tole tvoje spodnje vrjetno spada pod analiza Likertovih spremenljivk
 oziroma je tko vsaj v 1. vajah
+Neza: da spada to pod likertove spremenljivke, sam nevem zakaj ni tam, je prestavljeno tja dol...
+
 Pa teoreticno je naceloma taka razporeditve kokr si jo ti naredila ampak glede na korelacijsko matriko ("lowerMat(Rlik)") se mi zdi pa moja bolja...
+Neza: jst sm to razvrstitev nardila tko po kmecki logiki, tko da ni teoreticno utemeljena...
 -->
-
-```{r eval=FALSE, include=FALSE}
-# sestavljene spremenljivke
-#	sklop "istih" indikatorjev zdruzimo v eno sestavljeno spremenljivko (Likertova lestvica)
-#	sklop tvorimo glede na teorijo
-#	sklop se vidi iz korelacijske matrike
-v1 <- c('dolzina', 'diagonala')
-v2 <- c('levi.rob','desni.rob')
-v3 <- c('spodnji.rob', 'zgornji.rob')
-
-# sestavljena spremenljivka je povprecje indikatorjev iz sklopa
-# shranimo kot novi spremenljivki v podatkih (dodamo dva stolpca)
-podatki = data.frame()
-data$v1 <- rowMeans(x=data[v1])
-data$v2 <- rowMeans(x=data[v2])
-data$v3 <- rowMeans(x=data[v3])
-
-# opisne statistike
-opisne <- as.data.frame(describe(data[c("v1", "v2", "v3")]))
-rownames(opisne) <- c("Sklop 1", "Sklop 2", "Sklop3")
-round(t(opisne), 2)
-
-# graficni prikaz
-oldpar <- par(las=1, mfrow=c(1, 3))
-hist(data$v1 , main="Porazdelitev za Sklop 1", xlab="strinjanje", ylab="frekvenca")
-hist(data$v2 , main="Porazdelitev za Sklop 2", xlab="strinjanje", ylab="frekvenca")
-hist(data$v3 , main="Porazdelitev za Sklop 3", xlab="strinjanje", ylab="frekvenca")
-par(oldpar)
-
-
-```
 
 <!-- TOM: bom se jst tle neki probal pa bova potem vidla kaj je uporabnega -->
 
-```{r}
+```{r fig.cap = "Korelacija med spremenljivkami.", fig.height=4, fig.height=4, out.width="40%", out.height="50%", echo=FALSE, results=F}
+
 ime = c('dolzina','levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob')
 
 Rlik <- cor(data[ime])
@@ -217,23 +187,30 @@ heatmap(x=Rlik, Rowv=NA, symm=T, revC=T,
 
 Iz grafa vidimo, da sta levi in desni rob med seboj mocno povezana. Prav tako imata zgornji in spodnji rob z njima srednje mocno korelacijo. Dolzina ima z vsemi zelo sibko korelacijo iz cesar bi lahko zakljucili, da tvori svojo skupino. 
 
-To je bolje razvidno iz spodnjega grafa
+To je še bolje razvidno iz spodnjega grafa.
 
-```{r}
+```{r fig.cap="Korelacija med spremenljivkami in možna povezava med spremenljivkami.", fig.height=4, fig.height=4, out.width="50%", out.height="50%", echo=FALSE, results=F}
 heatmap(x=Rlik, symm=T, revC=T,
         col=hcl.colors(n=100, palette="Blue-Red 3", rev=T),
         breaks=seq(-1, 1, 0.02))
 ```
 
-```{r}
+Poglejmo si povezanost med kategorično spremenljivko tip bankovca in številskimi spremenljivkami za razvršanje. 
+
+```{r fig.cap="Povezanost med kategorično spremenljivko(tip bankovca) in številskimi spremenljivkami.", fig.height=4, fig.height=4, out.width="50%", out.height="50%", echo=FALSE, results=F}
 t(aggregate(x=data[ime], by=list(data$tip), FUN=mean))
 
 agr <- aggregate(x=data[ime], by=list(data$tip), FUN=mean)
-matplot(x=seq_along(ime), y=t(agr[, -1]), type="o", pch=16, col=agr[, 1], main="Spol", xlab="", xaxt="n", ylab="")
+matplot(x=seq_along(ime), y=t(agr[, -1]), type="o", pch=16, col=agr[, 1], main="", xlab="", xaxt="n", ylab="")
 axis(side=1, at=seq_along(ime), labels=ime, las=2)
-abline(v=1.5)
+#abline(v=1.5)
 legend("topright", legend=agr[, 1], col=agr[, 1], pch=16)
 ```
+
+<!-- 
+Neza: okej tega ne znam komentirat
+mislm men je isto glede na tip bankovca?
+-->
 
 <!--TOM: to spodnje nevem kok je OK -->
 
@@ -241,11 +218,145 @@ legend("topright", legend=agr[, 1], col=agr[, 1], pch=16)
 tabela.diagonala <- cor(x=data[ime], y=data$diagonala, method="pearson")
 round(tabela.diagonala, digits=2)
 ```
-
+Torej sklepava lahko, da spremenljivka `dolzina` tvori svoj sklop, ostale spremenljivke pa svojega iz zgornje analize in grafov.
 
 ## Konstrukcija in analiza Likertovih spremenljivk
 
-<!-- manka-->
+Sedaj bomo za spremenljivke izdelali dve Likertovi lestvici, torej razdelila sva jih v dve skupini, tako da znotraj skupine spremenljivke merijo približno enako stvar. Za vsako skupino sva ustvarili eno Likertovo lestvico, tako da za vsako opazovano enoto izračunamo povprečje izbranih spremenljivk.
+
+* Prvi sklop predstavlja dolžino bankovca in vsebuje `dolzina`.
+* Druga sklop predstavlja mere in vsebuje `levi.rob`,`desni.rob`, `spodnji.rob`, `zgornji.rob`.
+
+```{r include=FALSE}
+# sestavljene spremenljivke
+#	sklop "istih" indikatorjev zdruzimo v eno sestavljeno spremenljivko (Likertova lestvica)
+#	sklop tvorimo glede na teorijo
+#	sklop se vidi iz korelacijske matrike
+v1 <- c("dolzina")
+v2 <- c('levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob')
+
+# sestavljena spremenljivka je povprecje indikatorjev iz sklopa
+# shranimo kot novi spremenljivki v podatkih (dodamo dva stolpca)
+data$v1 <- rowMeans(x=data[v1])
+data$v2 <- rowMeans(x=data[v2])
+```
+
+<!--
+```{r}
+# opisne statistike
+opisne <- as.data.frame(describe(data[c("v1", "v2")]))
+rownames(opisne) <- c("dolzina", "mere")
+round(t(opisne), 2)
+
+# graficni prikaz
+oldpar <- par(las=1, mfrow=c(1, 2))
+hist(data$v1 , main="Porazdelitev za sklop dolzina", xlab="strinjanje", ylab="frekvenca")
+hist(data$v2 , main="Porazdelitev za sklop mere", xlab="strinjanje", ylab="frekvenca")
+par(oldpar)
+```
+-->
+Poglejmo si porazdelitvi novo ustvarjenih spremenljivk Likertove lestivce tj. dolzina in mere.
+
+```{r, results=TRUE, fig.width=9, fig.height=5, fig.cap="Deskriptivne statistike Likertovih spremenljivk.", include=FALSE}
+# Poglejmo porazdelitvi teh dveh spremenljivk.
+OpisLikert <- as.data.frame(psych::describe(data[, c("v1","v2")]))
+kable(round(OpisLikert[, c(2, 3, 4, 5, 8, 9, 10, 11, 12)], 2), caption=" ") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+```{r, results=F, fig.width=9, fig.height=4, fig.cap="Porazdelitvi Likertovih spremenljivk.", echo=FALSE}
+par(mfrow = c(1, 2))
+hist(data$v1, main = "Porazdelitev dolzine", xlab = "Strinjanje", ylab = "Frekvenca", prob = T)
+x <- seq(min(data$v1), max(data$v1), length = 1000)
+f <- dnorm(x, mean = mean(data$v1), sd = sd(data$v1))
+lines(x, f, col = "red", lwd = 2)
+
+hist(data$v2, main = "Porazdelitev mere", xlab = "Strinjanje", ylab = "Frekvenca", prob = T)
+
+# Preverimo domnevo o enakosti povprečij.
+t <- t.test(x = data$v2, y = data$v1, paired = TRUE)
+```
+
+Porazdelitvi dolzine in mer si nista podobni. Povprečna nagnjenost k dolzini je 214.9 s standarndim odklonom 0.38 in je dokaj simetrična. Povprečna nagnjenost k meri je 70.04, medtem ko je standardni odklon enak 0.56 in njena porazdelitev je precej nedefinirana.
+
+<!--
+Neza: a je to okej, da sta sklopa tok razlicno porazdeljena? Se mi zdi da je blo na vajah dokaj lepo...
+-->
+
+Da preverimo domnevo o enakosti povprečij dolzine in mer uporabimo t-test za odvisna vzorca z ničelno domnevo, da je razlika povprečij enaka 0. Ta vrne vrednost $p < 0.001$, torej lahko ničelno domnevo pri stopnji značilnosti 0.05 zavrnemo. 95% interval zaupanja za razliko povprečij med dolzino in mero je [-144.96,-144.76].
+
+Pogledala bova še ali sta ustvarjeni spremenljivki Likertove lestvice povezani med seboj in ali sta povezani z ostalimi spremenljivkami.
+
+\newpage
+
+## Povezanost Likertovih spremenljivk
+
+Grafično si oglejmo razsevni diagram dolzine in mer. 
+
+```{r, fig.align="center", fig.width=5, fig.height=5, fig.cap="Razsevni diagram dolzine in mer.", echo=FALSE, results = F, out.width="50%"}
+tmp <- apply(data[, c("v1", "v2")], 2, jitter, amount = 0.07)
+
+plot(tmp[,1], tmp[,2], xlab = "dolzina", ylab = "mere")
+
+cor.test(x=data$v1, y=data$v2)
+```
+
+Da sva preverila ničelno povezanost, sva uporabila korelacijski test za odvisna vzorca na osnovi Pearsonovega koeficienta korelacije, ki vrne kot oceno za Pearsonov korelacijski koeficient vrednost -0.0795, ampak vrednost 0 pa pade v 95% IZ ter vrednost $p = 0.26 > 0.05$, torej ne moreva pri stopnji značilnosti 5% trditi, da povezanost obstaja na populaciji.
+
+## Likertovi spremenljivki in `tip`
+
+```{r echo=FALSE, fig.cap="Povprečja dolzina (levo) in mere (desno) po skupinah spremenljivke tip.", fig.height=6, fig.width=10, message=FALSE, warning=FALSE, results=F, out.width="70%"}
+library(gplots)
+par(mfrow = c(1,2))
+plotmeans(v1 ~ tip, 
+          data = data, 
+          ylab = "povprečje", 
+          xlab = "")
+
+plotmeans(v2 ~ tip, 
+          data = data, 
+          ylab = "povprečje", 
+          xlab = "")
+
+t.test(data$v1 ~ data$tip)
+t.test(data$v2 ~ data$tip)
+```
+
+Tukaj sva uporabljala Welchev test za primerjavo povprečij, ki pokaže, da se skupini tipa bankovcev pri stopnji značilnosti 5% v povprečju statistično značilno razlikujeta pri obeh Likertovi spremenljivki, ker je $p<0.05$. 
+
+Ocena za povprečje pri dolzini za ponarejen tip bankovca je 214.82 in za pravi bankovec 214.97 pri 95% intervalu zaupanja [-0.25, -0.043]. Ocena za povprečje pri mere pa je za ponarejen tip bankovca 70.54 in za pravi bankovec 69.53 pri 95% intervalu zaupanja [0.94, 1.07].
+
+Nariševa še razsevni diagram spremenljivke `tip`, kjer za osi vzameva Likertovi lestvici, točke pa predstavljajo posamezne enote. Dodamo tudi dve večji točki, ki predstavljata povprečji po skupinah obeh Likertovih spremenljivk.
+
+```{r, fig.height=5, fig.width=5, fig.cap="Razsevni diagram dolzina in mere po spremenljivki tip.", out.width="70%"}
+# Izberemo spremenljivko
+var <- "tip"
+sprem <- c("v1", "v2")
+
+# Izračunamo centroide po nadzoru
+agg <- aggregate(data[, sprem], by=list(data[, var]), FUN=mean, na.rm = TRUE)
+
+tmp <- apply(data[, sprem], 2, jitter, amount=0.07)
+
+joint <- rbind(tmp, agg[, -1])
+
+plot(joint,
+     xlab = "dolzina",
+     ylab = "mere",
+     pch = 16,
+     cex = c(rep(0.5, nrow(tmp)), rep(2, nrow(agg))),
+     col=c(data[, var], agg[,1]))
+# dodamo legendo
+par(xpd=TRUE)
+legend("bottomright", legend = agg[,1], pch = 16, col = 1:nrow(agg))
+```
+
+Iz grafa opazimo razlike med tipom bankovca, ampak obstajajo enote, ki se malenkost pomešajo. 
+
+<!-- Neza: kaj nej zdej sploh za zakljucek napisem?-->
+
+Torej spremenljivke sva razdelila v dva sklopa glede na povezanost in tako ustvarila dve Likertovi spremenljivki. Prva spremenljivka predstavlja dolžino, druga pa ostale mere. S 95% zaupanjem lahko trdimo, da dolžina in mere nista statistično značilno povezani. Glede na tip bankovca se skupini statistično razlikujeta pri obeh Likertovi spremenljivki.
+
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 # skaliranje podatkov
@@ -254,7 +365,7 @@ round(tabela.diagonala, digits=2)
 dfz <- scale(x=data[1:5])
 ```
 
-Za razvrščanje bova uporabljala samo številske spremenljivke, in sicer `dolzina`, `levi.rob`, `desni.rob`, `spodnji.rob`, `zgornji.rob`; za analizo pa spremenljivki `tip` in `diagonala`. Ker je `diagonala` edina številska spremenljivka pri analizi, le ta ne bo skalirana.
+\newpage
 
 # Hierarhično razvršanje
 
@@ -315,8 +426,6 @@ barplot(tail(x=hc.com$height, n=10), names.arg=rev(seq_len(10)))
 plot(hc.com, labels=F, hang=-1, main="Complete", sub="", xlab="", ylab="")
 par(oldpar)
 ```
-
-\newpage
 
 ## Analiza
 
