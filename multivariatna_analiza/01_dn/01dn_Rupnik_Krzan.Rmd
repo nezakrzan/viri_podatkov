@@ -1,17 +1,39 @@
 ---
 title: "Domača naloga 1"
 author: "Neza Krzan, Tom Rupnik"
-output: pdf_document
+output:
+  pdf_document: 
+    fig_caption: yes
+    
+header-includes:
+  - \usepackage[slovene]{babel}
+  - \usepackage{float}
+  - \usepackage[T1]{fontenc}
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.pos = 'H', fig.align="center")
 library(cluster)
 library(mclust)
+library(foreign)
+library(psych)
+
 set.seed(2020)
 ```
 
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
+
+# Cilji naloge
+
+V nalogi vova poskušala razvrstiti enote v skupine tako, da si bodo enote znotraj skupin čim bolj podobne in enote v različnih skupinah čim bolj različne glede na več spremenljivk. 
+
 # Podatki
+
+<!--
+NEZA: a misls da je treba te podatke tko pregledat kokr na prvih vajah k ste delal?-->
 
 <!--
 Ime raziskave oziroma podatkov. Leto in kraj/država, če je to za podatke
@@ -29,7 +51,6 @@ str(data)
 nrow(data)
 colnames(data)
 ```
-
 
 Podatki vsebujejo 7 spremenljivk - 6 številskih in eno opisno. Vsebujejo različne izmerjene dolžine in širine bankovca v milimetrih:
 
@@ -82,26 +103,104 @@ sumtable(data[,pred], add.median = T, digits = 1,
          title = "Opisne statistike za števillske spremenljivke v podatkovnem okviru \\texttt{Swiss banknotes data}.")
 ```
 
-Spremenljivke imajo različen razpon vrednosti, zato jih bova, skalirala; vidimo pa tudi, da nimamo mankajočih vrednosti v podatkih.
+Spremenljivke imajo različen razpon vrednosti, zato jih bova, skalirala. Tako bodo imele spremenljivke povprečje 0 in standardni odklon 1. S tem doseževa enakovreden vpliv spremenljivk na razvrstitev. Vidimo pa tudi, da nimamo mankajočih vrednosti v podatkih.
 
 Poglejmo si še porazdelitve spremenljivk.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Porazdelitve spremenljivk v podatkovnem okviru \\texttt{Swiss banknotes data}."}
+<!-- tuki nevem al so bols boxploti al tko k sva mela na zacetku?-->
+
+```{r echo=FALSE, fig.cap="Porazdelitve spremenljivk v podatkovnem okviru \\texttt{Swiss banknotes data}.", fig.height=8, message=FALSE, warning=FALSE, fig.show='hold', out.width="50%"}
 library(reshape2)
 library(ggplot2)
-data_long <- melt(data[, c('dolzina','levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob', 'diagonala', "tip")])
+library(gridExtra)
+#data_long <- melt(data[, c('dolzina','levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob', 'diagonala', "tip")])
 
-qplot(value, data = data_long, fill=tip, geom = "density", linetype = tip) + 
-  facet_wrap(~variable, scales = "free") + 
+#qplot(value, data = data_long, fill=tip, geom = "density", linetype = tip) + 
+#  facet_wrap(~variable, scales = "free") + 
+#  theme_bw() + 
+#  xlab("mm")
+
+g1 = ggplot(data, aes(x = tip, y= dolzina, fill=tip)) +
+  geom_boxplot() +
   theme_bw() + 
-  xlab("mm")
+  ylab("dolzina(mm)")
+g2 = ggplot(data, aes(x = tip, y= levi.rob, fill=tip)) +
+  geom_boxplot() +
+  theme_bw() + 
+  ylab("levi rob(mm)")
+g3 = ggplot(data, aes(x = tip, y= desni.rob, fill=tip)) +
+  geom_boxplot() +
+  theme_bw() + 
+  ylab("desni rob(mm)")
+g4 = ggplot(data, aes(x = tip, y= spodnji.rob, fill=tip)) +
+  geom_boxplot() +
+  theme_bw() + 
+  ylab("spodnji rob(mm)")
+g5 = ggplot(data, aes(x = tip, y= zgornji.rob, fill=tip)) +
+  geom_boxplot() +
+  theme_bw() + 
+  ylab("zgornji rob(mm)")
+g6 = ggplot(data, aes(x = tip, y= diagonala, fill=tip)) +
+  geom_boxplot() +
+  theme_bw() + 
+  ylab("diagonala(mm)")
+
+library(patchwork)
+library(ggpubr)
+
+combined <- g1 + g2 + g3 + g4 + g5 + g6 & theme(legend.position = "bottom")
+combined + plot_layout(guides = "collect", nrow = 3)
 ```
 
 Opazna je razlika med pravimi bankovci in ponarejenimi pri vseh spremenljivkah.
 
+## Analiza povezanosti med spremenljivkami
+
+<!-- ker nimava tolk spremenljivk kokr jih mamo na vajah niti ne vem kako nej to sploh nardim
+Tematska: samo tip bankovca?
+povezanost med tipom bankovca in ostalimi stevilskimi spremenljivkami?
+okej jst kle nevem cist tocno kaj hoce....
+-->
+
+```{r eval=FALSE, include=FALSE}
+# sestavljene spremenljivke
+#	sklop "istih" indikatorjev zdruzimo v eno sestavljeno spremenljivko (Likertova lestvica)
+#	sklop tvorimo glede na teorijo
+#	sklop se vidi iz korelacijske matrike
+v1 <- c('dolzina', 'diagonala')
+v2 <- c('levi.rob','desni.rob')
+v3 <- c('spodnji.rob', 'zgornji.rob')
+
+# sestavljena spremenljivka je povprecje indikatorjev iz sklopa
+# shranimo kot novi spremenljivki v podatkih (dodamo dva stolpca)
+podatki = data.frame()
+data$v1 <- rowMeans(x=data[v1])
+data$v2 <- rowMeans(x=data[v2])
+data$v3 <- rowMeans(x=data[v3])
+
+# opisne statistike
+opisne <- as.data.frame(describe(data[c("v1", "v2", "v3")]))
+rownames(opisne) <- c("Sklop 1", "Sklop 2", "Sklop3")
+round(t(opisne), 2)
+
+# graficni prikaz
+oldpar <- par(las=1, mfrow=c(1, 3))
+hist(data$v1 , main="Porazdelitev za Sklop 1", xlab="strinjanje", ylab="frekvenca")
+hist(data$v2 , main="Porazdelitev za Sklop 2", xlab="strinjanje", ylab="frekvenca")
+hist(data$v3 , main="Porazdelitev za Sklop 3", xlab="strinjanje", ylab="frekvenca")
+par(oldpar)
+
+
+```
+
+## Konstrukcija in analiza Likertovih spremenljivk
+
+<!-- manka-->
+
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 # skaliranje podatkov
 # vprasanje: misls da skalirava tud diagonalo k jo uporabva za analizo?, zdej ni skalirana
+# odgovor: sva skalirala samo spremenljivke za razvrscanje
 dfz <- scale(x=data[1:5])
 ```
 
@@ -115,11 +214,19 @@ drugi metodi. Izberite najbolj primerno razvrstitev (metoda in število skupin).
 utemeljite.
 -->
 
+Pri hierarhičnem razvrščanju začnemo s tem, da je vsaka enota v svoji skupini. Potem pa se na vsakem koraku, glede na izračunane matrike različnosti, v kateri so razdalje med pari skupin, združujejo skupine, ki so si najbližje. Nato se izračunajo različnosti novih združenih skupin od ostalih, kar se nadaljuje dokler niso vse enote v eni skupini. Dobra lastnost hierarhičnega razvrščanja je, da uporabniku ni potrebno vnaprej določiti števila skupin.
+
+Kot mero različnosti bova uporabila evklidsko razdaljo.
+
 Torej za razvrščanje uporabljava spremenljivke `dolzina`, `levi.rob`, `desni.rob`, `spodnji.rob` in `zgornji.rob` ter primerjala bova tri različne metode in sicer, Wardovo metodo, minimalno metoda (single linkage) in maksimalno metoda (complete linkage).
+
+Število skupin lahko določimo na podlagi dendograma, ki grafično prikazuje potek združevanja v skupine. Število skupin pa določimo tako na podlagi vidnejšega zmanjšanja razdalj skupinami.
 
 ## Wardowa metoda
 
-```{r}
+Wardova metoda je primera za eliptične skupine.
+
+```{r echo=FALSE, fig.cap="Dendogrami Wardowe metode razvrščanja v skupine.", fig.height=5, fig.width=11}
 # matrika razliznosti na standardiziranih podatkih (Evklidska razdalja)
 dz <- dist(x=dfz, method="euclidean")
 
@@ -133,7 +240,9 @@ par(oldpar)
 
 ## Minimalna metoda 
 
-```{r}
+Minimalna metoda (enojna povezanost - single linkage) je primerna za dolge in neeliptične skupine, ki so jasno ločene med seboj. Kadar skupine med seboj niso jasno ločene pri minimalni metodi pride do problema veriženja. Na takem dendogramu ne moremo določiti števila skupin in zato rečemo, da je skupina zgolj ena.
+
+```{r echo=FALSE, fig.cap="Dendogrami minimalne metode razvrščanja v skupine.", fig.height=5, fig.width=11}
 # uporabili smo Evklidsko razdaljo
 hc.sin <- hclust(d=dz, method="single")
 oldpar <- par(las=1, mfrow=c(1, 3))
@@ -145,7 +254,9 @@ par(oldpar)
 
 ## Maksimalna metoda
 
-```{r}
+Maksimalna metoda (polna povezanost - complete linkage) pa je primerna za okrogle skupine.
+
+```{r echo=FALSE, fig.cap="Dendogrami maksimalne metode razvrščanja v skupine.", fig.height=5, fig.width=11}
 # uporabili smo Evklidsko razdaljo
 hc.com <- hclust(d=dz, method="complete")
 oldpar <- par(las=1, mfrow=c(1, 3))
@@ -155,11 +266,13 @@ plot(hc.com, labels=F, hang=-1, main="Complete", sub="", xlab="", ylab="")
 par(oldpar)
 ```
 
+\newpage
+
 ## Analiza
 
-Glede na izgled grafov (razvrstitve) sva se odločila, da je najbolj primerna razvrstitev po Wardowi metodi. Pri ostalih dveh metodah so različnosti dokaj majhne (ni tako izrazitih različnosti (višin)). Grafe bomo narisali za _2_, _3_ in _4_ skupine, saj so tu razlike med različnostmi bolj izrazite.
+Glede na izgled grafov (razvrstitve) sva se odločila, da je najbolj primerna razvrstitev po Wardowi metodi. Pri ostalih dveh metodah so različnosti dokaj majhne (ni tako izrazitih skokov v višini). Grafe bomo narisali za _2_, _3_ in _4_ skupine, saj so tu razlike <!--med različnostmi--> bolj izrazite.
 
-```{r}
+```{r echo=FALSE, fig.cap="Povprečja po skupinah za Wardowo metodo.", fig.height=5, fig.width=12}
 # Ward skupine
 hc.ward1 <- cutree(tree=hc.ward, k=1)
 hc.ward2 <- cutree(tree=hc.ward, k=2)
@@ -175,7 +288,7 @@ sk.ime <- paste("sk", 1:nsk, sep="")
 agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
 y <- t(agr[, -1])
 matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
-        ylab="Povprecje (standardizirane)")
+        ylab="Povprecje (standardizirane spremenljivke)")
 axis(side=1, at=seq_along(ime), labels=ime, las=2)
 legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
 abline(h=0, v=6.5)
@@ -185,7 +298,7 @@ sk.ime <- paste("sk", 1:nsk, sep="")
 agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
 y <- t(agr[, -1])
 matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
-        ylab="Povprezje (standardizirane)")
+        ylab="Povprecje (standardizirane spremenljivke)")
 axis(side=1, at=seq_along(ime), labels=ime, las=2)
 legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
 abline(h=0, v=6.5)
@@ -195,16 +308,21 @@ sk.ime <- paste("sk", 1:nsk, sep="")
 agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
 y <- t(agr[, -1])
 matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
-        ylab="Povprezje (standardizirane)")
+        ylab="Povprecje (standardizirane spremenljivke)")
 axis(side=1, at=seq_along(ime), labels=ime, las=2)
 legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
 abline(h=0, v=6.5)
 par(oldpar)
 ```
 
-<!-- Tukej je vrjetno potreben se komentar -->
+<!-- Tukej je vrjetno potreben se komentar 
+Neza: to pomojem zdej nc ni prov ker nevem ce je ta razvrstitev spremenljivk sploh prava....-->
 
-# Razvrščanje K-means
+Če si pogledamo skupino 2 na vseh treh grafih, vidimo, da zavzema podpovprečne vrednosti. Ravno obratno vidimo pri skupini 1, ki na prvem grafu zavzema nadpovprečne vrednosti, na drugih dveh pa zavzema podpovprečne vrednosti samo pri dolžini bankovca. Skupina 3 pa je v nekaterih primerih nadpovprečna v nekaterih pa podpovprečna(`spodnji.rob`, `zgornji.rob`). Pri zadnjem garfu se skupina 4 pri spremenljivki `dolzina` pribliza povprecju zelo dobro, pri vseh ostalih spremenljivkah je nadpovprecna in pri zadnji mocno podpovprecna.
+
+\newpage
+
+# Nehierarhično razvrščanje
 
 <!--
 Izberite/določite najbolj primerno število skupin. Pomagajte si z
@@ -212,31 +330,56 @@ rezultati hierarhičnega razvrščanja in dodatno za metodo K-means narišite gr
 koleno, pseudo F, gap statistika. Vašo izbiro utemeljite. 
 -->
 
-```{r}
+## Razvrščanje K-means
+
+K-means je metoda voditeljev oz. nehierarhičnega razvrščanja. Voditelji so "predstavniki skupin", vsaka enota pa pripada skupini, kateremu voditelju je najbližje(razdalja je evklidska) oz. mu je najbolj podobna; voditelj predstavlja povprečje skupine. Spremenljivke pri metodi _k-means_ morajo biti vsaj intervalne. 
+
+Tukaj pri tej metodi mora biti število skupin podanoi vnaprej, kar je morda slaba lastnost in se glede tega razlikuje od npr. Wardove metode. Na začetku določimo voditelje, potem pa na vsakem koraku vsako enoto priredimo voditelju oz. skupini, kateremu je najbljižja glede na evklidsko razdaljo. Na vsakem koraku se izračunajo novi voditelji kot povprečja skupin. Postopek se zaključi, ko so novi voditelji enaki starim. 
+
+Izberemo tisto razvrstitev, ki ima najmanjšo vrednost Wardove kriterijske funkcije, za katero vemo, da pada z naraščanjem števila skupin. Torej za optimalno število skupin ponavadi vzamemo tisto vrednost, kjer se zgori t.i. "koleno" funkcije. Če to "koleno" ni jasno razvidno, lahko sklepamo, da skupine niso jasno ločene. Postopek običajno večkrat ponovimo, saj za različne začetne voditelje lahko dobimo različne rešitve, torej razvrstitve v skupine.
+
+```{r echo=FALSE, fig.cap="Vrednost Wardove kriterijske funkcije.", fig.height=4, fig.width=6, out.width="70%"}
 # WSS
 kmax <- 10
 wss <- NULL
 for (k in 1:kmax) {
-  withinss <- kmeans(x=dfz, centers=k, nstart=100)$tot.withinss
+  withinss <- kmeans(x=dfz, # podatki
+                     centers=k, # st. skupin
+                     nstart=100)$tot.withinss # st. ponovitev
   wss <- c(wss, withinss)
 }
 
+plot(x=1:kmax, y=wss, type="b", main="", xlab="stevilo skupin(k)",
+     ylab="vrednost Wardowe kriterijske funkcije")
+```
+
+Sprememba naklona funkcije izgleda največja pri **2** ali **4** skupinah oziroma je tam "koleno" najbolj razvidno.
+
+## GAP statistika
+
+
+Pri določevanju števila skupin si lahko pomagamo tudi z GAP statistiko, kjer iščemo skupine, ki so podatki bolj homogeni, kot kjer ni skupin. Gre za primerjavo razdalj znotraj skupin z razdaljami na podatkih brez skupin. Izberemo pa tisto najmanjše število skupin k , kjer je vrednost $GAP(k)$ statistike vsaj tolikšna kot $GAP(k+1) - SE(GAP(k+1))$; $SE$ je standardna napaka GAP statistike.
+
+```{r echo=FALSE, fig.cap="Vrednost GAP statistike.", fig.height=4, fig.width=6, out.width="70%"}
+# gap statistika
+gap_stat <- clusGap(x=dfz, FUNcluster=kmeans, K.max=kmax)
+plot(gap_stat, xlab="stevilo skupin", main="")
+```
+
+Na podlagi grafičnega prikaza vrednosti GAP statistike pri različnem številu skupin se odločimo za **4** skupine, saj tam doseže najvišjo točko.
+
+## Pseudo F (Calinski - Harabasz indeks)
+
+Uporabimo pa lahko tudi indeks Calinski-Harabasz, ki ocenjuje razmerje med razpršenostjo znotraj skupin in razpršenostjo med skupinami. Uporabljamo ga za oceno primernosti števila skupin v metodi gručenja (angl. _clustering_). Višje vrednosti indeksa Calinski-Harabasz označujejo boljše gručenje, pri čemer optimalno število skupin običajno doseže maksimum tega indeksa.
+
+```{r echo=FALSE, fig.cap="Vrednost Pseudo F oz. Calinski - Harabasz indeksa.", fig.height=4, fig.width=6, out.width="70%"}
 # Pseudo F (Calinski and Harabasz index)
 pseudoF <- 0
 bss <- wss[1] - wss
 for (k in 2:kmax) pseudoF <- c(pseudoF, (bss[k]/(k-1)) / (wss[k]/(nrow(dfz)-k)))
 
-# gap statistika
-(gap_stat <- clusGap(x=dfz, FUNcluster=kmeans, K.max=kmax))
-
-# grafizni prikaz (vse tri skupaj)
-oldpar <- par(las=1, mfrow=c(1, 3))
-plot(x=1:kmax, y=wss, type="b", main="WSS", xlab="stevilo skupin",
-     ylab="Kriterijska funkcija")
-plot(x=1:kmax, y=pseudoF, type="b", main="Pseudo F", xlab="stevilo skupin",
-     ylab="Pseudo F")
-plot(gap_stat)
-par(oldpar)
+plot(x=1:kmax, y=pseudoF, type="b", xlab="stevilo skupin",
+     ylab="Pseudo F", main="")
 
 km1 <- kmeans(x=dfz, centers=1, nstart=1)
 km2 <- kmeans(x=dfz, centers=2, nstart=100)
@@ -244,15 +387,15 @@ km3 <- kmeans(x=dfz, centers=3, nstart=100)
 km4 <- kmeans(x=dfz, centers=4, nstart=100)
 ```
 
-Število skupin glede na posamezni graf:
+Tukaj je maksimum dosežen pri **2** skupinah.
 
-* WSS: sprememba naklona izgleda največja pri **4** skupinah
-* Pseudo F: maksimum doseze pri **2** skupinah
-* gap statistika: najvišjo točko preden začne padati doseže pri **4** skupinah
+Torej, če povzameva celotno analizo, bi, glede na posamezen graf, izbrala
 
-Do podobnih ugotovitev smo prišli s pomočjo rezultatov hierarhičnega razvrščanja. Tam smo se odločali med 2, 3 ali 4 skupinami. Vendar pa težimo k večjemu številu skupin kot le 2. 
+* WSS: sprememba naklona izgleda največja pri **4** skupinah,
+* Pseudo F: maksimum doseze pri **2** skupinah,
+* gap statistika: najvišjo točko preden začne padati doseže pri **4** skupinah.
 
-Torej glede na analizo, ki smo jo naredili do sedaj so **4** najbolj primeren rezultat.
+Na podlagi zgornjih analiz in ugotovitev pri hierarhičnem razvrščanju, kjer smo e odločali med 2, 3 ali 4 skupinami, bi se tu določili raje za **4** skupine, kot za 2, saj težimo k večjemu številu skupin kot je 2.
 
 <!--
 Primerjajte vrednost kriterijske funkcije pri različnem številu skupin za Wardovo
@@ -260,7 +403,13 @@ metodo in K-means. Katera metoda je boljša? Pri izbranem številu skupin primer
 obe razvrstitvi. Izpišite kontingenčno tabelo in izračunajte popravljen Randov indeks.
 -->
 
-```{r}
+\newpage
+
+## Primerjava vrednosti kriterijske funkcije za Wardowo metodo in K-means
+
+Primerjala sva tudi vrednosti kriterijskih funkcij za Wardowo metodo in metodo K-means, ker sta podobno oziroma delujeta na isti princip. Je pa metoda K-means boljša, ker išče lokalne minimume, za razliko do Wardove, ki deluje hierarhično in vedno poda enak rezultat. Ocenjujeva sva pa po principu, da ima boljša razvrtitev manjšo vrednost karaketristične funkcije. Pomembno pa je tudi to, da so podatki standardizirani, saj drugače med seboj ne bi bilo primerljivo.
+
+```{r echo=FALSE}
 # Wardova kriterijska funkcija
 WardKF <- function(data, cluster){
   # vsota kvadratov
@@ -278,12 +427,14 @@ wkf <- rbind(wkf, c(WardKF(dfz, hc.ward1), WardKF(dfz, hc.ward2), WardKF(dfz, hc
 wkf <- rbind(wkf, c(WardKF(dfz, km1$cluster), WardKF(dfz, km2$cluster), WardKF(dfz, km3$cluster), WardKF(dfz, km4$cluster)))
 rownames(wkf) <- c("Ward", "Kmeans")
 colnames(wkf) <- c("k=1", "k=2", "k=3", "k=4")
-wkf
+
+# NEZA: to tabelo ne znam med besedilo spravt, vedno jo vrze na vrh strani, mogoce ves zakaj, vse sm ze poskusla?
+kable(wkf, caption = "Primerjava vrednosti kriterijske funkcije za Wardowo metodo in K-means.")
 ```
 
-Vidimo da ima v vseh primerih (z izjemo prvega kjer sta enaka) K-means manjšo vrednost, kar tudi želimo. Primerjavo razvrtitev bomo naredili na številu skupin **4**. 
+Vidimo da ima v vseh primerih (z izjemo prvega kjer sta enaka) K-means manjšo vrednost, kar si tudi želimo. Primerjavo razvrtitev bomo naredili na številu skupin **k = 4**. 
 
-```{r}
+```{r echo=FALSE}
 # kontingenčna tabela
 table(km4$cluster, c(3, 2, 4, 1)[hc.ward4])
 
@@ -291,19 +442,25 @@ table(km4$cluster, c(3, 2, 4, 1)[hc.ward4])
 adjustedRandIndex(x=km4$cluster, y=hc.ward4)
 ```
 
-<!-- Tukej nevem kaj bi komentiral -->
+<!-- Tukej nevem kaj bi komentiral 
+Neza: sm neki napisala-->
+
+Največje elemente imamo na diagonali kontingenčne tabele, tudi te vrednosti niso ekstremno velike(npr. 400). Za izvendiagonalne elemente si želimo, da bi bili čim manjši oziroma zelo blizu 0, kar pa po večini so, ali pa so celo kar enaki 0(iztopa le ena vrednost - 17).
+
+Poglejmo si še Randow indeks, ki predstavlja delež parov enot, ki so si v obeh razbitjih usklajeni -  v obeh razbitjih v isti skupini ali pa v obeh razbitjih v različnih skupinah. Pogledala sva si popravljen Randow indeks, zaradi boljše primerljivosti. Enak je `r round(adjustedRandIndex(x=km4$cluster, y=hc.ward4), 3)`, kar je blizu 0,5, torej gre skoraj za neko srednjo podobnost, sicer pa večji kot je, boljše je -  vrednost 1 pomeni identični razbitji, vrednost 0 pa, da sta si razbitji tako podobni po slučaju.
+
+\newpage
 
 #  Razvrščanje na podlagi modelov
+
+Tukaj predpostavimo, da so podatki generirani iz multivariatnih normalnih porazdelitev z različnimi parametri oziroma komponentami; vsaka skupina ima svojo multivariatno normalno porazdelitev. Skupina je večja po volumnu, če ima večjo variabilnost, omejimo pa se z domnevami oziroma predhodnim znanjem, kakšne naj bi ti skupine bile. Zato si poglejmo porazdelitve spremenljivk ne glede na tip bankovca.
 
 <!-- Ali je porazdelitev spremenljivk primerna za uporabo te metode? Ne glede na
 primernost uporabite metodo za razvrščanje na vaših podatkih. Izberite najbolj
 primeren model in število skupin. Izbiro utemeljite.
 -->
 
-Metoda predpostavlja multivariatno normalno porazdelitev zato si poglejmo
-porazdelitev spremenljivk
-
-```{r}
+```{r echo=FALSE, fig.cap="Porazdelitve spremenljivk."}
 oldpar <- par(las=1, mfrow=c(2, 3))
 for (i in seq_along(ime)) {
   hist(data[, ime[i]],
@@ -314,13 +471,82 @@ for (i in seq_along(ime)) {
 par(oldpar)
 ```
 
+Spremenljivka `spodnji.rob`  in tudi `desni.rob` nista porazdeljeni po normalni porazdelitvi, zato ne moremo trditi, da je zadoščen ta pogoj. Ostale so porazdeljene po normalni, nekatere asimetrične v denso(npr. spremenljivka `dolzina`) in nekatere v levo(npr. spremenljivka `levi.rob`).
+
+<!--
 Nekatere spremenljivke niso porazdeljene po normalni porazdelitvi, zato ne moremo trditi da je zadoščen pogoj. 
+-->
 
-```{r}
-(mc <- Mclust(data=dfz, G=1:5))
+Tukaj ocenimo število skupin in parametre za vsako skupino ter kateri skupini posamezna enota pripada. V najinem primeru, kjer je predpostavka o multivariatni normalni porazdelitvi kršena, se simulacija ne izkaže za optimalno. Razvrstitev se dela na originalnih podatkih oz. nestandardiziranih podatkih, ker s tem omogočimo različno velikost skupin.
+
+## BIC(Bayes Information Criterion) kriterij
+
+Naredimo torej razvrstitev na originalnih, nestandardiziranih podatkih, kjer funkcija sama izbere naprimernejši model.
+
+```{r echo=FALSE, fig.height=5, fig.width=8, fig.cap="BIC kriterij za originalne podatke.", results=F, out.width="70%"}
+df = data[1:5]
+mc <- Mclust(data=df, G=1:5)
 summary(mc)
+plot(x=mc, what="BIC")
+```
+Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -592.64 izberemo model VEE s tremi skupinami, kar pomeni, da gre za elipsoidne(angl. _ellipsoidal_) skupine, ki so različno velike, različnih oblik in enako usmerjene.
 
+<!--
+Najbolj primeren model je VEE (vsi elipticne oblike, razlicnih velikosti in enake orientacije) in 3 skupine. 
+-->
+
+Kriterij temelji na "Bayesovski" statistiki, zato lahko določimo tudi apriorne verjetnosti(torej neko naše predhodno znanje oziroma prepričanja). 
+
+```{r, fig.height=4, fig.cap="BIC kriterij (priorControl) za originalne podatke.", fig.height=5, fig.width=8, results=F, out.width="70%"}
+# priorControl
+mcP <- Mclust(data=df, G=1:5, prior = priorControl())
+summary(mcP)
+plot(mcP, what = "BIC")
+```
+
+Na podlagi BIC kriterija z uporabljenim argumentom o apriornih verjetnostih se odločimo za model EEE s tremi skupinami, kar pomeni, da gre za različno velike skupine, različnih oblik in enake usmerjenosti.
+
+## BIC kriterij na standariziranih podatkih
+
+Poglejmo si še, iz radovednosti, kako je z oceno modela na standariziranih podatkih, ampak vrednosti BIC kriterija niso primerljive med standariziranimi in nestandariziranimi podatki. 
+
+```{r echo=FALSE, fig.height=6, fig.width=8, fig.cap="BIC kriterij za standardizirane podatke.", results=F, out.width="70%"}
+mc <- Mclust(data=dfz, G=1:5)
+summary(mc)
 plot(x=mc, what="BIC")
 ```
 
-Najbolj primeren model je VEE (vsi elipticne oblike, razlicnih velikosti in enake orientacije) in 3 skupine. 
+Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -1143.31	ponovno izberemo model VVE s tremi skupinami.
+
+Tudi tukaj lahko primerjamo z vključitvijo apriornih verjetnosti.
+
+```{r, fig.height=4, fig.cap="BIC kriterij (priorControl) za standardizirane podatke.", fig.height=5, fig.width=8, results=F, out.width="70%"}
+# priorControl
+mcP <- Mclust(data=dfz, G=1:5, prior = priorControl())
+summary(mcP)
+plot(mcP, what = "BIC")
+```
+
+Tudi tukaj se na podlagi BIC kriterija z uporabljenim argumentom o apriornih verjetnostih se odločimo za model EEE s tremi skupinami, kar pomeni, da gre za različno velike skupine, različnih oblik in enake usmerjenosti.
+
+<!-- tole nevem ce je okej-->
+
+Na podlagi vseh štirih kriterijev se zaradi enostavnosti odločimo za model VEE s tremi skupinami - torej različno velike skupine, različnih oblik in enakih umserjenosti.
+
+# Najboljša razvrstitev in predstavitev skupin
+
+<!--5. Predstavitev skupin. Izberite najboljšo razvrstitev po vašem mnenju in predstavite skupine.
+a) Izračunajte povprečja standardiziranih spremenljivk po skupinah. Rezultat grafično
+prikažite. Skupine opišite po najbolj izstopajočih lastnostih.
+b) Skupine analizirajte bolj podrobno po nekaterih izbranih spremenljivkah. Preverite,
+ali obstaja povezanost med skupino in temi spremenljivkami. Povezanost analizirajte na podlagi grafičnih prikazov in z ustreznimi izračuni. Interpretirajte moč in smer povezanosti. Preverite, ali je povezanost statistično značilna pri 5 % stopnji značilnosti. Pred analizo navedite, kateri test ste uporabili in zakaj ste izbrali ta test.
+-->
+
+Tukaj naju pa zanima kako podobne so si naše razvrstitve, ki sva jih v prejšnjih poglavjih izbrala na podlagi različnih modelov.
+
+<!-- tuki pa rabva te sklope, k bi jih pomojem mogla nardit glede na likartovo lestvico v prvem delu...-->
+
+
+
+
+
