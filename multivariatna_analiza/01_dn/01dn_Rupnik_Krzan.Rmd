@@ -107,7 +107,10 @@ Spremenljivke imajo različen razpon vrednosti, zato jih bova, skalirala. Tako b
 
 Poglejmo si še porazdelitve spremenljivk.
 
-<!-- tuki nevem al so bols boxploti al tko k sva mela na zacetku?-->
+<!-- 
+tuki nevem al so bols boxploti al tko k sva mela na zacetku?
+TOM: teli boxploti so mi kr vsec k se takoj vid da je razlika 
+-->
 
 ```{r echo=FALSE, fig.cap="Porazdelitve spremenljivk v podatkovnem okviru \\texttt{Swiss banknotes data}.", fig.height=8, message=FALSE, warning=FALSE, fig.show='hold', out.width="50%"}
 library(reshape2)
@@ -162,6 +165,12 @@ povezanost med tipom bankovca in ostalimi stevilskimi spremenljivkami?
 okej jst kle nevem cist tocno kaj hoce....
 -->
 
+<!-- 
+TOM: tole tvoje spodnje vrjetno spada pod analiza Likertovih spremenljivk
+oziroma je tko vsaj v 1. vajah
+Pa teoreticno je naceloma taka razporeditve kokr si jo ti naredila ampak glede na korelacijsko matriko ("lowerMat(Rlik)") se mi zdi pa moja bolja...
+-->
+
 ```{r eval=FALSE, include=FALSE}
 # sestavljene spremenljivke
 #	sklop "istih" indikatorjev zdruzimo v eno sestavljeno spremenljivko (Likertova lestvica)
@@ -192,6 +201,47 @@ par(oldpar)
 
 
 ```
+
+<!-- TOM: bom se jst tle neki probal pa bova potem vidla kaj je uporabnega -->
+
+```{r}
+ime = c('dolzina','levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob')
+
+Rlik <- cor(data[ime])
+lowerMat(Rlik)
+
+heatmap(x=Rlik, Rowv=NA, symm=T, revC=T, 
+        col=hcl.colors(n=100, palette="Blue-Red 3", rev=T),
+        breaks=seq(-1, 1, 0.02))
+```
+
+Iz grafa vidimo, da sta levi in desni rob med seboj mocno povezana. Prav tako imata zgornji in spodnji rob z njima srednje mocno korelacijo. Dolzina ima z vsemi zelo sibko korelacijo iz cesar bi lahko zakljucili, da tvori svojo skupino. 
+
+To je bolje razvidno iz spodnjega grafa
+
+```{r}
+heatmap(x=Rlik, symm=T, revC=T,
+        col=hcl.colors(n=100, palette="Blue-Red 3", rev=T),
+        breaks=seq(-1, 1, 0.02))
+```
+
+```{r}
+t(aggregate(x=data[ime], by=list(data$tip), FUN=mean))
+
+agr <- aggregate(x=data[ime], by=list(data$tip), FUN=mean)
+matplot(x=seq_along(ime), y=t(agr[, -1]), type="o", pch=16, col=agr[, 1], main="Spol", xlab="", xaxt="n", ylab="")
+axis(side=1, at=seq_along(ime), labels=ime, las=2)
+abline(v=1.5)
+legend("topright", legend=agr[, 1], col=agr[, 1], pch=16)
+```
+
+<!--TOM: to spodnje nevem kok je OK -->
+
+```{r}
+tabela.diagonala <- cor(x=data[ime], y=data$diagonala, method="pearson")
+round(tabela.diagonala, digits=2)
+```
+
 
 ## Konstrukcija in analiza Likertovih spremenljivk
 
