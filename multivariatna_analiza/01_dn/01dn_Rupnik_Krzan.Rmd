@@ -512,6 +512,7 @@ plot(x=1:kmax, y=wss, type="b", main="", xlab="stevilo skupin(k)",
      ylab="vrednost Wardowe kriterijske funkcije")
 ```
 
+<!--TOM: tukej men mogoce izgleda najvecja sprememba pri 2 in 3 -->
 Sprememba naklona funkcije izgleda največja pri **2** ali **4** skupinah oziroma je tam "koleno" najbolj razvidno.
 
 ## GAP statistika
@@ -524,7 +525,8 @@ Pri določevanju števila skupin si lahko pomagamo tudi z GAP statistiko, kjer i
 gap_stat <- clusGap(x=dfz, FUNcluster=kmeans, K.max=kmax)
 plot(gap_stat, xlab="stevilo skupin", main="")
 ```
-
+<!-- 
+TOM: tukej se mi zdi da je 3 skuoine ker se gleda kje je najvisja predn zacne padat -->
 Na podlagi grafičnega prikaza vrednosti GAP statistike pri različnem številu skupin se odločimo za **4** skupine, saj tam doseže najvišjo točko.
 
 ## Pseudo F (Calinski - Harabasz indeks)
@@ -548,6 +550,7 @@ km4 <- kmeans(x=dfz, centers=4, nstart=100)
 
 Tukaj je maksimum dosežen pri **2** skupinah.
 
+<!-- TOM: ce so moji zgornji komentarji prav je tole tudi treba mal popravit -->
 Torej, če povzameva celotno analizo, bi, glede na posamezen graf, izbrala
 
 * WSS: sprememba naklona izgleda največja pri **4** skupinah,
@@ -705,7 +708,113 @@ Tukaj naju pa zanima kako podobne so si naše razvrstitve, ki sva jih v prejšnj
 
 <!-- tuki pa rabva te sklope, k bi jih pomojem mogla nardit glede na likartovo lestvico v prvem delu...-->
 
+Na spodnjem grafu si poglejmo povprečne vrednosti spremenljivk za posamezno skupino.
+
+```{r fig.dim=c(5,4)}
+# tukej sm dal stevilo skupin na n=3 k so tud boljsi rezultati
+nsk <- 3
+sk <- km3$cluster
+sk.ime <- paste("sk", 1:nsk, sep="")
+agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
+y <- t(agr[, -1])
+matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
+        xaxt="n", ylab="Povprecje (standardizirane)")
+axis(side=1, at=seq_along(ime), labels=ime, las=2)
+legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
+abline(h=0, v=1.5)
+```
+
+Skupina 1 ima podpovprečno vrednost dolžine, vse ostale mere robov pa so nadpovprečne. \
+Skupina 2 je edina od skupin, ki ima nadpovprečno dolžino in ima skoraj vse mere robov prav tako nadpovprečne z izjemo spodnjega roba.\
+Skupina 3 je edina, ki ima povprečja vseh spremenljivk podpovprečne.
+
+Na spodnjem izpisu, si oglejmo število enot v posamezni skupini.
+
+```{r}
+# dodamo skupine v podatke
+data$cluster <- sk
+data$skupina <- factor(x=sk, labels=sk.ime)
+
+# velikost skupin
+table(data$skupina)
+```
+
+```{r}
+# pogledamo povprecja (nestandardizirane vrednosti)
+agr.v1 <- aggregate(v1 ~ skupina, data=data, FUN=mean)
+agr.v2 <- aggregate(v2 ~ skupina, data=data, FUN=mean)
+cbind(agr.v1, agr.v2)
+```
+
+```{r fig.dim=c(5,4)}
+#	jitter + razsevni grafikon
+#	horizontalna in vertikalna zrta oznazujeta povprezno vrednost
+#	X oznazuje centroid skupine
+x <- jitter(data$v1, amount=0.1)
+y <- jitter(data$v2, amount=0.1)
+plot(x=x, y=y, xlab="dolzina", ylab="mere", asp=1, col=data$skupina, las=1)
+legend("bottomright", legend=sk.ime, col=1:nsk, pch=16)
+abline(v=mean(data$v1))
+abline(h=mean(data$v2))
+points(x=agr.v1[, -1], y=agr.v2[, -1], cex=2, col="blue", pch="X")
+```
+
+### Povezanost skupin s tipom bankovca
+
+```{r fig.dim=c(5,5)}
+### OPIS LASTNOSTI SKUPIN
+# povezanost skupin z ostalimi spremenljivkami
+# graficni prikaz
+
+( tabela <- 100*proportions(x=table(data$tip, data$skupina), margin=2) )
+barplot(height=tabela, legend.text=T, ylim=c(0, 130), args.legend=list(x="top"), las=1)
+abline(h=(100*table(data$tip)/nrow(df))[1], col="red")
+```
+
+Skoraj vse enote v skupini 1 predstavljajo ponarejene bankovce. Torej skupina 1 je negativno povezana s tipom bankovca (pravimi bankovci).\
+Skupina 2 ima skoraj enakomerno zastopanost med pravimi in ponarejenimi bankovci. Sicer je pravih bankovcev nekoliko več zato bi lahko zaključili, da je skupina 2 šibko povezana s tipom bankovca. \
+V skupini 3 pa so skoraj vsi bankovci pravi. Ta skupina je pozitivno povezana s tipom bankovca.
 
 
+```{r}
+# hi kvadrat test
+# kontingenzna tabela
+tabela <- table(data$tip, data$skupina)
+chisq.test(x=tabela, correct=F)
+```
 
+Tudi statistični test je z p-vrednostjo $p<0.001$ pokazal, da je statistično značilna povezanost med skupino in tipom bankovca. 
 
+Preverimo še moč povezanosti s Cramerjevim V koeficientom.
+
+```{r}
+# moc povezanosti (Cramerjev V)
+tabela <- table(data$tip, data$skupina)
+hi2 <- chisq.test(x=tabela, correct=F)$statistic
+n <- sum(tabela)
+dim <- min(nrow(tabela), ncol(tabela)) - 1
+sqrt(hi2/(n*dim))
+```
+
+Povezanost (0.85) med skupinami in tipom bankovca je zelo močna.
+
+### Povezanost skupin z diagonalo
+
+```{r fig.dim=c(4,4)}
+boxplot(diagonala~skupina,data=data)
+mx <- aggregate(diagonala ~ skupina, data=data, FUN=mean)[, -1]
+abline(h=mean(data$diagonala), col="red")
+points(x=mx, col="blue", pch="X")
+```
+
+Skupina 1 vsebuje (z izjemo enega) bankovce, ki imajo podpovprečno vrednost diagonale. Povezanost skupine 1 in diagonale je negativna.\
+Povprečje vrednosti diagonal bankovcev v skupine 2 se ujema s povprecjem celotnega vzorca. Vendar pa so v njej vsebovani bankovci, ki imajo dosti podpovprečno ali nadpovprečno vrednost diagonale.\
+Bankovci v skupini 3 imajo vsi nadpovprečno vrednost diagonale. Povezanost te skupine in vrednosti diagonale je pozitivna.
+
+```{r}
+# test povezanosti (vec kategoriji = anova)
+# predpostavljamo neenake variance na populaciji
+oneway.test(diagonala ~ skupina, data=data, var.equal=F)
+```
+
+Naredili smo enostranski ANOVA test povezanosti, pri predpostavki različnih varianc. Test je bil statistično značilen ($p<0.001$), s čimer smo zavrnili ničelno hipotezo, ki pravi, da so povprečja (v našem primeru povprečje vrednosti diagonal) v vseh skupinah enaka.
