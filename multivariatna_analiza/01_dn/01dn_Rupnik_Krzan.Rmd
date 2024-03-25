@@ -107,12 +107,6 @@ Spremenljivke imajo različen razpon vrednosti, zato jih bova, skalirala. Tako b
 
 Poglejmo si še porazdelitve spremenljivk.
 
-<!-- 
-tuki nevem al so bols boxploti al tko k sva mela na zacetku?
-TOM: teli boxploti so mi kr vsec k se takoj vid da je razlika 
-Neza: okej pustim pol boxplote
--->
-
 ```{r echo=FALSE, fig.cap="Porazdelitve spremenljivk v podatkovnem okviru \\texttt{Swiss banknotes data}.", fig.height=8, message=FALSE, warning=FALSE, fig.show='hold', out.width="50%"}
 library(reshape2)
 library(ggplot2)
@@ -257,10 +251,10 @@ par(oldpar)
 -->
 Poglejmo si porazdelitvi novo ustvarjenih spremenljivk Likertove lestivce tj. dolzina in mere.
 
-```{r, results=TRUE, fig.width=9, fig.height=5, fig.cap="Deskriptivne statistike Likertovih spremenljivk.", include=FALSE}
+```{r echo=FALSE, fig.cap="Deskriptivne statistike Likertovih spremenljivk.", fig.height=5, fig.width=9, results=TRUE}
 # Poglejmo porazdelitvi teh dveh spremenljivk.
 OpisLikert <- as.data.frame(psych::describe(data[, c("v1","v2")]))
-kable(round(OpisLikert[, c(2, 3, 4, 5, 8, 9, 10, 11, 12)], 2), caption=" ") %>% 
+kable(round(OpisLikert[, c(2, 3, 4, 5, 8, 9, 10, 11, 12)], 2), caption="Deskriptivne statistike Likertovih spremenljivk.") %>% 
   kable_styling(full_width=F, latex_options="hold_position")
 ```
 
@@ -447,7 +441,7 @@ sk.ime <- paste("sk", 1:nsk, sep="")
 agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
 y <- t(agr[, -1])
 matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
-        ylab="Povprecje (standardizirane spremenljivke)")
+        ylab="ovprecje (standardizirane spremenljivke)")
 axis(side=1, at=seq_along(ime), labels=ime, las=2)
 legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
 abline(h=0, v=6.5)
@@ -457,7 +451,7 @@ sk.ime <- paste("sk", 1:nsk, sep="")
 agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
 y <- t(agr[, -1])
 matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
-        ylab="Povprecje (standardizirane spremenljivke)")
+        ylab="")
 axis(side=1, at=seq_along(ime), labels=ime, las=2)
 legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
 abline(h=0, v=6.5)
@@ -467,7 +461,7 @@ sk.ime <- paste("sk", 1:nsk, sep="")
 agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
 y <- t(agr[, -1])
 matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
-        ylab="Povprecje (standardizirane spremenljivke)")
+        ylab="")
 axis(side=1, at=seq_along(ime), labels=ime, las=2)
 legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
 abline(h=0, v=6.5)
@@ -513,7 +507,7 @@ plot(x=1:kmax, y=wss, type="b", main="", xlab="stevilo skupin(k)",
 ```
 
 <!--TOM: tukej men mogoce izgleda najvecja sprememba pri 2 in 3 -->
-Sprememba naklona funkcije izgleda največja pri **2** ali **4** skupinah oziroma je tam "koleno" najbolj razvidno.
+Sprememba naklona funkcije izgleda največja pri **2** ali **3** skupinah oziroma je tam "koleno" najbolj razvidno.
 
 ## GAP statistika
 
@@ -527,7 +521,7 @@ plot(gap_stat, xlab="stevilo skupin", main="")
 ```
 <!-- 
 TOM: tukej se mi zdi da je 3 skuoine ker se gleda kje je najvisja predn zacne padat -->
-Na podlagi grafičnega prikaza vrednosti GAP statistike pri različnem številu skupin se odločimo za **4** skupine, saj tam doseže najvišjo točko.
+Na podlagi grafičnega prikaza vrednosti GAP statistike pri različnem številu skupin se odločimo za **3** skupine, saj tam doseže najvišjo točko in začne padati.
 
 ## Pseudo F (Calinski - Harabasz indeks)
 
@@ -541,23 +535,19 @@ for (k in 2:kmax) pseudoF <- c(pseudoF, (bss[k]/(k-1)) / (wss[k]/(nrow(dfz)-k)))
 
 plot(x=1:kmax, y=pseudoF, type="b", xlab="stevilo skupin",
      ylab="Pseudo F", main="")
-
-km1 <- kmeans(x=dfz, centers=1, nstart=1)
-km2 <- kmeans(x=dfz, centers=2, nstart=100)
-km3 <- kmeans(x=dfz, centers=3, nstart=100)
-km4 <- kmeans(x=dfz, centers=4, nstart=100)
 ```
 
 Tukaj je maksimum dosežen pri **2** skupinah.
 
-<!-- TOM: ce so moji zgornji komentarji prav je tole tudi treba mal popravit -->
+<!-- TOM: ce so moji zgornji komentarji prav je tole tudi treba mal popravit
+Neza: to sm jst ubistvu samo pustila kar si ti ze prej napisu, ampak sm zdej popsavla na 3-->
 Torej, če povzameva celotno analizo, bi, glede na posamezen graf, izbrala
 
-* WSS: sprememba naklona izgleda največja pri **4** skupinah,
+* WSS: sprememba naklona izgleda največja pri **2** skupinah,
 * Pseudo F: maksimum doseze pri **2** skupinah,
-* gap statistika: najvišjo točko preden začne padati doseže pri **4** skupinah.
+* gap statistika: najvišjo točko preden začne padati doseže pri **3** skupinah.
 
-Na podlagi zgornjih analiz in ugotovitev pri hierarhičnem razvrščanju, kjer smo e odločali med 2, 3 ali 4 skupinami, bi se tu določili raje za **4** skupine, kot za 2, saj težimo k večjemu številu skupin kot je 2.
+Na podlagi zgornjih analiz in ugotovitev pri hierarhičnem razvrščanju, kjer smo e odločali med 2 ali 3 skupinami, bi se tu določili raje za **3** skupine, kot za 2, saj težimo k večjemu številu skupin kot je 2.
 
 <!--
 Primerjajte vrednost kriterijske funkcije pri različnem številu skupin za Wardovo
@@ -572,6 +562,11 @@ obe razvrstitvi. Izpišite kontingenčno tabelo in izračunajte popravljen Rando
 Primerjala sva tudi vrednosti kriterijskih funkcij za Wardowo metodo in metodo K-means, ker sta podobno oziroma delujeta na isti princip. Je pa metoda K-means boljša, ker išče lokalne minimume, za razliko do Wardove, ki deluje hierarhično in vedno poda enak rezultat. Ocenjujeva sva pa po principu, da ima boljša razvrtitev manjšo vrednost karaketristične funkcije. Pomembno pa je tudi to, da so podatki standardizirani, saj drugače med seboj ne bi bilo primerljivo.
 
 ```{r echo=FALSE}
+km1 <- kmeans(x=dfz, centers=1, nstart=1)
+km2 <- kmeans(x=dfz, centers=2, nstart=100)
+km3 <- kmeans(x=dfz, centers=3, nstart=100)
+km4 <- kmeans(x=dfz, centers=4, nstart=100)
+
 # Wardova kriterijska funkcija
 WardKF <- function(data, cluster){
   # vsota kvadratov
@@ -590,8 +585,8 @@ wkf <- rbind(wkf, c(WardKF(dfz, km1$cluster), WardKF(dfz, km2$cluster), WardKF(d
 rownames(wkf) <- c("Ward", "Kmeans")
 colnames(wkf) <- c("k=1", "k=2", "k=3", "k=4")
 
-# NEZA: to tabelo ne znam med besedilo spravt, vedno jo vrze na vrh strani, mogoce ves zakaj, vse sm ze poskusla?
-kable(wkf, caption = "Primerjava vrednosti kriterijske funkcije za Wardowo metodo in K-means.")
+kable(wkf, caption = "Primerjava vrednosti kriterijske funkcije za Wardowo metodo in K-means.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 ```
 
 Vidimo da ima v vseh primerih (z izjemo prvega kjer sta enaka) K-means manjšo vrednost, kar si tudi želimo. Primerjavo razvrtitev bomo naredili na številu skupin **k = 4**. 
@@ -609,7 +604,7 @@ Neza: sm neki napisala-->
 
 Največje elemente imamo na diagonali kontingenčne tabele, tudi te vrednosti niso ekstremno velike(npr. 400). Za izvendiagonalne elemente si želimo, da bi bili čim manjši oziroma zelo blizu 0, kar pa po večini so, ali pa so celo kar enaki 0(iztopa le ena vrednost - 17).
 
-Poglejmo si še Randow indeks, ki predstavlja delež parov enot, ki so si v obeh razbitjih usklajeni -  v obeh razbitjih v isti skupini ali pa v obeh razbitjih v različnih skupinah. Pogledala sva si popravljen Randow indeks, zaradi boljše primerljivosti. Enak je `r round(adjustedRandIndex(x=km4$cluster, y=hc.ward4), 3)`, kar je blizu 0,5, torej gre skoraj za neko srednjo podobnost, sicer pa večji kot je, boljše je -  vrednost 1 pomeni identični razbitji, vrednost 0 pa, da sta si razbitji tako podobni po slučaju.
+Poglejmo si še Randov indeks, ki predstavlja delež parov enot, ki so si v obeh razbitjih usklajeni -  v obeh razbitjih v isti skupini ali pa v obeh razbitjih v različnih skupinah. Pogledala sva si popravljen Randov indeks, zaradi boljše primerljivosti. Enak je `r round(adjustedRandIndex(x=km4$cluster, y=hc.ward4), 3)`, kar je blizu 0,5, torej gre skoraj za neko srednjo podobnost, sicer pa večji kot je, boljše je -  vrednost 1 pomeni identični razbitji, vrednost 0 pa, da sta si razbitji tako podobni po slučaju.
 
 \newpage
 
@@ -649,7 +644,7 @@ Naredimo torej razvrstitev na originalnih, nestandardiziranih podatkih, kjer fun
 df = data[1:5]
 mc <- Mclust(data=df, G=1:5)
 summary(mc)
-plot(x=mc, what="BIC")
+plot(x=mc, what="BIC", xlab="stevilo skupin")
 ```
 Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -592.64 izberemo model VEE s tremi skupinami, kar pomeni, da gre za elipsoidne(angl. _ellipsoidal_) skupine, ki so različno velike, različnih oblik in enako usmerjene.
 
@@ -663,7 +658,7 @@ Kriterij temelji na "Bayesovski" statistiki, zato lahko določimo tudi apriorne 
 # priorControl
 mcP <- Mclust(data=df, G=1:5, prior = priorControl())
 summary(mcP)
-plot(mcP, what = "BIC")
+plot(mcP, what = "BIC", xlab="stevilo skupin")
 ```
 
 Na podlagi BIC kriterija z uporabljenim argumentom o apriornih verjetnostih se odločimo za model EEE s tremi skupinami, kar pomeni, da gre za različno velike skupine, različnih oblik in enake usmerjenosti.
@@ -675,7 +670,7 @@ Poglejmo si še, iz radovednosti, kako je z oceno modela na standariziranih poda
 ```{r echo=FALSE, fig.height=6, fig.width=8, fig.cap="BIC kriterij za standardizirane podatke.", results=F, out.width="70%"}
 mc <- Mclust(data=dfz, G=1:5)
 summary(mc)
-plot(x=mc, what="BIC")
+plot(x=mc, what="BIC", xlab="stevilo skupin")
 ```
 
 Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -1143.31	ponovno izberemo model VVE s tremi skupinami.
@@ -686,14 +681,39 @@ Tudi tukaj lahko primerjamo z vključitvijo apriornih verjetnosti.
 # priorControl
 mcP <- Mclust(data=dfz, G=1:5, prior = priorControl())
 summary(mcP)
-plot(mcP, what = "BIC")
+plot(mcP, what = "BIC", xlab="stevilo skupin")
 ```
 
 Tudi tukaj se na podlagi BIC kriterija z uporabljenim argumentom o apriornih verjetnostih se odločimo za model EEE s tremi skupinami, kar pomeni, da gre za različno velike skupine, različnih oblik in enake usmerjenosti.
 
 <!-- tole nevem ce je okej-->
 
-Na podlagi vseh štirih kriterijev se zaradi enostavnosti odločimo za model VEE s tremi skupinami - torej različno velike skupine, različnih oblik in enakih umserjenosti.
+## Primerjava modelov
+
+Na pogladi BIC kriterja, kjer lahko na spodnjem grafu vidimo primerjavo VEE modela in EEE modela za nestandardizirane in standardizirane podatke, se, v obeh primerih, odločimo za model VEE. Bi pa se pri obeh modelih odločila za **3** skupine, saj vrednost BIC kriterija od tam naprej počasi narašča.
+
+```{r, fig.height=7, fig.width=12, fig.align="center", fig.cap="Primerjava VEE in EEE modela(levo: nestandardizirani podatki, desno: standardizirani podatki)."}
+# nestandardizirani
+mcSEL <- Mclust(data=df, G=1:5, modelNames = c("VEE", "EEE"))
+# modela na treh skupinah
+mcVEE <- Mclust(data=df, G = 3, modelNames = "VEE")
+mcEEE <- Mclust(data=df, G = 3, modelNames = "EEE")
+
+# standardizirani
+mcSEL.s <- Mclust(data=dfz, G=1:5, modelNames = c("VEE", "EEE"))
+# modela na treh skupinah
+mcVEE.s <- Mclust(data=dfz, G = 3, modelNames = "VEE")
+mcEEE.s <- Mclust(data=dfz, G = 3, modelNames = "EEE")
+
+oldpar <- par(las=1, mfrow=c(1, 2))
+plot(mcSEL, what="BIC", legendArgs = list(x = "bottomright"), xlab="stevilo skupin", main="Nestandardizirani podatki")
+plot(mcSEL.s, what="BIC", legendArgs = list(x = "bottomright"), xlab="stevilo skupin", main="Standardizirani podatki")
+par(oldpar)
+```
+
+Na podlagi vseh kriterijev se zaradi enostavnosti odločimo za model VEE s tremi skupinami - torej različno velike skupine, različnih oblik in enakih umserjenosti.
+
+\newpage
 
 # Najboljša razvrstitev in predstavitev skupin
 
@@ -704,117 +724,262 @@ b) Skupine analizirajte bolj podrobno po nekaterih izbranih spremenljivkah. Prev
 ali obstaja povezanost med skupino in temi spremenljivkami. Povezanost analizirajte na podlagi grafičnih prikazov in z ustreznimi izračuni. Interpretirajte moč in smer povezanosti. Preverite, ali je povezanost statistično značilna pri 5 % stopnji značilnosti. Pred analizo navedite, kateri test ste uporabili in zakaj ste izbrali ta test.
 -->
 
-Tukaj naju pa zanima kako podobne so si naše razvrstitve, ki sva jih v prejšnjih poglavjih izbrala na podlagi različnih modelov.
+Tukaj naju pa zanima kako podobne so si naše razvrstitve, ki sva jih v prejšnjih poglavjih izbrala na podlagi različnih modelov. V prejšnjih poglavjih sva izbirala najboljše razvrstitve in sedaj jih bova med seboj primerjala.
 
 <!-- tuki pa rabva te sklope, k bi jih pomojem mogla nardit glede na likartovo lestvico v prvem delu...-->
 
-Na spodnjem grafu si poglejmo povprečne vrednosti spremenljivk za posamezno skupino.
+## Primerjava povprečij
 
-```{r fig.dim=c(5,4)}
+Na spodnjem grafu si poglejmo povprečja po skupinah in primerjamo razvrstitve na standardiziranih podatkih.
+
+<!-- Neza: kle sm dodala vse modele, da lahko lazje med sabo primerjava, ker za tisto k je blo prej samo en model mava ze zgorej v drugem poglavju men se zdi isto sliko tam k so trije grafi skupaj, a je to okej?-->
+
+```{r echo=FALSE, fig.cap="Primerjava razvrstitev na standariziranih podatkih.", fig.height=5, fig.width=12}
 # tukej sm dal stevilo skupin na n=3 k so tud boljsi rezultati
+oldpar <- par(las=1, mfrow=c(1, 3))
 nsk <- 3
 sk <- km3$cluster
 sk.ime <- paste("sk", 1:nsk, sep="")
 agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
 y <- t(agr[, -1])
 matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
-        xaxt="n", ylab="Povprecje (standardizirane)")
+        xaxt="n", ylab="povprecje (standardizirane spremenljivke)", main = "k-means")
 axis(side=1, at=seq_along(ime), labels=ime, las=2)
 legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
-abline(h=0, v=1.5)
+abline(h=0, v=6.5)
+
+nsk <- 3
+sk <- hc.ward3
+sk.ime <- paste("sk", 1:nsk, sep="")
+agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
+y <- t(agr[, -1])
+matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
+        xaxt="n", ylab="", main = "Ward")
+axis(side=1, at=seq_along(ime), labels=ime, las=2)
+legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
+abline(h=0, v=6.5)
+
+nsk <- 3
+sk <- mcVEE.s$classification
+sk.ime <- paste("sk", 1:nsk, sep="")
+agr <- aggregate(x=dfz, by=list(sk), FUN=mean)
+y <- t(agr[, -1])
+matplot(x=seq_along(ime), y=y, type="o", pch=16, ylim=c(-2, 2), xlab="",
+        xaxt="n", ylab="", main = "VEE(BIC)")
+axis(side=1, at=seq_along(ime), labels=ime, las=2)
+legend("bottomleft", legend=sk.ime, col=1:nsk, pch=16)
+abline(h=0, v=6.5)
+par(oldpar)
 ```
 
+
+Vrstni red skupin se razlikuje v modelih, ampak če pogledamo sta si Wardov model in VEE model nekoliko bolj podobna. Skupina 1 si je pri modelu na podlagi k-means podobna skupini 1 v modelu na podlagi Ward-a. Podone so si tudi skupina 3 pri modelu na podlagi k-means in skupina 2 pri Wardu in VEE ter skupina 2 pri k-means je podobna skupini 3 pri Wardu. Do odstopanj prihaja le pri posameznih točkah(npr. pri k-means za skupino 2 je nadpovprečno pri spremenljivki `zgornji.rob`, s tem ko je pri modelu Ward za skupino 3 podpovprečno, pri ostalih spremenljivkah pa sta si skupini dokaj podobni). Pri k-means in Wardu- sta si torek skupini 1 podobni, obe sta nadpovprečni pri vseh spremenljivkah, razen pri spremenljivki `dolzina`, kjer sta podpovprečni. Vidimo lahko tudi, da so si skupina 1 pri k-means in Ward-u in skupina 3 pri VEE(BIC) zelo podobne. Skupina 3 pri k-means in skupina 2 pri Ward-u sta edini, ki sta vedno podpovprečni, vedno nadpovprečne skupine pa ni.
+
+<!--
 Skupina 1 ima podpovprečno vrednost dolžine, vse ostale mere robov pa so nadpovprečne. \
 Skupina 2 je edina od skupin, ki ima nadpovprečno dolžino in ima skoraj vse mere robov prav tako nadpovprečne z izjemo spodnjega roba.\
 Skupina 3 je edina, ki ima povprečja vseh spremenljivk podpovprečne.
+-->
 
-Na spodnjem izpisu, si oglejmo število enot v posamezni skupini.
+## Wardova kriterijska funkcija
 
-```{r}
-# dodamo skupine v podatke
-data$cluster <- sk
-data$skupina <- factor(x=sk, labels=sk.ime)
+Poglejmo si še primerjavo razvrstitev na podlagi Wardove kriterijske funkcije.
 
-# velikost skupin
-table(data$skupina)
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+wkf <- NULL
+wkf <- rbind(wkf, c(WardKF(dfz, km3$cluster), WardKF(dfz, hc.ward3), WardKF(dfz, mcVEE.s$classification) ))
+colnames(wkf) <- c("k-means", "Ward", "VEE(BIC)")
+
+kable(wkf, caption = "Primerjava vrednosti Wardove kriterijske funkcije za vse metode.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 ```
 
-```{r}
+Glede na vrednost Wardove kriterijske funkcije je najboljša metoda k-means razvrstitev s tremi skupinami, nato sledi Wardova in na koncu VEE. Zato se odločimo za k-means metodo.
+
+## Popravljen Randov indeks
+Poglejmo si še kako podobne so razvrstitve glede na popravljen Randov indeks. 
+
+```{r echo=FALSE}
+# kako podobni sta si razvrstitvi; popravljen randov indeks
+r = data.frame( wk = round(adjustedRandIndex(hc.ward3, km3$cluster),3), # ward in k-means
+                wv = round(adjustedRandIndex(hc.ward3, mcVEE.s$classification),3), #ward in VEE
+                kv = round(adjustedRandIndex(km3$cluster, mcVEE.s$classification),3)) # k-means in Vee
+colnames(r) <- c("Ward in k-means", "Ward in VEE(BIC)", "k-means in VEE(BIC)")
+
+kable(r, caption = "Primerjava popravljenega Randovega indeksa.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+Pri vseh treh primerjavah je vrednost indeksa večja od $0.5$, kar pomeni da gre za dokaj podobna razbitja na skupine. Indeks pri Ward in k-means je najvišji, torej gre za najbolj podobno razbitje na skupinah.
+
+## Število enot v skupinah
+
+<!-- Neza: tole je treba se komentirat-->
+
+Na spodnjem izpisu si oglejmo število enot v posamezni skupini in povprečja na nestandardiziranih podatkih za vse modele.
+
+k _means:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results=T}
+# dodamo skupine v podatke
+nsk = 3
+sk.k = km3$cluster
+sk.w = hc.ward3
+sk.v = mcVEE.s$classification
+sk.k.ime = paste("sk", 1:nsk, sep="")
+sk.w.ime = paste("sk", 1:nsk, sep="")
+sk.v.ime = paste("sk", 1:nsk, sep="")
+
+data$cluster.k = sk.k
+data$cluster.w = sk.w
+data$cluster.v = sk.v
+data$skupina.k = factor(x=sk.k, labels=sk.k.ime)
+data$skupina.w = factor(x=sk.w, labels=sk.w.ime)
+data$skupina.v = factor(x=sk.v, labels=sk.v.ime)
+
+# velikost skupin
+table(data$skupina.k)
+
 # pogledamo povprecja (nestandardizirane vrednosti)
-agr.v1 <- aggregate(v1 ~ skupina, data=data, FUN=mean)
-agr.v2 <- aggregate(v2 ~ skupina, data=data, FUN=mean)
+agr.v1 <- aggregate(v1 ~ skupina.k, data=data, FUN=mean)
+agr.v2 <- aggregate(v2 ~ skupina.k, data=data, FUN=mean)
 cbind(agr.v1, agr.v2)
 ```
 
-```{r fig.dim=c(5,4)}
+Ward:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results=T}
+table(data$skupina.w)
+
+# pogledamo povprecja (nestandardizirane vrednosti)
+agr.v1 <- aggregate(v1 ~ skupina.w, data=data, FUN=mean)
+agr.v2 <- aggregate(v2 ~ skupina.w, data=data, FUN=mean)
+cbind(agr.v1, agr.v2)
+```
+
+VEE(BIC):
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, results=T}
+table(data$skupina.v)
+
+# pogledamo povprecja (nestandardizirane vrednosti)
+agr.v1 <- aggregate(v1 ~ skupina.v, data=data, FUN=mean)
+agr.v2 <- aggregate(v2 ~ skupina.v, data=data, FUN=mean)
+cbind(agr.v1, agr.v2)
+```
+
+
+```{r echo=FALSE, results=T}
+# pogledamo povprecja (nestandardizirane vrednosti)
+agr.v1 <- aggregate(v1 ~ skupina.k, data=data, FUN=mean)
+agr.v2 <- aggregate(v2 ~ skupina.k, data=data, FUN=mean)
+cbind(agr.v1, agr.v2)
+```
+
+
+<!-- Neza: te skupine in povprecja nevem kako nej komentiram..-->
+
+## Razsevni grafikon skupin glede na Likartovi spremenljivki
+
+Prikaževa tudi vrednost enot glede na zgoraj izbrani Likartovi spremenljivki `dolzina` in `mere` za modele.
+
+```{r echo=FALSE, fig.cap="Razsevni grafikon skupin za Likartovi spremenljivki pri k-means.", fig.height=5, fig.width=5}
 #	jitter + razsevni grafikon
 #	horizontalna in vertikalna zrta oznazujeta povprezno vrednost
 #	X oznazuje centroid skupine
 x <- jitter(data$v1, amount=0.1)
 y <- jitter(data$v2, amount=0.1)
-plot(x=x, y=y, xlab="dolzina", ylab="mere", asp=1, col=data$skupina, las=1)
-legend("bottomright", legend=sk.ime, col=1:nsk, pch=16)
+
+#oldpar <- par(las=1, mfrow=c(1, 3))
+plot(x=x, y=y, xlab="dolzina", ylab="mere", asp=1, col=data$skupina.k, las=1)
+legend("bottomright", legend=sk.k.ime, col=1:nsk, pch=16)
 abline(v=mean(data$v1))
 abline(h=mean(data$v2))
 points(x=agr.v1[, -1], y=agr.v2[, -1], cex=2, col="blue", pch="X")
+
+#plot(x=x, y=y, xlab="dolzina", ylab="mere", asp=1, col=data$skupina.w, las=1, main="Ward")
+#legend("bottomright", legend=sk.w.ime, col=1:nsk, pch=16)
+#abline(v=mean(data$v1))
+#abline(h=mean(data$v2))
+#points(x=agr.v1[, -1], y=agr.v2[, -1], cex=2, col="blue", pch="X")
+
+#plot(x=x, y=y, xlab="dolzina", ylab="mere", asp=1, col=data$skupina.v, las=1, main="VEE(BIC)")
+#legend("bottomright", legend=sk.v.ime, col=1:nsk, pch=16)
+#abline(v=mean(data$v1))
+#abline(h=mean(data$v2))
+#points(x=agr.v1[, -1], y=agr.v2[, -1], cex=2, col="blue", pch="X")
+#par(oldpar)
 ```
 
-### Povezanost skupin s tipom bankovca
+Kot lahko vidimo iz grafov skupine niso popolnoma jasno ločene, morda se ta ločitev najbolje vidi pri VEE(BIC), s tem ko pri Wardu pa so na sredini kar dobro pomešane.
 
-```{r fig.dim=c(5,5)}
+## Povezanost skupin s tipom bankovca
+
+```{r fig.dim=c(5,5), echo=FALSE, fig.cap="Povezanost skupin pri k-means."}
 ### OPIS LASTNOSTI SKUPIN
 # povezanost skupin z ostalimi spremenljivkami
 # graficni prikaz
-
-( tabela <- 100*proportions(x=table(data$tip, data$skupina), margin=2) )
+( tabela <- 100*proportions(x=table(data$tip, data$skupina.k), margin=2) )
 barplot(height=tabela, legend.text=T, ylim=c(0, 130), args.legend=list(x="top"), las=1)
 abline(h=(100*table(data$tip)/nrow(df))[1], col="red")
 ```
+Skoraj vse enote v skupini 1 predstavljajo ponarejene bankovce. Torej skupina 1 je negativno povezana s tipom bankovca (pravimi bankovci). \
+Skupina 2 ima skoraj enakomerno zastopanost med pravimi in ponarejenimi bankovci. \
+V skupini 3 pa so skoraj vsi bankovci pravi, torej je pozitivno povezana s tipom bankovca.
 
-Skoraj vse enote v skupini 1 predstavljajo ponarejene bankovce. Torej skupina 1 je negativno povezana s tipom bankovca (pravimi bankovci).\
-Skupina 2 ima skoraj enakomerno zastopanost med pravimi in ponarejenimi bankovci. Sicer je pravih bankovcev nekoliko več zato bi lahko zaključili, da je skupina 2 šibko povezana s tipom bankovca. \
-V skupini 3 pa so skoraj vsi bankovci pravi. Ta skupina je pozitivno povezana s tipom bankovca.
-
-
-```{r}
+```{r echo=FALSE}
 # hi kvadrat test
 # kontingenzna tabela
-tabela <- table(data$tip, data$skupina)
+tabela <- table(data$tip, data$skupina.k)
 chisq.test(x=tabela, correct=F)
 ```
-
-Tudi statistični test je z p-vrednostjo $p<0.001$ pokazal, da je statistično značilna povezanost med skupino in tipom bankovca. 
+Hi-kvadrat test, pri dveh stopinjah prostosti in pri stopnji značilnosti 0.05 je z p-vrednostjo $p<0.001$ pokazal, da je statistično značilna povezanost med skupino in tipom bankovca. 
 
 Preverimo še moč povezanosti s Cramerjevim V koeficientom.
 
 ```{r}
 # moc povezanosti (Cramerjev V)
-tabela <- table(data$tip, data$skupina)
+tabela <- table(data$tip, data$skupina.k)
 hi2 <- chisq.test(x=tabela, correct=F)$statistic
 n <- sum(tabela)
 dim <- min(nrow(tabela), ncol(tabela)) - 1
 sqrt(hi2/(n*dim))
 ```
 
-Povezanost (0.85) med skupinami in tipom bankovca je zelo močna.
+Kramarjev V ima vrednosti 0.85, kar pomeni, da je povezanost med skupinama in tipom bankovcev zelo močna.
 
-### Povezanost skupin z diagonalo
+## Povezanost skupin z spremenljivko `diagonala`
 
-```{r fig.dim=c(4,4)}
-boxplot(diagonala~skupina,data=data)
-mx <- aggregate(diagonala ~ skupina, data=data, FUN=mean)[, -1]
+```{r fig.dim=c(5,5), echo=FALSE, fig.cap="Povezanost skupin s spremenljivko diagonala pri k-means."}
+boxplot(diagonala~skupina.k,data=data, xlab = "skupine", ylab="diagonala")
+mx <- aggregate(diagonala ~ skupina.k, data=data, FUN=mean)[, -1]
 abline(h=mean(data$diagonala), col="red")
 points(x=mx, col="blue", pch="X")
+
 ```
 
-Skupina 1 vsebuje (z izjemo enega) bankovce, ki imajo podpovprečno vrednost diagonale. Povezanost skupine 1 in diagonale je negativna.\
-Povprečje vrednosti diagonal bankovcev v skupine 2 se ujema s povprecjem celotnega vzorca. Vendar pa so v njej vsebovani bankovci, ki imajo dosti podpovprečno ali nadpovprečno vrednost diagonale.\
-Bankovci v skupini 3 imajo vsi nadpovprečno vrednost diagonale. Povezanost te skupine in vrednosti diagonale je pozitivna.
+<!-- te komentarje je treba se za Warda in VEE-->
+
+Skupina 1 vsebuje (z izjemo enega) bankovce, ki imajo podpovprečno vrednost diagonale in povezanost skupine 1 in diagonale je negativna. Glede na to, da skupina 1 vsebuje same ponarejene bankovce, ki imajo v povprečju manjšo diagonalo, je to povsem smislno, zato nas tudi nadpovprečne vrednosti diagonale ne presentijo v tretji skupini.\
+Povprečje vrednosti diagonal bankovcev v skupine 2 se ujema s povprecjem celotnega vzorca, vendar pa so v njej vsebovani bankovci, ki imajo dosti podpovprečno ali nadpovprečno vrednost diagonale, kar je smiselno, saj vsebuje ponarejene in prave bankovce.\
+Bankovci v skupini 3 imajo torej vsi nadpovprečno vrednost diagonale saj so vsi pravi. Povezanost te skupine in vrednosti diagonale je pozitivna.
 
 ```{r}
 # test povezanosti (vec kategoriji = anova)
 # predpostavljamo neenake variance na populaciji
-oneway.test(diagonala ~ skupina, data=data, var.equal=F)
+oneway.test(diagonala ~ skupina.k, data=data, var.equal=F)
 ```
 
 Naredili smo enostranski ANOVA test povezanosti, pri predpostavki različnih varianc. Test je bil statistično značilen ($p<0.001$), s čimer smo zavrnili ničelno hipotezo, ki pravi, da so povprečja (v našem primeru povprečje vrednosti diagonal) v vseh skupinah enaka.
+
+\newpage
+
+# Vsebinski povzetek
+
+<!-- morva pomojem se dopolnit-->
+
+V nalogi sva obravnavali različne metode razvrščanja v skupine. Iskala sva najbolj primerno število skupin, da se le-te med seboj čimbolj razlikujejo glede na lastnosti. 
+
+Pri hierarhičnemu razvrščanju je bila izbrana Wardova metoda, pri nehierarhičnemu smo se odločili za metodo voditeljev in pri razvrščanju na podlagi modelov pa za model VEE. Povsod smo imeli tri skupine. Po primerjanju teh treh metod, na podlagi Wardove kriterijske funkcije, se odločimo za metodo voditeljev(k-means). 
+
+V nadaljevanju pa sva ugotovila, da obstaja povezanost med skupinami in tipom bankovcev, glede na Kramarjev V pa je tudi zelo močna. Ugotovila sva tudi in s testom potrdila, da povprečja diagonal niso enaka v najinih treh skupinah, kar je logično glede na raporeditev bankovcev po skupinah.
