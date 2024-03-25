@@ -22,6 +22,7 @@ set.seed(2020)
 ```
 
 \tableofcontents
+\newpage
 \listoffigures
 \listoftables
 \newpage
@@ -31,10 +32,6 @@ set.seed(2020)
 V nalogi vova poskušala razvrstiti enote v skupine tako, da si bodo enote znotraj skupin čim bolj podobne in enote v različnih skupinah čim bolj različne glede na več spremenljivk. 
 
 # Podatki
-
-<!--
-NEZA: a misls da je treba te podatke tko pregledat kokr na prvih vajah k ste delal?-->
-
 <!--
 Ime raziskave oziroma podatkov. Leto in kraj/država, če je to za podatke
 smiselno. Enota analize. Velikost vzorca. Uporabljene spremenljivke (ime v datoteki in
@@ -95,12 +92,26 @@ levels(data$tip)
 
 Za lažjo predstavo si poglejmo opisne statistike številskih spremenljivk, da bomo vedeli s kakšnimi podatki imamo opravka.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, results=T, fig.pos = 'H'}
 library(vtable)
 #napovedne spremenljivke
 pred <- c('dolzina','levi.rob','desni.rob', 'spodnji.rob', 'zgornji.rob', 'diagonala')
-sumtable(data[,pred], add.median = T, digits = 1, 
-         title = "Opisne statistike za števillske spremenljivke v podatkovnem okviru \\texttt{Swiss banknotes data}.")
+#sumtable(data[,pred], add.median = T, digits = 1, 
+#         title = "Opisne statistike za števillske spremenljivke v podatkovnem okviru Swiss banknotes data.", #simple.kable = T, out = 'kable', fit.page = "\textwidth") 
+
+stat = data.frame(spremenljivke = c("dolzina", "levi.rob", "desni.rob", "spodnji.rob", "zgornji.rob", "diagonala"),
+           N = c(rep(200,6)),
+           mean = c(215, 130, 130, 9, 11, 140),
+           Std.Dev. = c(0.4, 0.4, 0.4, 1, 0.8, 1),
+           Min = c(214, 129, 129, 7, 8, 138), 
+           Pctl.25 = c(215, 130, 130, 8, 10, 140),
+           Pctl.50 = c(215, 130, 130, 9, 11, 140),
+           Pctl.75 = c(215, 130, 130, 11, 11, 142),
+           Max = c(216,131,131,13,12,142))
+
+kable(stat, 
+      caption="Opisne statistike za števillske spremenljivke v podatkovnem okviru Swiss banknotes data.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 ```
 
 Spremenljivke imajo različen razpon vrednosti, zato jih bova, skalirala. Tako bodo imele spremenljivke povprečje 0 in standardni odklon 1. S tem doseževa enakovreden vpliv spremenljivk na razvrstitev. Vidimo pa tudi, da nimamo mankajočih vrednosti v podatkih.
@@ -150,22 +161,7 @@ Za razvrščanje bova uporabljala samo številske spremenljivke, in sicer `dolzi
 
 ## Analiza povezanosti med spremenljivkami
 
-<!-- ker nimava tolk spremenljivk kokr jih mamo na vajah niti ne vem kako nej to sploh nardim
-Tematska: samo tip bankovca?
-povezanost med tipom bankovca in ostalimi stevilskimi spremenljivkami?
-okej jst kle nevem cist tocno kaj hoce....
--->
-
-<!-- 
-TOM: tole tvoje spodnje vrjetno spada pod analiza Likertovih spremenljivk
-oziroma je tko vsaj v 1. vajah
-Neza: da spada to pod likertove spremenljivke, sam nevem zakaj ni tam, je prestavljeno tja dol...
-
-Pa teoreticno je naceloma taka razporeditve kokr si jo ti naredila ampak glede na korelacijsko matriko ("lowerMat(Rlik)") se mi zdi pa moja bolja...
-Neza: jst sm to razvrstitev nardila tko po kmecki logiki, tko da ni teoreticno utemeljena...
--->
-
-<!-- TOM: bom se jst tle neki probal pa bova potem vidla kaj je uporabnega -->
+Najprej si poglejmo korelacijo med spremenljivkami.
 
 ```{r fig.cap = "Korelacija med spremenljivkami.", fig.height=4, fig.height=4, out.width="40%", out.height="50%", echo=FALSE, results=F}
 
@@ -179,7 +175,7 @@ heatmap(x=Rlik, Rowv=NA, symm=T, revC=T,
         breaks=seq(-1, 1, 0.02))
 ```
 
-Iz grafa vidimo, da sta levi in desni rob med seboj mocno povezana. Prav tako imata zgornji in spodnji rob z njima srednje mocno korelacijo. Dolzina ima z vsemi zelo sibko korelacijo iz cesar bi lahko zakljucili, da tvori svojo skupino. 
+Iz grafa vidimo, da sta levi in desni rob med seboj močno povezana. Prav tako imata zgornji in spodnji rob z njima srednje močno korelacijo. Dilžina ima z vsemi zelo šibko korelacijo iz česar bi lahko zaključili, da tvori svojo skupino. 
 
 To je še bolje razvidno iz spodnjega grafa.
 
@@ -189,8 +185,7 @@ heatmap(x=Rlik, symm=T, revC=T,
         breaks=seq(-1, 1, 0.02))
 ```
 
-Poglejmo si povezanost med kategorično spremenljivko tip bankovca in številskimi spremenljivkami za razvršanje. 
-
+Poglejmo si povezanost med kategorično spremenljivko `tip` bankovca in številskimi spremenljivkami za razvršanje. 
 ```{r fig.cap="Povezanost med kategorično spremenljivko(tip bankovca) in številskimi spremenljivkami.", fig.height=4, fig.height=4, out.width="50%", out.height="50%", echo=FALSE, results=F}
 t(aggregate(x=data[ime], by=list(data$tip), FUN=mean))
 
@@ -201,17 +196,21 @@ axis(side=1, at=seq_along(ime), labels=ime, las=2)
 legend("topright", legend=agr[, 1], col=agr[, 1], pch=16)
 ```
 
-<!-- 
-Neza: okej tega ne znam komentirat
-mislm men je isto glede na tip bankovca?
--->
+Vidimo, da razlik glede na tip bankovca po spremenljivkah ni.
 
-<!--TOM: to spodnje nevem kok je OK -->
+\newpage
 
-```{r}
-tabela.diagonala <- cor(x=data[ime], y=data$diagonala, method="pearson")
-round(tabela.diagonala, digits=2)
+Poglejmo si še korelacijo z številsko spremenljivko za analizo `diagonala` in ostalimi spremenenljivkami.
+
+```{r echo=FALSE, results=T}
+tabela.diagonala <- round(cor(x=data[ime], y=data$diagonala, method="pearson"), 2)
+
+kable(tabela.diagonala, caption="Korelacija med spremenljivko diagonala in ostalimi spremenljivkami:") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 ```
+
+Vidimo, da večjih korelacij ni, so pa skoraj vse negativne.
+
 Torej sklepava lahko, da spremenljivka `dolzina` tvori svoj sklop, ostale spremenljivke pa svojega iz zgornje analize in grafov.
 
 ## Konstrukcija in analiza Likertovih spremenljivk
@@ -260,28 +259,22 @@ kable(round(OpisLikert[, c(2, 3, 4, 5, 8, 9, 10, 11, 12)], 2), caption="Deskript
 
 ```{r, results=F, fig.width=9, fig.height=4, fig.cap="Porazdelitvi Likertovih spremenljivk.", echo=FALSE}
 par(mfrow = c(1, 2))
-hist(data$v1, main = "Porazdelitev dolzine", xlab = "Strinjanje", ylab = "Frekvenca", prob = T)
+hist(data$v1, main = "Porazdelitev spremenljivke dolzina", xlab = "strinjanje", ylab = "frekvenca", prob = T)
 x <- seq(min(data$v1), max(data$v1), length = 1000)
 f <- dnorm(x, mean = mean(data$v1), sd = sd(data$v1))
 lines(x, f, col = "red", lwd = 2)
 
-hist(data$v2, main = "Porazdelitev mere", xlab = "Strinjanje", ylab = "Frekvenca", prob = T)
+hist(data$v2, main = "Porazdelitev spremenljivke mere", xlab = "strinjanje", ylab = "frekvenca", prob = T)
 
-# Preverimo domnevo o enakosti povprečij.
+# Preverimo domnevo o enakosti povprečij
 t <- t.test(x = data$v2, y = data$v1, paired = TRUE)
 ```
 
-Porazdelitvi dolzine in mer si nista podobni. Povprečna nagnjenost k dolzini je 214.9 s standarndim odklonom 0.38 in je dokaj simetrična. Povprečna nagnjenost k meri je 70.04, medtem ko je standardni odklon enak 0.56 in njena porazdelitev je precej nedefinirana.
+Porazdelitvi `dolzina` in `mere` si nista podobni. Povprečna nagnjenost k `dolzina` je 214.9 s standarndim odklonom 0.38 in je dokaj simetrična. Povprečna nagnjenost k `mere` je 70.04, medtem ko je standardni odklon enak 0.56 in njena porazdelitev je precej nedefinirana.
 
-<!--
-Neza: a je to okej, da sta sklopa tok razlicno porazdeljena? Se mi zdi da je blo na vajah dokaj lepo...
--->
-
-Da preverimo domnevo o enakosti povprečij dolzine in mer uporabimo t-test za odvisna vzorca z ničelno domnevo, da je razlika povprečij enaka 0. Ta vrne vrednost $p < 0.001$, torej lahko ničelno domnevo pri stopnji značilnosti 0.05 zavrnemo. 95% interval zaupanja za razliko povprečij med dolzino in mero je [-144.96,-144.76].
+Da preverimo domnevo o enakosti povprečij `dolzina` in `mere` uporabimo t-test za odvisna vzorca z ničelno domnevo, da je razlika povprečij enaka 0. Ta vrne vrednost $p < 0.001$, torej lahko ničelno domnevo pri stopnji značilnosti 0.05 zavrnemo. 95% interval zaupanja za razliko povprečij med dolzino in mero je [-144.96,-144.76].
 
 Pogledala bova še ali sta ustvarjeni spremenljivki Likertove lestvice povezani med seboj in ali sta povezani z ostalimi spremenljivkami.
-
-\newpage
 
 ## Povezanost Likertovih spremenljivk
 
@@ -322,7 +315,7 @@ Ocena za povprečje pri dolzini za ponarejen tip bankovca je 214.82 in za pravi 
 
 Nariševa še razsevni diagram spremenljivke `tip`, kjer za osi vzameva Likertovi lestvici, točke pa predstavljajo posamezne enote. Dodamo tudi dve večji točki, ki predstavljata povprečji po skupinah obeh Likertovih spremenljivk.
 
-```{r, fig.height=5, fig.width=5, fig.cap="Razsevni diagram dolzina in mere po spremenljivki tip.", out.width="70%"}
+```{r, fig.height=5, fig.width=5, fig.cap="Razsevni diagram dolzina in mere po spremenljivki tip.", out.width="50%"}
 # Izberemo spremenljivko
 var <- "tip"
 sprem <- c("v1", "v2")
@@ -347,10 +340,7 @@ legend("bottomright", legend = agg[,1], pch = 16, col = 1:nrow(agg))
 
 Iz grafa opazimo razlike med tipom bankovca, ampak obstajajo enote, ki se malenkost pomešajo. 
 
-<!-- Neza: kaj nej zdej sploh za zakljucek napisem?-->
-
 Torej spremenljivke sva razdelila v dva sklopa glede na povezanost in tako ustvarila dve Likertovi spremenljivki. Prva spremenljivka predstavlja dolžino, druga pa ostale mere. S 95% zaupanjem lahko trdimo, da dolžina in mere nista statistično značilno povezani. Glede na tip bankovca se skupini statistično razlikujeta pri obeh Likertovi spremenljivki.
-
 
 ```{r message=FALSE, warning=FALSE, include=FALSE}
 # skaliranje podatkov
@@ -539,8 +529,6 @@ plot(x=1:kmax, y=pseudoF, type="b", xlab="stevilo skupin",
 
 Tukaj je maksimum dosežen pri **2** skupinah.
 
-<!-- TOM: ce so moji zgornji komentarji prav je tole tudi treba mal popravit
-Neza: to sm jst ubistvu samo pustila kar si ti ze prej napisu, ampak sm zdej popsavla na 3-->
 Torej, če povzameva celotno analizo, bi, glede na posamezen graf, izbrala
 
 * WSS: sprememba naklona izgleda največja pri **2** skupinah,
@@ -593,14 +581,14 @@ Vidimo da ima v vseh primerih (z izjemo prvega kjer sta enaka) K-means manjšo v
 
 ```{r echo=FALSE}
 # kontingenčna tabela
-table(km4$cluster, c(3, 2, 4, 1)[hc.ward4])
+#table(km4$cluster, c(3, 2, 4, 1)[hc.ward4])
+
+kable(table(km4$cluster, c(3, 2, 4, 1)[hc.ward4]), caption = "Kontingenčna tabela.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 
 # popravljen Randov indeks
 adjustedRandIndex(x=km4$cluster, y=hc.ward4)
 ```
-
-<!-- Tukej nevem kaj bi komentiral 
-Neza: sm neki napisala-->
 
 Največje elemente imamo na diagonali kontingenčne tabele, tudi te vrednosti niso ekstremno velike(npr. 400). Za izvendiagonalne elemente si želimo, da bi bili čim manjši oziroma zelo blizu 0, kar pa po večini so, ali pa so celo kar enaki 0(iztopa le ena vrednost - 17).
 
@@ -630,10 +618,6 @@ par(oldpar)
 
 Spremenljivka `spodnji.rob`  in tudi `desni.rob` nista porazdeljeni po normalni porazdelitvi, zato ne moremo trditi, da je zadoščen ta pogoj. Ostale so porazdeljene po normalni, nekatere asimetrične v denso(npr. spremenljivka `dolzina`) in nekatere v levo(npr. spremenljivka `levi.rob`).
 
-<!--
-Nekatere spremenljivke niso porazdeljene po normalni porazdelitvi, zato ne moremo trditi da je zadoščen pogoj. 
--->
-
 Tukaj ocenimo število skupin in parametre za vsako skupino ter kateri skupini posamezna enota pripada. V najinem primeru, kjer je predpostavka o multivariatni normalni porazdelitvi kršena, se simulacija ne izkaže za optimalno. Razvrstitev se dela na originalnih podatkih oz. nestandardiziranih podatkih, ker s tem omogočimo različno velikost skupin.
 
 ## BIC(Bayes Information Criterion) kriterij
@@ -647,10 +631,6 @@ summary(mc)
 plot(x=mc, what="BIC", xlab="stevilo skupin")
 ```
 Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -592.64 izberemo model VEE s tremi skupinami, kar pomeni, da gre za elipsoidne(angl. _ellipsoidal_) skupine, ki so različno velike, različnih oblik in enako usmerjene.
-
-<!--
-Najbolj primeren model je VEE (vsi elipticne oblike, razlicnih velikosti in enake orientacije) in 3 skupine. 
--->
 
 Kriterij temelji na "Bayesovski" statistiki, zato lahko določimo tudi apriorne verjetnosti(torej neko naše predhodno znanje oziroma prepričanja). 
 
@@ -677,7 +657,7 @@ Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -
 
 Tudi tukaj lahko primerjamo z vključitvijo apriornih verjetnosti.
 
-```{r, fig.height=4, fig.cap="BIC kriterij (priorControl) za standardizirane podatke.", fig.height=5, fig.width=8, results=F, out.width="70%"}
+```{r, fig.height=4, fig.cap="BIC kriterij (priorControl) za standardizirane podatke.", fig.height=6, fig.width=8, results=F, out.width="70%"}
 # priorControl
 mcP <- Mclust(data=dfz, G=1:5, prior = priorControl())
 summary(mcP)
@@ -726,13 +706,9 @@ ali obstaja povezanost med skupino in temi spremenljivkami. Povezanost analizira
 
 Tukaj naju pa zanima kako podobne so si naše razvrstitve, ki sva jih v prejšnjih poglavjih izbrala na podlagi različnih modelov. V prejšnjih poglavjih sva izbirala najboljše razvrstitve in sedaj jih bova med seboj primerjala.
 
-<!-- tuki pa rabva te sklope, k bi jih pomojem mogla nardit glede na likartovo lestvico v prvem delu...-->
-
 ## Primerjava povprečij
 
 Na spodnjem grafu si poglejmo povprečja po skupinah in primerjamo razvrstitve na standardiziranih podatkih.
-
-<!-- Neza: kle sm dodala vse modele, da lahko lazje med sabo primerjava, ker za tisto k je blo prej samo en model mava ze zgorej v drugem poglavju men se zdi isto sliko tam k so trije grafi skupaj, a je to okej?-->
 
 ```{r echo=FALSE, fig.cap="Primerjava razvrstitev na standariziranih podatkih.", fig.height=5, fig.width=12}
 # tukej sm dal stevilo skupin na n=3 k so tud boljsi rezultati
@@ -785,7 +761,7 @@ Skupina 3 je edina, ki ima povprečja vseh spremenljivk podpovprečne.
 
 Poglejmo si še primerjavo razvrstitev na podlagi Wardove kriterijske funkcije.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, results=T}
 wkf <- NULL
 wkf <- rbind(wkf, c(WardKF(dfz, km3$cluster), WardKF(dfz, hc.ward3), WardKF(dfz, mcVEE.s$classification) ))
 colnames(wkf) <- c("k-means", "Ward", "VEE(BIC)")
@@ -799,7 +775,7 @@ Glede na vrednost Wardove kriterijske funkcije je najboljša metoda k-means razv
 ## Popravljen Randov indeks
 Poglejmo si še kako podobne so razvrstitve glede na popravljen Randov indeks. 
 
-```{r echo=FALSE}
+```{r echo=FALSE, results=T}
 # kako podobni sta si razvrstitvi; popravljen randov indeks
 r = data.frame( wk = round(adjustedRandIndex(hc.ward3, km3$cluster),3), # ward in k-means
                 wv = round(adjustedRandIndex(hc.ward3, mcVEE.s$classification),3), #ward in VEE
@@ -814,11 +790,7 @@ Pri vseh treh primerjavah je vrednost indeksa večja od $0.5$, kar pomeni da gre
 
 ## Število enot v skupinah
 
-<!-- Neza: tole je treba se komentirat-->
-
 Na spodnjem izpisu si oglejmo število enot v posamezni skupini in povprečja na nestandardiziranih podatkih za vse modele.
-
-k _means:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, results=T}
 # dodamo skupine v podatke
@@ -838,46 +810,50 @@ data$skupina.w = factor(x=sk.w, labels=sk.w.ime)
 data$skupina.v = factor(x=sk.v, labels=sk.v.ime)
 
 # velikost skupin
-table(data$skupina.k)
+kable(table(data$skupina.k), caption = "Velikost skupin pri metodi k -means.", 
+      col.names= c("skupina", "velikost")) %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 
 # pogledamo povprecja (nestandardizirane vrednosti)
 agr.v1 <- aggregate(v1 ~ skupina.k, data=data, FUN=mean)
 agr.v2 <- aggregate(v2 ~ skupina.k, data=data, FUN=mean)
-cbind(agr.v1, agr.v2)
+#cbind(agr.v1, agr.v2)
+kable(cbind(agr.v1, agr.v2), caption = "Povprecje Likartovih spremenljivk po skupinah za k-means metodo.", 
+      col.names= c("skupina", "povprecje Lik. sprem. dolzina", "skupina", "povprecje Lik. sprem. mere")) %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 ```
 
-Ward:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, results=T}
-table(data$skupina.w)
+kable(table(data$skupina.w), caption = "Velikost skupin pri Ward metodi.", 
+      col.names= c("skupina", "velikost")) %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 
 # pogledamo povprecja (nestandardizirane vrednosti)
 agr.v1 <- aggregate(v1 ~ skupina.w, data=data, FUN=mean)
 agr.v2 <- aggregate(v2 ~ skupina.w, data=data, FUN=mean)
-cbind(agr.v1, agr.v2)
+#cbind(agr.v1, agr.v2)
+kable(cbind(agr.v1, agr.v2), caption = "Povprecje Likartovih spremenljivk po skupinah za Ward metodo.", 
+      col.names= c("skupina", "povprecje Lik. sprem. dolzina", "skupina", "povprecje Lik. sprem. mere")) %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 ```
 
-VEE(BIC):
+\newpage
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, results=T}
-table(data$skupina.v)
+kable(table(data$skupina.v), caption = "Velikost skupin pri VEE(BIC).", 
+      col.names= c("skupina", "velikost")) %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 
 # pogledamo povprecja (nestandardizirane vrednosti)
 agr.v1 <- aggregate(v1 ~ skupina.v, data=data, FUN=mean)
 agr.v2 <- aggregate(v2 ~ skupina.v, data=data, FUN=mean)
-cbind(agr.v1, agr.v2)
+kable(cbind(agr.v1, agr.v2), caption = "Povprecje Likartovih spremenljivk po skupinah za VEE(BIC).", 
+      col.names= c("skupina", "povprecje Lik. sprem. dolzina", "skupina", "povprecje Lik. sprem. mere")) %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 ```
 
-
-```{r echo=FALSE, results=T}
-# pogledamo povprecja (nestandardizirane vrednosti)
-agr.v1 <- aggregate(v1 ~ skupina.k, data=data, FUN=mean)
-agr.v2 <- aggregate(v2 ~ skupina.k, data=data, FUN=mean)
-cbind(agr.v1, agr.v2)
-```
-
-
-<!-- Neza: te skupine in povprecja nevem kako nej komentiram..-->
+Vidimo, da se število enot glede na skupine pri metodah razlikuje, s tem ko povprečja nestandardiziranih vrednosti Likartovih spremenljivk `dolzina` in `mere` niso tako zelo različne po skupinah.
 
 ## Razsevni grafikon skupin glede na Likartovi spremenljivki
 
@@ -890,32 +866,18 @@ Prikaževa tudi vrednost enot glede na zgoraj izbrani Likartovi spremenljivki `d
 x <- jitter(data$v1, amount=0.1)
 y <- jitter(data$v2, amount=0.1)
 
-#oldpar <- par(las=1, mfrow=c(1, 3))
 plot(x=x, y=y, xlab="dolzina", ylab="mere", asp=1, col=data$skupina.k, las=1)
 legend("bottomright", legend=sk.k.ime, col=1:nsk, pch=16)
 abline(v=mean(data$v1))
 abline(h=mean(data$v2))
 points(x=agr.v1[, -1], y=agr.v2[, -1], cex=2, col="blue", pch="X")
-
-#plot(x=x, y=y, xlab="dolzina", ylab="mere", asp=1, col=data$skupina.w, las=1, main="Ward")
-#legend("bottomright", legend=sk.w.ime, col=1:nsk, pch=16)
-#abline(v=mean(data$v1))
-#abline(h=mean(data$v2))
-#points(x=agr.v1[, -1], y=agr.v2[, -1], cex=2, col="blue", pch="X")
-
-#plot(x=x, y=y, xlab="dolzina", ylab="mere", asp=1, col=data$skupina.v, las=1, main="VEE(BIC)")
-#legend("bottomright", legend=sk.v.ime, col=1:nsk, pch=16)
-#abline(v=mean(data$v1))
-#abline(h=mean(data$v2))
-#points(x=agr.v1[, -1], y=agr.v2[, -1], cex=2, col="blue", pch="X")
-#par(oldpar)
 ```
 
-Kot lahko vidimo iz grafov skupine niso popolnoma jasno ločene, morda se ta ločitev najbolje vidi pri VEE(BIC), s tem ko pri Wardu pa so na sredini kar dobro pomešane.
+Kot lahko vidimo iz grafov skupine niso popolnoma jasno ločene, oziroma prihaja do malenkosti mešanja podatkov na robu skupin.
 
 ## Povezanost skupin s tipom bankovca
 
-```{r fig.dim=c(5,5), echo=FALSE, fig.cap="Povezanost skupin pri k-means."}
+```{r fig.dim=c(5,5), echo=FALSE, fig.cap="Povezanost skupin pri k-means.", out.width="70%"}
 ### OPIS LASTNOSTI SKUPIN
 # povezanost skupin z ostalimi spremenljivkami
 # graficni prikaz
@@ -950,7 +912,7 @@ Kramarjev V ima vrednosti 0.85, kar pomeni, da je povezanost med skupinama in ti
 
 ## Povezanost skupin z spremenljivko `diagonala`
 
-```{r fig.dim=c(5,5), echo=FALSE, fig.cap="Povezanost skupin s spremenljivko diagonala pri k-means."}
+```{r fig.dim=c(5,5), echo=FALSE, fig.cap="Povezanost skupin s spremenljivko diagonala pri k-means.", out.width="70%"}
 boxplot(diagonala~skupina.k,data=data, xlab = "skupine", ylab="diagonala")
 mx <- aggregate(diagonala ~ skupina.k, data=data, FUN=mean)[, -1]
 abline(h=mean(data$diagonala), col="red")
@@ -976,10 +938,23 @@ Naredili smo enostranski ANOVA test povezanosti, pri predpostavki različnih var
 
 # Vsebinski povzetek
 
-<!-- morva pomojem se dopolnit-->
-
 V nalogi sva obravnavali različne metode razvrščanja v skupine. Iskala sva najbolj primerno število skupin, da se le-te med seboj čimbolj razlikujejo glede na lastnosti. 
 
 Pri hierarhičnemu razvrščanju je bila izbrana Wardova metoda, pri nehierarhičnemu smo se odločili za metodo voditeljev in pri razvrščanju na podlagi modelov pa za model VEE. Povsod smo imeli tri skupine. Po primerjanju teh treh metod, na podlagi Wardove kriterijske funkcije, se odločimo za metodo voditeljev(k-means). 
 
-V nadaljevanju pa sva ugotovila, da obstaja povezanost med skupinami in tipom bankovcev, glede na Kramarjev V pa je tudi zelo močna. Ugotovila sva tudi in s testom potrdila, da povprečja diagonal niso enaka v najinih treh skupinah, kar je logično glede na raporeditev bankovcev po skupinah.
+V nadaljevanju pa sva ugotovila, da obstaja povezanost med skupinami in tipom bankovcev, glede na Kramarjev V pa je tudi zelo močna. Ugotovila sva tudi in s testom potrdila, da povprečja diagonal niso enaka v najinih treh skupinah, kar je logično glede na razporeditev bankovcev po skupinah.
+
+\newpage
+
+# Viri
+
+Flury, B., Riedwyl, H. (1988). _Multivariate Statistics: A practical approach._ London: Chapman & Hall, Tables 1.1 and 1.2, pp. 5-8.
+
+Pohar P., M.(2024). _Osnove teoretične statistike._
+
+Polajnar, E.(2024). _Multivariatna analiza._ 
+
+Smrekar, J.(2024). _Bayesova statistika._
+
+Žiberna, A.(2024). _Multivariatna analiza._ 
+
