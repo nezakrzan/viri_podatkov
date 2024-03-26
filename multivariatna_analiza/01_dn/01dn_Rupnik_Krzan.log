@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.9)  25 MAR 2024 20:41
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.10.9)  26 MAR 2024 15:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -691,7 +691,7 @@ LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
 (/usr/local/texlive/2023/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-5-1.pdf, id=156, 449.68pt x
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-5-1.pdf, id=160, 449.68pt x
  550.055pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (
 type pdf)
@@ -702,7 +702,7 @@ Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-5-1
 [3{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}{/usr/local
 /texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2
 023/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-6-1.pdf, id=168, 310.15875p
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-6-1.pdf, id=172, 310.15875p
 t x 286.06876pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (
 type pdf)
@@ -712,7 +712,7 @@ Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-6-1
 (pdftex.def)             Requested size: 187.89981pt x 173.30565pt.
 [4 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-5-1.pdf> <./01dn_Rupni
 k_Krzan_files/figure-latex/unnamed-chunk-6-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-7-1.pdf, id=189, 312.16624p
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-7-1.pdf, id=193, 312.16624p
 t x 288.07625pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file (
 type pdf)
@@ -720,7 +720,7 @@ type pdf)
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-7-1
 .pdf  used on input line 240.
 (pdftex.def)             Requested size: 234.88147pt x 216.75555pt.
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-8-1.pdf, id=190, 407.5225pt
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-8-1.pdf, id=194, 407.5225pt
  x 230.8625pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (
 type pdf)
@@ -730,195 +730,195 @@ Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-8-1
 (pdftex.def)             Requested size: 234.87704pt x 133.05841pt.
 [5 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-7-1.pdf> <./01dn_Rupni
 k_Krzan_files/figure-latex/unnamed-chunk-8-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-13-1.pdf, id=209, 608.2725p
-t x 248.93pt>
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-13-1.pdf, id=213, 608.2725p
+t x 246.9225pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-13-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-13-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-13-
-1.pdf  used on input line 330.
-(pdftex.def)             Requested size: 469.7635pt x 192.24643pt.
+1.pdf  used on input line 332.
+(pdftex.def)             Requested size: 469.7635pt x 190.69604pt.
 [6 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-13-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-14-1.pdf, id=223, 326.21875
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-14-1.pdf, id=227, 326.21875
 pt x 286.06876pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-14-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-14-
-1.pdf  used on input line 361.
+1.pdf  used on input line 363.
 (pdftex.def)             Requested size: 234.88727pt x 205.97807pt.
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 377.
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-15-1.pdf, id=224, 689.57625
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 379.
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-15-1.pdf, id=228, 689.57625
 pt x 341.275pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-15-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-15-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-15-
-1.pdf  used on input line 381.
+1.pdf  used on input line 383.
 (pdftex.def)             Requested size: 328.82529pt x 162.7374pt.
 [7 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-14-1.pdf> <./01dn_Rupn
 ik_Krzan_files/figure-latex/unnamed-chunk-15-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-16-1.pdf, id=248, 326.21875
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-16-1.pdf, id=252, 326.21875
 pt x 292.09125pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-16-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-16-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-16-
-1.pdf  used on input line 405.
+1.pdf  used on input line 407.
 (pdftex.def)             Requested size: 234.88727pt x 210.31444pt.
 [8 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-16-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-18-1.pdf, id=260, 747.79375
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-18-1.pdf, id=264, 747.79375
 pt x 315.1775pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-18-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-18-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-18-
-1.pdf  used on input line 454.
+1.pdf  used on input line 456.
 (pdftex.def)             Requested size: 469.75471pt x 197.99057pt.
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-19-1.pdf, id=261, 749.80125
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-19-1.pdf, id=265, 749.80125
 pt x 315.1775pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-19-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-19-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-19-
-1.pdf  used on input line 472.
+1.pdf  used on input line 474.
 (pdftex.def)             Requested size: 469.7573pt x 197.46156pt.
 [9 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-18-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-20-1.pdf, id=277, 742.775pt
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-20-1.pdf, id=281, 742.775pt
  x 315.1775pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-20-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-20-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-20-
-1.pdf  used on input line 487.
+1.pdf  used on input line 489.
 (pdftex.def)             Requested size: 469.76413pt x 199.33234pt.
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-21-1.pdf, id=278, 846.16125
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-21-1.pdf, id=282, 846.16125
 pt x 323.2075pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-21-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-21-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-21-
-1.pdf  used on input line 505.
+1.pdf  used on input line 507.
 (pdftex.def)             Requested size: 469.75417pt x 179.4316pt.
 [10 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-19-1.pdf> <./01dn_Rup
 nik_Krzan_files/figure-latex/unnamed-chunk-20-1.pdf>] [11 <./01dn_Rupnik_Krzan_
 files/figure-latex/unnamed-chunk-21-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-22-1.pdf, id=313, 400.49625
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-22-1.pdf, id=317, 400.49625
 pt x 234.8775pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-22-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-22-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-22-
-1.pdf  used on input line 555.
+1.pdf  used on input line 557.
 (pdftex.def)             Requested size: 328.84293pt x 192.85526pt.
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-23-1.pdf, id=314, 403.5075p
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-23-1.pdf, id=318, 403.5075p
 t x 214.8025pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-23-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-23-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-23-
-1.pdf  used on input line 577.
+1.pdf  used on input line 579.
 (pdftex.def)             Requested size: 328.828pt x 175.04773pt.
 [12{/usr/local/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc} <./01d
 n_Rupnik_Krzan_files/figure-latex/unnamed-chunk-22-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-24-1.pdf, id=330, 400.49625
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-24-1.pdf, id=334, 400.49625
 pt x 214.8025pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-24-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-24-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-24-
-1.pdf  used on input line 601.
+1.pdf  used on input line 603.
 (pdftex.def)             Requested size: 328.84293pt x 176.37189pt.
 [13 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-23-1.pdf> <./01dn_Rup
 nik_Krzan_files/figure-latex/unnamed-chunk-24-1.pdf>] [14]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-27-1.pdf, id=356, 445.665pt
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-27-1.pdf, id=360, 445.665pt
  x 279.0425pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-27-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-27-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-27-
-1.pdf  used on input line 676.
+1.pdf  used on input line 710.
 (pdftex.def)             Requested size: 445.6707pt x 279.04607pt.
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-28-1.pdf, id=357, 545.03625
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-28-1.pdf, id=361, 545.03625
 pt x 287.0725pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-28-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-28-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-28-
-1.pdf  used on input line 705.
+1.pdf  used on input line 739.
 (pdftex.def)             Requested size: 328.82896pt x 173.19536pt.
 [15 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-27-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-29-1.pdf, id=372, 545.03625
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-29-1.pdf, id=376, 545.03625
 pt x 287.0725pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-29-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-29-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-29-
-1.pdf  used on input line 723.
+1.pdf  used on input line 757.
 (pdftex.def)             Requested size: 328.82896pt x 173.19536pt.
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-30-1.pdf, id=373, 545.03625
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-30-1.pdf, id=377, 545.03625
 pt x 359.3425pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-30-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-30-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-30-
-1.pdf  used on input line 744.
+1.pdf  used on input line 778.
 (pdftex.def)             Requested size: 328.82896pt x 216.797pt.
 [16 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-28-1.pdf> <./01dn_Rup
 nik_Krzan_files/figure-latex/unnamed-chunk-29-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-31-1.pdf, id=393, 545.03625
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-31-1.pdf, id=397, 545.03625
 pt x 359.3425pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-31-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-31-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-31-
-1.pdf  used on input line 758.
+1.pdf  used on input line 792.
 (pdftex.def)             Requested size: 328.82896pt x 216.797pt.
 [17 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-30-1.pdf> <./01dn_Rup
 nik_Krzan_files/figure-latex/unnamed-chunk-31-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-32-1.pdf, id=413, 834.11626
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-32-1.pdf, id=417, 834.11626
 pt x 431.6125pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-32-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-32-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-32-
-1.pdf  used on input line 781.
+1.pdf  used on input line 815.
 (pdftex.def)             Requested size: 469.762pt x 243.07779pt.
 [18 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-32-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-33-1.pdf, id=426, 846.16125
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-33-1.pdf, id=430, 846.16125
 pt x 346.29375pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-33-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-33-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-33-
-1.pdf  used on input line 811.
+1.pdf  used on input line 845.
 (pdftex.def)             Requested size: 469.75417pt x 192.24814pt.
 [19 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-33-1.pdf>] [20]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-39-1.pdf, id=449, 326.21875
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-39-1.pdf, id=453, 326.21875
 pt x 285.065pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-39-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-39-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-39-
-1.pdf  used on input line 1004.
+1.pdf  used on input line 1038.
 (pdftex.def)             Requested size: 326.21794pt x 285.0643pt.
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-40-1.pdf, id=450, 306.14375
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-40-1.pdf, id=454, 306.14375
 pt x 255.95625pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-40-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-40-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-40-
-1.pdf  used on input line 1020.
+1.pdf  used on input line 1054.
 (pdftex.def)             Requested size: 306.14299pt x 255.95561pt.
 [21 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-39-1.pdf>]
-<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-43-1.pdf, id=464, 328.22626
+<01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-43-1.pdf, id=468, 328.22626
 pt x 287.0725pt>
 File: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-43-1.pdf Graphic file 
 (type pdf)
 <use 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-43-1.pdf>
 Package pdftex.def Info: 01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-43-
-1.pdf  used on input line 1049.
+1.pdf  used on input line 1083.
 (pdftex.def)             Requested size: 328.23546pt x 287.08055pt.
 [22 <./01dn_Rupnik_Krzan_files/figure-latex/unnamed-chunk-40-1.pdf>] [23 <./01d
 n_Rupnik_Krzan_files/figure-latex/unnamed-chunk-43-1.pdf>] [24] [25] (./01dn_Ru
@@ -929,10 +929,10 @@ LaTeX Warning: There were multiply-defined labels.
  ) 
 Here is how much of TeX's memory you used:
  16724 strings out of 476025
- 279350 string characters out of 5790017
+ 279366 string characters out of 5790017
  1869388 words of memory out of 5000000
- 36576 multiletter control sequences out of 15000+600000
- 569437 words of font info for 142 fonts, out of 8000000 for 9000
+ 36578 multiletter control sequences out of 15000+600000
+ 569224 words of font info for 140 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  77i,9n,81p,1014b,486s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/lo
@@ -945,10 +945,10 @@ blic/lm/lmr17.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmr
 r/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></usr/local/te
 xlive/2023/texmf-dist/fonts/type1/public/lm/lmtk10.pfb></usr/local/texlive/2023
 /texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on 01dn_Rupnik_Krzan.pdf (25 pages, 481925 bytes).
+Output written on 01dn_Rupnik_Krzan.pdf (25 pages, 482830 bytes).
 PDF statistics:
- 679 PDF objects out of 1000 (max. 8388607)
- 547 compressed objects within 6 object streams
- 127 named destinations out of 1000 (max. 500000)
+ 683 PDF objects out of 1000 (max. 8388607)
+ 551 compressed objects within 6 object streams
+ 129 named destinations out of 1000 (max. 500000)
  31094 words of extra memory for PDF output out of 35830 (max. 10000000)
 

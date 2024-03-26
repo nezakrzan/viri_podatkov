@@ -29,7 +29,7 @@ set.seed(2020)
 
 # Cilji naloge
 
-V nalogi vova poskušala razvrstiti enote v skupine tako, da si bodo enote znotraj skupin čim bolj podobne in enote v različnih skupinah čim bolj različne glede na več spremenljivk. 
+V nalogi bova poskušala razvrstiti enote v skupine tako, da si bodo enote znotraj skupin čim bolj podobne in enote v različnih skupinah čim bolj različne glede na več spremenljivk. 
 
 # Podatki
 <!--
@@ -62,7 +62,7 @@ Podatki vsebujejo 7 spremenljivk - 6 številskih in eno opisno. Vsebujejo razli�
 knitr::include_graphics("ban.png")
 ```
 
-Opisna spremenlivka `status` pa določa ali je bankovec pravi(`genuine`) ali ponarejen(`counterfeit`). V tabeli imamo torej meritve za 200 različnih bankovcev.
+Opisna spremenljivka `status` pa določa ali je bankovec pravi(`genuine`) ali ponarejen(`counterfeit`). V tabeli imamo torej meritve za 200 različnih bankovcev.
 
 ## Urejanje podatkov
 
@@ -175,7 +175,7 @@ heatmap(x=Rlik, Rowv=NA, symm=T, revC=T,
         breaks=seq(-1, 1, 0.02))
 ```
 
-Iz grafa vidimo, da sta levi in desni rob med seboj močno povezana. Prav tako imata zgornji in spodnji rob z njima srednje močno korelacijo. Dilžina ima z vsemi zelo šibko korelacijo iz česar bi lahko zaključili, da tvori svojo skupino. 
+Iz grafa vidimo, da sta levi in desni rob med seboj močno povezana. Prav tako imata zgornji in spodnji rob z njima srednje močno korelacijo. Dolžina ima z vsemi zelo šibko korelacijo iz česar bi lahko zaključili, da tvori svojo skupino. 
 
 To je še bolje razvidno iz spodnjega grafa.
 
@@ -195,8 +195,7 @@ axis(side=1, at=seq_along(ime), labels=ime, las=2)
 #abline(v=1.5)
 legend("topright", legend=agr[, 1], col=agr[, 1], pch=16)
 ```
-
-Vidimo, da razlik glede na tip bankovca po spremenljivkah ni.
+Na tem grafu ne vidimo razlik tako dobro kot na grafu iz slike 1, ker je skala na y-osi drugačna oziroma prilagojena za vse spremenljivke, razlike glede na tip bankovca pa vseeno so, sicer minimalne.
 
 \newpage
 
@@ -259,18 +258,18 @@ kable(round(OpisLikert[, c(2, 3, 4, 5, 8, 9, 10, 11, 12)], 2), caption="Deskript
 
 ```{r, results=F, fig.width=9, fig.height=4, fig.cap="Porazdelitvi Likertovih spremenljivk.", echo=FALSE}
 par(mfrow = c(1, 2))
-hist(data$v1, main = "Porazdelitev spremenljivke dolzina", xlab = "strinjanje", ylab = "frekvenca", prob = T)
+hist(data$v1, main = "Porazdelitev spremenljivke dolzina", xlab = "dolzina", ylab = "frekvenca", prob = T)
 x <- seq(min(data$v1), max(data$v1), length = 1000)
 f <- dnorm(x, mean = mean(data$v1), sd = sd(data$v1))
 lines(x, f, col = "red", lwd = 2)
 
-hist(data$v2, main = "Porazdelitev spremenljivke mere", xlab = "strinjanje", ylab = "frekvenca", prob = T)
+hist(data$v2, main = "Porazdelitev spremenljivke mere", xlab = "mere", ylab = "frekvenca", prob = T)
 
 # Preverimo domnevo o enakosti povprečij
 t <- t.test(x = data$v2, y = data$v1, paired = TRUE)
 ```
 
-Porazdelitvi `dolzina` in `mere` si nista podobni. Povprečna nagnjenost k `dolzina` je 214.9 s standarndim odklonom 0.38 in je dokaj simetrična. Povprečna nagnjenost k `mere` je 70.04, medtem ko je standardni odklon enak 0.56 in njena porazdelitev je precej nedefinirana.
+Porazdelitvi `dolzina` in `mere` si nista podobni. Povprečna nagnjenost k `dolzina` je 214.9 s standardnim odklonom 0.38 in je dokaj simetrična. Povprečna nagnjenost k `mere` je 70.04, medtem ko je standardni odklon enak 0.56 in njena porazdelitev je precej nedefinirana.
 
 Da preverimo domnevo o enakosti povprečij `dolzina` in `mere` uporabimo t-test za odvisna vzorca z ničelno domnevo, da je razlika povprečij enaka 0. Ta vrne vrednost $p < 0.001$, torej lahko ničelno domnevo pri stopnji značilnosti 0.05 zavrnemo. 95% interval zaupanja za razliko povprečij med dolzino in mero je [-144.96,-144.76].
 
@@ -477,9 +476,9 @@ koleno, pseudo F, gap statistika. Vašo izbiro utemeljite.
 
 K-means je metoda voditeljev oz. nehierarhičnega razvrščanja. Voditelji so "predstavniki skupin", vsaka enota pa pripada skupini, kateremu voditelju je najbližje(razdalja je evklidska) oz. mu je najbolj podobna; voditelj predstavlja povprečje skupine. Spremenljivke pri metodi _k-means_ morajo biti vsaj intervalne. 
 
-Tukaj pri tej metodi mora biti število skupin podanoi vnaprej, kar je morda slaba lastnost in se glede tega razlikuje od npr. Wardove metode. Na začetku določimo voditelje, potem pa na vsakem koraku vsako enoto priredimo voditelju oz. skupini, kateremu je najbljižja glede na evklidsko razdaljo. Na vsakem koraku se izračunajo novi voditelji kot povprečja skupin. Postopek se zaključi, ko so novi voditelji enaki starim. 
+Tukaj pri tej metodi mora biti število skupin podamo v naprej, kar je morda slaba lastnost in se glede tega razlikuje od npr. Wardove metode. Na začetku določimo voditelje, potem pa na vsakem koraku vsako enoto priredimo voditelju oz. skupini, kateremu je najbljižja glede na evklidsko razdaljo. Na vsakem koraku se izračunajo novi voditelji kot povprečja skupin. Postopek se zaključi, ko so novi voditelji enaki starim. 
 
-Izberemo tisto razvrstitev, ki ima najmanjšo vrednost Wardove kriterijske funkcije, za katero vemo, da pada z naraščanjem števila skupin. Torej za optimalno število skupin ponavadi vzamemo tisto vrednost, kjer se zgori t.i. "koleno" funkcije. Če to "koleno" ni jasno razvidno, lahko sklepamo, da skupine niso jasno ločene. Postopek običajno večkrat ponovimo, saj za različne začetne voditelje lahko dobimo različne rešitve, torej razvrstitve v skupine.
+Izberemo tisto razvrstitev, ki ima najmanjšo vrednost Wardove kriterijske funkcije, za katero vemo, da pada z naraščanjem števila skupin. Torej za optimalno število skupin ponavadi vzamemo tisto vrednost, kjer se zgodi t.i. "koleno" funkcije. Če to "koleno" ni jasno razvidno, lahko sklepamo, da skupine niso jasno ločene. Postopek običajno večkrat ponovimo, saj za različne začetne voditelje lahko dobimo različne rešitve, torej razvrstitve v skupine.
 
 ```{r echo=FALSE, fig.cap="Vrednost Wardove kriterijske funkcije.", fig.height=4, fig.width=6, out.width="70%"}
 # WSS
@@ -535,7 +534,7 @@ Torej, če povzameva celotno analizo, bi, glede na posamezen graf, izbrala
 * Pseudo F: maksimum doseze pri **2** skupinah,
 * gap statistika: najvišjo točko preden začne padati doseže pri **3** skupinah.
 
-Na podlagi zgornjih analiz in ugotovitev pri hierarhičnem razvrščanju, kjer smo e odločali med 2 ali 3 skupinami, bi se tu določili raje za **3** skupine, kot za 2, saj težimo k večjemu številu skupin kot je 2.
+Na podlagi zgornjih analiz in ugotovitev pri hierarhičnem razvrščanju, kjer smo se odločali med 2 ali 3 skupinami, bi se tu določili raje za **3** skupine, kot za 2, saj težimo k večjemu številu skupin kot je 2.
 
 <!--
 Primerjajte vrednost kriterijske funkcije pri različnem številu skupin za Wardovo
@@ -547,9 +546,9 @@ obe razvrstitvi. Izpišite kontingenčno tabelo in izračunajte popravljen Rando
 
 ## Primerjava vrednosti kriterijske funkcije za Wardowo metodo in K-means
 
-Primerjala sva tudi vrednosti kriterijskih funkcij za Wardowo metodo in metodo K-means, ker sta podobno oziroma delujeta na isti princip. Je pa metoda K-means boljša, ker išče lokalne minimume, za razliko do Wardove, ki deluje hierarhično in vedno poda enak rezultat. Ocenjujeva sva pa po principu, da ima boljša razvrtitev manjšo vrednost karaketristične funkcije. Pomembno pa je tudi to, da so podatki standardizirani, saj drugače med seboj ne bi bilo primerljivo.
+Primerjala sva tudi vrednosti kriterijskih funkcij za Wardowo metodo in metodo K-means, ker sta podobno oziroma delujeta na isti princip. Je pa metoda K-means boljša, ker išče lokalne minimume, za razliko do Wardove, ki deluje hierarhično in vedno poda enak rezultat. Ocenjujeva sva pa po principu, da ima boljša razvrtitev manjšo vrednost karakteristične funkcije. Pomembno pa je tudi to, da so podatki standardizirani, saj drugače med seboj ne bi bilo primerljivo.
 
-```{r echo=FALSE}
+```{r echo=FALSE, results=T}
 km1 <- kmeans(x=dfz, centers=1, nstart=1)
 km2 <- kmeans(x=dfz, centers=2, nstart=100)
 km3 <- kmeans(x=dfz, centers=3, nstart=100)
@@ -577,28 +576,28 @@ kable(wkf, caption = "Primerjava vrednosti kriterijske funkcije za Wardowo metod
   kable_styling(full_width=F, latex_options="hold_position")
 ```
 
-Vidimo da ima v vseh primerih (z izjemo prvega kjer sta enaka) K-means manjšo vrednost, kar si tudi želimo. Primerjavo razvrtitev bomo naredili na številu skupin **k = 4**. 
+Vidimo da ima v vseh primerih (z izjemo prvega kjer sta enaka) K-means manjšo vrednost, kar si tudi želimo. Primerjavo razvrtitev bomo naredili na številu skupin **k = 3**. 
 
-```{r echo=FALSE}
+```{r echo=FALSE, results=T}
 # kontingenčna tabela
 #table(km4$cluster, c(3, 2, 4, 1)[hc.ward4])
 
-kable(table(km4$cluster, c(3, 2, 4, 1)[hc.ward4]), caption = "Kontingenčna tabela.") %>% 
+kable(table(km3$cluster, c(1,3,2)[hc.ward3]), caption = "Kontingenčna tabela.") %>% 
   kable_styling(full_width=F, latex_options="hold_position")
 
 # popravljen Randov indeks
-adjustedRandIndex(x=km4$cluster, y=hc.ward4)
+r = adjustedRandIndex(x=km3$cluster, y=hc.ward3)
 ```
 
-Največje elemente imamo na diagonali kontingenčne tabele, tudi te vrednosti niso ekstremno velike(npr. 400). Za izvendiagonalne elemente si želimo, da bi bili čim manjši oziroma zelo blizu 0, kar pa po večini so, ali pa so celo kar enaki 0(iztopa le ena vrednost - 17).
+Največje elemente imamo na diagonali kontingenčne tabele, tudi te vrednosti niso ekstremno velike(npr. 400). Za izvendiagonalne elemente si želimo, da bi bili čim manjši oziroma zelo blizu 0, kar pa po večini so, ali pa so celo kar enaki 0(izstopa le ena vrednost - 16).
 
-Poglejmo si še Randov indeks, ki predstavlja delež parov enot, ki so si v obeh razbitjih usklajeni -  v obeh razbitjih v isti skupini ali pa v obeh razbitjih v različnih skupinah. Pogledala sva si popravljen Randov indeks, zaradi boljše primerljivosti. Enak je `r round(adjustedRandIndex(x=km4$cluster, y=hc.ward4), 3)`, kar je blizu 0,5, torej gre skoraj za neko srednjo podobnost, sicer pa večji kot je, boljše je -  vrednost 1 pomeni identični razbitji, vrednost 0 pa, da sta si razbitji tako podobni po slučaju.
+Poglejmo si še Randov indeks, ki predstavlja delež parov enot, ki so si v obeh razbitjih usklajeni -  v obeh razbitjih v isti skupini ali pa v obeh razbitjih v različnih skupinah. Pogledala sva si popravljen Randov indeks, zaradi boljše primerljivosti. Enak je `r round(r, 3)`, kar je blizu 0,5, torej gre skoraj za neko srednjo podobnost, sicer pa večji kot je, boljše je -  vrednost 1 pomeni identični razbitji, vrednost 0 pa, da sta si razbitji tako podobni po slučaju.
 
 \newpage
 
 #  Razvrščanje na podlagi modelov
 
-Tukaj predpostavimo, da so podatki generirani iz multivariatnih normalnih porazdelitev z različnimi parametri oziroma komponentami; vsaka skupina ima svojo multivariatno normalno porazdelitev. Skupina je večja po volumnu, če ima večjo variabilnost, omejimo pa se z domnevami oziroma predhodnim znanjem, kakšne naj bi ti skupine bile. Zato si poglejmo porazdelitve spremenljivk ne glede na tip bankovca.
+Tukaj predpostavimo, da so podatki generirani iz multivariatnih normalnih porazdelitev z različnimi parametri oziroma komponentami; vsaka skupina ima svojo multivariatno normalno porazdelitev. Skupina je večja po volumnu, če ima večjo variabilnost, omejimo pa se z domnevami oziroma predhodnim znanjem, kakšne naj bi te skupine bile. Zato si poglejmo porazdelitve spremenljivk ne glede na tip bankovca.
 
 <!-- Ali je porazdelitev spremenljivk primerna za uporabo te metode? Ne glede na
 primernost uporabite metodo za razvrščanje na vaših podatkih. Izberite najbolj
@@ -616,7 +615,7 @@ for (i in seq_along(ime)) {
 par(oldpar)
 ```
 
-Spremenljivka `spodnji.rob`  in tudi `desni.rob` nista porazdeljeni po normalni porazdelitvi, zato ne moremo trditi, da je zadoščen ta pogoj. Ostale so porazdeljene po normalni, nekatere asimetrične v denso(npr. spremenljivka `dolzina`) in nekatere v levo(npr. spremenljivka `levi.rob`).
+Spremenljivka `spodnji.rob`  in tudi `desni.rob` nista porazdeljeni po normalni porazdelitvi, zato ne moremo trditi, da je zadoščen ta pogoj. Ostale so porazdeljene po normalni, nekatere asimetrične v desno(npr. spremenljivka `dolzina`) in nekatere v levo(npr. spremenljivka `levi.rob`).
 
 Tukaj ocenimo število skupin in parametre za vsako skupino ter kateri skupini posamezna enota pripada. V najinem primeru, kjer je predpostavka o multivariatni normalni porazdelitvi kršena, se simulacija ne izkaže za optimalno. Razvrstitev se dela na originalnih podatkih oz. nestandardiziranih podatkih, ker s tem omogočimo različno velikost skupin.
 
@@ -630,7 +629,7 @@ mc <- Mclust(data=df, G=1:5)
 summary(mc)
 plot(x=mc, what="BIC", xlab="stevilo skupin")
 ```
-Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -592.64 izberemo model VEE s tremi skupinami, kar pomeni, da gre za elipsoidne(angl. _ellipsoidal_) skupine, ki so različno velike, različnih oblik in enako usmerjene.
+Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -1365.42 izberemo model VEE s tremi skupinami, kar pomeni, da gre za elipsoidne(angl. _ellipsoidal_) skupine, ki so različno velike, različnih oblik in enako usmerjene.
 
 Kriterij temelji na "Bayesovski" statistiki, zato lahko določimo tudi apriorne verjetnosti(torej neko naše predhodno znanje oziroma prepričanja). 
 
@@ -653,7 +652,7 @@ summary(mc)
 plot(x=mc, what="BIC", xlab="stevilo skupin")
 ```
 
-Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -1143.31	ponovno izberemo model VVE s tremi skupinami.
+Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -2466.76	ponovno izberemo model VVE s tremi skupinami.
 
 Tudi tukaj lahko primerjamo z vključitvijo apriornih verjetnosti.
 
@@ -749,7 +748,7 @@ par(oldpar)
 ```
 
 
-Vrstni red skupin se razlikuje v modelih, ampak če pogledamo sta si Wardov model in VEE model nekoliko bolj podobna. Skupina 1 si je pri modelu na podlagi k-means podobna skupini 1 v modelu na podlagi Ward-a. Podone so si tudi skupina 3 pri modelu na podlagi k-means in skupina 2 pri Wardu in VEE ter skupina 2 pri k-means je podobna skupini 3 pri Wardu. Do odstopanj prihaja le pri posameznih točkah(npr. pri k-means za skupino 2 je nadpovprečno pri spremenljivki `zgornji.rob`, s tem ko je pri modelu Ward za skupino 3 podpovprečno, pri ostalih spremenljivkah pa sta si skupini dokaj podobni). Pri k-means in Wardu- sta si torek skupini 1 podobni, obe sta nadpovprečni pri vseh spremenljivkah, razen pri spremenljivki `dolzina`, kjer sta podpovprečni. Vidimo lahko tudi, da so si skupina 1 pri k-means in Ward-u in skupina 3 pri VEE(BIC) zelo podobne. Skupina 3 pri k-means in skupina 2 pri Ward-u sta edini, ki sta vedno podpovprečni, vedno nadpovprečne skupine pa ni.
+Vrstni red skupin se razlikuje v modelih, ampak če pogledamo sta si Wardov model in VEE model nekoliko bolj podobna. Skupina 1 si je pri modelu na podlagi k-means podobna skupini 1 v modelu na podlagi Ward-a. Podobne so si tudi skupina 3 pri modelu na podlagi k-means in skupina 2 pri Wardu in VEE ter skupina 2 pri k-means je podobna skupini 3 pri Wardu. Do odstopanj prihaja le pri posameznih točkah(npr. pri k-means za skupino 2 je nadpovprečno pri spremenljivki `zgornji.rob`, s tem ko je pri modelu Ward za skupino 3 podpovprečno, pri ostalih spremenljivkah pa sta si skupini dokaj podobni). Pri k-means in Wardu- sta si torek skupini 1 podobni, obe sta nadpovprečni pri vseh spremenljivkah, razen pri spremenljivki `dolzina`, kjer sta podpovprečni. Vidimo lahko tudi, da so si skupina 1 pri k-means in Ward-u in skupina 3 pri VEE(BIC) zelo podobne. Skupina 3 pri k-means in skupina 2 pri Ward-u sta edini, ki sta vedno podpovprečni, vedno nadpovprečne skupine pa ni.
 
 <!--
 Skupina 1 ima podpovprečno vrednost dolžine, vse ostale mere robov pa so nadpovprečne. \
@@ -922,7 +921,7 @@ points(x=mx, col="blue", pch="X")
 
 <!-- te komentarje je treba se za Warda in VEE-->
 
-Skupina 1 vsebuje (z izjemo enega) bankovce, ki imajo podpovprečno vrednost diagonale in povezanost skupine 1 in diagonale je negativna. Glede na to, da skupina 1 vsebuje same ponarejene bankovce, ki imajo v povprečju manjšo diagonalo, je to povsem smislno, zato nas tudi nadpovprečne vrednosti diagonale ne presentijo v tretji skupini.\
+Skupina 1 vsebuje (z izjemo enega) bankovce, ki imajo podpovprečno vrednost diagonale in povezanost skupine 1 in diagonale je negativna. Glede na to, da skupina 1 vsebuje same ponarejene bankovce, ki imajo v povprečju manjšo diagonalo, je to povsem smislno, zato nas tudi nadpovprečne vrednosti diagonale ne presenetijo v tretji skupini.\
 Povprečje vrednosti diagonal bankovcev v skupine 2 se ujema s povprecjem celotnega vzorca, vendar pa so v njej vsebovani bankovci, ki imajo dosti podpovprečno ali nadpovprečno vrednost diagonale, kar je smiselno, saj vsebuje ponarejene in prave bankovce.\
 Bankovci v skupini 3 imajo torej vsi nadpovprečno vrednost diagonale saj so vsi pravi. Povezanost te skupine in vrednosti diagonale je pozitivna.
 
