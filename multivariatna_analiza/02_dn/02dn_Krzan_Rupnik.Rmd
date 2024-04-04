@@ -1,0 +1,10 @@
+---
+title: "Domača naloga 2"
+author: "Neza krzan, Tom Rupnik"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
