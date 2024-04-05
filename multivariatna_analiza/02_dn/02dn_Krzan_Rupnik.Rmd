@@ -14,8 +14,19 @@ header-includes:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, fig.pos = 'H', fig.align="center", results = F)
 
-library("haven")
+library(haven)
+library(psych)
+
+set.seed(2024)
 ```
+
+\tableofcontents
+\newpage
+\listoffigures
+\listoftables
+\newpage
+
+# Opis podatkov
 
 ```{r}
 # vsi podatki
@@ -27,7 +38,9 @@ stolpci = c("EXT1","EXT2","EXT3","EXT4","EXT5","EXT6","EXT7","EXT8","EXT9","EXT1
 
 # najni podatki
 podatki = dataframe[dataframe$country == "FR", stolpci]
+n_prej = nrow(podatki) # stevilo vrstic pred odstranitvijo NA
 podatki = na.omit(podatki) # odstranjene vrstice, ki vsebujejo NA
+razlika = n_prej - nrow(podatki) # stevilo odtrajenih vrstic
 ```
 
 <!-- 
@@ -101,37 +114,303 @@ Vrednosti trditev, ki so označene z (-) bomo množili z $-1$ in s tem obrnili l
 negativne = c("EXT2", "EXT4", "EXT6", "EXT8", "EXT10",
               "EST1", "EST3", "EST5", "EST6", "EST7", "EST8", "EST9", "EST10")
 
+# negativne = c("EXT2", "EXT4", "EXT6", "EXT8", "EXT10",
+#               "EST2", "EST4")
+
 for(el in negativne){
   podatki[[el]] = -1*podatki[[el]]
 }
+
+```
+
+Iz podatkovnega okvirja sva odstranila vrstice, ki so vsebovale kakšno _NA_ vrednost. Takih vrstic je bilo `r razlika`.
+
+
+
+# Korelacijska matrika
+
+```{r}
+# Korelacijska matrika stvilsko
+Rlik <- cor(podatki)
+lowerMat(R=Rlik)
+```
+
+Iz matrike korelacije vidimo, da se korelacija znotraj spremenljvk **EXT** giblje približno med 0.3-0.6.\
+Pri spremenljivkah **EST** je razpon vrednosti nekoliko večji in sicer 0.1-0.8. Pri tem z nizkimi vrednostmi izstopa predvsem spremenljivka **EST4**, ki predstavlja trditev *"Redko sem žalosten, melanholičen, emotično pretresen"*. \
+Opaziti je, da so korelacije znotraj skupin spremenljivk (EXT in EST) večje, zato lahko na spodnjem prikazu pričakujemo dva očitna sklopa.
+
+```{r}
+int <- c(-1, -0.5, -0.3, -0.1, 0.1, 0.3, 0.5, 1)
+nint <- length(int) - 1
+legint <- c("neg", "srednje", "sibko", "zanemarljivo", "sibko", "srednje", "poz")
+heatmap(x=Rlik, Rowv=NA, symm=T, revC=T, margins=c(8, 8), 
+        col=hcl.colors(n=nint, palette="Blue-Red 3", rev=T), breaks=int)
+legend(x="topleft", legend=legint, 
+       fill=hcl.colors(n=nint, palette="Blue-Red 3", rev=T), inset=c(0.75, 0), xpd=T)
+```
+
+Res vidimo, da sta tvorjeni dve skupini spremenljivk, in sicer **EXT1-10** in **EST1-10**.
+
+```{r}
+cortest = cortest.bartlett(R=Rlik, n=nrow(podatki))
+```
+
+Da se zares prepričamo, da spremenljivke med seboj niso neodvisne lahko izvedemo Bartlettov test, ki ima ničelno hipotezo _"vse spremenljivke so neodvisne"_. Ko izvedemo test dobimo p-vrednost enako `r cortest$p.value`, kar pomeni da ovržemo ničelno hipotezo. Torej spremenljivke med seboj niso neodvisne.
+
+<!-- 
+TOM: to je treba se odgovorit...trenutno nism nc nasu...
+Ali so podatki primerni za analizo z metodo glavnih komponent?
+-->
+
+Preverimo ali so podatki primerni za faktorsko analizo. V ta namen izvedemo Kaiser-Meyer-Olkin test.
+
+```{r}
+# KMO(Rlik)
+round(KMO(Rlik)$MSAi,2)
+```
+
+Test nam vrne naslednje vrednosti:
+
+<!--
+TOM: izberi katera ti je lepsa
+-->
+
+|EXT1|EXT2|EXT3|EXT4|EXT5|EXT6|EXT7|EXT8|EXT9|EXT10|
+|:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|
+|0.93|0.92|0.95|0.94|0.93|0.92|0.92|0.89|0.91|0.95|
+|EST1|EST2|EST3|EST4|EST5|EST6|EST7|EST8|EST9|EST10|
+|0.88|0.89|0.91|0.87|0.96|0.88|0.80|0.80|0.87|0.94|
+
+|EXT1|EXT2|EXT3|EXT4|EXT5|EXT6|EXT7|EXT8|EXT9|EXT10|
+|:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|
+|0.93|0.92|0.95|0.94|0.93|0.92|0.92|0.89|0.91|0.95|
+|\hline|
+|EST1|EST2|EST3|EST4|EST5|EST6|EST7|EST8|EST9|EST10|
+|0.88|0.89|0.91|0.87|0.96|0.88|0.80|0.80|0.87|0.94|
+
+Vse vrednosti so $\geq 0.8$ kar pomeni da so podatki zelo primerni za faktorsko analizo.
+
+# Metoda glavnih komponent
+
+```{r}
+( mgk <- princomp(x=podatki, cor=T, scores=T) )
+plot(mgk)
+```
+
+Prikazan je graf variance v odvisnosti od števila komponent (izvedeno na standardiziranih podatkih). Odločamo se med vrednostmi, ki so nad 1, zato bi se odločili za 2 komponenti. Tudi vrednost pri 3 komponentah je nekoliko nad 1 vendar jo vrednost le nekoliko preseže, zato se raje odločimo za 2 komponenti.
+
+**Podrobnejša analiza izbire števila glavnih komponent**
+
+```{r}
+# lastne vrednosti
+eig <- eigen(x=Rlik, symmetric=T, only.values=T)$values
+round(cbind(eig, mgk$sdev^2, mgk$sdev),4)
+```
+
+| st. komponent | lastna vrednost | varianca |standardni odklon|
+|:-|:-|:-|:-|
+|1|5.9288 |5.9288| 2.4349|
+|2|3.8332| 3.8332| 1.9578|
+|3|1.1027| 1.1027| 1.0501|
+|4| 0.9842| 0.9842| 0.9921|
+|5| 0.8724| 0.8724| 0.9340|
+
+Podobno kot zgoraj s pomočjo grafa pridemo do ugotvitve, da je najbolj primerno število gravnih komponent 2. 
+
+```{r}
+# koleno
+plot(x=mgk, type="lines", ylim=c(0, 6))
+```
+
+Najbolj očitno koleno je pri 3 komponentah. Vendar pa za število glavnih komponent izberemo vrednost (st. komponent), ki je nad kolenom. Torej število glavnih komponent v našem primeru je 2.
+
+
+```{r}
+# paralelna analiza
+fa.parallel(x=Rlik, n.obs=nrow(podatki), fm="minres", fa="pc")
+```
+
+S paralelno analizo smo dobili nekoliko drugačen rezultat kot v prejšnjih primerih. Predlagano število glavnih komponent je 3 vendar je ta vrednost tik na meji (je tudi težko razvidno iz grafa), zato bomo obržali število glavnih komponent 2.
+
+**Celotna variabilnost**
+
+```{r}
+# delez pojasnjene variabilnosti GK
+# celotna variabilnost (koliko prispeva vsaka komponenta)
+skupna_var = eig/sum(eig)
+prvi_dve = round(sum(skupna_var[1:2]),3)
+```
+
+Koliko prispeva k celotni variabilnosti posamezna glavna komponenta:
+
+|**število g. komponent**|1|2|3|4|5|...|
+|:-|:-|:-|:-|:-|:-|:-|
+|**proporcij varinace** |0.2964| 0.1917| 0.0551| 0.0492| 0.0436|...|
+
+Z dvema glavnima komponentama nam je uspelo pojasniti `r prvi_dve`% variabilnosti.
+
+
+```{r}
+# nereskalirane utezi (originalne) = regresijski koeficienti
+loadings.orig <- mgk$loadings[, 1:2]
+
+loadings.res <- loadings.orig %*% diag(sqrt(eig[1:2]))
+# cbind(loadings.orig, loadings.res)
+
+# delez pojasnjene variabilnosti posamezne spremenljivke
+
+cbind(rowSums(loadings.res^2))
+cbind(sort(rowSums(loadings.res^2)))
+```
+
+|**spremenljivka**|EST4|EST5|EXT6|EST3|EXT9|EXT8|EST2|EST10|EXT1|EXT10|
+|:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|
+||0.0537|0.3039|0.3817|0.4140|0.4284|0.4359|0.4739|0.4840|0.5093|0.5104|
+|\hline|
+||EST9|EST1|EST6|EXT3|EXT7|EXT4|EXT2|EST7|EXT5|EST8|
+||0.5182|0.5432|0.5529|0.5625|0.5784|0.5851|0.5868|0.5964|0.61570|.6276|
+
+Opazimo da je le **EST4** slabo pojasnjen, saj ima vrednost $0.054<0.2$ (mejo 0.2 vzamemo kot vrednost pri kateri lahko indikator povzroča probleme).
+
+**Grafični prikaz glavnih komponent**
+
+```{r}
+matplot(x=seq_along(stolpci), y=loadings.res, type="o", pch=16,
+        xlab="Sklop 1 - Sklop 2", ylab="Korelacije", ylim=c(-1, 1), las=1)
+legend("bottomleft", legend=c("GK1", "GK2"), col=1:2, pch=16)
+abline(h=0, v=10.5)
 ```
 
 
+```{r}
+int <- c(-1, -0.4, -0.2, 0.2, 0.4, 1)
+nint <- length(int) - 1
+legint <- c("neg", "problem", "zanemarljivo", "problem", "poz")
+heatmap(x=loadings.res, Rowv=NA, Colv=NA, revC=T, scale="none", margins=c(5, 13),
+        cexCol=1, labCol=c("GK1", "GK2"),
+        col=hcl.colors(n=nint, palette="Blue-Red 3", rev=T), breaks=int)
+legend(x="topleft", legend=legint, fill=hcl.colors(n=nint, palette="Blue-Red 3", rev=T),
+       inset=c(0.65, 0), xpd=T)
+```
 
 
+<!--
+TOM: Ok men to mal cudn izgleda...mogoce bi lahko bila razlaga da ljudje k so ektroverti da so tudi tudi custveno stavilni, da osebe ki pa niso custveno stabilne da so tudi manj ektroverti oz. da osebe k so rade bolj za sebe(manj v druzbi bolj introverti) da so custveno manj stabilni.
+-->
+
+# Faktorska analiza
+
+## a)
 
 
+```{r}
+# screeplot
+scree(podatki)
+```
+
+Pri scree grafu gledamo koliko komponent je $\geq1$, torej je v našem primeru število faktorjev 2. Pri 3 je tudi prisotno največje koleno zato izberemo vrednost 2.
+
+```{r}
+nfactors(x=podatki, n=8, fm="minres", rotate="none")
+```
+
+VSS: če upoštevamo le uteži 1 in 2, predlaga 3 faktorje (utež 2 pri vrednosti 3 doseže najvišjo vrednost)
+eBIC: doseže minimum pri 7 faktorjih
+
+```{r}
+# paralelna analiza
+fa.parallel(x=Rlik, n.obs=nrow(podatki), fm="minres", fa="fa")
+```
+
+Pri paralelni gledamo koliko vrednosti je večjih od simuliranih podatkov. Predlagano število faktorjev je 5.
 
 
+## b
+
+Obdržimo 2 faktorja
+
+```{r}
+# standardizirani podatki
+dfz <- scale(x=podatki)
+
+# metoda ML, posevna rotacija oblimin
+fa.obli <- fa(r=dfz, nfactors=2, rotate="oblimin", scores="none", covar=T, fm="ml")
+fa.obli$Phi
+```
+
+Ker je korelacija manjša od 0.2 naredimo še pravokotno rotacijo. 
+<!--
+TOM: neki k sm bral je blo da uporabimo posevne rotacije ce so velike korelacije med skupinami, drugace pa pravokotne (na predavanjih smo imeli 0.2 za mejo majhne korelacije)
+-->
 
 
+## c
+
+```{r}
+# metoda ML, pravokotna rotacija varimax, faktorske vrednosti regresija
+# TLI (Tucker Lewis Index) > 0.95
+# RMSEA  < 0.05
+fa.vari <- fa(r=dfz, nfactors=2, rotate="varimax", scores="regression",
+              covar=F, fm="ml")
+fa.vari
+```
 
 
+Komunalitete
+
+```{r}
+### komunalitete
+# del variabilnosti spremenljivke, ki je pojasnjen s skupnimi faktorji
+cbind(fa.vari$communality)
+cbind(sort(fa.vari$communality))
+```
+
+Z izbranimi skupnimi faktorji smo pojasnili naslednje deleže posameznega indikatorja:
+
+|**spremenljivka**|EST4|EST5|EST3|EXT6|EXT9|EXT8|EST2|EST1|EST10|EST9|
+|:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|
+||0.0343|0.2285|0.3044|0.3225|0.3560|0.3574|0.3586|0.4176|0.4365|0.4400|
+|\hline|
+||EXT1|EXT10|EST6|EXT3|EXT4|EXT2|EXT7|EXT5|EST7|EST8|
+||0.4541|0.4644|0.4651|0.5269|0.5288|0.5289|0.5438|0.5847|0.6411|0.6745|
+
+Opazimo da je le **EST4** slabo pojasnjen, saj ima vrednost $0.034<0.2$ (mejo 0.2 vzamemo kot vrednost pri kateri lahko indikator povzroča probleme).
 
 
+**Grafični prikaz**
+
+```{r}
+# polozaj spremenljivk na faktorjih
+fa.plot(ic.results=fa.vari, ylim=c(-0.1,0.9))
+```
 
 
+```{r}
+# graficni prikaz modela
+#	cut: na sliki prikaze utezi vecje od vrednosti cut  
+#	simple=T prikaze samo najbolj mocno povezavo do spremenljivke
+fa.diagram(fa.results=fa.vari, sort=F, cut=0.4, simple=T)
+```
 
 
+```{r}
+# graficni prikaz
+matplot(x=seq_along(stolpci), y=fa.vari$loadings[, ], type="o", pch=16,
+        main="Pattern", xlab="Sklop 1 - Sklop 2", ylab="Utezi", ylim=c(-1, 1), las=1)
+legend("topleft", legend=c("FA1", "FA2"), col=1:2, pch=16)
+abline(h=0, v=10.5)
+```
 
 
-
-
-
-
-
-
-
-
-
+```{r}
+# heatmap
+int <- c(-1, -0.4, -0.2, 0.2, 0.4, 1)
+nint <- length(int) - 1
+legint <- c("neg", "problem", "zanemarljivo", "problem", "poz")
+heatmap(x=fa.vari$loadings[, ], Rowv=NA, Colv=NA, revC=T, scale="none",
+        margins=c(5, 13), cexCol=1, labCol=c("FA1", "FA2"), 
+        col=hcl.colors(n=nint, palette="Blue-Red 3", rev=T), breaks=int)
+legend(x="topleft", legend=legint, fill=hcl.colors(n=nint, palette="Blue-Red 3",
+                                                   rev=T), inset=c(0.65, 0), xpd=T)
+```
 
