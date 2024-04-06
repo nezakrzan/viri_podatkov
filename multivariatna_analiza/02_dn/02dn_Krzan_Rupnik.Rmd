@@ -1,6 +1,6 @@
 ---
 title: "Domača naloga 2"
-author: "Neza Krzan, Tom Rupnik"
+author: "Neža Kržan, Tom Rupnik"
 output:
   pdf_document:
     fig_caption: true
@@ -12,16 +12,27 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.pos = 'H', fig.align="center", results = F)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.pos = "H",
+	message = FALSE,
+	warning = FALSE,
+	results = F, fig.height = 4, fig.width = 5
+)
 
 library(haven)
 library(psych)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+library(kableExtra)
+library(blockmodeling)
 
 set.seed(2024)
 ```
 
 \tableofcontents
-\newpage
 \listoffigures
 \listoftables
 \newpage
@@ -50,11 +61,18 @@ https://www.kaggle.com/datasets/tunguz/big-five-personality-test/data
 Podatki so bili zbrani med letoma 2016-2018 preko interaktivnega testa osebnosti na spletu.\
 Test osebnosti je bil zgrajen na podlagi "Big-Five Factor Markers" pridoblejnih iz IPIP (International Personality Item Pool). 
 
-Lestvica uporabljena za odgovore je bila sledeča:
+Lestvica, uporabljena za odgovore, je bila sledeča:
 
 * 1 = se ne strinjam
+* 2 = 
 * 3 = nevtralno
+* 4 = 
 * 5 = se strinjam
+
+<!-- 
+Neža:
+v podatkij je še 2 in 4 k tuki nisi napisu, zakaj pa ne?
+pa nekak morva pomojem še dobisat kaj so -1, -2, -3,...-->
 
 <!--
 EXT1	I am the life of the party.
@@ -79,7 +97,7 @@ EST9	I get irritated easily.
 EST10	I often feel blue.
 -->
 
-Za domoačo nalogo sva si izbrala spremneljvke, ki so bile kodirane z "EXT1-10" in "EST1-10". Te oznake predstavljajo trditev oz. osebnostno lastnost, katero so ankentiranci ovrednostili po zgornji lestvici. Pomen (s + oz. - je označeno ali je trditev bila označena kot pozitivna (velja za ta sklop/lastnost), ali negativno (ne velja za ta sklop/lastnost, lestvica je obrnjena)):
+Za domačo nalogo sva si izbrala spremenljivke, ki so bile kodirane z "EXT1-10" in "EST1-10". Te oznake predstavljajo trditev oz. osebnostno lastnost, katero so ankentiranci ovrednostili po zgornji lestvici. Pomen, pri čemer je s + oz. - označeno ali je trditev bila označena kot pozitivna (velja za ta sklop/lastnost), ali negativno (ne velja za ta sklop/lastnost, lestvica je obrnjena):
 
 **Energija (ektravertnost, surgentnost)**
 
@@ -107,7 +125,6 @@ Za domoačo nalogo sva si izbrala spremneljvke, ki so bile kodirane z "EXT1-10" 
 * EST9...Sem hitro vzkipljiv (-)
 * EST10...Pogosto se počutim žalostno, melanholično, emotično pretreseno (-)
 
-
 Vrednosti trditev, ki so označene z (-) bomo množili z $-1$ in s tem obrnili lestvico.
 
 ```{r}
@@ -123,21 +140,52 @@ for(el in negativne){
 
 ```
 
-Iz podatkovnega okvirja sva odstranila vrstice, ki so vsebovale kakšno _NA_ vrednost. Takih vrstic je bilo `r razlika`.
+Iz podatkovnega okvirja sva odstranila vrstice, ki so vsebovale kakšno _NA_ vrednost. Takih vrstic je bilo `r razlika`, torej imava na koncu `r nrow(podatki)` podatkov.
 
+Poglejmo si nekatere opisne statistike sklopa spremenljivk pri _energiji_ in sklopa spremenljivk  _čustvene stabilnosti_. V spodnji tabeli vidimo, da so podatki v redu in nimamo nepravilnih vrednosti, ki niso znotraj lestvice.
 
+```{r, results=T}
+stat = data.frame(spremenljivke = c("EXT1", "EXT2", "EXT3", "EXT4", "EXT5", "EXT6", "EXT7", "EXT8", "EXT9", "EXT10", "EST1", "EST2", "EST3", "EST4", "EST5", "EST6", "EST7", "EST8", "EST9", "EST10"),
+           mean = c(2.48,-2.972,3.055,-3.242,3.118,-2.469, 2.679 ,-3.414 ,2.944,-3.688 ,-3.325
+                    ,3.061,-3.862,2.804,-3.182,-2.913,-3.107,-2.884,-3.015,-3.122),
+           Min = c(1.000,-5.000,1.000,-5.000,1.000,-5.000,1.000,-5.000,1.000,-5.000,-5.000,1.000,
+                   -5.000,1.000,-5.000,-5.000,-5.000,-5.000, -5.000, -5.000), 
+           Max = c(5.000,-1.000,5.000,-1.000,5.000,-1.000 ,5.000,-1.000,5.000,-1.000,-1.000,5.000,
+                   -1.000,5.000,-1.000,-1.000,-1.000,-1.000,-1.000,-1.000))
+
+kable(stat, 
+      caption="Opisne statistike za števillske spremenljivke v podatkovnem okviru.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+\newpage
 
 # Korelacijska matrika
 
-```{r}
+Ker želimo pojasniti čim več variabilnosti spremenljivk in korelacijo med spremenljivkami, se bomo to lotili z metodo glavnih komponent in faktorsko analizo. Metodi sta smiselni v primeru, ko so spremenljivke v podtkovnem okviru med seboj korelirane, zato si poglejmo korelacijsko matriko.
+
+```{r, fig.align="center", fig.height=6, fig.width=6, fig.cap="Prikaz Pearsonove korelacije med spremenljivkami.", results=T}
 # Korelacijska matrika stvilsko
 Rlik <- cor(podatki)
-lowerMat(R=Rlik)
+# lowerMat(R=Rlik)
+
+# kable(Rlik, 
+#       caption="Korelacijska matrika.") %>% 
+#   kable_styling(full_width=F, latex_options="hold_position")
+
+# morda bolje, ker tale matrika ne pride okej v pdf?
+library(corrplot)
+colors10 <- colorRampPalette(c("#0000aa","white","#aa0000"))(10)
+corrplot.mixed(cor(podatki,
+                   method = "pearson"),
+               lower.col = colors10, upper.col = colors10,
+               tl.col="black", tl.cex = 0.5, number.cex = 0.5)
 ```
 
 Iz matrike korelacije vidimo, da se korelacija znotraj spremenljvk **EXT** giblje približno med 0.3-0.6.\
 Pri spremenljivkah **EST** je razpon vrednosti nekoliko večji in sicer 0.1-0.8. Pri tem z nizkimi vrednostmi izstopa predvsem spremenljivka **EST4**, ki predstavlja trditev *"Redko sem žalosten, melanholičen, emotično pretresen"*. \
-Opaziti je, da so korelacije znotraj skupin spremenljivk (EXT in EST) večje, zato lahko na spodnjem prikazu pričakujemo dva očitna sklopa.
+Opaziti je, da so korelacije znotraj skupin spremenljivk (EXT in EST) večje, zato lahko na spodnjem prikazu pričakujemo dva očitna sklopa. 
+
+Korelacije znotraj obeh sklopov so pozitivne in srednje oziroma šibke, edino povezanost med **EST8** in **EST7** je močnejša. Spremenljivke med sklopoma pa so zanemarljivo povezane in se jasno vidi razlika med sklopoma.
 
 ```{r}
 int <- c(-1, -0.5, -0.3, -0.1, 0.1, 0.3, 0.5, 1)
@@ -155,14 +203,16 @@ Res vidimo, da sta tvorjeni dve skupini spremenljivk, in sicer **EXT1-10** in **
 cortest = cortest.bartlett(R=Rlik, n=nrow(podatki))
 ```
 
-Da se zares prepričamo, da spremenljivke med seboj niso neodvisne lahko izvedemo Bartlettov test, ki ima ničelno hipotezo _"vse spremenljivke so neodvisne"_. Ko izvedemo test dobimo p-vrednost enako `r cortest$p.value`, kar pomeni da ovržemo ničelno hipotezo. Torej spremenljivke med seboj niso neodvisne.
+Da se zares prepričamo, da spremenljivke med seboj niso neodvisne lahko izvedemo Bartlettov test, ki ima ničelno hipotezo _"vse spremenljivke so neodvisne"_, kar bi pomenilo, da je korelacijska matrika spremenljivk identiteta. Ko izvedemo test dobimo p-vrednost enako `r cortest$p.value`, kar pomeni, da ovržemo ničelno hipotezo. Torej spremenljivke med seboj niso neodvisne oz. so korelirane in metodi, ki jih bomo izvajali v nadaljevanju, sta smiselni.
 
 <!-- 
 TOM: to je treba se odgovorit...trenutno nism nc nasu...
 Ali so podatki primerni za analizo z metodo glavnih komponent?
+
+Neža: sm odgovorila, na začetki tega poglavja sm napisala da morajo bit sprem. korelirane za te dve metodi med seboj zato sploh gledamo korelacijo in pa ta test zdej ti pokaže da so neodvisne torej je primerno(pac so korelirane) - glede na to da hoče kratke komentarje se mi to zdi dost, kaj ti misls?
 -->
 
-Preverimo ali so podatki primerni za faktorsko analizo. V ta namen izvedemo Kaiser-Meyer-Olkin test.
+Zanima nas še, ali bomo imeli kakšne težave pri faktorski analizi, zato zivedemo še Kaiser-Meyer-Olkin test.
 
 ```{r}
 # KMO(Rlik)
@@ -171,43 +221,46 @@ round(KMO(Rlik)$MSAi,2)
 
 Test nam vrne naslednje vrednosti:
 
-<!--
-TOM: izberi katera ti je lepsa
--->
-
 |EXT1|EXT2|EXT3|EXT4|EXT5|EXT6|EXT7|EXT8|EXT9|EXT10|
 |:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|
 |0.93|0.92|0.95|0.94|0.93|0.92|0.92|0.89|0.91|0.95|
 |EST1|EST2|EST3|EST4|EST5|EST6|EST7|EST8|EST9|EST10|
 |0.88|0.89|0.91|0.87|0.96|0.88|0.80|0.80|0.87|0.94|
 
-|EXT1|EXT2|EXT3|EXT4|EXT5|EXT6|EXT7|EXT8|EXT9|EXT10|
-|:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|
-|0.93|0.92|0.95|0.94|0.93|0.92|0.92|0.89|0.91|0.95|
-|\hline|
-|EST1|EST2|EST3|EST4|EST5|EST6|EST7|EST8|EST9|EST10|
-|0.88|0.89|0.91|0.87|0.96|0.88|0.80|0.80|0.87|0.94|
+Vse vrednosti so večje oz. enake $0.8$, kar pomeni da so podatki primerni za faktorsko analizo in ne bomo imeli težav.
 
-Vse vrednosti so $\geq 0.8$ kar pomeni da so podatki zelo primerni za faktorsko analizo.
+\newpage
 
 # Metoda glavnih komponent
 
-```{r}
-( mgk <- princomp(x=podatki, cor=T, scores=T) )
-plot(mgk)
+Cilj metode glavnih komponent je s prvimi nekaj nekoreliranimi glavnimi komponentami pojasniti kar največ variabilnosti originalnih spremenljivk in zmanjšati razsežnost podatkov tako, da se izgubi čim manj informacij. Glavne komponente so linearne kombinacije merjenih spremenljivk in so med seboj neodvisne. Urejene so glede na pojasnenost variabilnosti od največ do najmanj.
+
+## Določitev števila komponent
+
+```{r, fig.cap="Izbira števila glavnih komponent.", results=T}
+mgk <- princomp(x=podatki, cor=T, scores=T)
+plot(mgk, type="lines", ylim=c(0, 6), main="MGK") 
 ```
 
-Prikazan je graf variance v odvisnosti od števila komponent (izvedeno na standardiziranih podatkih). Odločamo se med vrednostmi, ki so nad 1, zato bi se odločili za 2 komponenti. Tudi vrednost pri 3 komponentah je nekoliko nad 1 vendar jo vrednost le nekoliko preseže, zato se raje odločimo za 2 komponenti.
+Prikazan je graf variance v odvisnosti od števila komponent (izvedeno na standardiziranih podatkih). Izbrano število glavnih komponent je tam, kjer se graf lomi oziroma ima koleno in so vrednosti nad 1, pri čemer obdržimo komponente nad kolenom. Zato bi se odločili za 2 komponenti. Tudi vrednost pri 3 komponentah malo preseže vrednost nad 1, zato se vseeno raje odločimo za 2 komponenti.
 
-**Podrobnejša analiza izbire števila glavnih komponent**
+### Podrobnejša analiza izbire števila glavnih komponent
 
 ```{r}
 # lastne vrednosti
 eig <- eigen(x=Rlik, symmetric=T, only.values=T)$values
-round(cbind(eig, mgk$sdev^2, mgk$sdev),4)
+# round(cbind(eig, mgk$sdev^2, mgk$sdev),4)
+# sum(eig)
+
+kable(round(cbind(eig, mgk$sdev^2, mgk$sdev),4), caption="Izbira glavnih komponent na podlagi lastnih vrednosti.",
+       col.names = c("št. komponent", "lastna vrednost", "varianca", "standardni odklon")) %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
 ```
 
-| st. komponent | lastna vrednost | varianca |standardni odklon|
+Ponavadi se odločimo za tisto število komponent, da so lastne vrednosti komponent večje od povprečne variabilnosti standariziranih spremenljivk, ki je enaka 1(oz. stadardni odklon večji od 1). pri nas to velja za 3 komponente. Zadnja je sicer ponovno zelo na meji, zato se zaenkrat raje odločimo za dve komponenti.
+
+<!--
+| št. komponent | lastna vrednost | varianca |standardni odklon|
 |:-|:-|:-|:-|
 |1|5.9288 |5.9288| 2.4349|
 |2|3.8332| 3.8332| 1.9578|
@@ -219,28 +272,63 @@ Podobno kot zgoraj s pomočjo grafa pridemo do ugotvitve, da je najbolj primerno
 
 ```{r}
 # koleno
-plot(x=mgk, type="lines", ylim=c(0, 6))
+# plot(x=mgk, type="lines", ylim=c(0, 6)) # to je cist isto kt tist zgori, zato sm dala vn
 ```
 
 Najbolj očitno koleno je pri 3 komponentah. Vendar pa za število glavnih komponent izberemo vrednost (st. komponent), ki je nad kolenom. Torej število glavnih komponent v našem primeru je 2.
+-->
 
+### Paralelna analiza
 
-```{r}
+Glede števila glavnih komponent se lahko odločimo tudi na podlagi scree diagrama, ki grafično predstavi lastne vrednosti. Izbrano število glavnih komponent je ponovno tam, kjer se graf lomi oziroma ima koleno, pri čemer obdržimo komponente nad kolenom. 
+
+```{r, fig.height=4, fig.width=5, fig.cap="Scree diagram za izbiro število glavnih komponent."}
 # paralelna analiza
 fa.parallel(x=Rlik, n.obs=nrow(podatki), fm="minres", fa="pc")
 ```
 
-S paralelno analizo smo dobili nekoliko drugačen rezultat kot v prejšnjih primerih. Predlagano število glavnih komponent je 3 vendar je ta vrednost tik na meji (je tudi težko razvidno iz grafa), zato bomo obržali število glavnih komponent 2.
+S paralelno analizo smo dobili nekoliko drugačen rezultat kot v prejšnjih primerih. Predlagano število glavnih komponent je 3 vendar je ta vrednost na meji (je tudi težko razvidno iz grafa), zato bomo obržali število glavnih komponent 2.
 
-**Celotna variabilnost**
+Torej, na podlagi paralelne analize, primerjav lastnih vrednosti, ki morajo biti večje od 1 in na podalgi primerjav lastnih vrednosti se odločimo za 2 glavni komponenti, kljub temi, da pri vseh treh načinih ni popolnoma razvidna meja med dvema ali tremi komponentami.
+
+## Uteži za izbrani glavni komponenti
+
+Uteži dobljenih glavnih komponent reskaliramo, ker nereskalirane uteži predstavljajo regresijske koeficiente. Reskalirana utež pa predstavljajo korelacije med komponentami in spremenljivkami in s pomočjo teh korelacij lahko interpretiramo glavne komponente.
+
+\newpage
+
+```{r, results=T}
+loadings.orig <- mgk$loadings[,1:2]
+loadings.res <- loadings.orig %*% diag(sqrt(eig[1:2]))
+
+utezi = data.frame(comp1n = loadings.orig[,1], comp2n = loadings.orig[,2],
+                   comp1r = loadings.res[,1], comp2r = loadings.res[,2])
+
+kable(utezi, caption="Prikaz uteži glavnih komponen.",
+       col.names = c("Comp.1", "Comp.2", "Comp.1", "Comp.2")) %>% 
+  add_header_above(header = c(" " = 1, "Nereskalirane uteži" = 2, "Reskalirane uteži" = 2)) %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+Interpretacija reskaliranih uteži je, da so spremenljivke čustvene stabilnosti negativno koreliren z drugo glavno komponento, spremenljivke energije pa so močneje pozitivno povezane s prvo glavno komponento kot z drugo.  
+
+Če strnemo, prva glavna komponenta povzema predvsem pomembnost energije in druga glavna komponenta povzema predvsem pomembnost čustvene stabilnosti (negativne korelacije).
+
+## Delež nepojasnene variabilnosti
+
+Velja, da je vsota kvadratov reskaliranih uteži po spremenljivkah varianca spremenljivke. Zanima nas celotna variabilnost, torej koliko prispeva vsaka komponenta.
 
 ```{r}
 # delez pojasnjene variabilnosti GK
 # celotna variabilnost (koliko prispeva vsaka komponenta)
 skupna_var = eig/sum(eig)
 prvi_dve = round(sum(skupna_var[1:2]),3)
+za_vse = round(rowSums(loadings.res**2) ,2)
 ```
 
+Pri nas s prvo komponento pojasnimo 29.6% celotne variabilnosti in z drugo komponento 19.1%, skupaj pa 48.8% celotne variabilnosti. Z izbranima prvima glavnima komponentama pojasnimo največji delež EST8 (63%), EST7 (60%) in EXT2 (59%). Najmanjši delež variabilnosti pa pojasnimo pri spremenljivki EST4 (5%).
+
+<!--
 Koliko prispeva k celotni variabilnosti posamezna glavna komponenta:
 
 |**število g. komponent**|1|2|3|4|5|...|
@@ -248,8 +336,10 @@ Koliko prispeva k celotni variabilnosti posamezna glavna komponenta:
 |**proporcij varinace** |0.2964| 0.1917| 0.0551| 0.0492| 0.0436|...|
 
 Z dvema glavnima komponentama nam je uspelo pojasniti `r prvi_dve`% variabilnosti.
+-->
 
-
+<!-- 
+Neža: To sm gor prestavla, ker smo na vajah najprej delal to pol pa šele variabilnost...
 ```{r}
 # nereskalirane utezi (originalne) = regresijski koeficienti
 loadings.orig <- mgk$loadings[, 1:2]
@@ -271,18 +361,20 @@ cbind(sort(rowSums(loadings.res^2)))
 ||0.5182|0.5432|0.5529|0.5625|0.5784|0.5851|0.5868|0.5964|0.61570|.6276|
 
 Opazimo da je le **EST4** slabo pojasnjen, saj ima vrednost $0.054<0.2$ (mejo 0.2 vzamemo kot vrednost pri kateri lahko indikator povzroča probleme).
+-->
 
-**Grafični prikaz glavnih komponent**
+## Grafični prikaz glavnih komponent
 
-```{r}
+```{r, fig.cap="Grafični prikaz intepretacije metoe glavnih komponent."}
 matplot(x=seq_along(stolpci), y=loadings.res, type="o", pch=16,
         xlab="Sklop 1 - Sklop 2", ylab="Korelacije", ylim=c(-1, 1), las=1)
 legend("bottomleft", legend=c("GK1", "GK2"), col=1:2, pch=16)
 abline(h=0, v=10.5)
 ```
 
+Z navpično črto na grafu smo ločili sklopa spremenljivk in vidimo, da se komponenti ne obračata glede na navpično črto, kar ni v redu. Želeli bi si, da je na enem delu grafa GK1 nad GK2 in potem v drugem delu ravno obratno. Če so utež nad 0.4(vrednost korelacije) je v redu, kjer je korelacija slaba pa si želimo pod 0.2. <!-- Neža: tole nevem če si prov razlagam: Na desnem delu grafa tem pogojem zadostimo, s tem ko na levem pa ne.-->
 
-```{r}
+```{r, fig.cap="Grafični prikaz spremenljivk glede na komponento.", fig.height=4}
 int <- c(-1, -0.4, -0.2, 0.2, 0.4, 1)
 nint <- length(int) - 1
 legint <- c("neg", "problem", "zanemarljivo", "problem", "poz")
@@ -293,41 +385,60 @@ legend(x="topleft", legend=legint, fill=hcl.colors(n=nint, palette="Blue-Red 3",
        inset=c(0.65, 0), xpd=T)
 ```
 
-
+Problematična je spremenljivka **EST4** saj ne spada nikamor, kar smo videli že zgoraj pri nizki korelaciji. Ni jasno ločenih spremenljivk glede na komponento.
 <!--
-TOM: Ok men to mal cudn izgleda...mogoce bi lahko bila razlaga da ljudje k so ektroverti da so tudi tudi custveno stavilni, da osebe ki pa niso custveno stabilne da so tudi manj ektroverti oz. da osebe k so rade bolj za sebe(manj v druzbi bolj introverti) da so custveno manj stabilni.
+TOM: Ok men to mal cudn izgleda...mogoce bi lahko bila razlaga da ljudje k so ekstroverti da so tudi tudi custveno stavilni, da osebe ki pa niso custveno stabilne da so tudi manj ekstroverti oz. da osebe k so rade bolj za sebe(manj v druzbi bolj introverti) da so custveno manj stabilni.
+
+Neža: tole ne vem če te dobr razumem? To nevem ce lahko kr tko sklepava? naceloma ljudje k se vec druzjo majo vec ljudi, vec problemov, vec custev....bolj nestabilni, sam introverti pa po vecini so neki depresivni, sam ce si depresivn si pac skos zalosten torej so custva stabila sam pac v negativno smer....
 -->
+
+## Zaključek
+
+Pri tej metodi sva se odličila za dve glavni komponenti, sicer je bilo skoraj vedno na meji, da bi bilo bolje izbrati tri. Odločila sva se za dve in sicer spremenljivke, ki ocenjujejo energijo so v eni in spremenljivke, ki ocenjujejo čustveno stabilnost v drugi. Z obema komponentama smo pojasnili skoraj 50% celotne variabilnosti, pojasnili pa smo največji delež spremenljivke EST8 (63%), najmanjši delež variabilnosti pa spremenljivke EST4 (5%).
+
+\newpage
 
 # Faktorska analiza
 
-## a)
+Faktorska analiza poizkuša poenostaviti kompleksnost povezav med opazovanimi spremenljivkami tako, da poskuša najti novo množico spremenljivk, ki predstavlja skupno opazovanim spremenljivkam. Ponavadi jo uporabimo takrat, ko pojmov ne moremo meriti neposredno in zato izberemo nekaj direktno merjenih spremenljivk, ki so indikatorji tistih, ki jih želimo meriti. Preko faktorej poiskušamo čim bolje pojasniti korelacije oziroma kovariance med merjenimi spremenljivkami. Merjene spremenljivke so tako lineane kombinacije skupnih in specifičnih faktorjev. 
 
+## Določitev števila faktorjev
 
-```{r}
-# screeplot
+Za določitev števila faktorjev uporabljamo podobne kriterije kot pri metodi glavnih komponent. Odločimo se lahko na podlago kolena scree diagrama, na podlagi lastnih vrednosti faktorjev ali pa s primerjavo lastnih vrednosti faktorjev s tistimi na podlagi podatkov generiranih iz nekoreliranih spremenljivk.
+
+Predpostaviti moramo, da se spremenljivke porazdeljujejo normalno in tako lahko uporabimo faktorsko metodo največjega verjetja.
+
+```{r, fig.align="center", fig.height=4, fig.width=5, fig.cap="Scree diagram za izbiro število faktorjev."}
+fa.parallel(x = Rlik, n.obs = nrow(podatki), fa = "fa", fm = "minres") 
+```
+
+Pri paralelni analizi gledamo koliko vrednosti je nad rdečo črto in zelo očitno je, da bi se odločili za dva faktorja oziroma tri. Analiza pa sicer predlaga pet fakorjev, ker gleda koliko vrednosti je večjih od simuliranih podatkov.
+
+```{r, fig.cap="Izbira števila faktorjev.", results=T}
 scree(podatki)
 ```
 
-Pri scree grafu gledamo koliko komponent je $\geq1$, torej je v našem primeru število faktorjev 2. Pri 3 je tudi prisotno največje koleno zato izberemo vrednost 2.
+Podobno kot pri metodi glavnih komponent, si tudi tukaj lahko pomagamo s screenplotom, kjer gledamo kolena in koliko komponent je večjih od 1. Na podlagi zgornjega grafa je zelo očitno, da bi lahko imeli dva faktorja, tretji pa je na meji z ena. 
 
-```{r}
+Poglejmo si še rezultat pristopa VSS in eBIC. Pri VSS izberemo število, kjer so uteži pri spremenljivkah največje in s tem največ pojasnijo (upoštevane so samo najvišje uteži pri spremenljivkah). Pristop eBIC pa število faktorjev določi tam, kjer je koleno.
+
+```{r, fig.height=6, fig.width=6, fig.align="center", fig.cap="Prikazi drugih pristopov za določanje št. faktorjev."}
 nfactors(x=podatki, n=8, fm="minres", rotate="none")
 ```
 
-VSS: če upoštevamo le uteži 1 in 2, predlaga 3 faktorje (utež 2 pri vrednosti 3 doseže najvišjo vrednost)
-eBIC: doseže minimum pri 7 faktorjih
+Na podlagi VSS predlaga 3 faktorje, pri čemer upoštevamouteži 1 in 2, saj po treh faktorjih oz. že po dveh zelo počasi narašča. eBIC minimum doseže pri 7 faktorjih, vendar je najboljše število faktorjev dva, saj prileganje pri večjem številu fakotrjev postaja zanemarljivo boljše. 
 
-```{r}
-# paralelna analiza
-fa.parallel(x=Rlik, n.obs=nrow(podatki), fm="minres", fa="fa")
-```
+Po vseh sklepih se odločimo, da obdržimo dva faktorja. 
 
-Pri paralelni gledamo koliko vrednosti je večjih od simuliranih podatkov. Predlagano število faktorjev je 5.
+## Faktorska analiza
 
+Na podlagi izbranega števila faktorjev tj. dveh faktorjev bomo izvedli faktorsko analizo.
 
-## b
+Najprej začnemo s poševno rotacijo(oblimin) vidimo, da je korelacija med faktorjema zelo majhna (0.188) in manjša od 0.2. Zato naredimo še pravokotno rotacijo(varimax), kjer so korelacije med faktorji enake 0.
 
-Obdržimo 2 faktorja
+Pri pravokotni rotaciji si želimo, da bi bil indeks Tucker Lewis večji od 0.95 ali RMSE manjša od 0.05, da je fakotrska analiza zares dobra.Naš indeks je 0.82, RMSE pa 0.091, kar kaže na to, da fakotski model ni najboljši.
+
+S prvim faktorjem pojasnemo 23% z drugim pa 43% variabilnosti med spremenljivkami, izmed vse pojasnene variabilnosti z izbranima dvema faktorjema s prvim faktorjem pojasnimo 54% variabilnosti, z drugim pa 46%.
 
 ```{r}
 # standardizirani podatki
@@ -336,17 +447,7 @@ dfz <- scale(x=podatki)
 # metoda ML, posevna rotacija oblimin
 fa.obli <- fa(r=dfz, nfactors=2, rotate="oblimin", scores="none", covar=T, fm="ml")
 fa.obli$Phi
-```
 
-Ker je korelacija manjša od 0.2 naredimo še pravokotno rotacijo. 
-<!--
-TOM: neki k sm bral je blo da uporabimo posevne rotacije ce so velike korelacije med skupinami, drugace pa pravokotne (na predavanjih smo imeli 0.2 za mejo majhne korelacije)
--->
-
-
-## c
-
-```{r}
 # metoda ML, pravokotna rotacija varimax, faktorske vrednosti regresija
 # TLI (Tucker Lewis Index) > 0.95
 # RMSEA  < 0.05
@@ -355,62 +456,128 @@ fa.vari <- fa(r=dfz, nfactors=2, rotate="varimax", scores="regression",
 fa.vari
 ```
 
+<!--
+TOM: neki k sm bral je blo da uporabimo posevne rotacije ce so velike korelacije med skupinami, drugace pa pravokotne (na predavanjih smo imeli 0.2 za mejo majhne korelacije)
+Neza: je povedu na predavanjih da ce je vec kot 0.2 delas posevno in ce je manj delas pravokotno, za domaco nalogo tud ce dobis vec kot 0.2 napises da bi mogu delat poseno naprej amapk delas pravokotno ker je on tko reku
+-->
 
-Komunalitete
+## Komunalitete
 
-```{r}
+Zanimajo nas komunalitete, ki odražajo del variabilnosti spremenljivke, ki je pojasnjen s skupnimi faktorji. Z izbranimi skupnimi faktorji smo pojasnili naslednje deleže posameznega indikatorja:
+
+```{r, results=T}
 ### komunalitete
 # del variabilnosti spremenljivke, ki je pojasnjen s skupnimi faktorji
-cbind(fa.vari$communality)
-cbind(sort(fa.vari$communality))
+# cbind(fa.vari$communality)
+urejene = data.frame(t(cbind(sort(fa.vari$communality))))
+
+kable(urejene[,1:5], 
+       caption="Komunalitete.") %>% 
+   kable_styling(full_width=F, latex_options="hold_position")
+
+kable(urejene[,6:10]) %>% 
+   kable_styling(full_width=F, latex_options="hold_position")
+
+kable(urejene[,11:15]) %>% 
+   kable_styling(full_width=F, latex_options="hold_position")
+
+kable(urejene[,16:20]) %>% 
+   kable_styling(full_width=F, latex_options="hold_position")
+
 ```
-
-Z izbranimi skupnimi faktorji smo pojasnili naslednje deleže posameznega indikatorja:
-
+<!--
 |**spremenljivka**|EST4|EST5|EST3|EXT6|EXT9|EXT8|EST2|EST1|EST10|EST9|
 |:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|:-|
 ||0.0343|0.2285|0.3044|0.3225|0.3560|0.3574|0.3586|0.4176|0.4365|0.4400|
 |\hline|
 ||EXT1|EXT10|EST6|EXT3|EXT4|EXT2|EXT7|EXT5|EST7|EST8|
 ||0.4541|0.4644|0.4651|0.5269|0.5288|0.5289|0.5438|0.5847|0.6411|0.6745|
+-->
 
-Opazimo da je le **EST4** slabo pojasnjen, saj ima vrednost $0.034<0.2$ (mejo 0.2 vzamemo kot vrednost pri kateri lahko indikator povzroča probleme).
+V našem primeru je večina komunalitet nad 0.2, kar pomeni, da je spremenljivka dobro pojasnjena s skupnim faktorskim modelom. Odstopa zgolj **EST4**, ki ima vrednost komunalitet nižjo od 0.2 in je njena variabilnost slabše pojasnjena z modelom.
 
+Na spodnjih grafih vidimo matriko odklonov korelacij na podlagi modela od empiričnih korelacij. Izven diagonale so razlike ocenjenih in empiričnih korelacij, na diagonali pa so unikvitete(angl. _uniquenesses_), ki povedo kolikšen delež variabilnosti spremenljivke ni pojasnen s skupnimi faktorji. 
 
-**Grafični prikaz**
+```{r, fig.height=5, fig.width=5, fig.align="center", fig.cap="Matrika odklonov korelacij na podlagi modela od empiričnih korelacij(levo)."}
+CM.vari <- fa.vari$loadings %*% t(fa.vari$loadings) 
+razlika <- Rlik - CM.vari
+plot.mat(razlika, main = "") 
+```
 
-```{r}
-# polozaj spremenljivk na faktorjih
+```{r, fig.height=5, fig.width=6, fig.align="center", fig.cap="Grafični prikaz odklonov."}
+int <- c(-1, -0.2, 0.2, 1)
+nint <- length(int) - 1
+legint <- c("negativno", "zanemarljivo", "pozitizno")
+heatmap(x=razlika, Rowv=NA, symm=T, revC=T, margins=c(15, 15), col=hcl.colors(n=nint, palette="Blue-Red 3", rev=T), breaks=int)
+legend(x="topleft", legend=legint, fill=hcl.colors(n=nint, palette="Blue-Red 3", rev=T), inset=c(0.75, 0), xpd=T)
+```
+
+Vidimo, da so unikvitete visoke, ampak manjše od 0.8, kar si želimo, z izjemo ene **EST4** - to smo že videli pri komunalitetah zgoraj, da ni dobro pojasnena s skupnim faktorskim modelom. 
+Pri ostalih spremenljivkah so vrednosti unikvitet pod 0.8 in njihove variabilnosti so tako dobro pojasnjene. Izven diagonal so vrednosti po absolustni vrednosti v večini blizu 0, kar je dobro, izrazito odstopajo le spremenljivke EXT8 in EXT9, EST1, EST2, EST3 in EST6, EST9.
+
+## Faktorske uteži - interpretacija skupnih faktorjev
+
+Pokažimo regresijske koeficiente ter strukturne uteži oziroma korelacijske koeficiente, ki so za pravokotno (varimax) rotacijo, ki sva jo v najinem primeru upoštevala.
+
+```{r, fig.cap="Grafični prikaz strukturnih uteži za pravokotno rotacijo na grafu.", fig.height=4}
 fa.plot(ic.results=fa.vari, ylim=c(-0.1,0.9))
 ```
 
+Želimo si situacijo, ko je en sklop uteži desno na x-osi spodnjega grafa in en sklop proti vrhu y-osi spodnjega grafa. Na x-osi se sklop uteži zelo lepo vidi, s tem ko na y-osi ni tako zelo lepo.
 
-```{r}
-# graficni prikaz modela
-#	cut: na sliki prikaze utezi vecje od vrednosti cut  
-#	simple=T prikaze samo najbolj mocno povezavo do spremenljivke
-fa.diagram(fa.results=fa.vari, sort=F, cut=0.4, simple=T)
+```{r, results=T}
+# Pattern uteži (reg. koeficienti)
+utezi = data.frame(fa.vari$Structure[,])
+
+kable(utezi,
+           col.names = c("", "Faktor1", "Faktor2"),
+      caption = "Prikaz faktorskih uteži.") %>% 
+   kable_styling(full_width=F, latex_options="hold_position")
 ```
 
+Če si najprej pogledamo prvi faktor, vidimo, da ima visoke pozitivne, srednje do močne, korelacije s sklopom spremenljivk, ki meri energijo(EXT) in nizke korelacije s spremenljivkami, ki merijo čustveno stabilnost(EST). Izstopa le EST10, ki ima nekoliko višjo korelacijo, kot druge spremenljivke v sklopu čustvene stabilnosti.
 
-```{r}
+Drugi faktor ima visoke pozitivne srednje do močne korelacije s spremenljivkami, ki merijo čustveno stabilnost in nižjo oz. šibko korelacijo s spremenljivkami, ki merijo energijo. Pri sklopu čustvene stabilnosti izstopla le z nižjo korelacijo spremenljivka EST4, pri skolpu energija pa ima višjo korelacijo od ostalih spremenljivka EXT3.
+
+\newpage
+
+## Grafični prikaz modela
+
+<!-- Neza: pri tem je reku, da uporabis kar ti je lepse in midva bova uporabla tole kar jst znam prblizn interpretirat-->
+
+Poglejmo si še grafični prikaz modela.
+
+```{r, fig.cap="Grafični prikaz modela."}
+# graficni prikaz - uporabis kar ti je lepse, pri tem bi bilo fajn spodaj dopisati spremenljivke(tudi zgoraj k smo mel ta graf za nalogo dopisi spremenljivke --> komentar s predavanj
+
+# Neza: mislm, da je reku da so tele podobn interpretira kt pr metodi glavnih komponent
+
 # graficni prikaz
 matplot(x=seq_along(stolpci), y=fa.vari$loadings[, ], type="o", pch=16,
-        main="Pattern", xlab="Sklop 1 - Sklop 2", ylab="Utezi", ylim=c(-1, 1), las=1)
-legend("topleft", legend=c("FA1", "FA2"), col=1:2, pch=16)
+        main="Pattern", xlab="Sklop 1 - Sklop 2", ylab="uteži", ylim=c(-1, 1), las=1)
+legend("bottomleft", legend=c("FA1", "FA2"), col=1:2, pch=16)
 abline(h=0, v=10.5)
 ```
 
+Z navpično črto na grafu smo ponovno ločili sklopa spremenljivk in vidimo, da se faktorja obračata glede na navpično črto, kar si želimo. V enem sklopu so uteži, ki so bolj korelirne višje od 0.4 in tiste, ki so manj so pod 0.2, z izjemo ene, ki je v prvem sklopu nekoliko višja in v drugem nekoliko nižja pri drugem faktorju. Pri faktorju ena pa so uteži zelo lepo urejene, nad 0.4 in pod 0.2.
 
-```{r}
+Vidimo lahko, da je prvi faktor res lepo urejen, z izjemo ene spremenlivke, ki se sili v njega(EST10); to je bolje vidno na spodnjem grafu.
+
+Spremenljivka EST4 ni v nobene faktorju, kar smo videli že prej, da je njena variabilnost slabše pojasnena z modelom. V drugi faktor se sili spremenljivka EXT3, ki naj bi bila v prvem faktorju.
+
+```{r, fig.cap="Grafični prikaz razporeditve spremenljivk v faktorje.", fig.height=4}
 # heatmap
 int <- c(-1, -0.4, -0.2, 0.2, 0.4, 1)
 nint <- length(int) - 1
-legint <- c("neg", "problem", "zanemarljivo", "problem", "poz")
+legint <- c("negativno", "problem", "zanemarljivo", "problem", "pozitivno")
 heatmap(x=fa.vari$loadings[, ], Rowv=NA, Colv=NA, revC=T, scale="none",
         margins=c(5, 13), cexCol=1, labCol=c("FA1", "FA2"), 
         col=hcl.colors(n=nint, palette="Blue-Red 3", rev=T), breaks=int)
 legend(x="topleft", legend=legint, fill=hcl.colors(n=nint, palette="Blue-Red 3",
                                                    rev=T), inset=c(0.65, 0), xpd=T)
 ```
+
+## Zaključek
+
+Tukaj smo se odločili za dva faktorja in pravokotno rotacijo. Spremenljivke, ki so v povezavi z energijo so bile razdeljene v en faktorj, spremenljivke čustvene stabilnosti pa v drug. S prvim faktorjem smo pojasnili 23%  in z drugim 43% variabilnosti med spremenljivkami. Pri tej metodi, so se spremenljivke bolje ločevale glede na faktor, težave smo imeli le pri spremenljivki EST4, ki ni bila dobro pojasnena s skupinm faktorskim modelom. Najbolje izmed vseh pa smo s faktroskim modelom pojasnili spremenljivko EST8.
 
