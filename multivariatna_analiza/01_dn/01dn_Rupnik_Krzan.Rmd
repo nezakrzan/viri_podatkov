@@ -189,7 +189,7 @@ par(oldpar)
 
 ## Analiza
 
-Glede na izgled grafov (razvrstitve) sva se odločila, da je najbolj primerna razvrstitev po Wardowi metodi. Pri ostalih dveh metodah so različnosti dokaj majhne (ni tako izrazitih skokov v višini). Grafe bomo narisali za _2_, _3_ in _4_ skupine, saj so tu razlike <!--med različnostmi--> bolj izrazite.
+Glede na izgled grafov (razvrstitve) sva se odločila, da je najbolj primerna razvrstitev po Wardowi metodi. Pri ostalih dveh metodah so različnosti dokaj majhne (ni tako izrazitih skokov v višini). Grafe bomo narisali za _2_, _3_ in _4_ skupine, saj so tu razlike bolj izrazite.
 
 ```{r echo=FALSE, fig.cap="Povprečja po skupinah za Wardowo metodo.", fig.height=5, fig.width=12}
 # Ward skupine
@@ -234,9 +234,6 @@ abline(h=0, v=6.5)
 par(oldpar)
 ```
 
-<!-- Tukej je vrjetno potreben se komentar 
-Neza: to pomojem zdej nc ni prov ker nevem ce je ta razvrstitev spremenljivk sploh prava....-->
-
 Če si pogledamo skupino 2, ki je enaka na vseh treh grafih(pri vseh treh razvrstitvah) in zavzema podpovprečne vrednosti. 
 
 Ravno obratno vidimo pri skupini 1, ki na prvem grafu zavzema nadpovprečne vrednosti, na drugih dveh pa zavzema podpovprečne vrednosti samo pri dolžini bankovca. Skupina 1 se na drugem in tretjem grafu torej razdeli na podskupine, ker smo tam povečali število skupin.
@@ -276,7 +273,6 @@ plot(x=1:kmax, y=wss, type="b", main="", xlab="stevilo skupin(k)",
      ylab="vrednost Wardowe kriterijske funkcije")
 ```
 
-<!--TOM: tukej men mogoce izgleda najvecja sprememba pri 2 in 3 -->
 Sprememba naklona funkcije izgleda največja pri **2** ali **3** skupinah oziroma je tam "koleno" najbolj razvidno.
 
 ## GAP statistika
@@ -291,7 +287,6 @@ plot(gap_stat, xlab="stevilo skupin", ylim=c(0.42,0.57), main="")
 
 Na podlagi grafičnega prikaza vrednosti GAP statistike pri različnem številu skupin se odločimo za **3** skupine, saj tam doseže najvišjo točko in začne padati.
 
-<!-- Tom: tukej sm rajs pustil 3 ker drugac imava samo 2 oz 4 skupine na izbiro ne pa 3 kokr imava celo nadaljevanje -->
 
 ## Pseudo F (Calinski - Harabasz indeks)
 
@@ -315,11 +310,7 @@ Torej, če povzameva celotno analizo, bi, glede na posamezen graf, izbrala
 * Pseudo F: maksimum doseze pri **2** skupinah,
 * gap statistika: najvišjo točko preden začne padati doseže pri **3** skupinah.
 
-Na podlagi zgornjih analiz in ugotovitev pri hierarhičnem razvrščanju, kjer smo se odločali med 2 ali 3 skupinami, bi se tu določili <!--raje--> za **3** skupine. <!--, kot za 2, saj težimo k večjemu številu skupin kot je 2.-->
-
-<!--Neza: kaj nej tuki napiseva, zakaj rajs 3 skupine, okej ker si zelimo vec skupin ampak, jst nikjer v zapiskih nimam napisan zakaj točno hočmo več kt 2 skupini, v predavanjih pa tud nekega smiselnega razloga ne najdem, razn to da nočmo premal skupin pa da nočmo preveč skupin...
-
-Tom: lahko samo napiseva da se odlociva za 3 skupine in konec...ker kokr bova neki pisala razlago bo kej narobe ker ni neke teorije v ozadju ampak se dela mal po obcutku...
+Na podlagi zgornjih analiz in ugotovitev pri hierarhičnem razvrščanju, kjer smo se odločali med 2 ali 3 skupinami, bi se tu določili za **3** skupine.
 
 <!--
 Primerjajte vrednost kriterijske funkcije pri različnem številu skupin za Wardovo
@@ -414,6 +405,7 @@ mc <- Mclust(data=df, G=1:5)
 summary(mc)
 plot(x=mc, what="BIC", xlab="stevilo skupin")
 ```
+
 Na podlagi BIC kriterija (Bayesian Information Criterion), ki zavzame vrednost -1365.42 izberemo model VEE s tremi skupinami, kar pomeni, da gre za elipsoidne(angl. _ellipsoidal_) skupine, ki so različno velike, različnih oblik in enako usmerjene.
 
 Kriterij temelji na "Bayesovski" statistiki, zato lahko določimo tudi apriorne verjetnosti(torej neko naše predhodno znanje oziroma prepričanja). 
@@ -634,12 +626,8 @@ Skupina 1 ima skoraj enakomerno zastopanost med pravimi in ponarejenimi bankovci
 Skoraj vse enote v skupini 2 predstavljajo ponarejene bankovce. Torej skupina 1 je povezana s tipom bankovca (pravimi bankovci).\
 V skupini 3 pa so skoraj vsi bankovci pravi, torej je tudi povezana s tipom bankovca.
 
-<!-- Neza: kle sm dala sam pozitivno pa negativno vn ker pac nevem kako nej drugac popravim...
-
-Tom: mogoce lahko dava kot kategorije znotraj opisnih sprem. Ker kej drugega pa men ne pade na pamet...
-Tkole: Torej skupina 1 je povezana s tipom bankovca (kategorija ponarejeni bankovci).
+Torej skupina 1 je povezana s tipom bankovca (kategorija ponarejeni bankovci).
 V skupini 3 pa so skoraj vsi bankovci pravi, torej je tudi povezana s tipom bankovca (kategorija pravi bankovec).
--->
 
 ```{r echo=FALSE}
 # hi kvadrat test
@@ -647,6 +635,7 @@ V skupini 3 pa so skoraj vsi bankovci pravi, torej je tudi povezana s tipom bank
 tabela <- table(data$tip, data$skupina.k)
 chisq.test(x=tabela, correct=F)
 ```
+
 Hi-kvadrat test, pri dveh stopinjah prostosti in pri stopnji značilnosti 0.05 je z p-vrednostjo $p<0.001$ pokazal, da je statistično značilna povezanost med skupino in tipom bankovca. 
 
 Preverimo še moč povezanosti s Cramerjevim V koeficientom.
@@ -669,7 +658,6 @@ boxplot(diagonala~skupina.k,data=data, xlab = "skupine", ylab="diagonala")
 mx <- aggregate(diagonala ~ skupina.k, data=data, FUN=mean)[, -1]
 abline(h=mean(data$diagonala), col="red")
 points(x=mx, col="blue", pch="X")
-
 ```
 
 <!-- te komentarje je treba se za Warda in VEE-->
@@ -683,8 +671,6 @@ Bankovci v skupini 3 imajo torej vsi nadpovprečno vrednost diagonale saj so vsi
 Skupina 2 vsebuje (z izjemo enega) bankovce, ki imajo podpovprečno vrednost diagonale in povezanost skupine 2 in diagonale je negativna. Glede na to, da skupina 2 vsebuje same ponarejene bankovce, ki imajo v povprečju manjšo diagonalo, je to povsem smiselno, zato nas tudi nadpovprečne vrednosti diagonale ne presenetijo v tretji skupini.\
 Povprečje vrednosti diagonal bankovcev v skupine 1 se ujema s povprecjem celotnega vzorca, vendar pa so v njej vsebovani bankovci, ki imajo dosti podpovprečno ali nadpovprečno vrednost diagonale, kar je smiselno, saj vsebuje ponarejene in prave bankovce.\
 Bankovci v skupini 3 imajo torej vsi nadpovprečno vrednost diagonale saj so vsi pravi. Povezanost te skupine in vrednosti diagonale je pozitivna.
-
-
 
 ```{r}
 # test povezanosti (vec kategoriji = anova)
