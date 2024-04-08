@@ -61,18 +61,9 @@ https://www.kaggle.com/datasets/tunguz/big-five-personality-test/data
 Podatki so bili zbrani med letoma 2016-2018 preko interaktivnega testa osebnosti na spletu.\
 Test osebnosti je bil zgrajen na podlagi "Big-Five Factor Markers" pridoblejnih iz IPIP (International Personality Item Pool). 
 
-Lestvica, uporabljena za odgovore, je bila sledeča:
+Lestvica, uporabljena za odgovore, je bila 0d 1 do 5 oziroma od -1 do -5(podrobnejše razlage ni bilo dostopne, kot 1 = se ne strinjam, 3 = nevtralno, 5 = se strinjam).
 
-* 1 = se ne strinjam
-* 2 = 
-* 3 = nevtralno
-* 4 = 
-* 5 = se strinjam
-
-<!-- 
-Neža:
-v podatkij je še 2 in 4 k tuki nisi napisu, zakaj pa ne?
-pa nekak morva pomojem še dobisat kaj so -1, -2, -3,...-->
+<!--Neza08: kle si reku da je blo samo tko, a napiseva tko?-->
 
 <!--
 EXT1	I am the life of the party.
@@ -210,6 +201,8 @@ TOM: to je treba se odgovorit...trenutno nism nc nasu...
 Ali so podatki primerni za analizo z metodo glavnih komponent?
 
 Neža: sm odgovorila, na začetki tega poglavja sm napisala da morajo bit sprem. korelirane za te dve metodi med seboj zato sploh gledamo korelacijo in pa ta test zdej ti pokaže da so neodvisne torej je primerno(pac so korelirane) - glede na to da hoče kratke komentarje se mi to zdi dost, kaj ti misls?
+
+Neza08: kle nisi nc odgovoru, pa me sam zanima ce je okej?
 -->
 
 Zanima nas še, ali bomo imeli kakšne težave pri faktorski analizi, zato izvedemo še Kaiser-Meyer-Olkin test.
@@ -242,9 +235,11 @@ mgk <- princomp(x=podatki, cor=T, scores=T)
 plot(mgk, type="lines", ylim=c(0, 6), main="MGK") 
 ```
 
-Prikazan je graf variance v odvisnosti od števila komponent (izvedeno na standardiziranih podatkih). Izbrano število glavnih komponent je tam, kjer se graf lomi oziroma ima koleno in so vrednosti nad 1, pri čemer obdržimo komponente nad kolenom. Zato bi se odločili za 2 komponenti. Tudi vrednost pri 3 komponentah malo preseže vrednost nad 1, zato se vseeno raje odločimo za 2 komponenti.
+Prikazan je graf variance v odvisnosti od števila komponent (izvedeno na standardiziranih podatkih). Izbrano število glavnih komponent je tam, kjer se graf lomi oziroma ima koleno in so vrednosti nad 1, pri čemer obdržimo komponente nad kolenom. Zato bi se odločili za 2 komponenti. Tudi vrednost pri 3 komponentah malo preseže vrednost nad 1, vendar je koleno pri 3 komponentah bolj ocitno zato se vseeno raje odločimo za 2 komponenti.
 <!--
 Tom: mogoce bi tukej zadnji stavek dal kt kej tko: Tudi vrednost pri 3 komponentah malo preseže vrednost nad 1, vendar je koleno pri 3 komponentah bolj ocitno zato se vseeno raje odločimo za 2 komponenti...Kaj pravis?
+
+Neza08: sm dala tvoje notr
 -->
 
 ### Podrobnejša analiza izbire števila glavnih komponent
@@ -375,16 +370,18 @@ legend("bottomleft", legend=c("GK1", "GK2"), col=1:2, pch=16)
 abline(h=0, v=10.5)
 ```
 
-Z navpično črto na grafu smo ločili sklopa spremenljivk in vidimo, da se komponenti ne obračata glede na navpično črto, kar ni v redu. Želeli bi si, da je na enem delu grafa GK1 nad GK2 in potem v drugem delu ravno obratno. Če so utež nad 0.4(vrednost korelacije) je v redu, kjer je korelacija slaba pa si želimo pod 0.2. <!-- Neža: tole nevem če si prov razlagam: Na desnem delu grafa tem pogojem zadostimo, s tem ko na levem pa ne.-->
+Z navpično črto na grafu smo ločili sklopa spremenljivk in vidimo, da se komponenti ne obračata glede na navpično črto. Če so utež nad 0.4(vrednost korelacije) je v redu, kjer je korelacija slaba pa si želimo pod 0.2. Obe glavni komponenti sta v levi polovici pozitivno korelirani, ampak ima GK1 višje vrednosti(nad 0.5), GK2 ima pa vrednosti korelacije med 0.2-0.4, kar je območje, ki nam povzroča problem, saj korelacija ni zanemerljiva, ampak ni tudi tako visoka, da bi jo z zagotovostjo povezali s temi lastnostmi. Na desni polovici  pa se glavni komponenti lepo ločita na pozitivno in negativno koreliranost in so vrednosti po absolutni vrednosti nad 0.4 z nekaj izjemami (EST4, EST5).
+
+<!-- Neža: tole nevem če si prov razlagam: Na desnem delu grafa tem pogojem zadostimo, s tem ko na levem pa ne.-->
 <!--
 Tom: Tukej nevem ce je nujno da se obracata glede na navpicnico (to bi bil verjetno najbolj idealni primer)...mogoce kej takega napiseva, da sta obe glavni komponenti v levi polovici pozitivno korelirani ampak ima GK1 visje vrednosti(nad 0.5), GK2 ima pa vrednosti korelacije med 0.2-0.4, kar je obmocje, ki nam povzroca problem, saj korelacija ni zanemerljiva ampak ni tudi tako visoka da bi jo z zagotovostjo povezali s temi lastnostmi. Potem na desni polovici pa se glavni komponenti lepo ločita na pozitivno in negativno koreliranost in so vrednosti po absolutni vrednosti nad 0.4 z nekaj izjemami (EST4, EST5)
 
 Pa to si vrjetno mislna po absolutni vrednosti
 "Če so utež nad 0.4(vrednost korelacije) je v redu, kjer je korelacija slaba pa si želimo pod 0.2."
+
+Neza08: tole ne vem cist tocno, nikjer tud ni jasno reku al po absolutni al ne po absolutni
+Mal sm spremenila zgornji odstavk...
 -->
-
-
-
 
 ```{r, fig.cap="Grafični prikaz spremenljivk glede na komponento.", fig.height=4}
 int <- c(-1, -0.4, -0.2, 0.2, 0.4, 1)
@@ -402,6 +399,8 @@ Problematična je spremenljivka **EST4** saj ne spada nikamor, kar smo videli ž
 TOM: Ok men to mal cudn izgleda...mogoce bi lahko bila razlaga da ljudje k so ekstroverti da so tudi tudi custveno stavilni, da osebe ki pa niso custveno stabilne da so tudi manj ekstroverti oz. da osebe k so rade bolj za sebe(manj v druzbi bolj introverti) da so custveno manj stabilni.
 
 Neža: tole ne vem če te dobr razumem? To nevem ce lahko kr tko sklepava? naceloma ljudje k se vec druzjo majo vec ljudi, vec problemov, vec custev....bolj nestabilni, sam introverti pa po vecini so neki depresivni, sam ce si depresivn si pac skos zalosten torej so custva stabila sam pac v negativno smer....
+
+Neza08: pustiva tko kt je, sej pomojem si neki popravu tole?
 -->
 
 ## Zaključek
@@ -430,7 +429,7 @@ Pri paralelni analizi gledamo koliko vrednosti je nad rdečo črto in zelo očit
 scree(podatki)
 ```
 
-Podobno kot pri metodi glavnih komponent, si tudi tukaj lahko pomagamo s screeplotom, kjer gledamo kolena in koliko komponent je večjih od 1. Na podlagi zgornjega grafa je zelo očitno, da bi lahko imeli dva faktorja. <!--Tom: "tretji pa je na meji z ena"...tukej morva vrjetno gledat FA vrednosti (beli krogci), kjer je 3 komponente pod 1...PC vrednosti se mi zdi da predstavljajo vrednosti za glavne komponente -->
+Podobno kot pri metodi glavnih komponent, si tudi tukaj lahko pomagamo s screeplotom, kjer gledamo kolena in koliko komponent je večjih od 1 za FA vrednosti. Na podlagi zgornjega grafa je zelo očitno, da bi lahko imeli dva faktorja. 
 
 Poglejmo si še rezultat pristopa VSS in eBIC. Pri VSS izberemo število, kjer so uteži pri spremenljivkah največje in s tem največ pojasnijo (upoštevane so samo najvišje uteži pri spremenljivkah). Pristop eBIC pa število faktorjev določi tam, kjer je koleno.
 
@@ -467,11 +466,6 @@ fa.vari <- fa(r=dfz, nfactors=2, rotate="varimax", scores="regression",
               covar=F, fm="ml")
 fa.vari
 ```
-
-<!--
-TOM: neki k sm bral je blo da uporabimo posevne rotacije ce so velike korelacije med skupinami, drugace pa pravokotne (na predavanjih smo imeli 0.2 za mejo majhne korelacije)
-Neza: je povedu na predavanjih da ce je vec kot 0.2 delas posevno in ce je manj delas pravokotno, za domaco nalogo tud ce dobis vec kot 0.2 napises da bi mogu delat poseno naprej amapk delas pravokotno ker je on tko reku
--->
 
 ## Komunalitete
 
