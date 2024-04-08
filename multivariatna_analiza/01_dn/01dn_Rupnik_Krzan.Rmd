@@ -286,11 +286,12 @@ Pri določevanju števila skupin si lahko pomagamo tudi z GAP statistiko, kjer i
 ```{r echo=FALSE, fig.cap="Vrednost GAP statistike.", fig.height=4, fig.width=6, out.width="70%"}
 # gap statistika
 gap_stat <- clusGap(x=dfz, FUNcluster=kmeans, K.max=kmax)
-plot(gap_stat, xlab="stevilo skupin", main="")
+plot(gap_stat, xlab="stevilo skupin", ylim=c(0.42,0.57), main="")
 ```
-<!-- 
-TOM: tukej se mi zdi da je 3 skuoine ker se gleda kje je najvisja predn zacne padat -->
+
 Na podlagi grafičnega prikaza vrednosti GAP statistike pri različnem številu skupin se odločimo za **3** skupine, saj tam doseže najvišjo točko in začne padati.
+
+<!-- Tom: tukej sm rajs pustil 3 ker drugac imava samo 2 oz 4 skupine na izbiro ne pa 3 kokr imava celo nadaljevanje -->
 
 ## Pseudo F (Calinski - Harabasz indeks)
 
@@ -314,9 +315,11 @@ Torej, če povzameva celotno analizo, bi, glede na posamezen graf, izbrala
 * Pseudo F: maksimum doseze pri **2** skupinah,
 * gap statistika: najvišjo točko preden začne padati doseže pri **3** skupinah.
 
-Na podlagi zgornjih analiz in ugotovitev pri hierarhičnem razvrščanju, kjer smo se odločali med 2 ali 3 skupinami, bi se tu določili raje za **3** skupine, kot za 2, saj težimo k večjemu številu skupin kot je 2.
+Na podlagi zgornjih analiz in ugotovitev pri hierarhičnem razvrščanju, kjer smo se odločali med 2 ali 3 skupinami, bi se tu določili <!--raje--> za **3** skupine. <!--, kot za 2, saj težimo k večjemu številu skupin kot je 2.-->
 
 <!--Neza: kaj nej tuki napiseva, zakaj rajs 3 skupine, okej ker si zelimo vec skupin ampak, jst nikjer v zapiskih nimam napisan zakaj točno hočmo več kt 2 skupini, v predavanjih pa tud nekega smiselnega razloga ne najdem, razn to da nočmo premal skupin pa da nočmo preveč skupin...
+
+Tom: lahko samo napiseva da se odlociva za 3 skupine in konec...ker kokr bova neki pisala razlago bo kej narobe ker ni neke teorije v ozadju ampak se dela mal po obcutku...
 
 <!--
 Primerjajte vrednost kriterijske funkcije pri različnem številu skupin za Wardovo
@@ -364,7 +367,7 @@ Vidimo da ima v vseh primerih (z izjemo prvega kjer sta enaka) K-means manjšo v
 # kontingenčna tabela
 #table(km4$cluster, c(3, 2, 4, 1)[hc.ward4])
 
-kable(table(km3$cluster, c(1,3,2)[hc.ward3]), caption = "Kontingenčna tabela.") %>% 
+kable(table(km3$cluster, c(2,3,1)[hc.ward3]), caption = "Kontingenčna tabela.") %>% 
   kable_styling(full_width=F, latex_options="hold_position")
 
 # popravljen Randov indeks
@@ -620,12 +623,23 @@ Vidimo, da se število enot glede na skupine pri metodah razlikuje, s tem ko pov
 barplot(height=tabela, legend.text=T, ylim=c(0, 130), args.legend=list(x="top"), las=1)
 abline(h=(100*table(data$tip)/nrow(df))[1], col="red")
 ```
-
+<!--
+Tom: tukej je zdej mal drugacna razdelitev glede na skupine
 Skoraj vse enote v skupini 1 predstavljajo ponarejene bankovce. Torej skupina 1 je povezana s tipom bankovca (pravimi bankovci). \
 Skupina 2 ima skoraj enakomerno zastopanost med pravimi in ponarejenimi bankovci. \
 V skupini 3 pa so skoraj vsi bankovci pravi, torej je tudi povezana s tipom bankovca.
+-->
 
-<!-- Neza: kle sm dala sam pozitivno pa negativno vn ker pac nevem kako nej drugac popravim...-->
+Skupina 1 ima skoraj enakomerno zastopanost med pravimi in ponarejenimi bankovci.\
+Skoraj vse enote v skupini 2 predstavljajo ponarejene bankovce. Torej skupina 1 je povezana s tipom bankovca (pravimi bankovci).\
+V skupini 3 pa so skoraj vsi bankovci pravi, torej je tudi povezana s tipom bankovca.
+
+<!-- Neza: kle sm dala sam pozitivno pa negativno vn ker pac nevem kako nej drugac popravim...
+
+Tom: mogoce lahko dava kot kategorije znotraj opisnih sprem. Ker kej drugega pa men ne pade na pamet...
+Tkole: Torej skupina 1 je povezana s tipom bankovca (kategorija ponarejeni bankovci).
+V skupini 3 pa so skoraj vsi bankovci pravi, torej je tudi povezana s tipom bankovca (kategorija pravi bankovec).
+-->
 
 ```{r echo=FALSE}
 # hi kvadrat test
@@ -660,9 +674,17 @@ points(x=mx, col="blue", pch="X")
 
 <!-- te komentarje je treba se za Warda in VEE-->
 
+<!-- Tom: tukej sta skupina 1 in 2 spet zamenjani...
 Skupina 1 vsebuje (z izjemo enega) bankovce, ki imajo podpovprečno vrednost diagonale in povezanost skupine 1 in diagonale je negativna. Glede na to, da skupina 1 vsebuje same ponarejene bankovce, ki imajo v povprečju manjšo diagonalo, je to povsem smislno, zato nas tudi nadpovprečne vrednosti diagonale ne presenetijo v tretji skupini.\
 Povprečje vrednosti diagonal bankovcev v skupine 2 se ujema s povprecjem celotnega vzorca, vendar pa so v njej vsebovani bankovci, ki imajo dosti podpovprečno ali nadpovprečno vrednost diagonale, kar je smiselno, saj vsebuje ponarejene in prave bankovce.\
 Bankovci v skupini 3 imajo torej vsi nadpovprečno vrednost diagonale saj so vsi pravi. Povezanost te skupine in vrednosti diagonale je pozitivna.
+-->
+
+Skupina 2 vsebuje (z izjemo enega) bankovce, ki imajo podpovprečno vrednost diagonale in povezanost skupine 2 in diagonale je negativna. Glede na to, da skupina 2 vsebuje same ponarejene bankovce, ki imajo v povprečju manjšo diagonalo, je to povsem smiselno, zato nas tudi nadpovprečne vrednosti diagonale ne presenetijo v tretji skupini.\
+Povprečje vrednosti diagonal bankovcev v skupine 1 se ujema s povprecjem celotnega vzorca, vendar pa so v njej vsebovani bankovci, ki imajo dosti podpovprečno ali nadpovprečno vrednost diagonale, kar je smiselno, saj vsebuje ponarejene in prave bankovce.\
+Bankovci v skupini 3 imajo torej vsi nadpovprečno vrednost diagonale saj so vsi pravi. Povezanost te skupine in vrednosti diagonale je pozitivna.
+
+
 
 ```{r}
 # test povezanosti (vec kategoriji = anova)

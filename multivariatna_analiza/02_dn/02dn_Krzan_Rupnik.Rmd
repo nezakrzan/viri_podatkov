@@ -97,7 +97,7 @@ EST9	I get irritated easily.
 EST10	I often feel blue.
 -->
 
-Za domačo nalogo sva si izbrala spremenljivke, ki so bile kodirane z "EXT1-10" in "EST1-10". Te oznake predstavljajo trditev oz. osebnostno lastnost, katero so ankentiranci ovrednostili po zgornji lestvici. Pomen, pri čemer je s + oz. - označeno ali je trditev bila označena kot pozitivna (velja za ta sklop/lastnost), ali negativno (ne velja za ta sklop/lastnost, lestvica je obrnjena):
+Za domačo nalogo sva si izbrala spremenljivke, ki so bile kodirane z "EXT1-10" in "EST1-10". Te oznake predstavljajo trditev oz. osebnostno lastnost, katero so ankentiranci ovrednotili po zgornji lestvici. Pomen, pri čemer je s + oz. - označeno ali je trditev bila označena kot pozitivna (velja za ta sklop/lastnost), ali negativno (ne velja za ta sklop/lastnost, lestvica je obrnjena):
 
 **Energija (ektravertnost, surgentnost)**
 
@@ -161,7 +161,7 @@ kable(stat,
 
 # Korelacijska matrika
 
-Ker želimo pojasniti čim več variabilnosti spremenljivk in korelacijo med spremenljivkami, se bomo to lotili z metodo glavnih komponent in faktorsko analizo. Metodi sta smiselni v primeru, ko so spremenljivke v podtkovnem okviru med seboj korelirane, zato si poglejmo korelacijsko matriko.
+Ker želimo pojasniti čim več variabilnosti spremenljivk in korelacijo med spremenljivkami, se bomo to lotili z metodo glavnih komponent in faktorsko analizo. Metodi sta smiselni v primeru, ko so spremenljivke v podatkovnem okviru med seboj korelirane, zato si poglejmo korelacijsko matriko.
 
 ```{r, fig.align="center", fig.height=6, fig.width=6, fig.cap="Prikaz Pearsonove korelacije med spremenljivkami.", results=T}
 # Korelacijska matrika stvilsko
@@ -212,7 +212,7 @@ Ali so podatki primerni za analizo z metodo glavnih komponent?
 Neža: sm odgovorila, na začetki tega poglavja sm napisala da morajo bit sprem. korelirane za te dve metodi med seboj zato sploh gledamo korelacijo in pa ta test zdej ti pokaže da so neodvisne torej je primerno(pac so korelirane) - glede na to da hoče kratke komentarje se mi to zdi dost, kaj ti misls?
 -->
 
-Zanima nas še, ali bomo imeli kakšne težave pri faktorski analizi, zato zivedemo še Kaiser-Meyer-Olkin test.
+Zanima nas še, ali bomo imeli kakšne težave pri faktorski analizi, zato izvedemo še Kaiser-Meyer-Olkin test.
 
 ```{r}
 # KMO(Rlik)
@@ -243,6 +243,9 @@ plot(mgk, type="lines", ylim=c(0, 6), main="MGK")
 ```
 
 Prikazan je graf variance v odvisnosti od števila komponent (izvedeno na standardiziranih podatkih). Izbrano število glavnih komponent je tam, kjer se graf lomi oziroma ima koleno in so vrednosti nad 1, pri čemer obdržimo komponente nad kolenom. Zato bi se odločili za 2 komponenti. Tudi vrednost pri 3 komponentah malo preseže vrednost nad 1, zato se vseeno raje odločimo za 2 komponenti.
+<!--
+Tom: mogoce bi tukej zadnji stavek dal kt kej tko: Tudi vrednost pri 3 komponentah malo preseže vrednost nad 1, vendar je koleno pri 3 komponentah bolj ocitno zato se vseeno raje odločimo za 2 komponenti...Kaj pravis?
+-->
 
 ### Podrobnejša analiza izbire števila glavnih komponent
 
@@ -373,6 +376,15 @@ abline(h=0, v=10.5)
 ```
 
 Z navpično črto na grafu smo ločili sklopa spremenljivk in vidimo, da se komponenti ne obračata glede na navpično črto, kar ni v redu. Želeli bi si, da je na enem delu grafa GK1 nad GK2 in potem v drugem delu ravno obratno. Če so utež nad 0.4(vrednost korelacije) je v redu, kjer je korelacija slaba pa si želimo pod 0.2. <!-- Neža: tole nevem če si prov razlagam: Na desnem delu grafa tem pogojem zadostimo, s tem ko na levem pa ne.-->
+<!--
+Tom: Tukej nevem ce je nujno da se obracata glede na navpicnico (to bi bil verjetno najbolj idealni primer)...mogoce kej takega napiseva, da sta obe glavni komponenti v levi polovici pozitivno korelirani ampak ima GK1 visje vrednosti(nad 0.5), GK2 ima pa vrednosti korelacije med 0.2-0.4, kar je obmocje, ki nam povzroca problem, saj korelacija ni zanemerljiva ampak ni tudi tako visoka da bi jo z zagotovostjo povezali s temi lastnostmi. Potem na desni polovici pa se glavni komponenti lepo ločita na pozitivno in negativno koreliranost in so vrednosti po absolutni vrednosti nad 0.4 z nekaj izjemami (EST4, EST5)
+
+Pa to si vrjetno mislna po absolutni vrednosti
+"Če so utež nad 0.4(vrednost korelacije) je v redu, kjer je korelacija slaba pa si želimo pod 0.2."
+-->
+
+
+
 
 ```{r, fig.cap="Grafični prikaz spremenljivk glede na komponento.", fig.height=4}
 int <- c(-1, -0.4, -0.2, 0.2, 0.4, 1)
@@ -400,7 +412,7 @@ Pri tej metodi sva se odličila za dve glavni komponenti, sicer je bilo skoraj v
 
 # Faktorska analiza
 
-Faktorska analiza poizkuša poenostaviti kompleksnost povezav med opazovanimi spremenljivkami tako, da poskuša najti novo množico spremenljivk, ki predstavlja skupno opazovanim spremenljivkam. Ponavadi jo uporabimo takrat, ko pojmov ne moremo meriti neposredno in zato izberemo nekaj direktno merjenih spremenljivk, ki so indikatorji tistih, ki jih želimo meriti. Preko faktorej poiskušamo čim bolje pojasniti korelacije oziroma kovariance med merjenimi spremenljivkami. Merjene spremenljivke so tako lineane kombinacije skupnih in specifičnih faktorjev. 
+Faktorska analiza poizkuša poenostaviti kompleksnost povezav med opazovanimi spremenljivkami tako, da poskuša najti novo množico spremenljivk, ki predstavlja skupno opazovanim spremenljivkam. Ponavadi jo uporabimo takrat, ko pojmov ne moremo meriti neposredno in zato izberemo nekaj direktno merjenih spremenljivk, ki so indikatorji tistih, ki jih želimo meriti. Preko faktorjev poiskušamo čim bolje pojasniti korelacije oziroma kovariance med merjenimi spremenljivkami. Merjene spremenljivke so tako lineane kombinacije skupnih in specifičnih faktorjev. 
 
 ## Določitev števila faktorjev
 
@@ -418,7 +430,7 @@ Pri paralelni analizi gledamo koliko vrednosti je nad rdečo črto in zelo očit
 scree(podatki)
 ```
 
-Podobno kot pri metodi glavnih komponent, si tudi tukaj lahko pomagamo s screenplotom, kjer gledamo kolena in koliko komponent je večjih od 1. Na podlagi zgornjega grafa je zelo očitno, da bi lahko imeli dva faktorja, tretji pa je na meji z ena. 
+Podobno kot pri metodi glavnih komponent, si tudi tukaj lahko pomagamo s screeplotom, kjer gledamo kolena in koliko komponent je večjih od 1. Na podlagi zgornjega grafa je zelo očitno, da bi lahko imeli dva faktorja. <!--Tom: "tretji pa je na meji z ena"...tukej morva vrjetno gledat FA vrednosti (beli krogci), kjer je 3 komponente pod 1...PC vrednosti se mi zdi da predstavljajo vrednosti za glavne komponente -->
 
 Poglejmo si še rezultat pristopa VSS in eBIC. Pri VSS izberemo število, kjer so uteži pri spremenljivkah največje in s tem največ pojasnijo (upoštevane so samo najvišje uteži pri spremenljivkah). Pristop eBIC pa število faktorjev določi tam, kjer je koleno.
 
@@ -426,7 +438,7 @@ Poglejmo si še rezultat pristopa VSS in eBIC. Pri VSS izberemo število, kjer s
 nfactors(x=podatki, n=8, fm="minres", rotate="none")
 ```
 
-Na podlagi VSS predlaga 3 faktorje, pri čemer upoštevamouteži 1 in 2, saj po treh faktorjih oz. že po dveh zelo počasi narašča. eBIC minimum doseže pri 7 faktorjih, vendar je najboljše število faktorjev dva, saj prileganje pri večjem številu fakotrjev postaja zanemarljivo boljše. 
+Na podlagi VSS predlaga 3 faktorje, pri čemer upoštevamo uteži 1 in 2, saj po treh faktorjih oz. že po dveh zelo počasi narašča. eBIC minimum doseže pri 7 faktorjih, vendar je najboljše število faktorjev dva, saj prileganje pri večjem številu fakotrjev postaja zanemarljivo boljše. 
 
 Po vseh sklepih se odločimo, da obdržimo dva faktorja. 
 
@@ -436,9 +448,9 @@ Na podlagi izbranega števila faktorjev tj. dveh faktorjev bomo izvedli faktorsk
 
 Najprej začnemo s poševno rotacijo(oblimin) vidimo, da je korelacija med faktorjema zelo majhna (0.188) in manjša od 0.2. Zato naredimo še pravokotno rotacijo(varimax), kjer so korelacije med faktorji enake 0.
 
-Pri pravokotni rotaciji si želimo, da bi bil indeks Tucker Lewis večji od 0.95 ali RMSE manjša od 0.05, da je fakotrska analiza zares dobra.Naš indeks je 0.82, RMSE pa 0.091, kar kaže na to, da fakotski model ni najboljši.
+Pri pravokotni rotaciji si želimo, da bi bil indeks Tucker Lewis večji od 0.95 ali RMSE manjša od 0.05, da je fakotrska analiza zares dobra.Naš indeks je 0.82, RMSE pa 0.091, kar kaže na to, da faktorski model ni najboljši.
 
-S prvim faktorjem pojasnemo 23% z drugim pa 43% variabilnosti med spremenljivkami, izmed vse pojasnene variabilnosti z izbranima dvema faktorjema s prvim faktorjem pojasnimo 54% variabilnosti, z drugim pa 46%.
+S prvim faktorjem pojasnemo 23% z drugim pa 20% (torej z dvema faktorjema pojasnimo 43%) variabilnosti med spremenljivkami, izmed vse pojasnene variabilnosti z izbranima dvema faktorjema s prvim faktorjem pojasnimo 54% variabilnosti, z drugim pa 46%.
 
 ```{r}
 # standardizirani podatki
@@ -579,5 +591,5 @@ legend(x="topleft", legend=legint, fill=hcl.colors(n=nint, palette="Blue-Red 3",
 
 ## Zaključek
 
-Tukaj smo se odločili za dva faktorja in pravokotno rotacijo. Spremenljivke, ki so v povezavi z energijo so bile razdeljene v en faktorj, spremenljivke čustvene stabilnosti pa v drug. S prvim faktorjem smo pojasnili 23%  in z drugim 43% variabilnosti med spremenljivkami. Pri tej metodi, so se spremenljivke bolje ločevale glede na faktor, težave smo imeli le pri spremenljivki EST4, ki ni bila dobro pojasnena s skupinm faktorskim modelom. Najbolje izmed vseh pa smo s faktroskim modelom pojasnili spremenljivko EST8.
+Tukaj smo se odločili za dva faktorja in pravokotno rotacijo. Spremenljivke, ki so v povezavi z energijo so bile razdeljene v en faktorj, spremenljivke čustvene stabilnosti pa v drug. S prvim faktorjem smo pojasnili 23%  in z drugim 43% variabilnosti med spremenljivkami. Pri tej metodi, so se spremenljivke bolje ločevale glede na faktor, težave smo imeli le pri spremenljivki EST4, ki ni bila dobro pojasnena s skupinm faktorskim modelom. Najbolje izmed vseh pa smo s faktorskim modelom pojasnili spremenljivko EST8.
 
