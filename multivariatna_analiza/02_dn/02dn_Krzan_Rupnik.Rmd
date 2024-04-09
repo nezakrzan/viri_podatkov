@@ -61,9 +61,10 @@ https://www.kaggle.com/datasets/tunguz/big-five-personality-test/data
 Podatki so bili zbrani med letoma 2016-2018 preko interaktivnega testa osebnosti na spletu.\
 Test osebnosti je bil zgrajen na podlagi "Big-Five Factor Markers" pridoblejnih iz IPIP (International Personality Item Pool). 
 
-Lestvica, uporabljena za odgovore, je bila 0d 1 do 5 oziroma od -1 do -5(podrobnejše razlage ni bilo dostopne, kot 1 = se ne strinjam, 3 = nevtralno, 5 = se strinjam).
+Lestvica, uporabljena za odgovore, je bila od 1 do 5 oziroma od -1 do -5(podrobnejše razlage ni bilo dostopne, kot 1 = se ne strinjam, 3 = nevtralno, 5 = se strinjam).
 
-<!--Neza08: kle si reku da je blo samo tko, a napiseva tko?-->
+<!--Neza08: kle si reku da je blo samo tko, a napiseva tko?
+Tom08: Ja je tko cist vredu-->
 
 <!--
 EXT1	I am the life of the party.
@@ -203,6 +204,7 @@ Ali so podatki primerni za analizo z metodo glavnih komponent?
 Neža: sm odgovorila, na začetki tega poglavja sm napisala da morajo bit sprem. korelirane za te dve metodi med seboj zato sploh gledamo korelacijo in pa ta test zdej ti pokaže da so neodvisne torej je primerno(pac so korelirane) - glede na to da hoče kratke komentarje se mi to zdi dost, kaj ti misls?
 
 Neza08: kle nisi nc odgovoru, pa me sam zanima ce je okej?
+Tom08: ja je ok tko
 -->
 
 Zanima nas še, ali bomo imeli kakšne težave pri faktorski analizi, zato izvedemo še Kaiser-Meyer-Olkin test.
@@ -381,6 +383,7 @@ Pa to si vrjetno mislna po absolutni vrednosti
 
 Neza08: tole ne vem cist tocno, nikjer tud ni jasno reku al po absolutni al ne po absolutni
 Mal sm spremenila zgornji odstavk...
+Tom08: ja tko je cist ok
 -->
 
 ```{r, fig.cap="Grafični prikaz spremenljivk glede na komponento.", fig.height=4}
@@ -401,6 +404,7 @@ TOM: Ok men to mal cudn izgleda...mogoce bi lahko bila razlaga da ljudje k so ek
 Neža: tole ne vem če te dobr razumem? To nevem ce lahko kr tko sklepava? naceloma ljudje k se vec druzjo majo vec ljudi, vec problemov, vec custev....bolj nestabilni, sam introverti pa po vecini so neki depresivni, sam ce si depresivn si pac skos zalosten torej so custva stabila sam pac v negativno smer....
 
 Neza08: pustiva tko kt je, sej pomojem si neki popravu tole?
+Tom08: ja pustiva tko
 -->
 
 ## Zaključek
