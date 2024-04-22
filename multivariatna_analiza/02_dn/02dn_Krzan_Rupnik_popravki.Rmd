@@ -288,7 +288,7 @@ fa.parallel(x=Rlik, n.obs=nrow(podatki), fm="minres", fa="pc")
 ```
 
 <!--Tom16: Tuki je tudi nekaj popravkov-->
-S paralelno analizo dobimo podoben rezultat kot v prejšnjih primerih. Predlagano število glavnih komponent je 3 vendar je ta vrednost na meji (je tudi težko razvidno iz grafa), zato bomo obržali število glavnih komponent 2. V takšnih "robnih" primerih je smiselno izločiti zadnjo vrednost (torej v našem primeru 3 komponente). 
+S paralelno analizo dobimo podoben rezultat kot v prejšnjih primerih. Predlagano število glavnih komponent je 3m, vendar je ta vrednost na meji (je tudi težko razvidno iz grafa), zato bomo obržali število glavnih komponent 2. V takšnih "robnih" primerih je smiselno izločiti zadnjo vrednost (torej v našem primeru 3 komponente). 
 
 Torej, na podlagi paralelne analize, primerjav lastnih vrednosti, ki morajo biti večje od 1 in na podalgi primerjav lastnih vrednosti se odločimo za 2 glavni komponenti, kljub temi, da pri vseh treh načinih ni popolnoma razvidna meja med dvema ali tremi komponentami.
 
@@ -315,7 +315,7 @@ kable(utezi, caption="Prikaz uteži glavnih komponen.",
 Pa drugi del sploh nevem ce je kej prav-->
 Interpretacija reskaliranih uteži je, da so spremenljivke čustvene stabilnosti (EST) negativno koreliren z drugo glavno komponento, medtem ko so spremenljivke energije pozitivno (EXT) korelirane. Prva komponenta je bolj ali manj močno pozitivno korelirana tako s spremenljivkami čustvene stabilnosti (EST) kot tudi s spremenljivkami energije (EXT).  
 
-Če strnemo, prva glavna komponenta povzema tako pomembnost energije kot tudi čustvene stabilnosti, druga glavna komponenta pa povzema predvsem pomembnost čustvene stabilnosti (negativne korelacije).
+Če strnemo, prva glavna komponenta povzema tako pomembnost energije kot tudi čustvene stabilnosti, druga glavna komponenta pa povzema predvsem pomembnost čustvene stabilnosti.
 
 ## Delež nepojasnene variabilnosti
 
