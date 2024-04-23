@@ -1,0 +1,110 @@
+---
+title: "Domača naloga 2"
+author: "Neža Kržan, Tom Rupnik"
+output:
+  pdf_document:
+    fig_caption: true
+    number_sections: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.pos = "H",
+	message = FALSE,
+	warning = FALSE,
+	results = F, fig.height = 4, fig.width = 5
+)
+
+library(haven)
+library(psych)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+library(kableExtra)
+library(blockmodeling)
+
+set.seed(2024)
+```
+
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
+
+# Podatki - konfirmatorna faktorska analiza in merska enakovrednost(MG-CFA)
+
+```{r}
+# vsi podatki
+dataframe <- read_sav("dn3_big5.sav") 
+
+# samo najni stolpci
+stolpci = c("EXT1","EXT2","EXT3","EXT4","EXT5","EXT6","EXT7","EXT8","EXT9","EXT10",
+            "EST1","EST2","EST3","EST4","EST5","EST6","EST7","EST8","EST9","EST10")
+
+# najni podatki
+podatki1 = dataframe[dataframe$country == "FR", stolpci]
+podatki2 = dataframe[dataframe$country == "IT", stolpci]
+podatki = rbind(podatki1, podatki2)
+n_prej = nrow(podatki) # stevilo vrstic pred odstranitvijo NA
+podatki = na.omit(podatki) # odstranjene vrstice, ki vsebujejo NA
+razlika = n_prej - nrow(podatki) # stevilo odtrajenih vrstic
+```
+
+<!-- 
+https://www.kaggle.com/datasets/tunguz/big-five-personality-test/data
+-->
+
+V nalogi obravnavava konfirmatorno faktorsko analizo(CFA) in mersko enakovrednost(MG-CFA) na podatkih testa osebnosti za državo Francija ter Italija in spremenljivke, ki so kodirane z "EXT1-10" in "EST1-10".
+
+* EXT1...Sem zabavna oseba, ki je rada v središču dogajanja (+)
+* EXT2...Ne govorim veliko (-)
+* EXT3...Dobro se počutim v krogu ljudi (+)
+* EXT4...Raje sem v ozadju (stran od pozornosti/neopazen) (-)
+* EXT5...Jaz začenjam pogovore (+)
+* EXT6...Nimam veliko za povedati/Sem redkobeseden (-)
+* EXT7...Na zabavah se pogovarjam z veliko različnimi osebami (+)
+* EXT8...Ne maram pritegniti pozornosti ostalih (-)
+* EXT9...Ne moti me če sem v središču dogajanja (+)
+* EXT10...V okolici neznancev ne govorim (-)
+
+**Čustvena stabilnost (nevroticizem)**
+
+* EST1...Hitro postanem živčen (-)
+* EST2...Večino časa sem sproščen (+)
+* EST3...Skrbi me za veliko stvari (-)
+* EST4...Redko sem žalosten, melanholičen, emotično pretresen (+)
+* EST5...Stvari me hitro zmotijo (-)
+* EST6...Hitro se razjezim (-)
+* EST7...Dosti spreminjam razpoloženje (-)
+* EST8...Imam pogosta nihanja razpoloženja (-)
+* EST9...Sem hitro vzkipljiv (-)
+* EST10...Pogosto se počutim žalostno, melanholično, emotično pretreseno (-)
+
+Vrednosti trditev, ki so označene z (-) bomo množili z $-1$ in s tem obrnili lestvico.
+
+```{r}
+negativne = c("EXT2", "EXT4", "EXT6", "EXT8", "EXT10",
+              "EST1", "EST3", "EST5", "EST6", "EST7", "EST8", "EST9", "EST10")
+
+# negativne = c("EXT2", "EXT4", "EXT6", "EXT8", "EXT10",
+#               "EST2", "EST4")
+
+for(el in negativne){
+  podatki[[el]] = -1*podatki[[el]]
+}
+
+```
+
+Iz podatkovnega okvirja sva odstranila vrstice, ki so vsebovale kakšno _NA_ vrednost. Takih vrstic je bilo `r razlika`, torej imava na koncu `r nrow(podatki)` podatkov.
+
+\newpage
+
+# Konfirmatorna faktorska analiza(CFA)
+
+
