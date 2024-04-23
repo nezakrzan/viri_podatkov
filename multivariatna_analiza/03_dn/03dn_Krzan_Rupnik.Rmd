@@ -1,5 +1,5 @@
 ---
-title: "Domača naloga 2"
+title: "Domača naloga 3"
 author: "Neža Kržan, Tom Rupnik"
 output:
   pdf_document:
@@ -28,6 +28,9 @@ library(reshape2)
 library(dplyr)
 library(kableExtra)
 library(blockmodeling)
+library(foreign)
+library(psych)
+library(lavaan)
 
 set.seed(2024)
 ```
@@ -45,7 +48,7 @@ dataframe <- read_sav("dn3_big5.sav")
 
 # samo najni stolpci
 stolpci = c("EXT1","EXT2","EXT3","EXT4","EXT5","EXT6","EXT7","EXT8","EXT9","EXT10",
-            "EST1","EST2","EST3","EST4","EST5","EST6","EST7","EST8","EST9","EST10")
+            "EST1","EST2","EST3","EST4","EST5","EST6","EST7","EST8","EST9","EST10", "country")
 
 # najni podatki
 podatki1 = dataframe[dataframe$country == "FR", stolpci]
@@ -62,6 +65,7 @@ https://www.kaggle.com/datasets/tunguz/big-five-personality-test/data
 
 V nalogi obravnavava konfirmatorno faktorsko analizo(CFA) in mersko enakovrednost(MG-CFA) na podatkih testa osebnosti za državo Francija ter Italija in spremenljivke, ki so kodirane z "EXT1-10" in "EST1-10".
 
+**Energija (ektravertnost, surgentnost)**
 * EXT1...Sem zabavna oseba, ki je rada v središču dogajanja (+)
 * EXT2...Ne govorim veliko (-)
 * EXT3...Dobro se počutim v krogu ljudi (+)
@@ -103,8 +107,128 @@ for(el in negativne){
 
 Iz podatkovnega okvirja sva odstranila vrstice, ki so vsebovale kakšno _NA_ vrednost. Takih vrstic je bilo `r razlika`, torej imava na koncu `r nrow(podatki)` podatkov.
 
+Poglejmo si nekatere opisne statistike sklopa spremenljivk pri _energiji_ in sklopa spremenljivk  _čustvene stabilnosti_. V spodnjih tabelah vidimo, da so podatki v redu in nimamo nepravilnih vrednosti, ki niso znotraj lestvice.
+
+```{r, results=T}
+stat.fr = data.frame(spremenljivke = c("EXT1", "EXT2", "EXT3", "EXT4", "EXT5", "EXT6", "EXT7", "EXT8", "EXT9", "EXT10", "EST1", "EST2", "EST3", "EST4", "EST5", "EST6", "EST7", "EST8", "EST9", "EST10"),
+           mean = c(2.48,-2.972,3.055,-3.242,3.118,-2.469, 2.679 ,-3.414 ,2.944,-3.688 ,-3.325
+                    ,3.061,-3.862,2.804,-3.182,-2.913,-3.107,-2.884,-3.015,-3.122),
+           Min = c(1.000,-5.000,1.000,-5.000,1.000,-5.000,1.000,-5.000,1.000,-5.000,-5.000,1.000,
+                   -5.000,1.000,-5.000,-5.000,-5.000,-5.000, -5.000, -5.000), 
+           Max = c(5.000,-1.000,5.000,-1.000,5.000,-1.000 ,5.000,-1.000,5.000,-1.000,-1.000,5.000,
+                   -1.000,5.000,-1.000,-1.000,-1.000,-1.000,-1.000,-1.000))
+
+kable(stat.fr, 
+      caption="Opisne statistike za števillske spremenljivke v podatkovnem okviru za državo Francija.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+
+stat.it = data.frame(spremenljivke = c("EXT1", "EXT2", "EXT3", "EXT4", "EXT5", "EXT6", "EXT7", "EXT8", "EXT9", "EXT10", "EST1", "EST2", "EST3", "EST4", "EST5", "EST6", "EST7", "EST8", "EST9", "EST10"),
+           mean = c(2.457, 2.955, 3.014, 3.233, 3.106, 2.377,  2.564, 3.336, 2.994, 3.696, 3.309,
+                     2.794, 3.888, 2.8, 3.054, 3.034, 3.288, 3.016,  3.079, 3.076),
+           Min = c( 1.000, 1.000, 1.000, 1.000, 1.000, 1.000,  1.000, 1.000, 1.000, 1.000, 1.000,
+                    1.000,  1.000, 1.0, 1.000, 1.000, 1.000, 1.000,  1.000, 1.000), 
+           Max = c(5.000, 5.000, 5.000, 5.000, 5.000, 5.000,  5.000, 5.000, 5.000, 5.000, 5.000,
+                    5.000,  5.000, 5.0, 5.000, 5.000, 5.000, 5.000,  5.000, 5.000))
+
+kable(stat.it, 
+      caption="Opisne statistike za števillske spremenljivke v podatkovnem okviru za državo Italija.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
 \newpage
 
 # Konfirmatorna faktorska analiza(CFA)
 
+Analizo izvajamo na zgoraj opisanih podatkih za državo Francija. Predpostavimo večrazsežno normalno porazdelitev spremenljivk - kar lahko približno vidimo na spodnjih grafih glede na sklop in državo, primernost merskih lestvic in ustrezno velikost vzorca. 
 
+<!-- Neza: tole men ne zgleda normalna porazdelitev....-->
+
+```{r, fig.cap="Porazdelitev sklopa energija in čustvena stabilnost za obe državi.", fig.height=4.5}
+francija_energija = podatki[podatki$country == "FR", 1:10]
+italija_energija = podatki[podatki$country == "IT", 1:10]
+francija_custvenastab = podatki[podatki$country == "FR", 11:20]
+italija_custvenastab = podatki[podatki$country == "IT", 11:20]
+
+oldpar <- par(mfrow=c(2, 2))
+hist(unlist(francija_energija), main="Energija - FR", ylab="frekvenca", xlab="")
+hist(unlist(francija_custvenastab), main="Čustvena stabilnost - FR", ylab="frekvenca", xlab="")
+hist(unlist(italija_energija), main="Energija - IT", ylab="frekvenca", xlab="")
+hist(unlist(italija_custvenastab), main="Čustvena stabilnost - IT", ylab="frekvenca",xlab="")
+par(oldpar)
+```
+
+Najprej naredimo model na nestandardiziranih spremenljivkah in pogledajmo kako dobro se prilega podatkom. Kot latentne spremenljivke sva izbrala energijo(sklop spremenljivk "EXT1-10") in čustveno stabilnost(sklop spremenljivk "EST1-10").
+
+```{r}
+podatki.fr = podatki[podatki$country == "FR", 1:20]
+### CFA
+# zapis modela
+cfa.model <- "
+	# latentne spremenljivke
+	  f1 =~ EXT1 + EXT2 + EXT3 + EXT4 + EXT5 + EXT6 + EXT7 + EXT8 + EXT9 + EXT10
+	  f2 =~ EST1 + EST2 + EST3 + EST4 + EST5 + EST6 + EST7 + EST8 + EST9 + EST10
+	"
+
+# analiza
+(cfa.fit <- cfa(model=cfa.model, data=podatki.fr, estimator="MLR"))
+```
+
+Zavrnemo ničelno domnevo($p = 0.000$), kar ni v redu. Zavedamo se, da imamo velik vzorec in $\chi^2$ (kar uporabljamo pri tej analizi) je občutljiv na velike vzorce in hitro zavrača ničelno domnevo. 
+
+Poglejmo si korelacije, kjer si želimo, da si elemnti izven diagonale čim bližje 0, kar lahko vidimo, da po večini ustreza, z izjemo parih.
+
+```{r, fig.cap="Grafični prikaz odklonov(korelacije)."}
+razlika <- residuals(object=cfa.fit, type="cor")$cov
+int <- c(-1, -0.2, 0.2, 1)
+nint <- length(int) - 1
+legint <- c("neg", "zanemarljivo", "poz")
+heatmap(x=razlika, Rowv=NA, symm=T, revC=T, margins=c(15, 15), col=hcl.colors(n=nint, palette="Blue-Red 3", rev=T), breaks=int)
+legend(x="topleft", legend=legint, fill=hcl.colors(n=nint, palette="Blue-Red 3", rev=T), inset=c(0.75, 0), xpd=T)
+```
+
+```{r}
+summary(cfa.fit, fit=T, rsquare=T, standardized=T) # celotna resitev
+# indeksi prileganja
+fitMeasures(cfa.fit, fit.measures = c("rmsea", "srmr", "cfi", "tli"))
+```
+
+Strmimo k temu, da je User Model statistično neznačile, kar ni ($p = 0.000$) v najinem primeru, Baseline Model pa statistično značilen, čemur pa najin model ustreza. Z modela tudi razbereva, da imava med fakotrjema $f_1$(energija) in $f_2$(čustvena stabilnost) kovarianco.
+
+RMSEA, ki nam pove v kolikšni meri se model dobro prilega vrednostim na populaciji, vrne vrednost 0.093, kar sicer je pod 0.1(želimo si pod 0.06), in je model mejno sprejemljiv. 
+
+SRMR, ki meri koren povprečne kvadrirane razlike med ocenjenimi in modelskimi korelacijemi, vrne vrednost 0.065, kar je manj od mejne vrednosti 0.08.
+
+CFI, kateri primerja ocenjen model z modelom brez korelacij zavzame vrednost 0.833, kar je pod najnižjo mejno vrednostjo 0.90(želimo si, da je nad 0.95), prav tako je TLI vrednost 0.812, ki je podobna CLI in je pod skrajno mejno vrednostjo 0.90(želimo si, da je nad 0.95).
+
+Na podlagi mere prileganja bi rekla, da model ni sprejemljiv in se ne prilega najbolje podatkom in to, da smo zgoraj zavrnili ničeno domnevo ni v redu.
+
+## Spremembe modela
+
+Poglejmo ali modelu lahko dodamo spremembe, ki bi dodatno pripomogle k ustreznosti modela ter prileganju podatkom. 
+
+```{r}
+modindices(object=cfa.fit, sort=T, maximum.number=10) # sort=T zato da jih izpiše od najboljše do najslabše
+
+# popravljanje modela
+cfa.model1 <- "
+  f1 =~ EXT1 + EXT2 + EXT3 + EXT4 + EXT5 + EXT6 + EXT7 + EXT8 + EXT9 + EXT10
+  f2 =~ EST1 + EST2 + EST3 + EST4 + EST5 + EST6 + EST7 + EST8 + EST9 + EST1
+	# sproscene omejitve
+	EST7 ~~ EST8
+	EST6 ~~	EST9
+	EST1 ~~	EST2
+	EST1 ~~	EST3
+	EXT8 ~~	EXT9 # od tuki naprej se ni izbolšval
+	# EST1 ~~	EST8
+	# EST1 ~~	EST7
+"
+cfa.fit <- cfa(model=cfa.model1, data=podatki.fr, estimator="MLR")
+# indeksi prileganja
+fitMeasures(cfa.fit, fit.measures = c("rmsea", "srmr", "cfi", "tli"))
+summary(cfa.fit, fit=T, rsquare=T, standardized=T)
+```
+
+User Model še vedno ni statistično neznačilen($p = 0.000$), Baseline Model pa ostaja statistično značilen. RMSEA je tokrat 0.056, kar je pod 0.06, in je na podlagi tega model (mejno) sprejemljiv. SRMR je sedaj 0.047. CFI in TLI pa še vedno nista nad 0.95, ampak sta nad 0.9, TLI ima vrednost 0.934, CFI pa 0.944. 
+
+Na podlagi mere prileganja bi rekla, da model sedaj je sprejemljiv in se prilega podatkom. 
+
+## Merska enakovrednost
