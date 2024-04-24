@@ -5,7 +5,7 @@ output:
   pdf_document:
     fig_caption: true
     number_sections: true
-  word_document: default
+  # word_document: default
 header-includes:
 - \usepackage[slovene]{babel}
 - \usepackage{float}
@@ -326,12 +326,87 @@ anova(configural.fit, loadings.fit, intercepts.fit)
 ```
 
 Torej če modele primerjamo po Akaikijevem informacijskem kriteriju, vidimo, da je skalarna merska enakovrednost najboljša, saj ima najnižjo AIC vrednost.
+<!--Tom24: tukej si vrjetno mislila da je konfiguralna merska enakovrednost ker ima najmanjso vrednost -->
+
+# Analiza mediacije z latentnimi spremenljivkami (SEM)
+
+```{r}
+data <- read.csv("dn4_stata_sem_ex9.csv", header=T)
+
+povprecja = data[1,]
+standardni_odkloni = data[2,]
+kovariancna_matrika = data[3:nrow(data),]
+
+# potrebni = c("educ66","occstat66","anomia67", "pwless67", "anomia71", "pwless71")
+# indeksi = which(colnames(kovariancna_matrika) %in% potrebni)
+# 
+# kovariancna_model = kovariancna_matrika[indeksi, indeksi]
+```
+
+```{r, fig.cap="Shema modela iz literature.", results=T}
+knitr::include_graphics('model_slika.png')
+```
+
+```{r}
+model3.1 <- "
+	# latentne spremenljivke (merski model)
+	  Alien67 =~ anomia67 + pwless67
+	  Alien71 =~ anomia71 + pwless71
+	  SES =~ educ66 + occstat66
+	
+	# linearna regresija (strukturni model)
+	  Alien71 ~ Alien67 + SES
+	  Alien67 ~ SES
+	"
+
+model3.1_fit <- sem(model=model3.1, kovariancna_matrika, estimator="ML")
+# summary(model3.1_fit, fit.measures=T, rsquare=T, standardized=T)
+```
+
+```{r}
+fitMeasures(model3.1_fit, fit.measures=c("df", "cfi", "tli",
+                                           "rmsea", "srmr"), output="matrix")
+```
+
+Vsi indeksi prileganja kažejo na zelo dobro prilagnaje modela. RMSEA je 0, kar je pod 0.06, in je na podlagi tega model sprejemljiv. SRMR je sedaj 0.008. CFI in TLI zavzameta vrednost 1, kar je nad 0.95. Razlog za taksne vrednosti se lahko nahaja v majhnem število prostostnih stopenj (6) in malo podatkih (n=15)
 
 
+Z izpisom _modification indices_ preverimo, ali je model potrebno se popraviti
+
+```{r}
+modindices(model3.1_fit, sort = TRUE, maximum.number = 5)
+```
+
+Teoreticno smiselna popraveka sta le dodani kovarianci med _anomia67_ in _anomia71_
+torej Anomia leta 1967 in leta 1971, ter med _pwless67_ in _pwless71_, torej Powerlessness leta 1967 in leta 1971. 
+
+```{r}
+model3.2 <- "
+	# latentne spremenljivke (merski model)
+	  Alien67 =~ anomia67 + pwless67
+	  Alien71 =~ anomia71 + pwless71
+	  SES =~ educ66 + occstat66
+	
+	# linearna regresija (strukturni model)
+	  Alien71 ~ Alien67 + SES
+	  Alien67 ~ SES
+	  
+	# korelacija
+	anomia67 ~~ anomia71
+	pwless67 ~~ pwless71
+	"
+
+model3.2_fit <- sem(model=model3.2, kovariancna_matrika, estimator="ML")
+# summary(model3.2_fit, fit.measures=T, rsquare=T, standardized=T)
+```
 
 
+```{r}
+fitMeasures(model3.2_fit, fit.measures=c("df", "cfi", "tli",
+                                           "rmsea", "srmr"), output="matrix")
+```
 
-
+Vrednosti indeksov prileganja so dokaj podobne zgornjim. Vse vrednosti kažejo na zelo dobro prilagnaje modela. RMSEA je 0, kar je pod 0.06, in je na podlagi tega model sprejemljiv. SRMR je sedaj 0.003. CFI in TLI zavzameta vrednost 1, kar je nad 0.95. Zaradi dodanih kovarianc se število prostostnih stopenj zmanjsa (4).
 
 
 
