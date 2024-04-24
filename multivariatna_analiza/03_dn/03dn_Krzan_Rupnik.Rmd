@@ -5,6 +5,7 @@ output:
   pdf_document:
     fig_caption: true
     number_sections: true
+  word_document: default
 header-includes:
 - \usepackage[slovene]{babel}
 - \usepackage{float}
@@ -160,7 +161,10 @@ Najprej naredimo model na nestandardiziranih spremenljivkah in pogledajmo kako d
 
 ```{r}
 podatki.fr = podatki[podatki$country == "FR", 1:20]
-### CFA
+```
+
+```{r echo=TRUE}
+# CFA
 # zapis modela
 cfa.model <- "
 	# latentne spremenljivke
@@ -169,7 +173,7 @@ cfa.model <- "
 	"
 
 # analiza
-(cfa.fit <- cfa(model=cfa.model, data=podatki.fr, estimator="MLR"))
+cfa.fit <- cfa(model=cfa.model, data=podatki.fr, estimator="MLR")
 ```
 
 Zavrnemo ničelno domnevo($p = 0.000$), kar ni v redu. Zavedamo se, da imamo velik vzorec in $\chi^2$ (kar uporabljamo pri tej analizi) je občutljiv na velike vzorce in hitro zavrača ničelno domnevo. 
@@ -205,10 +209,12 @@ Na podlagi mere prileganja bi rekla, da model ni sprejemljiv in se ne prilega na
 
 Poglejmo ali modelu lahko dodamo spremembe, ki bi dodatno pripomogle k ustreznosti modela ter prileganju podatkom. 
 
-```{r}
-modindices(object=cfa.fit, sort=T, maximum.number=10) # sort=T zato da jih izpiše od najboljše do najslabše
+```{r echo=TRUE}
+# spremembe modela - ker model očitno ni najboljši, 
+# ga popravimo s funkcijo, ki predlaga spremembe
+modindices(object=cfa.fit, sort=T, maximum.number=10) 
 
-# popravljanje modela
+# popravljanje modela - spremenljivke sva dodajala postopoma
 cfa.model1 <- "
   f1 =~ EXT1 + EXT2 + EXT3 + EXT4 + EXT5 + EXT6 + EXT7 + EXT8 + EXT9 + EXT10
   f2 =~ EST1 + EST2 + EST3 + EST4 + EST5 + EST6 + EST7 + EST8 + EST9 + EST1
@@ -217,18 +223,122 @@ cfa.model1 <- "
 	EST6 ~~	EST9
 	EST1 ~~	EST2
 	EST1 ~~	EST3
-	EXT8 ~~	EXT9 # od tuki naprej se ni izbolšval
+	EXT8 ~~	EXT9 # se ne izbolšuje več od tu naprej
 	# EST1 ~~	EST8
 	# EST1 ~~	EST7
 "
 cfa.fit <- cfa(model=cfa.model1, data=podatki.fr, estimator="MLR")
+
 # indeksi prileganja
-fitMeasures(cfa.fit, fit.measures = c("rmsea", "srmr", "cfi", "tli"))
-summary(cfa.fit, fit=T, rsquare=T, standardized=T)
+indeksi.prileganja = fitMeasures(cfa.fit, fit.measures = c("rmsea", "srmr", "cfi", "tli"))
+povzetek = summary(cfa.fit, fit=T, rsquare=T, standardized=T)
 ```
 
-User Model še vedno ni statistično neznačilen($p = 0.000$), Baseline Model pa ostaja statistično značilen. RMSEA je tokrat 0.056, kar je pod 0.06, in je na podlagi tega model (mejno) sprejemljiv. SRMR je sedaj 0.047. CFI in TLI pa še vedno nista nad 0.95, ampak sta nad 0.9, TLI ima vrednost 0.934, CFI pa 0.944. 
+RMSEA je tokrat 0.056, kar je pod 0.06, in je na podlagi tega model (mejno) sprejemljiv. SRMR je sedaj 0.047. CFI in TLI pa še vedno nista nad 0.95, ampak sta nad 0.9, TLI ima vrednost 0.934, CFI pa 0.944. Na podlagi mere prileganja bi rekla, da model sedaj je sprejemljiv in se prilega podatkom. 
 
-Na podlagi mere prileganja bi rekla, da model sedaj je sprejemljiv in se prilega podatkom. 
+Na podlagi Model Test User Model($p < 0.001$), katerega vrednost testne statistike, pri 146 stopinjah prostosti, je enaka 2379.941, pri stopnji značilnosti $0.05$ zavrnemo domnevo, da je variančno-kovariančna matrika ocenjena na podlagi modela enaka populacijski in sprejmemo domnevo, da se statistično značilno razlikujeta.
 
-## Merska enakovrednost
+Na podlagi Model Test Baseline Model($p < 0.001$) tudi zavrnemo ničelno domnevo pri stopnji statistične značilnosti 0.05, da je variančno-kovariančna matrika ocenjenega modela enaka variančko-kovariančni matriki začetnega modela(brez korelacije spremenljivk).
+
+Testa sta sicer izredno občutljiva in se le redko zgodi, da ničelnih domnev ne zavračamo, torej željeno bomo težko dobili, zato se z rezultatom ne obremenjujeva.
+
+Da zagotoviva identifikabilnost modela, sva pri vsakem faktorju eni spremenljivki vrednost faktorske uteži nastavila na 1 (marker indikator). Pri faktorju energija je to indikator EXT1 in pri čustveni stabilnosti je to EST1.
+
+Vrednosti p so pri vseh spremenljivkah manjše od 0.001, torej so vrednosti ocenjenih koeficientov statistično značilno različne od 0. Iz ocen standariziranih koeficientov sva razbrala, da imata največji vpliv na energijo EXT5 in EXT7, na čustveno stabilnost pa EST1 in EST6. Vrednosti vseh koeficientov so pozitivne, torej se s povečanjem vrednosti spremenljivk, poveč tudi vrednost latentne.
+
+Poglejmo si še korelacije med latentnimi spremenljivkami. Vse korelacije so pri stopnji značilnosti 0.05 statistično značilne($p < 0.001$). Vse korelacije so pozotivne, kar pomeni, da da se s povečanjem vrednosti ene spremenljivke, poveča tudi vrednost druge, npr. bolj kot imajo ljudje nihanje razpoloženja(EST8) bolj spreminjajo razpoloženje(EST7) ali manj kot ljudi skrbi za veliko stvari(EST#) in več kot so sproščeni(EST2) kasneje postanejo živčni(EST1).
+
+# Merska enakovrednost Francije in Italije(MG-CFA)
+
+Zanima naju, ali pri različnih pogojih opazovanja in raziskovanja, kar izhaja iz različnih skupin, meritve še vedno merijo isto lastnost in do kakšne mere so naši rezultati primerljivi med skupinami. V našem primeru skupine določajo države in obravnavani državi sta Francija in Italija. 
+
+Za model vzameva zadnji popravljeni model za državo Francija, torej zadnji najboljši.
+
+```{r}
+# zadnji najboljsi model
+cfa.model1 <- "
+  f1 =~ EXT1 + EXT2 + EXT3 + EXT4 + EXT5 + EXT6 + EXT7 + EXT8 + EXT9 + EXT10
+  f2 =~ EST1 + EST2 + EST3 + EST4 + EST5 + EST6 + EST7 + EST8 + EST9 + EST1
+	# sproscene omejitve
+	EST7 ~~ EST8
+	EST6 ~~	EST9
+	EST1 ~~	EST2
+	EST1 ~~	EST3
+	EXT8 ~~	EXT9 # se ne izbolšuje več od tu naprej
+	# EST1 ~~	EST8
+	# EST1 ~~	EST7
+"
+```
+
+## Konfiguralna merska enakovrednost
+
+Konfiguralna enakovrednost nastopi, ko so v vseh skupinah merjeni enaki koncepti in so med skupinami identične faktorske strukture. V vseh skupinah imamo iste spremenljivke za merjenje izbranih latentnih spremenljivk. 
+
+```{r echo=TRUE}
+configural.fit <- cfa(model=cfa.model1, data=podatki, group="country", estimator="MLR") 
+```
+
+```{r}
+fitMeasures(configural.fit, fit.measures= c("rmsea", "srmr", "cfi", "tli"))
+povzetek = summary(configural.fit, fit=T, rsquare=T, standardized=T)
+```
+
+RMSEA je 0.056, kar je pod 0.06, in je na podlagi tega model sprejemljiv. SRMR je sedaj 0.046. CFI in TLI pa nista nad 0.95, ampak sta nad 0.9, TLI ima vrednost 0.932, CFI pa 0.942. Na podlagi mere prileganja bi rekla, da model je sprejemljiv in se prilega podatkom, torej bi lahko isti model uporabili na obeh državah.
+
+## Metrična merska enakovrednost
+
+Pri metrični enakovrednosti ima povečanje latentne spremenljivke za eno enoto enak pomen v vseh skupinah, torej so faktorske uteži med skupinami enake, kar nam omogoča testiranje razlik v moči vplivov med različnimi skupinami. 
+
+```{r echo=TRUE}
+loadings.fit <- cfa(model=cfa.model1, data=podatki, 
+                    group="country", group.equal="loadings", estimator="MLR")
+```
+
+```{r}
+fitMeasures(loadings.fit, fit.measures= c("rmsea", "srmr", "cfi", "tli"))
+```
+
+RMSEA je 0.057, kar je pod 0.06 in je na podlagi tega model sprejemljiv. SRMR je sedaj 0.052, kar je manj od 0.08. CFI in TLI pa nista nad 0.95, TLI ima vrednost 0.938, CFI pa 0.932. Pričakujemo sicer slabše prileganje modela, saj fiksiramo faktorske uteži, ampak na podlagi mer prileganja bi rekla, da model je sprejemljiv in se prilega podatkom, torej uteži med Francijo in Italijo sta enaki in imamo omogočeno primerjavo regresijskih koeficientov.
+
+## Skalarna merska enakovrednost
+
+Imamo jo v primeru polne primerljivosti vseh vrednosti, torej ko so tako regresijski koeficienti in konstante kot faktorske uteži med državama enake. Omogoča pa nam primerljivost povprečij.
+
+```{r echo=TRUE}
+intercepts.fit <- cfa(model=cfa.model1, data=podatki, group="country", 
+                      group.equal=c("loadings", "intercepts"), estimator="MLR")
+```
+
+```{r}
+fitMeasures(intercepts.fit, fit.measures= c("rmsea", "srmr", "cfi", "tli"))
+```
+
+
+Tudi tukaj sta meri RMSEA in SRMR v sprejemljivem območju, CFI in TLI pa sta nad 0.9(RMSEA = 0.057, SRMR = 0.053, TLI = 0.930, CFI = 0.934)) in je prileganje modela sprejemljivo.
+
+Predpostavimo torej, da imamo med Italijo in Francijo metrično, konfiguralno in skalarno enakovrednost in tako lahko testiramo razlike v moči vplivov med državama in primerjamo povprečja.
+
+Naredimo še primerjavo modelov s testom `anova`.
+
+```{r echo=TRUE}
+# primerjava modelov
+anova(configural.fit, loadings.fit, intercepts.fit)
+```
+
+Torej če modele primerjamo po Akaikijevem informacijskem kriteriju, vidimo, da je skalarna merska enakovrednost najboljša, saj ima najnižjo AIC vrednost.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
