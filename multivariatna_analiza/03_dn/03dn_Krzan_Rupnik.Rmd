@@ -335,19 +335,26 @@ data <- read.csv("dn4_stata_sem_ex9.csv", header=T)
 
 povprecja = data[1,]
 standardni_odkloni = data[2,]
-kovariancna_matrika = data[3:nrow(data),]
+korelacijska_matrika = data[3:nrow(data),]
 
-# potrebni = c("educ66","occstat66","anomia67", "pwless67", "anomia71", "pwless71")
-# indeksi = which(colnames(kovariancna_matrika) %in% potrebni)
-# 
-# kovariancna_model = kovariancna_matrika[indeksi, indeksi]
+potrebni = c("educ66","occstat66","anomia67", "pwless67", "anomia71", "pwless71")
+indeksi = which(colnames(korelacijska_matrika) %in% potrebni)
+
+kovariancna_matrika = diag(standardni_odkloni) %*% as.matrix(korelacijska_matrika) %*% diag(standardni_odkloni)
+
+kovariancna_matrika = kovariancna_matrika[indeksi,indeksi]
+
+rownames(kovariancna_matrika) = potrebni
+colnames(kovariancna_matrika) = potrebni
 ```
 
 ```{r, fig.cap="Shema modela iz literature.", results=T}
 knitr::include_graphics('model_slika.png')
 ```
 
-```{r}
+Zgornjo shemo modela zapisemo na sledeč način:
+
+```{r echo=TRUE}
 model3.1 <- "
 	# latentne spremenljivke (merski model)
 	  Alien67 =~ anomia67 + pwless67
@@ -358,29 +365,45 @@ model3.1 <- "
 	  Alien71 ~ Alien67 + SES
 	  Alien67 ~ SES
 	"
-
-model3.1_fit <- sem(model=model3.1, kovariancna_matrika, estimator="ML")
-# summary(model3.1_fit, fit.measures=T, rsquare=T, standardized=T)
 ```
 
 ```{r}
+model3.1_fit <- sem(model=model3.1, sample.cov = kovariancna_matrika, sample.nobs = 932)
+# summary(model3.1_fit, fit.measures=T, rsquare=T, standardized=T)
+
 fitMeasures(model3.1_fit, fit.measures=c("df", "cfi", "tli",
                                            "rmsea", "srmr"), output="matrix")
 ```
 
-Vsi indeksi prileganja kažejo na zelo dobro prilagnaje modela. RMSEA je 0, kar je pod 0.06, in je na podlagi tega model sprejemljiv. SRMR je sedaj 0.008. CFI in TLI zavzameta vrednost 1, kar je nad 0.95. Razlog za taksne vrednosti se lahko nahaja v majhnem število prostostnih stopenj (6) in malo podatkih (n=15)
+**Preverimo ali podatki podpirajo model:**
+
+RMSEA je 0.108, kar je nad 0.06, in na podlagi tega model ni sprejemljiv. SRMR je sedaj 0.021. CFI je z vrednostjo 0.969 nad mejo 0.95, medtem ko ima TLI vrednost 0.923. Torej nekateri indeksi prileganja nakazujejo na sprejemljiv model, medtem ko nekateri nakazujejo nasprotno. \
+Ker model še ni najboljši ga poskusimo izboljšati z odstranitvijo omejitev, kjer je to smiselno.  
 
 
-Z izpisom _modification indices_ preverimo, ali je model potrebno se popraviti
+Z izpisom _modification indices_ preverimo mere lokalnega (ne)prileganja. 
 
 ```{r}
 modindices(model3.1_fit, sort = TRUE, maximum.number = 5)
 ```
 
-Teoreticno smiselna popraveka sta le dodani kovarianci med _anomia67_ in _anomia71_
-torej Anomia leta 1967 in leta 1971, ter med _pwless67_ in _pwless71_, torej Powerlessness leta 1967 in leta 1971. 
+```{r results=T}
+df_indices = data.frame("leva" = c("anomia67", "anomia67", "pwless67", "pwless67", "pwless67"),
+                        "operator" = rep("~~", 5),
+                        "desna" = c("anomia71", "pwless71", "anomia71", "pwless71", "educ66"), 
+                      "mi" = c(63.786,49.892,49.876,37.358,7.752),
+                      "epc" = c(1.952, -1.507, -1.534, 1.159, -0.556),
+                      "sepc.all" = c(0.507,-0.395,-0.447,0.341,-0.181))
 
-```{r}
+kable(df_indices, align=rep('c', 6),
+      caption="Izpis modification indices.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+
+Teoreticno smiselna popraveka sta le dodani kovarianci med _anomia67_ in _anomia71_ torej Anomia leta 1967 in leta 1971, ter med _pwless67_ in _pwless71_, torej Powerlessness leta 1967 in leta 1971. Smiselnost predpostavljamo, saj gre za isto spremenljivko le leto se razlikuje.
+
+```{r echo=TRUE}
 model3.2 <- "
 	# latentne spremenljivke (merski model)
 	  Alien67 =~ anomia67 + pwless67
@@ -395,22 +418,27 @@ model3.2 <- "
 	anomia67 ~~ anomia71
 	pwless67 ~~ pwless71
 	"
-
-model3.2_fit <- sem(model=model3.2, kovariancna_matrika, estimator="ML")
-# summary(model3.2_fit, fit.measures=T, rsquare=T, standardized=T)
 ```
 
 
 ```{r}
+model3.2_fit <- sem(model=model3.2, sample.cov = kovariancna_matrika, sample.nobs = 932)
+# summary(model3.2_fit, fit.measures=T, rsquare=T, standardized=T)
+
 fitMeasures(model3.2_fit, fit.measures=c("df", "cfi", "tli",
                                            "rmsea", "srmr"), output="matrix")
 ```
 
-Vrednosti indeksov prileganja so dokaj podobne zgornjim. Vse vrednosti kažejo na zelo dobro prilagnaje modela. RMSEA je 0, kar je pod 0.06, in je na podlagi tega model sprejemljiv. SRMR je sedaj 0.003. CFI in TLI zavzameta vrednost 1, kar je nad 0.95. Zaradi dodanih kovarianc se število prostostnih stopenj zmanjsa (4).
+**Preverimo ali podatki podpirajo model:**
+
+RMSEA je 0.014, kar je pod 0.06, in na podlagi tega je model sprejemljiv. SRMR je sedaj 0.007. Tokrat sta oba CFI (1) in TLI (0.999) nad mejo 0.95. Torej vsi parametri so znotraj meje sprejemljivega modela iz česar lahko zaključimo, da je model res sprejemljiv. 
 
 
-
-
+<!--
+Tom24: se to nama manjka:
+Kolikšni so neposredni vpliv, posredni vpliv in skupni vpliv? Kateri izmed teh
+vplivov so statistično značilni?
+-->
 
 
 
