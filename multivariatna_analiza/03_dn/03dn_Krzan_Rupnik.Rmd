@@ -67,6 +67,7 @@ https://www.kaggle.com/datasets/tunguz/big-five-personality-test/data
 V nalogi obravnavava konfirmatorno faktorsko analizo(CFA) in mersko enakovrednost(MG-CFA) na podatkih testa osebnosti za državo Francija ter Italija in spremenljivke, ki so kodirane z "EXT1-10" in "EST1-10".
 
 **Energija (ektravertnost, surgentnost)**
+
 * EXT1...Sem zabavna oseba, ki je rada v središču dogajanja (+)
 * EXT2...Ne govorim veliko (-)
 * EXT3...Dobro se počutim v krogu ljudi (+)
@@ -151,9 +152,9 @@ italija_custvenastab = podatki[podatki$country == "IT", 11:20]
 
 oldpar <- par(mfrow=c(2, 2))
 hist(unlist(francija_energija), main="Energija - FR", ylab="frekvenca", xlab="")
-hist(unlist(francija_custvenastab), main="Čustvena stabilnost - FR", ylab="frekvenca", xlab="")
+hist(unlist(francija_custvenastab), main="Custvena stabilnost - FR", ylab="frekvenca", xlab="")
 hist(unlist(italija_energija), main="Energija - IT", ylab="frekvenca", xlab="")
-hist(unlist(italija_custvenastab), main="Čustvena stabilnost - IT", ylab="frekvenca",xlab="")
+hist(unlist(italija_custvenastab), main="Custvena stabilnost - IT", ylab="frekvenca",xlab="")
 par(oldpar)
 ```
 
@@ -325,7 +326,7 @@ Naredimo še primerjavo modelov s testom `anova`.
 anova(configural.fit, loadings.fit, intercepts.fit)
 ```
 
-Torej če modele primerjamo po Akaikijevem informacijskem kriteriju, vidimo, da je skalarna merska enakovrednost najboljša, saj ima najnižjo AIC vrednost.
+Torej če modele primerjamo po Akaikijevem informacijskem kriteriju, vidimo, da je konfiguralna merska enakovrednost najboljša, saj ima najnižjo AIC vrednost.
 <!--Tom24: tukej si vrjetno mislila da je konfiguralna merska enakovrednost ker ima najmanjso vrednost -->
 
 # Analiza mediacije z latentnimi spremenljivkami (SEM)
