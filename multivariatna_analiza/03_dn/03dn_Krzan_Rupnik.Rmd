@@ -32,6 +32,7 @@ library(blockmodeling)
 library(foreign)
 library(psych)
 library(lavaan)
+library(corrplot)
 
 set.seed(2024)
 ```
@@ -139,6 +140,29 @@ kable(stat.it,
 \newpage
 
 # Konfirmatorna faktorska analiza(CFA)
+<!--Tom25: tole nevem se sm kje zasledil pa nocem kr nekam vrint da te ne pokvarim izgleda
+
+"Kolikšno je število poznanih vrednosti v kovariančni matriki (število informacij)? Kolikšno je število ocenjenih parametrov v modelu? Kolikšno je število prostostnih stopenj?"
+
+20*(20+1)/2 - (10+9+1+10+9+1+1) = 169
+
+20*(20+1)/2 pride iz kovariancne matrike kjer prestejes st. elementov na diagonali in pod diagonalo (midva imava 20 elementov EXT1-10 in EST1-10)
+
+(10+9+1+10+9+1+1) pa stevilo parametrov k jih ocenjujemo 
+
+10 ... st. varianc oz nepojasnjenih delov pri EST1-10 
+9 ... st. vezi med ESTxx in f1 (vezi je sicer 10 vedar eno fiksiramo na 1)
+1 ... nepojasnjen del pri f1
+
+10 ... st. varianc oz nepojasnjenih delov pri EXT1-10 
+9 ... st. vezi med EXTxx in f1 (vezi je sicer 10 vedar eno fiksiramo na 1)
+1 ... nepojasnjen del pri f1
+
+1 ... povezava med f1 in f2
+
+In se stevilke tud ujemaj s summary(cfa.fit,...)
+Ce pa slucajno ze imava pa da sm spregledal pa sami izbrisi :)
+-->
 
 Analizo izvajamo na zgoraj opisanih podatkih za državo Francija. Predpostavimo večrazsežno normalno porazdelitev spremenljivk - kar lahko približno vidimo na spodnjih grafih glede na sklop in državo, primernost merskih lestvic in ustrezno velikost vzorca. 
 
@@ -349,7 +373,38 @@ rownames(kovariancna_matrika) = potrebni
 colnames(kovariancna_matrika) = potrebni
 ```
 
-```{r, fig.cap="Shema modela iz literature.", results=T}
+## Podatki
+
+Raziskava je bila zasnovana kot zbiranje vrednosti spremenljivk v letih 1966, 1967, 1971 v dveh regijah. Prva regija je bilo območje kjer je bil zgrajen Jones & Laughlin jeklena industrija, in testno območje kjer ni bilo takega razvoja. V celoti so izbrali 932 enot. 
+
+```{r results=TRUE}
+
+predstavitev_data = data.frame("spremenljivka" = c("educ66", "occstat66", "anomia66","pwless66","socdist66","occstat67","anomia67", "pwless67", "socdist67", "occstat71", "anomia71", "pwless71", "socdist71"),
+                               "pomen" = c("Education, 1966", "Occupational status, 1966", "Anomia, 1966", "Powerlessness, 1966", "Latin American social distance, 1966", "Occupational status, 1967", "Anomia, 1967", "Powerlessness, 1967", "Latin American social distance, 1967", "Occupational status, 1971", "Anomia, 1971", "Powerlessness, 1971", "Latin American social distance, 1971"))
+
+kable(predstavitev_data, 
+      caption="Predstavitev podatkov.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+Poglejmo si še prikaz korelacijske matrike spremenljivk, del katere bomo kasneje tudi uporabili.
+
+```{r fig.dim=c(5,5)}
+colors10 <- colorRampPalette(c("#0000aa","white","#aa0000"))(10)
+corrplot.mixed(as.matrix(korelacijska_matrika),
+               lower.col = colors10, upper.col = colors10,
+               tl.col="black", tl.cex = 0.4, number.cex = 0.5)
+```
+
+\newpage
+
+## SEM
+
+Poenostavljena različica modela
+
+```{r, fig.cap="Shema modela iz literature. vir: https://www.stata.com/manuals/semexample9.pdf", results=T}
+
+
 knitr::include_graphics('model_slika.png')
 ```
 
@@ -362,7 +417,7 @@ model3.1 <- "
 	  Alien71 =~ anomia71 + pwless71
 	  SES =~ educ66 + occstat66
 	
-	# linearna regresija (strukturni model)
+	# strukturni model
 	  Alien71 ~ Alien67 + SES
 	  Alien67 ~ SES
 	"
@@ -404,6 +459,8 @@ kable(df_indices, align=rep('c', 6),
 
 Teoreticno smiselna popraveka sta le dodani kovarianci med _anomia67_ in _anomia71_ torej Anomia leta 1967 in leta 1971, ter med _pwless67_ in _pwless71_, torej Powerlessness leta 1967 in leta 1971. Smiselnost predpostavljamo, saj gre za isto spremenljivko le leto se razlikuje.
 
+Popravljen model zapisemo na sledeč način:
+
 ```{r echo=TRUE}
 model3.2 <- "
 	# latentne spremenljivke (merski model)
@@ -411,7 +468,7 @@ model3.2 <- "
 	  Alien71 =~ anomia71 + pwless71
 	  SES =~ educ66 + occstat66
 	
-	# linearna regresija (strukturni model)
+	# strukturni model
 	  Alien71 ~ Alien67 + SES
 	  Alien67 ~ SES
 	  
@@ -434,15 +491,49 @@ fitMeasures(model3.2_fit, fit.measures=c("df", "cfi", "tli",
 
 RMSEA je 0.014, kar je pod 0.06, in na podlagi tega je model sprejemljiv. SRMR je sedaj 0.007. Tokrat sta oba CFI (1) in TLI (0.999) nad mejo 0.95. Torej vsi parametri so znotraj meje sprejemljivega modela iz česar lahko zaključimo, da je model res sprejemljiv. 
 
+**Preverimo še neposredni, posredni in skupni vpliv**
 
-<!--
-Tom24: se to nama manjka:
-Kolikšni so neposredni vpliv, posredni vpliv in skupni vpliv? Kateri izmed teh
-vplivov so statistično značilni?
--->
+To bomo naredili s sledečim modelom
+
+```{r echo=TRUE}
+model3.3 <- "
+	# latentne spremenljivke (merski model)
+	  Alien67 =~ anomia67 + pwless67
+	  Alien71 =~ anomia71 + pwless71
+	  SES =~ educ66 + occstat66
+	
+	# strukturni model
+	# direct effect
+	  Alien71 ~ C*SES
+	# mediator
+	  Alien67 ~ A*SES
+	  Alien71 ~ B*Alien67
+	# indirect effect
+	  IND:= A*B
+	# total effect
+	  TOT := C + A*B
+	  
+	# korelacija
+	anomia67 ~~ anomia71
+	pwless67 ~~ pwless71
+	"
+```
 
 
+```{r}
+model3.3_fit <- sem(model=model3.3, sample.cov = kovariancna_matrika, sample.nobs = 932)
+summary(model3.3_fit, fit.measures=T, rsquare=T, standardized=T)
+```
 
+Neposredni vplivi imajo povprečno pričakovano vrednost:
 
+* Alien71~SES ... -0.227
+* Alien67~SES ... -0.575
+* Alien71~Alien67 ... 0.607
+
+Posrednji vpliv izračunamo kot "$(Alien67 \sim SES) * (Alien71 \sim Alien67)$", torej $-0.575\cdot0.607 = -0.349$. \
+Torej skupni vpliv je enak "$(Alien71 \sim SES) + (Alien67~SES)\cdot(Alien71\sim Alien67)$",  $-0.227 + -0.575\cdot0.607 = -0.576$. 
+
+Za vse vplive velja $p<0.001$, torej so vsi vplivi statistično značilni.
 
 
