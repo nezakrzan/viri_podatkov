@@ -389,7 +389,7 @@ kable(predstavitev_data,
 
 Poglejmo si še prikaz korelacijske matrike spremenljivk, del katere bomo kasneje tudi uporabili.
 
-```{r fig.dim=c(5,5)}
+```{r fig.dim=c(5,5), fig.cap="Korelacija med spremenljivkami."}
 colors10 <- colorRampPalette(c("#0000aa","white","#aa0000"))(10)
 corrplot.mixed(as.matrix(korelacijska_matrika),
                lower.col = colors10, upper.col = colors10,
@@ -398,17 +398,17 @@ corrplot.mixed(as.matrix(korelacijska_matrika),
 
 \newpage
 
-## SEM
+## Analiza mediacije z latentnimi spremenljivkami(SEM)
 
-Poenostavljena različica modela
+Poglejmo si polni strukturni model, kjer obravnavanemu merskemu delu modela dodamo strukturne poti, torej linearne regresije, ki poleg merskega dela povezujejo odnose med spremenljivkami.
+
+Spodaj je prikazana poenostavljena grafična različica modela.
 
 ```{r, fig.cap="Shema modela iz literature. vir: https://www.stata.com/manuals/semexample9.pdf", results=T}
-
-
 knitr::include_graphics('model_slika.png')
 ```
 
-Zgornjo shemo modela zapisemo na sledeč način:
+Zgornjo grafično shemo modela zapišemo na sledeč način.
 
 ```{r echo=TRUE}
 model3.1 <- "
@@ -425,7 +425,7 @@ model3.1 <- "
 
 ```{r}
 model3.1_fit <- sem(model=model3.1, sample.cov = kovariancna_matrika, sample.nobs = 932)
-# summary(model3.1_fit, fit.measures=T, rsquare=T, standardized=T)
+summary = summary(model3.1_fit, fit.measures=T, rsquare=T, standardized=T)
 
 fitMeasures(model3.1_fit, fit.measures=c("df", "cfi", "tli",
                                            "rmsea", "srmr"), output="matrix")
@@ -433,9 +433,15 @@ fitMeasures(model3.1_fit, fit.measures=c("df", "cfi", "tli",
 
 **Preverimo ali podatki podpirajo model:**
 
-RMSEA je 0.108, kar je nad 0.06, in na podlagi tega model ni sprejemljiv. SRMR je sedaj 0.021. CFI je z vrednostjo 0.969 nad mejo 0.95, medtem ko ima TLI vrednost 0.923. Torej nekateri indeksi prileganja nakazujejo na sprejemljiv model, medtem ko nekateri nakazujejo nasprotno. \
-Ker model še ni najboljši ga poskusimo izboljšati z odstranitvijo omejitev, kjer je to smiselno.  
+RMSEA je 0.108, kar je nad 0.06, in na podlagi tega model ni sprejemljiv. SRMR je sedaj 0.021. CFI je z vrednostjo 0.969 nad mejo 0.95, medtem ko ima TLI vrednost 0.923, torej je mejno sprejemljiv, saj je nad 0.90. Torej nekateri indeksi prileganja nakazujejo na sprejemljiv model, medtem ko nekateri nakazujejo nasprotno.
 
+Na podlagi Model Test User Model($p < 0.001$) pri stopnji značilnosti $0.05$ zavrnemo domnevo, da je variančno-kovariančna matrika ocenjena na podlagi modela enaka populacijski in na podlagi Model Test Baseline Model($p < 0.001$) tudi zavrnemo ničelno domnevo pri stopnji statistične značilnosti 0.05, da je variančno-kovariančna matrika ocenjenega modela enaka variančko-kovariančni matriki začetnega modela(brez korelacije spremenljivk). Želimo si sicer, da User Model ne bi zavračali, ampak bomo to težko dobili, saj sta oba testa izjemno občutljiva in se to redko zgodi.
+
+Da zagotoviva identifikabilnost modela, sva pri vsakem faktorju eni spremenljivki vrednost faktorske uteži nastavila na 1 (marker indikator). Pri faktorju Alien67 je to indikator anomia67, pri Alien71 je to anomia71 in pri SES je to educ66.
+
+Iz povzetka modela sva videla tudi, da imata Alien67(0.663) in SES(-0.151) statistično pomemben vplit($p\le 0.001$) na Alien71, eden pozitivnega in drug negativnega. Tudi SES(-0.567) ima statistično pomemben($p < 0.000$) negativen vpliv na Alien67.
+
+Ker model, glede na mere, še ni najboljši ga poskusimo izboljšati z odstranitvijo omejitev, kjer je to smiselno.  
 
 Z izpisom _modification indices_ preverimo mere lokalnega (ne)prileganja. 
 
@@ -458,8 +464,9 @@ kable(df_indices, align=rep('c', 6),
 
 
 Teoreticno smiselna popraveka sta le dodani kovarianci med _anomia67_ in _anomia71_ torej Anomia leta 1967 in leta 1971, ter med _pwless67_ in _pwless71_, torej Powerlessness leta 1967 in leta 1971. Smiselnost predpostavljamo, saj gre za isto spremenljivko le leto se razlikuje.
+<!-- Neza: a to si iz vira vn razbrau? te teoreticne popravke-->
 
-Popravljen model zapisemo na sledeč način:
+Popravljen model zapisemo na sledeč način.
 
 ```{r echo=TRUE}
 model3.2 <- "
@@ -478,10 +485,9 @@ model3.2 <- "
 	"
 ```
 
-
 ```{r}
 model3.2_fit <- sem(model=model3.2, sample.cov = kovariancna_matrika, sample.nobs = 932)
-# summary(model3.2_fit, fit.measures=T, rsquare=T, standardized=T)
+povzetek = summary(model3.2_fit, fit.measures=T, rsquare=T, standardized=T)
 
 fitMeasures(model3.2_fit, fit.measures=c("df", "cfi", "tli",
                                            "rmsea", "srmr"), output="matrix")
@@ -490,6 +496,32 @@ fitMeasures(model3.2_fit, fit.measures=c("df", "cfi", "tli",
 **Preverimo ali podatki podpirajo model:**
 
 RMSEA je 0.014, kar je pod 0.06, in na podlagi tega je model sprejemljiv. SRMR je sedaj 0.007. Tokrat sta oba CFI (1) in TLI (0.999) nad mejo 0.95. Torej vsi parametri so znotraj meje sprejemljivega modela iz česar lahko zaključimo, da je model res sprejemljiv. 
+
+Na podlagi Model Test User Model($p > 0.05$) pri stopnji značilnosti $0.05$ ne zavračamo ničelne domneve in na podlagi Model Test Baseline Model($p < 0.001$) pa jo še vedno zavračamo, torej smo s tem modelom dobili željeno, da ne zavračamo User Model in zavračamo Baseline Model.
+
+Vrednosti p so pri vseh spremenljivkah manjše od 0.001, torej so vrednosti ocenjenih koeficientov statistično značilno različne od 0. 
+
+Poglejmo si še korelacije med latentnimi spremenljivkami. Nio vse korelacije so pri stopnji značilnosti 0.05 statistično značilne($p < 0.001$), so pa vse pozitivne, kar pomeni, da da se s povečanjem vrednosti ene spremenljivke, poveča tudi vrednost druge.
+
+Tudi tokrat imata Alien67 in SES statistično pomemben vpliv na Alien67, prvi pozitivnega(0.567), drugi pa negativnega(-0.208). Tudi SES ima statistično pomemben negativni vpliv na Alien67(-0.563).
+
+
+```{r}
+model3.2 <- "
+	# latentne spremenljivke (merski model)
+	  Alien67 =~ anomia67 + pwless67
+	  Alien71 =~ anomia71 + pwless71
+	  SES =~ educ66 + occstat66
+	
+	# strukturni model
+	  Alien71 ~ Alien67 + SES
+	  Alien67 ~ SES
+	  
+	# korelacija
+	anomia67 ~~ anomia71
+	pwless67 ~~ pwless71
+	"
+```
 
 **Preverimo še neposredni, posredni in skupni vpliv**
 
@@ -519,21 +551,41 @@ model3.3 <- "
 	"
 ```
 
-
 ```{r}
 model3.3_fit <- sem(model=model3.3, sample.cov = kovariancna_matrika, sample.nobs = 932)
-summary(model3.3_fit, fit.measures=T, rsquare=T, standardized=T)
+povzetek = 
+  summary(model3.3_fit, fit.measures=T, rsquare=T, standardized=T)
 ```
+
+<!--Neza: tole nevem ce je okej...
+na vajah smo delal drugac... je zakomentirano kako je blo na vajah pa kar sm si jst od njegove razlage zapisala-->
 
 Neposredni vplivi imajo povprečno pričakovano vrednost:
 
-* Alien71~SES ... -0.227
+<!-- Neza: tuki ne gledas Estimate ampak Std.all v istem izpisu, tko smo naredl na vajah, nevem kaj dava notr? kje si pa ti prebrau da gledas estimate?-->
+* Alien71~SES ... -0.227 
 * Alien67~SES ... -0.575
 * Alien71~Alien67 ... 0.607
+
+<!--
+* Alien71~SES ... -0.208 
+* Alien67~SES ... -0.563
+* Alien71~Alien67 ... 0.567
+-->
 
 Posrednji vpliv izračunamo kot "$(Alien67 \sim SES) * (Alien71 \sim Alien67)$", torej $-0.575\cdot0.607 = -0.349$. \
 Torej skupni vpliv je enak "$(Alien71 \sim SES) + (Alien67~SES)\cdot(Alien71\sim Alien67)$",  $-0.227 + -0.575\cdot0.607 = -0.576$. 
 
-Za vse vplive velja $p<0.001$, torej so vsi vplivi statistično značilni.
+<!--
+Posrednji vpliv izračunamo kot "$(Alien67 \sim SES) * (Alien71 \sim Alien67)$", torej $-0.563\cdot0.567 = -0.319$. \
+Torej skupni vpliv je enak "$(Alien71 \sim SES) + (Alien67~SES)\cdot(Alien71\sim Alien67)$",  $-0.208 + (-0.563)\cdot0.567 = -0.527$. \
+-->
+
+Za vse vplive velja $p<0.001$, torej so vsi vplivi močno statistično značilni. Ker sta posredni in skupni vpliv statistično značilna, pri stopnji značilnosti 0.05 lahko zavrnemo ničelni domnevi, da vplivov ni. 
+
+
+
+
+
 
 
