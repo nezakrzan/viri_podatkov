@@ -168,10 +168,6 @@ Ce pa slucajno ze imava pa da sm spregledal pa sami izbrisi :)
 Analizo izvajamo na zgoraj opisanih podatkih za državo Francija. Predpostavimo večrazsežno normalno porazdelitev spremenljivk - kar lahko približno vidimo na spodnjih grafih glede na sklop in državo, primernost merskih lestvic in ustrezno velikost vzorca. 
 
 <!-- Neza: tole men ne zgleda normalna porazdelitev....
-Tom29: sej to bi vrjetno lahko komentirala k je tud v navodilu 
-"Ocenite, ali je porazdelitev približno multivariatna normalna"
-Lahko dodava samo kej na to foro
-"Noben od zgornjih grafov ne prikazuje izrazite normalne porazdelitve."
 -->
 
 ```{r, fig.cap="Porazdelitev sklopa energija in čustvena stabilnost za obe državi.", fig.height=4.5}
@@ -188,6 +184,9 @@ hist(unlist(italija_custvenastab), main="Custvena stabilnost - IT", ylab="frekve
 par(oldpar)
 ```
 
+Iz zgornjih grafov vidimo, da porazdelitve odstopajo od normalne porazdelitve. Opaziti je asimetričnost v desno oziroma porazdelitev z dvema vrhovoma.
+
+## Grafični prikaz modela
 
 ```{r, fig.cap="Shema modela.", results=T}
 knitr::include_graphics('model1.png')
@@ -195,16 +194,18 @@ knitr::include_graphics('model1.png')
 
 **Število prostostnih stopenj**
 
-V kovariančni matriki imamo 20 spremenljivk (EXT1-10 in EST1-10). Vrednosti pod in nad diagonalo so enake zato se lahko omejimo samo na diagonalo in vrednosti, ki so pod njo. Torej število poznanih vrednosti (število informacij) je $\frac{20*(20+1)}{2}=210$. \
+V variančno-kovariančni matriki imamo 20 spremenljivk (EXT1-10 in EST1-10). Vrednosti pod in nad diagonalo so enake zato se lahko omejimo samo na diagonalo in vrednosti, ki so pod njo. Torej število poznanih vrednosti (število informacij) je $\frac{20*(20+1)}{2}=210$. \
 Število parametrov, ki jih ocenjujemo v modelu je enako $41$.
 
-* število nepojasnjenih delov v modelu je enako $10+10+1+1=22$ (EXT1-10: 10, EST1-10: 10, f1: 1, f2: 1).
-* pri vsakem faktorju eno izmed povezav fiksiramo na 1, ostalih 9 pa ocenjujemo. Ker imamo dva faktorja v tem primeru ocenjujemo $9+9=18$ paramterov.
+* število nepojasnjenih delov v modelu je enako $10+10+1+1=22$ (EXT1-10: 10, EST1-10: 10, F1: 1, F2: 1).
+* pri vsakem faktorju eno izmed povezav fiksiramo na 1, ostalih 9 pa ocenjujemo. Ker imamo dva faktorja v tem primeru ocenjujemo $9+9=18$ parametrov.
 * povezanost med faktorjema prispeva en parameter
 
-Torej če sesštejemo zgornje vrednosti $22+18+1=41$.
+Torej če seštejemo zgornje vrednosti $22+18+1=41$.
 
 Število prostostnih stopenj je enako $210-41=169$, kar je tudi vrednost, ki nam jo vrne program.
+
+## Model
 
 Najprej naredimo model na nestandardiziranih spremenljivkah in pogledajmo kako dobro se prilega podatkom. Kot latentne spremenljivke sva izbrala energijo(sklop spremenljivk "EXT1-10") in čustveno stabilnost(sklop spremenljivk "EST1-10").
 
@@ -227,7 +228,7 @@ cfa.fit <- cfa(model=cfa.model, data=podatki.fr, estimator="MLR")
 
 Zavrnemo ničelno domnevo($p = 0.000$), kar ni v redu. Zavedamo se, da imamo velik vzorec in $\chi^2$ (kar uporabljamo pri tej analizi) je občutljiv na velike vzorce in hitro zavrača ničelno domnevo. 
 
-Poglejmo si korelacije, kjer si želimo, da si elemnti izven diagonale čim bližje 0, kar lahko vidimo, da po večini ustreza, z izjemo parih.
+Poglejmo si korelacije, kjer si želimo, da si elementi izven diagonale čim bližje 0, kar lahko vidimo, da po večini ustreza, z izjemo parih.
 
 ```{r, fig.cap="Grafični prikaz odklonov(korelacije)."}
 razlika <- residuals(object=cfa.fit, type="cor")$cov
@@ -244,7 +245,7 @@ summary(cfa.fit, fit=T, rsquare=T, standardized=T) # celotna resitev
 fitMeasures(cfa.fit, fit.measures = c("rmsea", "srmr", "cfi", "tli"))
 ```
 
-Strmimo k temu, da je User Model statistično neznačile, kar ni ($p = 0.000$) v najinem primeru, Baseline Model pa statistično značilen, čemur pa najin model ustreza. Z modela tudi razbereva, da imava med fakotrjema $f_1$(energija) in $f_2$(čustvena stabilnost) kovarianco.
+Strmimo k temu, da je User Model statistično neznačilen, kar ni ($p = 0.000$) v najinem primeru, Baseline Model pa statistično značilen, čemur pa najin model ustreza. Z modela tudi razbereva, da imava med faktorjema $f_1$(energija) in $f_2$(čustvena stabilnost) kovarianco.
 
 RMSEA, ki nam pove v kolikšni meri se model dobro prilega vrednostim na populaciji, vrne vrednost 0.093, kar sicer je pod 0.1(želimo si pod 0.06), in je model mejno sprejemljiv. 
 
@@ -287,15 +288,15 @@ RMSEA je tokrat 0.056, kar je pod 0.06, in je na podlagi tega model (mejno) spre
 
 Na podlagi Model Test User Model($p < 0.001$), katerega vrednost testne statistike, pri 146 stopinjah prostosti, je enaka 2379.941, pri stopnji značilnosti $0.05$ zavrnemo domnevo, da je variančno-kovariančna matrika ocenjena na podlagi modela enaka populacijski in sprejmemo domnevo, da se statistično značilno razlikujeta.
 
-Na podlagi Model Test Baseline Model($p < 0.001$) tudi zavrnemo ničelno domnevo pri stopnji statistične značilnosti 0.05, da je variančno-kovariančna matrika ocenjenega modela enaka variančko-kovariančni matriki začetnega modela(brez korelacije spremenljivk).
+Na podlagi Model Test Baseline Model($p < 0.001$) tudi zavrnemo ničelno domnevo pri stopnji statistične značilnosti 0.05, da je variančno-kovariančna matrika ocenjenega modela enaka variančno-kovariančni matriki začetnega modela(brez korelacije spremenljivk).
 
 Testa sta sicer izredno občutljiva in se le redko zgodi, da ničelnih domnev ne zavračamo, torej željeno bomo težko dobili, zato se z rezultatom ne obremenjujeva.
 
 Da zagotoviva identifikabilnost modela, sva pri vsakem faktorju eni spremenljivki vrednost faktorske uteži nastavila na 1 (marker indikator). Pri faktorju energija je to indikator EXT1 in pri čustveni stabilnosti je to EST1.
 
-Vrednosti p so pri vseh spremenljivkah manjše od 0.001, torej so vrednosti ocenjenih koeficientov statistično značilno različne od 0. Iz ocen standariziranih koeficientov sva razbrala, da imata največji vpliv na energijo EXT5 in EXT7, na čustveno stabilnost pa EST1 in EST6. Vrednosti vseh koeficientov so pozitivne, torej se s povečanjem vrednosti spremenljivk, poveč tudi vrednost latentne.
+Vrednosti p so pri vseh spremenljivkah manjše od 0.001, torej so vrednosti ocenjenih koeficientov statistično značilno različne od 0. Iz ocen standariziranih koeficientov sva razbrala, da imata največji vpliv na energijo EXT5 in EXT7, na čustveno stabilnost pa EST1 in EST6. Vrednosti vseh koeficientov so pozitivne, torej se s povečanjem vrednosti spremenljivk, poveča tudi vrednost latentne.
 
-Poglejmo si še korelacije med latentnimi spremenljivkami. Vse korelacije so pri stopnji značilnosti 0.05 statistično značilne($p < 0.001$). Vse korelacije so pozotivne, kar pomeni, da da se s povečanjem vrednosti ene spremenljivke, poveča tudi vrednost druge, npr. bolj kot imajo ljudje nihanje razpoloženja(EST8) bolj spreminjajo razpoloženje(EST7) ali manj kot ljudi skrbi za veliko stvari(EST#) in več kot so sproščeni(EST2) kasneje postanejo živčni(EST1).
+Poglejmo si še korelacije med latentnimi spremenljivkami. Vse korelacije so pri stopnji značilnosti 0.05 statistično značilne($p < 0.001$). Vse korelacije so pozitivne, kar pomeni, da se s povečanjem vrednosti ene spremenljivke, poveča tudi vrednost druge, npr. bolj kot imajo ljudje nihanje razpoloženja(EST8) bolj spreminjajo razpoloženje(EST7) ali manj kot ljudi skrbi za veliko stvari(EST3) in več kot so sproščeni(EST2) kasneje postanejo živčni(EST1).
 
 # Merska enakovrednost Francije in Italije(MG-CFA)
 
@@ -398,7 +399,7 @@ colnames(kovariancna_matrika) = potrebni
 
 ## Podatki
 
-Raziskava je bila zasnovana kot zbiranje vrednosti spremenljivk v letih 1966, 1967, 1971 v dveh regijah. Prva regija je bilo območje kjer je bil zgrajen Jones & Laughlin jeklena industrija, in testno območje kjer ni bilo takega razvoja. V celoti so izbrali 932 enot. 
+Raziskava je bila zasnovana kot zbiranje vrednosti spremenljivk v letih 1966, 1967, 1971 v dveh regijah. Prva regija je bilo območje kjer je bil zgrajen Jones & Laughlin jeklena industrija, in testno območje kjer ni bilo takega razvoja. V celoti so zbrali podatke za 932 enot. 
 
 ```{r results=TRUE}
 
@@ -458,14 +459,15 @@ fitMeasures(model3.1_fit, fit.measures=c("df", "cfi", "tli",
 
 RMSEA je 0.108, kar je nad 0.06, in na podlagi tega model ni sprejemljiv. SRMR je sedaj 0.021. CFI je z vrednostjo 0.969 nad mejo 0.95, medtem ko ima TLI vrednost 0.923, torej je mejno sprejemljiv, saj je nad 0.90. Torej nekateri indeksi prileganja nakazujejo na sprejemljiv model, medtem ko nekateri nakazujejo nasprotno.
 
-Na podlagi Model Test User Model($p < 0.001$) pri stopnji značilnosti $0.05$ zavrnemo domnevo, da je variančno-kovariančna matrika ocenjena na podlagi modela enaka populacijski in na podlagi Model Test Baseline Model($p < 0.001$) tudi zavrnemo ničelno domnevo pri stopnji statistične značilnosti 0.05, da je variančno-kovariančna matrika ocenjenega modela enaka variančko-kovariančni matriki začetnega modela(brez korelacije spremenljivk). Želimo si sicer, da User Model ne bi zavračali, ampak bomo to težko dobili, saj sta oba testa izjemno občutljiva in se to redko zgodi.
+Na podlagi Model Test User Model($p < 0.001$) pri stopnji značilnosti $0.05$ zavrnemo domnevo, da je variančno-kovariančna matrika ocenjena na podlagi modela enaka populacijski in na podlagi Model Test Baseline Model($p < 0.001$) tudi zavrnemo ničelno domnevo pri stopnji statistične značilnosti 0.05, da je variančno-kovariančna matrika ocenjenega modela enaka variančno-kovariančni matriki začetnega modela(brez korelacije spremenljivk). Želimo si sicer, da User Model ne bi zavračali, ampak bomo to težko dobili, saj sta oba testa izjemno občutljiva in se to redko zgodi.
 
 Da zagotoviva identifikabilnost modela, sva pri vsakem faktorju eni spremenljivki vrednost faktorske uteži nastavila na 1 (marker indikator). Pri faktorju Alien67 je to indikator anomia67, pri Alien71 je to anomia71 in pri SES je to educ66.
 
 Iz povzetka modela sva videla tudi, da imata Alien67(0.663) in SES(-0.151) statistično pomemben vplit($p\le 0.001$) na Alien71, eden pozitivnega in drug negativnega. Tudi SES(-0.567) ima statistično pomemben($p < 0.000$) negativen vpliv na Alien67.
 
 <!--Tom29: tukej sm dodal-->
-V kovariančni matriki imamo $\frac{6(6+1)}{2}=21$ enoličnih podatkov (znanih vrednosti). Število parametrov, ki jih ocenjujemo je enako $15$. Do tega števila pridemo po sledečem razmisleku. Imamo 9 nepojasnenih delov v modelu ($\epsilon$). Pri vseh treh (*SES*, *Alien67*, *Alien71*) eno izmed povezav fiksiramo na 1, drugo pa ocenjujemo (torej vse skupaj ocenimo 3 parametre). Nato seldijo še povezave med *SES*, *Alien67* in *Alien71*, ki ji je prav tako 3. Torej vse skupaj ocenimo $9+3+3=15$ paramterov. Število prostostnih stopenj je enako $21-15=6$, kar se ujema tudi z izpisom. 
+V variančno-kovariančni matriki imamo $\frac{6(6+1)}{2}=21$ enoličnih podatkov (znanih vrednosti). Število parametrov, ki jih ocenjujemo je enako $15$. Do tega števila pridemo po sledečem razmisleku.\
+Imamo 9 nepojasnjenih delov v modelu ($\epsilon$). Pri vseh treh (*SES*, *Alien67*, *Alien71*) eno izmed povezav fiksiramo na 1, drugo pa ocenjujemo (torej vse skupaj ocenimo 3 parametre). Nato sledijo še povezave med *SES*, *Alien67* in *Alien71*, ki jih je prav tako 3. Torej vse skupaj ocenimo $9+3+3=15$ parametrov. Število prostostnih stopenj je enako $21-15=6$, kar se ujema tudi z izpisom. 
 
 
 Ker model, glede na mere, še ni najboljši ga poskusimo izboljšati z odstranitvijo omejitev, kjer je to smiselno.  
