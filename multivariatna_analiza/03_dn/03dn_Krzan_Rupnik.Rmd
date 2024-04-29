@@ -188,6 +188,24 @@ hist(unlist(italija_custvenastab), main="Custvena stabilnost - IT", ylab="frekve
 par(oldpar)
 ```
 
+
+```{r, fig.cap="Shema modela.", results=T}
+knitr::include_graphics('model1.png')
+```
+
+**Število prostostnih stopenj**
+
+V kovariančni matriki imamo 20 spremenljivk (EXT1-10 in EST1-10). Vrednosti pod in nad diagonalo so enake zato se lahko omejimo samo na diagonalo in vrednosti, ki so pod njo. Torej število poznanih vrednosti (število informacij) je $\frac{20*(20+1)}{2}=210$. \
+Število parametrov, ki jih ocenjujemo v modelu je enako $41$.
+
+* število nepojasnjenih delov v modelu je enako $10+10+1+1=22$ (EXT1-10: 10, EST1-10: 10, f1: 1, f2: 1).
+* pri vsakem faktorju eno izmed povezav fiksiramo na 1, ostalih 9 pa ocenjujemo. Ker imamo dva faktorja v tem primeru ocenjujemo $9+9=18$ paramterov.
+* povezanost med faktorjema prispeva en parameter
+
+Torej če sesštejemo zgornje vrednosti $22+18+1=41$.
+
+Število prostostnih stopenj je enako $210-41=169$, kar je tudi vrednost, ki nam jo vrne program.
+
 Najprej naredimo model na nestandardiziranih spremenljivkah in pogledajmo kako dobro se prilega podatkom. Kot latentne spremenljivke sva izbrala energijo(sklop spremenljivk "EXT1-10") in čustveno stabilnost(sklop spremenljivk "EST1-10").
 
 ```{r}
@@ -235,19 +253,6 @@ SRMR, ki meri koren povprečne kvadrirane razlike med ocenjenimi in modelskimi k
 CFI, kateri primerja ocenjen model z modelom brez korelacij zavzame vrednost 0.833, kar je pod najnižjo mejno vrednostjo 0.90(želimo si, da je nad 0.95), prav tako je TLI vrednost 0.812, ki je podobna CLI in je pod skrajno mejno vrednostjo 0.90(želimo si, da je nad 0.95).
 
 Na podlagi mere prileganja bi rekla, da model ni sprejemljiv in se ne prilega najbolje podatkom in to, da smo zgoraj zavrnili ničeno domnevo ni v redu.
-
-**Število prostostnih stopenj**
-
-V kovariančni matriki imamo 20 spremenljivk (EXT1-10 in EST1-10). Vrednosti pod in nad diagonalo so enake zato se lahko omejimo samo na diagonalo in vrednosti, ki so pod njo. Torej število poznanih vrednosti (število informacij) je $\frac{20*(20+1)}{2}=210$. \
-Število parametrov, ki jih ocenjujemo v modelu je enako $41$.
-
-* število nepojasnjenih delov v modelu je enako $10+10+1+1=22$ (EXT1-10: 10, EST1-10: 10, f1: 1, f2: 1).
-* pri vsakem faktorju eno izmed povezav fiksiramo na 1, ostalih 9 pa ocenjujemo. Ker imamo dva faktorja v tem primeru ocenjujemo $9+9=18$ paramterov.
-* povezanost med faktorjema prispeva en parameter
-
-Torej če sesštejemo zgornje vrednosti $22+18+1=41$.
-
-Število prostostnih stopenj je enako $210-41=169$, kar je tudi vrednost, ki nam jo vrne program.
 
 ## Spremembe modela
 
