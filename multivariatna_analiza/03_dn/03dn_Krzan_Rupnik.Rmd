@@ -140,7 +140,8 @@ kable(stat.it,
 \newpage
 
 # Konfirmatorna faktorska analiza(CFA)
-<!--Tom25: tole nevem se sm kje zasledil pa nocem kr nekam vrint da te ne pokvarim izgleda
+<!--Tom29: sm dodal zdej na konec tega razdelka...
+Tom25: tole nevem se sm kje zasledil pa nocem kr nekam vrint da te ne pokvarim izgleda
 
 "Kolikšno je število poznanih vrednosti v kovariančni matriki (število informacij)? Kolikšno je število ocenjenih parametrov v modelu? Kolikšno je število prostostnih stopenj?"
 
@@ -166,7 +167,12 @@ Ce pa slucajno ze imava pa da sm spregledal pa sami izbrisi :)
 
 Analizo izvajamo na zgoraj opisanih podatkih za državo Francija. Predpostavimo večrazsežno normalno porazdelitev spremenljivk - kar lahko približno vidimo na spodnjih grafih glede na sklop in državo, primernost merskih lestvic in ustrezno velikost vzorca. 
 
-<!-- Neza: tole men ne zgleda normalna porazdelitev....-->
+<!-- Neza: tole men ne zgleda normalna porazdelitev....
+Tom29: sej to bi vrjetno lahko komentirala k je tud v navodilu 
+"Ocenite, ali je porazdelitev približno multivariatna normalna"
+Lahko dodava samo kej na to foro
+"Noben od zgornjih grafov ne prikazuje izrazite normalne porazdelitve."
+-->
 
 ```{r, fig.cap="Porazdelitev sklopa energija in čustvena stabilnost za obe državi.", fig.height=4.5}
 francija_energija = podatki[podatki$country == "FR", 1:10]
@@ -229,6 +235,19 @@ SRMR, ki meri koren povprečne kvadrirane razlike med ocenjenimi in modelskimi k
 CFI, kateri primerja ocenjen model z modelom brez korelacij zavzame vrednost 0.833, kar je pod najnižjo mejno vrednostjo 0.90(želimo si, da je nad 0.95), prav tako je TLI vrednost 0.812, ki je podobna CLI in je pod skrajno mejno vrednostjo 0.90(želimo si, da je nad 0.95).
 
 Na podlagi mere prileganja bi rekla, da model ni sprejemljiv in se ne prilega najbolje podatkom in to, da smo zgoraj zavrnili ničeno domnevo ni v redu.
+
+**Število prostostnih stopenj**
+
+V kovariančni matriki imamo 20 spremenljivk (EXT1-10 in EST1-10). Vrednosti pod in nad diagonalo so enake zato se lahko omejimo samo na diagonalo in vrednosti, ki so pod njo. Torej število poznanih vrednosti (število informacij) je $\frac{20*(20+1)}{2}=210$. \
+Število parametrov, ki jih ocenjujemo v modelu je enako $41$.
+
+* število nepojasnjenih delov v modelu je enako $10+10+1+1=22$ (EXT1-10: 10, EST1-10: 10, f1: 1, f2: 1).
+* pri vsakem faktorju eno izmed povezav fiksiramo na 1, ostalih 9 pa ocenjujemo. Ker imamo dva faktorja v tem primeru ocenjujemo $9+9=18$ paramterov.
+* povezanost med faktorjema prispeva en parameter
+
+Torej če sesštejemo zgornje vrednosti $22+18+1=41$.
+
+Število prostostnih stopenj je enako $210-41=169$, kar je tudi vrednost, ki nam jo vrne program.
 
 ## Spremembe modela
 
@@ -351,7 +370,6 @@ anova(configural.fit, loadings.fit, intercepts.fit)
 ```
 
 Torej če modele primerjamo po Akaikijevem informacijskem kriteriju, vidimo, da je konfiguralna merska enakovrednost najboljša, saj ima najnižjo AIC vrednost.
-<!--Tom24: tukej si vrjetno mislila da je konfiguralna merska enakovrednost ker ima najmanjso vrednost -->
 
 # Analiza mediacije z latentnimi spremenljivkami (SEM)
 
@@ -441,6 +459,10 @@ Da zagotoviva identifikabilnost modela, sva pri vsakem faktorju eni spremenljivk
 
 Iz povzetka modela sva videla tudi, da imata Alien67(0.663) in SES(-0.151) statistično pomemben vplit($p\le 0.001$) na Alien71, eden pozitivnega in drug negativnega. Tudi SES(-0.567) ima statistično pomemben($p < 0.000$) negativen vpliv na Alien67.
 
+<!--Tom29: tukej sm dodal-->
+V kovariančni matriki imamo $\frac{6(6+1)}{2}=21$ enoličnih podatkov (znanih vrednosti). Število parametrov, ki jih ocenjujemo je enako $15$. Do tega števila pridemo po sledečem razmisleku. Imamo 9 nepojasnenih delov v modelu ($\epsilon$). Pri vseh treh (*SES*, *Alien67*, *Alien71*) eno izmed povezav fiksiramo na 1, drugo pa ocenjujemo (torej vse skupaj ocenimo 3 parametre). Nato seldijo še povezave med *SES*, *Alien67* in *Alien71*, ki ji je prav tako 3. Torej vse skupaj ocenimo $9+3+3=15$ paramterov. Število prostostnih stopenj je enako $21-15=6$, kar se ujema tudi z izpisom. 
+
+
 Ker model, glede na mere, še ni najboljši ga poskusimo izboljšati z odstranitvijo omejitev, kjer je to smiselno.  
 
 Z izpisom _modification indices_ preverimo mere lokalnega (ne)prileganja. 
@@ -464,7 +486,8 @@ kable(df_indices, align=rep('c', 6),
 
 
 Teoreticno smiselna popraveka sta le dodani kovarianci med _anomia67_ in _anomia71_ torej Anomia leta 1967 in leta 1971, ter med _pwless67_ in _pwless71_, torej Powerlessness leta 1967 in leta 1971. Smiselnost predpostavljamo, saj gre za isto spremenljivko le leto se razlikuje.
-<!-- Neza: a to si iz vira vn razbrau? te teoreticne popravke-->
+<!-- Neza: a to si iz vira vn razbrau? te teoreticne popravke
+Tom29: V viru ni blo nobene take teorije da bi to razbral...ampak je to kot edino teoteticno siselni dodatke tud v primeru k je reku po katerem nej se ravnamo...pa tud nekak iz logike ker gre za isto sprem. samo drugo leto tko da nekej povezave je mozno-->
 
 Popravljen model zapisemo na sledeč način.
 
@@ -501,9 +524,9 @@ Na podlagi Model Test User Model($p > 0.05$) pri stopnji značilnosti $0.05$ ne 
 
 Vrednosti p so pri vseh spremenljivkah manjše od 0.001, torej so vrednosti ocenjenih koeficientov statistično značilno različne od 0. 
 
-Poglejmo si še korelacije med latentnimi spremenljivkami. Nio vse korelacije so pri stopnji značilnosti 0.05 statistično značilne($p < 0.001$), so pa vse pozitivne, kar pomeni, da da se s povečanjem vrednosti ene spremenljivke, poveča tudi vrednost druge.
+Poglejmo si še korelacije med latentnimi spremenljivkami. Niso vse korelacije pri stopnji značilnosti 0.05 statistično značilne($p < 0.001$), so pa vse pozitivne, kar pomeni, da da se s povečanjem vrednosti ene spremenljivke, poveča tudi vrednost druge.
 
-Tudi tokrat imata Alien67 in SES statistično pomemben vpliv na Alien67, prvi pozitivnega(0.567), drugi pa negativnega(-0.208). Tudi SES ima statistično pomemben negativni vpliv na Alien67(-0.563).
+Tudi tokrat imata Alien67 in SES statistično pomemben vpliv na Alien71, prvi pozitivnega(0.567), drugi pa negativnega(-0.208). Tudi SES ima statistično pomemben negativni vpliv na Alien67(-0.563).
 
 
 ```{r}
@@ -562,24 +585,13 @@ na vajah smo delal drugac... je zakomentirano kako je blo na vajah pa kar sm si 
 
 Neposredni vplivi imajo povprečno pričakovano vrednost:
 
-<!-- Neza: tuki ne gledas Estimate ampak Std.all v istem izpisu, tko smo naredl na vajah, nevem kaj dava notr? kje si pa ti prebrau da gledas estimate?-->
-* Alien71~SES ... -0.227 
-* Alien67~SES ... -0.575
-* Alien71~Alien67 ... 0.607
-
-<!--
 * Alien71~SES ... -0.208 
 * Alien67~SES ... -0.563
 * Alien71~Alien67 ... 0.567
--->
 
-Posrednji vpliv izračunamo kot "$(Alien67 \sim SES) * (Alien71 \sim Alien67)$", torej $-0.575\cdot0.607 = -0.349$. \
-Torej skupni vpliv je enak "$(Alien71 \sim SES) + (Alien67~SES)\cdot(Alien71\sim Alien67)$",  $-0.227 + -0.575\cdot0.607 = -0.576$. 
 
-<!--
 Posrednji vpliv izračunamo kot "$(Alien67 \sim SES) * (Alien71 \sim Alien67)$", torej $-0.563\cdot0.567 = -0.319$. \
-Torej skupni vpliv je enak "$(Alien71 \sim SES) + (Alien67~SES)\cdot(Alien71\sim Alien67)$",  $-0.208 + (-0.563)\cdot0.567 = -0.527$. \
--->
+Torej skupni vpliv je enak "$(Alien71 \sim SES) + (Alien67~SES)\cdot(Alien71\sim Alien67)$",  $-0.208 + (-0.563)\cdot0.567 = -0.527$. 
 
 Za vse vplive velja $p<0.001$, torej so vsi vplivi močno statistično značilni. Ker sta posredni in skupni vpliv statistično značilna, pri stopnji značilnosti 0.05 lahko zavrnemo ničelni domnevi, da vplivov ni. 
 
