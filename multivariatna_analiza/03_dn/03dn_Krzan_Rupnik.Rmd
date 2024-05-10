@@ -12,6 +12,8 @@ header-includes:
 - \usepackage[T1]{fontenc}
 ---
 
+<!--Neza10: bi lahko prosim dal v mapo sliko model1, da lahko nardim pdf, zdej je zakomentirano-->
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
 	echo = FALSE,
@@ -33,6 +35,7 @@ library(foreign)
 library(psych)
 library(lavaan)
 library(corrplot)
+library(gridExtra)
 
 set.seed(2024)
 ```
@@ -175,21 +178,46 @@ Ce pa slucajno ze imava pa da sm spregledal pa sami izbrisi :)
 
 Analizo izvajamo na zgoraj opisanih podatkih za državo Francija. Predpostavimo večrazsežno normalno porazdelitev spremenljivk - kar lahko približno vidimo na spodnjih grafih glede na sklop in državo, primernost merskih lestvic in ustrezno velikost vzorca. 
 
-<!-- Neza: tole men ne zgleda normalna porazdelitev....
+<!-- Neza10: to je zdej vsak hist posebi narisan, nevem kako nej nardim da se jih bo vec izrisal v eni vrsti ker neki jamra da je preveliko...
 -->
 
-```{r, fig.cap="Porazdelitev sklopa energija in čustvena stabilnost za obe državi.", fig.height=4.5}
-francija_energija = podatki[podatki$country == "FR", 1:10]
-italija_energija = podatki[podatki$country == "IT", 1:10]
-francija_custvenastab = podatki[podatki$country == "FR", 11:20]
-italija_custvenastab = podatki[podatki$country == "IT", 11:20]
+```{r echo=FALSE, fig.cap="Porazdelitev spremenljivk v sklopih energija in čustvena stabilnost za državo Francija.", fig.dim=c(8,8)}
+# francija_energija = podatki[podatki$country == "FR", 1:10]
+# italija_energija = podatki[podatki$country == "IT", 1:10]
+# francija_custvenastab = podatki[podatki$country == "FR", 11:20]
+# italija_custvenastab = podatki[podatki$country == "IT", 11:20]
 
-oldpar <- par(mfrow=c(2, 2))
-hist(unlist(francija_energija), main="Energija - FR", ylab="frekvenca", xlab="")
-hist(unlist(francija_custvenastab), main="Custvena stabilnost - FR", ylab="frekvenca", xlab="")
-hist(unlist(italija_energija), main="Energija - IT", ylab="frekvenca", xlab="")
-hist(unlist(italija_custvenastab), main="Custvena stabilnost - IT", ylab="frekvenca",xlab="")
-par(oldpar)
+# oldpar <- par(mfrow=c(2, 2))
+# hist(unlist(francija_energija), main="Energija - FR", ylab="frekvenca", xlab="")
+# hist(unlist(francija_custvenastab), main="Custvena stabilnost - FR", ylab="frekvenca", xlab="")
+# hist(unlist(italija_energija), main="Energija - IT", ylab="frekvenca", xlab="")
+# hist(unlist(italija_custvenastab), main="Custvena stabilnost - IT", ylab="frekvenca",xlab="")
+# par(oldpar)
+
+g1 = ggplot(podatki1, aes(x=EXT1))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT1")+theme_bw()
+g2 = ggplot(podatki1, aes(x=EXT2))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT2")+theme_bw()
+g3 = ggplot(podatki1, aes(x=EXT3))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT3")+theme_bw()
+g4 = ggplot(podatki1, aes(x=EXT4))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT4")+theme_bw()
+g5 = ggplot(podatki1, aes(x=EXT5))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT5")+theme_bw()
+g6 = ggplot(podatki1, aes(x=EXT6))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT6")+theme_bw()
+g7 = ggplot(podatki1, aes(x=EXT7))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT7")+theme_bw()
+g8 = ggplot(podatki1, aes(x=EXT8))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT8")+theme_bw()
+g9 = ggplot(podatki1, aes(x=EXT9))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT9")+theme_bw()
+g10 = ggplot(podatki1, aes(x=EXT10))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EXT10")+theme_bw()
+#grid.arrange(g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,ncol = 3)
+
+g11 = ggplot(podatki1, aes(x=EST1))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST1")+theme_bw()
+g12 = ggplot(podatki1, aes(x=EST2))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST2")+theme_bw()
+g13 = ggplot(podatki1, aes(x=EST3))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST3")+theme_bw()
+g14 = ggplot(podatki1, aes(x=EST4))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST4")+theme_bw()
+g15 = ggplot(podatki1, aes(x=EST5))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST5")+theme_bw()
+g16 = ggplot(podatki1, aes(x=EST6))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST6")+theme_bw()
+g17 = ggplot(podatki1, aes(x=EST7))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST7")+theme_bw()
+g18 = ggplot(podatki1, aes(x=EST8))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST8")+theme_bw()
+g19 = ggplot(podatki1, aes(x=EST9))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST9")+theme_bw()
+g20 = ggplot(podatki1, aes(x=EST10))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("EST10")+theme_bw()
+grid.arrange(g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,g14,g15,g16,g17,g18,g19,g20,
+             ncol = 4)
 ```
 
 Iz zgornjih grafov vidimo, da porazdelitve odstopajo od normalne porazdelitve. Opaziti je asimetričnost v desno oziroma porazdelitev z dvema vrhovoma.
@@ -197,7 +225,7 @@ Iz zgornjih grafov vidimo, da porazdelitve odstopajo od normalne porazdelitve. O
 ## Grafični prikaz modela
 
 ```{r, fig.cap="Shema modela.", results=T}
-knitr::include_graphics('model1.png')
+#knitr::include_graphics('model1.png')
 ```
 
 **Število prostostnih stopenj**
@@ -236,9 +264,10 @@ cfa.fit <- cfa(model=cfa.model, data=podatki.fr, estimator="MLR")
 
 Zavrnemo ničelno domnevo($p = 0.000$), da je variančno-kovariančna matrika ocenjena na podlagi modela enaka populacijski, kar ni v redu. Zavedamo se, da imamo velik vzorec in $\chi^2$ (kar uporabljamo pri tej analizi) je občutljiv na velike vzorce in hitro zavrača ničelno domnevo. 
 
-Poglejmo si odstopanja, kjer si želimo, da so elementi izven diagonale čim bližje 0, kar lahko vidimo, da po večini ustreza, z izjemo parih.
+Poglejmo si odstopanja, kjer si želimo, da so elementi izven diagonale čim bližje 0, kar lahko vidimo, da po večini ustreza, z izjemo parih, ki imajo pozitivne odklone.
+<!--Neza10: tega pa ne znam komentirat, ker na vajah nismo komentiral druzga kokr to da morjo bit čim bližje 0-->
 
-```{r, fig.cap="Grafični prikaz odklonov(korelacije)."}
+```{r, fig.cap="Grafični prikaz odklonov."}
 razlika <- residuals(object=cfa.fit, type="cor")$cov
 int <- c(-1, -0.2, 0.2, 1)
 nint <- length(int) - 1
@@ -378,7 +407,7 @@ Predpostavimo torej, da imamo med Italijo in Francijo metrično, konfiguralno in
 
 Naredimo še primerjavo modelov s testom `anova`.
 
-```{r echo=TRUE}
+```{r echo=TRUE, results=T}
 # primerjava modelov
 anova(configural.fit, loadings.fit, intercepts.fit)
 ```
