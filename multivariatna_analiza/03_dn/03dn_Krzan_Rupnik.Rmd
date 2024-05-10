@@ -59,6 +59,14 @@ podatki = rbind(podatki1, podatki2)
 n_prej = nrow(podatki) # stevilo vrstic pred odstranitvijo NA
 podatki = na.omit(podatki) # odstranjene vrstice, ki vsebujejo NA
 razlika = n_prej - nrow(podatki) # stevilo odtrajenih vrstic
+
+# po drzavah
+n_prej_fr = nrow(podatki1)
+n_prej_it = nrow(podatki2)
+podatki1 = na.omit(podatki1)
+podatki2 = na.omit(podatki2)
+razlika_fr = n_prej_fr - nrow(podatki1)
+razlika_it = n_prej_it - nrow(podatki2)
 ```
 
 <!-- 
@@ -108,7 +116,7 @@ for(el in negativne){
 
 ```
 
-Iz podatkovnega okvirja sva odstranila vrstice, ki so vsebovale kakšno _NA_ vrednost. Takih vrstic je bilo `r razlika`, torej imava na koncu `r nrow(podatki)` podatkov.
+Iz podatkovnega okvirja sva odstranila vrstice, ki so vsebovale kakšno _NA_ vrednost. Takih vrstic je bilo `r razlika`, torej imava na koncu `r nrow(podatki)` podatkov - pri državi Francija je bilo mankajočih podatkov `r razlika_fr`, torej je bilo za Francijo uporabnih `r nrow(podatki1)`, pri državi Italija pa je bilo mankajočih podatkov `r razlika_it`, torej je bilo za Italijo uporabnih `r nrow(podatki2)`.
 
 Poglejmo si nekatere opisne statistike sklopa spremenljivk pri _energiji_ in sklopa spremenljivk  _čustvene stabilnosti_. V spodnjih tabelah vidimo, da so podatki v redu in nimamo nepravilnih vrednosti, ki niso znotraj lestvice.
 
@@ -226,9 +234,9 @@ cfa.model <- "
 cfa.fit <- cfa(model=cfa.model, data=podatki.fr, estimator="MLR")
 ```
 
-Zavrnemo ničelno domnevo($p = 0.000$), kar ni v redu. Zavedamo se, da imamo velik vzorec in $\chi^2$ (kar uporabljamo pri tej analizi) je občutljiv na velike vzorce in hitro zavrača ničelno domnevo. 
+Zavrnemo ničelno domnevo($p = 0.000$), da je variančno-kovariančna matrika ocenjena na podlagi modela enaka populacijski, kar ni v redu. Zavedamo se, da imamo velik vzorec in $\chi^2$ (kar uporabljamo pri tej analizi) je občutljiv na velike vzorce in hitro zavrača ničelno domnevo. 
 
-Poglejmo si korelacije, kjer si želimo, da si elementi izven diagonale čim bližje 0, kar lahko vidimo, da po večini ustreza, z izjemo parih.
+Poglejmo si odstopanja, kjer si želimo, da so elementi izven diagonale čim bližje 0, kar lahko vidimo, da po večini ustreza, z izjemo parih.
 
 ```{r, fig.cap="Grafični prikaz odklonov(korelacije)."}
 razlika <- residuals(object=cfa.fit, type="cor")$cov
