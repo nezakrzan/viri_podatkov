@@ -225,7 +225,7 @@ Iz zgornjih grafov vidimo, da porazdelitve odstopajo od normalne porazdelitve. O
 ## Grafični prikaz modela
 
 ```{r, fig.cap="Shema modela.", results=T}
-#knitr::include_graphics('model1.png')
+knitr::include_graphics('model1.png')
 ```
 
 **Število prostostnih stopenj**
