@@ -265,14 +265,7 @@ cfa.fit <- cfa(model=cfa.model, data=podatki.fr, estimator="MLR")
 Zavrnemo ničelno domnevo($p = 0.000$), da je variančno-kovariančna matrika ocenjena na podlagi modela enaka populacijski, kar ni v redu. Zavedamo se, da imamo velik vzorec in $\chi^2$ (kar uporabljamo pri tej analizi) je občutljiv na velike vzorce in hitro zavrača ničelno domnevo. 
 
 Poglejmo si odstopanja, kjer si želimo, da so elementi izven diagonale čim bližje 0, kar lahko vidimo, da po večini ustreza, z izjemo parih, ki imajo pozitivne odklone.
-<!--Neza10: tega pa ne znam komentirat, ker na vajah nismo komentiral druzga kokr to da morjo bit čim bližje 0
-Tom11: zdej sm sou mal brat in sm ugotovil da so to kovariance ostankov do cesar pride recimo k imamo vprasanja v vprasalniku k sprasujejo po podobni oz isti stvari. npr:
-EST6-hitro se razjezim
-EST9-sem hitro vzkipljiv
-in tedve imata na grafu pozitivno korelacijo
 
-bom tole spodi dodal pa poglej ce se strinjas
--->
 Do odstopanja pride pri spremenljivkah, ki imajo zelo podoben ali celo enak pomen (sprašujejo po enaki stvari). Primer tega je pozitivna korelacija med EST6 (Hitro se razjezim) in EST9 (Sem hitro vzkipljiv). Podobna situacija je tudi, ko imata spremenljivki nasproten pomen (lestvico pri negativno označenih sprem. smo obrnili). Primer tega je pozitivna korelacija med EST1 (Hitro postanem živčen) in EST2 (Večino časa sem sproščen). 
 
 ```{r, fig.cap="Grafični prikaz odklonov."}
