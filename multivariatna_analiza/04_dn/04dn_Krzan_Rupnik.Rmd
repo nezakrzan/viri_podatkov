@@ -13,9 +13,11 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center")
 
 library(kableExtra)
+
+set.seed(2024)
 ```
 
 ```{r}
@@ -25,7 +27,7 @@ data <- read.csv("dn5_data_wine.csv", header=T)
 
 # Opis podatkov
 
-Za analizo sva si izbrala podatkovni okvir z naslovom _Wine_, ki vsebuje `r nrow(data)` vrstic. Podatki vsebujejo vrednosti kemijske analize treh različnih sort vina iz enake regije v Italiji.  Analiza vsebuje vrednosti 13 različnih komponent (lastnosti) najdenih v vsaki izmed treh sort vina. Iz teh komponent želimo določiti kateri sorti pripada vino (stolpec _Class_). Komponente oz. stolpci v podatkovne okvirju so:
+Za analizo sva si izbrala podatkovni okvir z naslovom _Wine_, ki vsebuje `r nrow(data)` vrstic. Enoto oz. vrstico podatkov predstavlja posamezno vino. Podatki vsebujejo vrednosti kemijske analize treh različnih sort vina iz enake regije v Italiji.  Analiza vsebuje vrednosti 13 različnih komponent (lastnosti) najdenih v vsaki izmed treh sort vina. Iz teh komponent želimo določiti kateri sorti pripada vino (stolpec _Class_). Komponente oz. stolpci v podatkovne okvirju so:
 
 ```{r}
 df_stolpci = data.frame("Ime" = c("Class", "Alcohol", "Malic_acid", "Ash",
@@ -43,18 +45,18 @@ df_stolpci = data.frame("Ime" = c("Class", "Alcohol", "Malic_acid", "Ash",
 
 
 kable(df_stolpci, 
-      caption="Opis") %>% 
+      caption="Spremenljivke v podatkovnem okvirju.") %>% 
   kable_styling(full_width=F, latex_options="hold_position")
 ```
 
 
 ```{r}
-df_stat = data.frame("Ime" = c("Class", "Alcohol", "Malic_acid", "Ash",
+df_stat = data.frame("Ime" = c( "Alcohol", "Malic_acid", "Ash",
                                   "Alcalinity_of_ash", "Magnesium", "Total_phenols",
                                   "Flavanoids", "Nonflavanoid_phenols",
                                   "Proanthocyanins", "Color_intensity", "Hue",
                                   "OD280_OD315",  "Proline"),
-                     "min" = c(min(data$Class), min(data$Alcohol),
+                     "min" = c(min(data$Alcohol),
                                min(data$Malic_acid), min(data$Ash),
                                min(data$Alcalinity_of_ash), min(data$Magnesium),
                                min(data$Total_phenols), min(data$Flavanoids),
@@ -62,26 +64,106 @@ df_stat = data.frame("Ime" = c("Class", "Alcohol", "Malic_acid", "Ash",
                                min(data$Proanthocyanins), 
                                min(data$Color_intensity), min(data$Hue),
                                min(data$OD280_OD315),  min(data$Proline)),
-                     "povprecje" = c(min(data$Class), min(data$Alcohol),
-                               min(data$Malic_acid), min(data$Ash),
-                               min(data$Alcalinity_of_ash), min(data$Magnesium),
-                               min(data$Total_phenols), min(data$Flavanoids),
-                               min(data$Nonflavanoid_phenols), 
-                               min(data$Proanthocyanins), 
-                               min(data$Color_intensity), min(data$Hue),
-                               min(data$OD280_OD315),  min(data$Proline)))
+                     "max" = c(max(data$Alcohol),
+                               max(data$Malic_acid), max(data$Ash),
+                               max(data$Alcalinity_of_ash), max(data$Magnesium),
+                               max(data$Total_phenols), max(data$Flavanoids),
+                               max(data$Nonflavanoid_phenols), 
+                               max(data$Proanthocyanins), 
+                               max(data$Color_intensity), max(data$Hue),
+                               max(data$OD280_OD315),  max(data$Proline)),
+                     "povprecje" = c(mean(data$Alcohol),
+                               mean(data$Malic_acid), mean(data$Ash),
+                               mean(data$Alcalinity_of_ash), mean(data$Magnesium),
+                               mean(data$Total_phenols), mean(data$Flavanoids),
+                               mean(data$Nonflavanoid_phenols), 
+                               mean(data$Proanthocyanins), 
+                               mean(data$Color_intensity), mean(data$Hue),
+                               mean(data$OD280_OD315),  mean(data$Proline)))
+
+kable(df_stat, digits = 2,
+      caption="Opisna statistika spremenljivk.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+
+# Skupine in povezanost
+
+```{r}
+# standardizirani podatki
+dfz <- scale(x=data[,2:ncol(data)])
+
+skupine = data[,1]
+spremenljivke = c("Alcohol", "Malic_acid", "Ash",
+                  "Alcalinity_of_ash", "Magnesium", "Total_phenols",
+                  "Flavanoids", "Nonflavanoid_phenols",
+                  "Proanthocyanins", "Color_intensity", "Hue",
+                  "OD280_OD315",  "Proline")
+```
+
+```{r results='hide'}
+# velikost skupin
+tabela <- cbind(table(skupine), 100 * proportions(table(skupine)))
+colnames(tabela) <- c("f", "f%")
+tabela
+```
+```{r}
+df_vel_skupin = data.frame("skupina" = c(1:3),
+                           "koliko" = c(59,71,48),
+                           "delež" = round(c(59,71,48)/178*100,2))
+
+kable(df_vel_skupin, digits = 2,
+      caption="Velikost skupin.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+Iz tabele 3 vidimo, da je največ enot prisotnih v skupini **2** (71) in najmanj v skupini **3** (48). Preostanek enot je v skupini **1** in sicer 59.
+
+```{r fig.dim=c(6,4), fig.cap="Povprecja neodvisnih spremenljivk po skupinah (standardizirane vrednosti)", fig.pos="H"}
+# povprecja neodvisnih spremenljivk 
+par(mar = c(3, 3, 3, 8), xpd = TRUE) 
+agr <- aggregate(x=dfz, by=list(skupine), FUN=mean)
+matplot(x=seq_along(spremenljivke), y=t(agr[, -1]), type="o", pch=16, col=1:3, xaxt="n", xlab="", ylab="Povprecje", las=1)
+axis(side=1, at=seq_along(spremenljivke), labels=spremenljivke, las=2, cex.axis=0.5)
+legend("topright", inset = c(-0.15, 0), legend=agr[, 1], col=1:3, pch=16)
+```
+
+
+Iz grafičnega prikaza lahko vidimo, da večina spremenljivk dobro loči med skupinami, je pa nekaj takih kjer to ne velja. Primer take spremenljivke je na primer _Hue_
+ali _Ash_.
+
+
+# Predpostavke
+
+```{r results='hide'}
+# multikolinearnost
+cor(dfz)
+sort(cor(dfz)[cor(dfz)<1])
+
+# rang matrike X'X
+X <- as.matrix(dfz)
+dim(X)
+qr(X)$rank
+qr(t(X) %*% X)$rank
+
+# lastne vrednosti matrike X'X
+eigen(t(X) %*% X, symmetric=T, only.values=T)
+
+# obcutljivost ali pogojenostno stevilo matrike X'X
+kappa(t(X) %*% X)
 ```
 
 
 
-
-
-
-
-
-
-
-
+```{r results='hide'}
+# homogenost
+# kovariancne matrike na pogled
+by(data=dfz, INDICES=skupine, FUN=var)
+# Box M-test
+# H0: kovariancne matrike po skupinah so enake
+source(file="BoxMTest.R")
+BoxMTest(X=dfz, cl=as.factor(skupine), alpha=0.05, test=F)
+```
 
 
 
