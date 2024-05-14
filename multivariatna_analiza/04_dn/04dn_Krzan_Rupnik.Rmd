@@ -13,6 +13,77 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+
+library(kableExtra)
 ```
+
+```{r}
+# branje podatkov
+data <- read.csv("dn5_data_wine.csv", header=T)
+```
+
+# Opis podatkov
+
+Za analizo sva si izbrala podatkovni okvir z naslovom _Wine_, ki vsebuje `r nrow(data)` vrstic. Podatki vsebujejo vrednosti kemijske analize treh različnih sort vina iz enake regije v Italiji.  Analiza vsebuje vrednosti 13 različnih komponent (lastnosti) najdenih v vsaki izmed treh sort vina. Iz teh komponent želimo določiti kateri sorti pripada vino (stolpec _Class_). Komponente oz. stolpci v podatkovne okvirju so:
+
+```{r}
+df_stolpci = data.frame("Ime" = c("Class", "Alcohol", "Malic_acid", "Ash",
+                                  "Alcalinity_of_ash", "Magnesium", "Total_phenols",
+                                  "Flavanoids", "Nonflavanoid_phenols",
+                                  "Proanthocyanins", "Color_intensity", "Hue",
+                                  "OD280_OD315",  "Proline"),
+                        "Pomen" = c("razred (uporabimo za analizo)", "% alkohola",
+                                    "jabolčna kislina", "vsebnost pepela",
+                                    "alkalnost pepela", "Magnezij", 
+                                    "skupaj fenolov",  "",
+                                    "", "",
+                                    "intenziteta barve", "", 
+                                    "", ""))
+
+
+kable(df_stolpci, 
+      caption="Opis") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+
+```{r}
+df_stat = data.frame("Ime" = c("Class", "Alcohol", "Malic_acid", "Ash",
+                                  "Alcalinity_of_ash", "Magnesium", "Total_phenols",
+                                  "Flavanoids", "Nonflavanoid_phenols",
+                                  "Proanthocyanins", "Color_intensity", "Hue",
+                                  "OD280_OD315",  "Proline"),
+                     "min" = c(min(data$Class), min(data$Alcohol),
+                               min(data$Malic_acid), min(data$Ash),
+                               min(data$Alcalinity_of_ash), min(data$Magnesium),
+                               min(data$Total_phenols), min(data$Flavanoids),
+                               min(data$Nonflavanoid_phenols), 
+                               min(data$Proanthocyanins), 
+                               min(data$Color_intensity), min(data$Hue),
+                               min(data$OD280_OD315),  min(data$Proline)),
+                     "povprecje" = c(min(data$Class), min(data$Alcohol),
+                               min(data$Malic_acid), min(data$Ash),
+                               min(data$Alcalinity_of_ash), min(data$Magnesium),
+                               min(data$Total_phenols), min(data$Flavanoids),
+                               min(data$Nonflavanoid_phenols), 
+                               min(data$Proanthocyanins), 
+                               min(data$Color_intensity), min(data$Hue),
+                               min(data$OD280_OD315),  min(data$Proline)))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
