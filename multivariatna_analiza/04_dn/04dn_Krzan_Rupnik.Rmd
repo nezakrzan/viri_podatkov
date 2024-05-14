@@ -1,0 +1,18 @@
+---
+title: "Domača naloga 4"
+author: "Neža Kržan, Tom Rupnik"
+output:
+  pdf_document:
+    fig_caption: true
+    number_sections: true
+  # word_document: default
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
