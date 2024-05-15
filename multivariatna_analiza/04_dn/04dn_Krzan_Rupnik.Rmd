@@ -49,7 +49,7 @@ df_stolpci = data.frame("Ime" = c("Class", "Alcohol", "Malic_acid", "Ash",
                                     "alkalnost pepela", "Magnezij", 
                                     "skupaj fenolov",  "rastlinske kemikalije(fenoli)",
                                     "fenolne spojine(za okus, aromo, barvo)",
-                                    "intenziteta barve", "kondenzirani tanini", 
+                                    "kondenzirani tanini", "intenziteta barve",
                                     "barvni odtenek vina", "razmerje ocene vsebnosti fenolnih spojin", 
                                     "aminokislina"))
 
@@ -261,7 +261,8 @@ kable(data.frame(class = c(1,2,3), round(dm, digits=3)), caption="Povprečja po 
       col.names = c("skupina", "LD1", "LD2")) %>% 
   kable_styling(full_width=F, latex_options="hold_position")
 ```
-<!--Neza: tole nis zih kako tocno interpretiras...-->
+<!--Neza: tole nis zih kako tocno interpretiras...
+Tom: jst bi tukej reku da prva funkcija dobro locuje med sorto vina (to se tudi na spodnji slikci dobro vidi), medtem ko druga dobro locuje med 2 in ostalima dvema sortama (ostali dve imata skor enako vrednost)(to se tudi na spodnji slikci dobro vidi)...sicer mi je mal cudno k sm mislu da morjo bit vrednosti med [-1,1] ampak ne najdem kje bi blo kej narobe tko da izgleda je OK-->
 Prva linearna diskriminantna funkcija najbolj ločuje med sorto vina **1** in sorto vina **3**. Druga linearna diskriminantna funkcija pa najbolje ločuje med sorto vina **1** in **2**.
 
 Poglejmo si spremenljivke, ki imajo največji vpliv na vrednosti diskriminantne funkcije, ker so z posamezno funkcijo močno korelirane. Torej spremenjivke, ki najbolj ločujejo med skupinami. 
@@ -293,3 +294,84 @@ par(oldpar)
 
 # Kvaliteta ocenjenega modela
 
+Če si ponovno ogledamo tabelo iz sklopa 2.
+
+```{r results=T}
+kable(df_vel_skupin, digits = 2,
+      caption="Velikost skupin.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+
+V našem primeru imamo največ enot v skupini **2** (71). V primeru, da bi vse enote razvrstili v največjo skupino, bi bil delež pravilno razvrščenih enot enak `r round(71/178*100,2)`%. 
+
+```{r}
+# klasifikacijska tabela in delez pravilno razvrscenih enot
+# vrstica = original, stolpec = LDA model
+tabela <- table(sk, lda.predict$class) # prave vrednosti na diagonali
+sum(diag(tabela)) / sum(tabela)
+```
+
+```{r results=T}
+df = data.frame("class"= c(1:3),
+                "1" = c(59,0,0),
+                "2" = c(0, 71, 0),
+                "3" = c(0, 0, 48))
+
+kable(df, caption="klasifikacijska tabela",
+      col.names = c("", "1", "2", "3")) %>% 
+  column_spec(1,bold=T) %>%
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+Že iz tabele je razvidno, da vse enote razvrstimo pravilno (izven diagonale so vrednosti 0), torej je delež pravilno razvrščenih enak 1. Prav tako je popravljen Randlov indeks enak 1.
+
+```{r}
+# adjusted rand index
+adjustedRandIndex(x=sk, y=lda.predict$class)
+```
+
+Preverimo še kakšne vrednosti bi dobili v primeru uporabe CV.
+
+```{r}
+# nepristranska ocena za delez pravilno razvrscenih enot
+lda.fit <- lda(x=X, grouping=sk, method="moment", CV=T)
+tabelaCV <- table(sk, lda.fit$class)
+sum(diag(tabelaCV)) / sum(tabelaCV)
+adjustedRandIndex(x=sk, y=lda.fit$class)
+```
+
+```{r results=T}
+df_CV = data.frame("class"= c(1:3),
+                "1" = c(59,1,0),
+                "2" = c(0, 69, 0),
+                "3" = c(0, 1, 48))
+
+kable(df_CV, caption="klasifikacijska tabela (CV)",
+      col.names = c("", "1", "2", "3")) %>% 
+  column_spec(1,bold=T) %>%
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+
+Iz tabele je vidno, da tokrat dobimo nekoliko slabše rezultate. V primerjavi s prejšnjo razvrtitvijo, smo tokrat dve enoti iz skupine **2** napačno razvrstili. Eno enoto smo uvrstili v skupino **1** in eno v skupino **3**. Nepristranska ocena za delež pravilno razvrščenih enot je enaka `r round(sum(diag(tabelaCV)) / sum(tabelaCV),3)`, popravljen Randov indeks pa `r round(adjustedRandIndex(x=sk, y=lda.fit$class),3)`.
+
+# Grafični prikaz
+
+Naprej si oglejmo prikaz enot glede na pravo pripadnost sorti vina.
+
+```{r}
+# pripadnost sorta vina 1-3
+plot(x=xLD1, y=xLD2, col=sk, xlim=c(-6, 6), ylim=c(-5, 5), main="Pripadnost (prava)", asp=1)
+legend("bottomleft", legend=levels(sk), col=1:3, pch=16)
+```
+
+Nato pa še pripadnost posamezni skupini glede na klasifikacijo po LDA.
+
+```{r}
+# pripadnost LDA
+# barva oznacuje pripadnost skupini po klasifikaciji LDA
+plot(x=xLD1, y=xLD2, col=lda.predict$class, xlim=c(-6, 6), ylim=c(-5, 5), main="Pripadnost (klasifikacija)", asp=1)
+legend("bottomleft", legend=levels(lda.predict$class), col=1:3, pch=16)
+```
+
+Že iz prvega grafa se vidi, da so sorte vina med seboj dobro ločene oz. se med seboj ne prekrivajo. Zato ni presenečenje, da je taka situacija tudi v primeru klasifikacije po LDA. Grafa sta med seboj identična zato lahko zaključimo, da diskriminantna analiza odlično ločujem med skupinami.
