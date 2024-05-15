@@ -13,9 +13,18 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.align = "center")
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.pos = "H",
+	message = FALSE,
+	warning = FALSE,
+	results = F, fig.height = 4, fig.width = 5
+)
 
 library(kableExtra)
+library(MASS)
+library(mclust)
 
 set.seed(2024)
 ```
@@ -29,7 +38,7 @@ data <- read.csv("dn5_data_wine.csv", header=T)
 
 Za analizo sva si izbrala podatkovni okvir z naslovom _Wine_, ki vsebuje `r nrow(data)` vrstic. Enoto oz. vrstico podatkov predstavlja posamezno vino. Podatki vsebujejo vrednosti kemijske analize treh različnih sort vina iz enake regije v Italiji.  Analiza vsebuje vrednosti 13 različnih komponent (lastnosti) najdenih v vsaki izmed treh sort vina. Iz teh komponent želimo določiti kateri sorti pripada vino (stolpec _Class_). Komponente oz. stolpci v podatkovne okvirju so:
 
-```{r}
+```{r, results=T}
 df_stolpci = data.frame("Ime" = c("Class", "Alcohol", "Malic_acid", "Ash",
                                   "Alcalinity_of_ash", "Magnesium", "Total_phenols",
                                   "Flavanoids", "Nonflavanoid_phenols",
@@ -38,19 +47,21 @@ df_stolpci = data.frame("Ime" = c("Class", "Alcohol", "Malic_acid", "Ash",
                         "Pomen" = c("razred (uporabimo za analizo)", "% alkohola",
                                     "jabolčna kislina", "vsebnost pepela",
                                     "alkalnost pepela", "Magnezij", 
-                                    "skupaj fenolov",  "",
-                                    "", "",
-                                    "intenziteta barve", "", 
-                                    "", ""))
+                                    "skupaj fenolov",  "rastlinske kemikalije(fenoli)",
+                                    "fenolne spojine(za okus, aromo, barvo)",
+                                    "intenziteta barve", "kondenzirani tanini", 
+                                    "barvni odtenek vina", "razmerje ocene vsebnosti fenolnih spojin", 
+                                    "aminokislina"))
 
 
 kable(df_stolpci, 
       caption="Spremenljivke v podatkovnem okvirju.") %>% 
-  kable_styling(full_width=F, latex_options="hold_position")
+  kable_styling(full_width=F, latex_options="hold_position", font_size = 9)
 ```
 
+Poglejmo si osnovne opisne statistike spremenljivk.
 
-```{r}
+```{r, results=T}
 df_stat = data.frame("Ime" = c( "Alcohol", "Malic_acid", "Ash",
                                   "Alcalinity_of_ash", "Magnesium", "Total_phenols",
                                   "Flavanoids", "Nonflavanoid_phenols",
@@ -83,11 +94,36 @@ df_stat = data.frame("Ime" = c( "Alcohol", "Malic_acid", "Ash",
 
 kable(df_stat, digits = 2,
       caption="Opisna statistika spremenljivk.") %>% 
-  kable_styling(full_width=F, latex_options="hold_position")
+  kable_styling(full_width=F, latex_options="hold_position", font_size = 9)
+```
+
+Za boljšo predstavo o spremenljivkah, si poglejmo še njihove histograme.
+
+```{r echo=FALSE, fig.cap="Porazdelitev spremenljivk v podatkovnem okviru vin.", fig.dim=c(8,8), message=FALSE, warning=FALSE}
+library(ggplot2)
+library(gridExtra)
+g1 = ggplot(data, aes(x=Alcohol))+geom_histogram()+xlab("")+ylab("frekvenca")+ggtitle("Alcohol")+theme_bw()
+g2 = ggplot(data, aes(x=Malic_acid))+geom_histogram( )+xlab("")+ylab("frekvenca")+ggtitle("Malic acid")+theme_bw()
+g3 = ggplot(data, aes(x=Ash))+geom_histogram( )+xlab("")+ylab("frekvenca")+ggtitle("Ash")+theme_bw()
+g4 = ggplot(data, aes(x=Alcalinity_of_ash))+geom_histogram()+xlab("")+ylab("frekvenca")+ggtitle("Alcalinity of ash")+theme_bw()
+g5 = ggplot(data, aes(x=Magnesium))+geom_histogram(binwidth=1)+xlab("")+ylab("frekvenca")+ggtitle("Magnesium")+theme_bw()
+g6 = ggplot(data, aes(x=Total_phenols))+geom_histogram( )+xlab("")+ylab("frekvenca")+ggtitle("Total phenols")+theme_bw()
+g7 = ggplot(data, aes(x=Flavanoids))+geom_histogram( )+xlab("")+ylab("frekvenca")+ggtitle("Flavanoids")+theme_bw()
+g8 = ggplot(data, aes(x=Nonflavanoid_phenols))+geom_histogram()+xlab("")+ylab("frekvenca")+ggtitle("Nonflavanoid phenols")+theme_bw()
+g9 = ggplot(data, aes(x=Proanthocyanins))+geom_histogram()+xlab("")+ylab("frekvenca")+ggtitle("Proanthocyanins")+theme_bw()
+g10 = ggplot(data, aes(x=Color_intensity))+geom_histogram( )+xlab("")+ylab("frekvenca")+ggtitle("Color intensity")+theme_bw()
+g11 = ggplot(data, aes(x=Hue))+geom_histogram( )+xlab("")+ylab("frekvenca")+ggtitle("Hue")+theme_bw()
+g12 = ggplot(data, aes(x=OD280_OD315))+geom_histogram( )+xlab("")+ylab("frekvenca")+ggtitle("OD280/OD315")+theme_bw()
+g13 = ggplot(data, aes(x=Proline))+geom_histogram( )+xlab("")+ylab("frekvenca")+ggtitle("Proline")+theme_bw()
+
+grid.arrange(g1,g2,g3,g4,g5,g6,g7,g8,g9,g10,g11,g12,g13,
+             ncol = 4)
 ```
 
 
 # Skupine in povezanost
+
+Za skupine torej imamo sorte vina, označene so z številkami $1$, $2$ in $3$.
 
 ```{r}
 # standardizirani podatki
@@ -107,7 +143,8 @@ tabela <- cbind(table(skupine), 100 * proportions(table(skupine)))
 colnames(tabela) <- c("f", "f%")
 tabela
 ```
-```{r}
+
+```{r, results=T}
 df_vel_skupin = data.frame("skupina" = c(1:3),
                            "koliko" = c(59,71,48),
                            "delež" = round(c(59,71,48)/178*100,2))
@@ -117,9 +154,9 @@ kable(df_vel_skupin, digits = 2,
   kable_styling(full_width=F, latex_options="hold_position")
 ```
 
-Iz tabele 3 vidimo, da je največ enot prisotnih v skupini **2** (71) in najmanj v skupini **3** (48). Preostanek enot je v skupini **1** in sicer 59.
+Iz zgornje tabele vidimo, da je največ enot prisotnih v skupini **2** (71) in najmanj v skupini **3** (48). Preostanek enot je v skupini **1** in sicer 59.
 
-```{r fig.dim=c(6,4), fig.cap="Povprecja neodvisnih spremenljivk po skupinah (standardizirane vrednosti)", fig.pos="H"}
+```{r fig.dim=c(6,4), fig.cap="Povprečja neodvisnih spremenljivk po skupinah (standardizirane vrednosti).", fig.pos="H"}
 # povprecja neodvisnih spremenljivk 
 par(mar = c(3, 3, 3, 8), xpd = TRUE) 
 agr <- aggregate(x=dfz, by=list(skupine), FUN=mean)
@@ -129,11 +166,13 @@ legend("topright", inset = c(-0.15, 0), legend=agr[, 1], col=1:3, pch=16)
 ```
 
 
-Iz grafičnega prikaza lahko vidimo, da večina spremenljivk dobro loči med skupinami, je pa nekaj takih kjer to ne velja. Primer take spremenljivke je na primer _Hue_
-ali _Ash_.
-
+Iz grafičnega prikaza lahko vidimo, da večina spremenljivk dobro loči med skupinami, je pa nekaj takih kjer to ne velja. Primer take spremenljivke je na primer _Hue_ ali _Ash_. z grafa tudi vidimo, da posamezna spremenljivka ima različna povprečja v posamezni skupini(sorti vina). Če so razlike v povprečjih majhne, lahko pričakujemo, da bomo z diskriminatnimi funkcijami slabo ločevali med skupinami.
 
 # Predpostavke
+
+Pri diskriminantni analizi imamo nekaj predpostavk, katerim morajo podatki zadoščati. V najinem podatkovnem okviru imava vsaj dve skupini - imava 3 skupine(3 sorte vina) **1**, **2**, **3**, in zgoraj smo videli v tabeli 3, da ima vsaka skupina več kot dve enoti. Imava tudi manjše število spremenljivk kot enot(zapisano je v začetku naloge, koliko enot in koliko spremenljivk imamo v podatkovnem okviru). Ker pa skupine niso enako velike, ne bova predpostavila enako velikih skupin.
+
+Sedaj moramo preveriti predpostavko o odsotnosti multikolinearnosti, torej, da nobena od spremenljivk ni popolna linearna kombinacija ostalih. Težavo imamo, ko je katera od korelacij med spremenljivkama zelo blizu 1(npr. nad 0.95). V ta namen si najprej poglejmo korelacijsko matriko.
 
 ```{r results='hide'}
 # multikolinearnost
@@ -154,18 +193,103 @@ kappa(t(X) %*% X)
 ```
 
 
+```{r, fig.cap="Korelacijska matrika spremenljivk v podatkovnem okviru.", fig.height=5, fig.width=8}
+library(corrplot)
+colors10 <- colorRampPalette(c("#0000aa","white","#aa0000"))(10)
+corrplot.mixed(cor(data,
+                   method = "spearman"),
+               lower.col = colors10, upper.col = colors10,
+               tl.col="black",   tl.cex = 0.5, number.cex = 0.8)
+```
 
-```{r results='hide'}
+Iz matrike vidimo, da nimamo večjih korelacij, kar bi lahko pomenilo, da multikolinearnost ni prisotna(sicer se le ta zelo pozno vidi, npr. šele, ko imamo koeficiente nad 0.95). Če sestavimo matriko $XX'$, kjer imamo v matriki $X$ podatke naših spremenljivk, je njen rang enak `r qr(t(X) %*% X)$rank` in njena občutljivost oz. pogojenostno število je enako `r round(kappa(t(X) %*% X), 3)`, kar je dokaj majhno, torej res lahko rečemo, da je predpostavka o odsotnosti multikolinearnosti izpolnjena.
+
+Naslednja predpostavka pa je homogoenost, ki zahteva, da so vse kovariančne matrike skupin na populaciji enake. Pri prevrjanju te predpostavke si pomagamo z Box M-testom, kjer preverjamo $H_0:$ _kovariančne matrike po skupinah(po sortah vin) so enake_.
+
+```{r results=T}
 # homogenost
 # kovariancne matrike na pogled
-by(data=dfz, INDICES=skupine, FUN=var)
+# by(data=dfz, INDICES=skupine, FUN=var)
 # Box M-test
 # H0: kovariancne matrike po skupinah so enake
 source(file="BoxMTest.R")
 BoxMTest(X=dfz, cl=as.factor(skupine), alpha=0.05, test=F)
 ```
 
+Iz zgornjega zapisa vidimo, da je $p < 0.05$, torej zavračamo ničelno hipotezo, kar pomeni, da pogoj ni izpolnjen, ampak nadaljujemo z diskriminantno analizo.
+
+# Analiza
+
+Izvedimo sedaj linearno diskriminantno analizo na standardiziranih podatkih. 
+
+```{r, results=T}
+X <- dfz
+sk <- as.factor(data[, "Class"])
+lda.fit <- lda(x=X, grouping=sk, method="moment")
+```
+
+S prvo diskriminantno funkcijo pojasnimo 68% razlik med povprečji spremenljivk, z drugo kanonično korelacijo pa 31% razlik med povprečji spremenljivk.
+
+Poglejmo si še ali sta diskriminantni funkciji statistično značilni, kjer preverjamo domnevo $H_0:$ _povprečja diskriminantnih funkcij po skupinah(po sortah vin) enaka_.
+
+```{r, results=T}
+n <- nrow(X)
+p <- ncol(X)
+q <- length(levels(sk)) - 1
+ysk <- model.matrix(~ sk)[, -1, drop=F]
+cca <- cancor(x=X, y=ysk)
+source(file="sklop51_lda_testCC.R")
+
+kable(round(testCC(cor=cca$cor, n=n, p=p, q=q)$sigTest, 5), 
+      caption="Statistična značilnost diskriminantnih funckij.") %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
 
 
+Pri stopnji značilnosti 0.05 lahko na podlagi $p-vrednost$ za obe diskriminantni funkciji zavrnemo domnevo $H_0$ in sprejememo, da so povprečja po sortah vin za obe diskriminantni funkciji različna. 
 
+Sedaj nas seveda zanima med katerimi skupinami bolje ločuje posamezna diskriminantna funkcija. 
+
+```{r, results=T}
+lda.fit$scaling
+
+prior <- lda.fit$prior
+means <- colSums(prior * lda.fit$means)
+dm <- scale(lda.fit$means, center=means, scale=F) %*% lda.fit$scaling
+
+kable(data.frame(class = c(1,2,3), round(dm, digits=3)), caption="Povprečja po skupinah",
+      col.names = c("skupina", "LD1", "LD2")) %>% 
+  kable_styling(full_width=F, latex_options="hold_position")
+```
+<!--Neza: tole nis zih kako tocno interpretiras...-->
+Prva linearna diskriminantna funkcija najbolj ločuje med sorto vina **1** in sorto vina **3**. Druga linearna diskriminantna funkcija pa najbolje ločuje med sorto vina **1** in **2**.
+
+Poglejmo si spremenljivke, ki imajo največji vpliv na vrednosti diskriminantne funkcije, ker so z posamezno funkcijo močno korelirane. Torej spremenjivke, ki najbolj ločujejo med skupinami. 
+
+V največji meri se nam splača govoriti o intenziteti barve( _Color_intensity_), razmerju ocene vsebnosti fenolnih spojin( _OD280_OD315_), aminokislinah( _Proline_) pri prvi diskriminantni funkciji. 
+Sklepamo lahko, da je pri sorti vina **1**  pomembna predvsem razmerje OD280/OD315, aminokisline( _Proline_), pri sorti **3** pa intenziteta barve( _Color_intensity_).
+
+Prav tako se splača govoriti o aminokislinah( _Proline_), % alkohola( _Alcohol_), vsebovanost pepela( _Ash_) pri drugi diskriminantni funkciji. Šibko koreliranost z drugo diskriminantno funkcijo pa imajo tudi intenziteta barve( _Color_intensity_) in spremenljivka _Flavanoids_.
+
+Pri sorti vina **1** je pomemben % alkohola( _Alcohol_), aminokisline( _Proline_) in vsebovanost pepela(_Ash_), pri sorti **2** pa _Flavanoids_ in alkalnost pepela(*Alcalinity_of_ash*).
+
+Poglejmo si še grafično kako je z ločevanjem po skupinah. Na spodnjem grafu vidimo, da se pri LD1 porazdelitve skupin ne prekrivajo tako zelo, s tem ko pri LD2, ne ločujemo med skupinama **1** in **3**, sorta vina **1** pa ima težičše precej v levo. Vidimo, da ne glede na to kaj smo opisali, da dejanska sposobnost ločevanja po sortah pri drugi funkciji zelo mahna, pri prvi pa bi to bilo možno.
+
+```{r, results=T, fig.cap="Grafični prikaz porazdelitev vrednosti po skupinah.", fig.width=8, fig.height=4}
+lda.predict <- predict(object=lda.fit, dimen=2)
+xLD1 <- lda.predict$x[, "LD1"]
+xLD2 <- lda.predict$x[, "LD2"]
+oldpar <- par(las=1, mfrow=c(1, 2))
+plot(density(xLD1[which(sk=="1")]), xlim=c(-7, 8), ylim=c(0, 0.6), main="LD1")
+lines(density(xLD1[which(sk=="2")]), col=2)
+lines(density(xLD1[which(sk=="3")]), col=3)
+legend("topleft", legend=levels(sk), col=1:3, pch=16)
+plot(density(xLD2[which(sk=="1")]), xlim=c(-8, 5), ylim=c(0, 0.5), main="LD2")
+lines(density(xLD2[which(sk=="2")]), col=2)
+lines(density(xLD2[which(sk=="3")]), col=3)
+legend("topleft", legend=levels(sk), col=1:3, pch=16)
+par(oldpar)
+```
+
+# Kvaliteta ocenjenega modela
 
