@@ -302,7 +302,6 @@ kable(df_vel_skupin, digits = 2,
   kable_styling(full_width=F, latex_options="hold_position")
 ```
 
-
 V našem primeru imamo največ enot v skupini **2** (71). V primeru, da bi vse enote razvrstili v največjo skupino, bi bil delež pravilno razvrščenih enot enak `r round(71/178*100,2)`%. 
 
 ```{r}
@@ -318,7 +317,7 @@ df = data.frame("class"= c(1:3),
                 "2" = c(0, 71, 0),
                 "3" = c(0, 0, 48))
 
-kable(df, caption="klasifikacijska tabela",
+kable(df, caption="Klasifikacijska tabela.",
       col.names = c("", "1", "2", "3")) %>% 
   column_spec(1,bold=T) %>%
   kable_styling(full_width=F, latex_options="hold_position")
@@ -331,7 +330,7 @@ kable(df, caption="klasifikacijska tabela",
 adjustedRandIndex(x=sk, y=lda.predict$class)
 ```
 
-Preverimo še kakšne vrednosti bi dobili v primeru uporabe CV.
+Preverimo še kakšne vrednosti bi dobili v primeru uporabe navzkrižnega preverjanja(CV), ker smo se prej učili na istih podatkih kot smo potem model tudi testirali, zato je možnost, da precenjujemo. Želimo pa si bolj verodostojne ocene oziroma nepristranske ocene za delež pravilno razvrščenih enot.
 
 ```{r}
 # nepristranska ocena za delez pravilno razvrscenih enot
@@ -347,7 +346,7 @@ df_CV = data.frame("class"= c(1:3),
                 "2" = c(0, 69, 0),
                 "3" = c(0, 1, 48))
 
-kable(df_CV, caption="klasifikacijska tabela (CV)",
+kable(df_CV, caption="Klasifikacijska tabela (CV).",
       col.names = c("", "1", "2", "3")) %>% 
   column_spec(1,bold=T) %>%
   kable_styling(full_width=F, latex_options="hold_position")
@@ -357,21 +356,20 @@ Iz tabele je vidno, da tokrat dobimo nekoliko slabše rezultate. V primerjavi s 
 
 # Grafični prikaz
 
-Naprej si oglejmo prikaz enot glede na pravo pripadnost sorti vina.
+Naprej si oglejmo prikaz enot glede na pravo pripadnost sorti vina, nato pa še  pripadnost posamezni skupini glede na klasifikacijo po LDA.
 
-```{r}
+```{r, fig.cap="Prikaz enot glede na pravo pripadnost sorti vina(levo) in pripadnost posamezni skupini glede na klasifikacijo po LDA(desno).", fig.width=9}
 # pripadnost sorta vina 1-3
+par(mfrow=c(1,2))
 plot(x=xLD1, y=xLD2, col=sk, xlim=c(-6, 6), ylim=c(-5, 5), main="Pripadnost (prava)", asp=1)
 legend("bottomleft", legend=levels(sk), col=1:3, pch=16)
-```
-
-Nato pa še pripadnost posamezni skupini glede na klasifikacijo po LDA.
-
-```{r}
 # pripadnost LDA
 # barva oznacuje pripadnost skupini po klasifikaciji LDA
 plot(x=xLD1, y=xLD2, col=lda.predict$class, xlim=c(-6, 6), ylim=c(-5, 5), main="Pripadnost (klasifikacija)", asp=1)
 legend("bottomleft", legend=levels(lda.predict$class), col=1:3, pch=16)
 ```
 
-Že iz prvega grafa se vidi, da so sorte vina med seboj dobro ločene oz. se med seboj ne prekrivajo. Zato ni presenečenje, da je taka situacija tudi v primeru klasifikacije po LDA. Grafa sta med seboj identična zato lahko zaključimo, da diskriminantna analiza odlično ločujem med skupinami.
+Že iz levega grafa se vidi, da so sorte vina med seboj dobro ločene oz. se med seboj ne prekrivajo. Zato ni presenečenje, da je taka situacija tudi v primeru klasifikacije po LDA. Skupine se lepo ločujejo glede na prvo diskriminantno funkcijo(gledamo vodoravno) in glede na drugo(gledamo navpično).
+
+Grafa sta med seboj identična zato lahko zaključimo, da diskriminantna analiza odlično ločuje med skupinami.
+
