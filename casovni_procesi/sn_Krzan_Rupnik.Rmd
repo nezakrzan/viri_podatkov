@@ -1,0 +1,39 @@
+---
+title: "Seminarska naloga"
+author: "Neža Kržan, Tom Rupnik"
+output:
+  pdf_document:
+    number_sections: true
+    fig_caption: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+# install.packages("readxl")
+
+library(readxl)
+```
+
+```{r}
+# imena posameznih sheet-ov
+# excel_sheets("Podatki za seminarske naloge.xlsx")
+
+# Prosta in zasedena delovna mest
+data1 = read_excel("Podatki za seminarske naloge.xlsx",
+                   sheet = "Prosta in zasedena delovna mest")
+# Indeks prihodka po dejavnostih
+data2 = read_excel("Podatki za seminarske naloge.xlsx",
+                   sheet = "Indeks prihodka po dejavnostih")
+
+zasedena_1 = data1[,"Zasedena_1+_I GOSTINSTVO"]
+prosta_1 = data1[,"Prosta_1+_I GOSTINSTVO"]
+
+nastanitvene_dejavnosti = data2[,"Gostinske nastanitvene dejavnosti"]
+strezba_jedi_pjac = data2[, "Dejavnost strežbe jedi in pijač"]
+```
+
