@@ -12,11 +12,13 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
+                      fig.align = "center")
 
 # install.packages("readxl")
 
 library(readxl)
+library(astsa)
 ```
 
 ```{r}
@@ -36,4 +38,81 @@ prosta_1 = data1[,"Prosta_1+_I GOSTINSTVO"]
 nastanitvene_dejavnosti = data2[,"Gostinske nastanitvene dejavnosti"]
 strezba_jedi_pjac = data2[, "Dejavnost strežbe jedi in pijač"]
 ```
+
+# Uvod
+
+Za analizo sva si izbrala podatke, ki spadajo pod temo Gostinstvo. \
+Natančneje sva si za indeks prihodka po dejavnosti izbrala "Gostinske nastanitvene dejavnosti" in "Dejavnost strežbe jedi in pijač". Podatki so podani za časovno obdobje od 2010M01 do 2024M01. Frekvenca vzorčenja je približno enakomerna in enaka 12, torej gre za mesečno vzročenje. \
+Nato sva analiziral še časovni vrsti za prosta in zasedena delovna mesta v gostinstvu, kjer je zaposlena vsa 1 oseba. Podatki so podani za časovno obdobje od 2008Q1 do 2023Q4. Frekvenca vzorčenja je približno enakomerna in enaka 4, torej gre za četrtletno vzročenje.
+
+
+# Predstavitev časovnih vrst
+
+```{r}
+# casovni interval 2010M1-2024M1
+ts_nastanitve = ts(nastanitvene_dejavnosti, start = c(2010,1), frequency = 12)
+ts_strezba = ts(strezba_jedi_pjac, start = c(2010,1), frequency = 12)
+
+# preveriva ce je zadnje obdobje res 2024M1
+# end(ts_nastanitve)
+# end(ts_strezba)
+
+# casovni interval 2028Q1-2023Q4
+ts_zasedena = ts(zasedena_1, start = c(2008, 1), frequency = 4)
+ts_prosta = ts(prosta_1, start = c(2008, 1), frequency = 4)
+
+# preveriva ce je zadnje obdobje res 2023Q4
+# end(ts_zasedena)
+# end(ts_prosta)
+```
+
+## Časovna vrsta "Gostinske nastanitvene dejavnosti"
+
+```{r fig.dim=c(6,3.7)}
+plot.ts(ts_nastanitve, type = "o", pch = 16, cex=0.6, xlab = "Leto", ylab = "Indeks prihodka")
+
+# gladilnik
+gladilnik <- lowess(time(ts_nastanitve),ts_nastanitve)
+points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+```
+
+V časovni vrsti je prisotnostnih več različnih komponent časovnega procesa. Sprva opazimo trend, ki je najprej nekoliko padajoč, nato pa se proti koncu leta 2014 obrne in postane pozitiven. Dobro je vidna tudi prisotnost sezonskosti. Indeks v posameznem letu se nekoliko poveča v začetku leta (januarja), nato nekoliko pade in ponovno raste do poletja (avgusta). Potem sledi padanje do konca let, ko je ponovno nekolikšno povišanje decembra. Tako gibanje je bilo tudi pričakovano, saj ne to ravno obdobje poletne in zimske sezone. \
+Med letoma 2020 in 2022 je opazno neobičajno gibanje vrednosti. Gre namreč za obdobje pandemije covid-19, ko so veljali izredni ukrepi, ki so tako ali drugače vplivali tudi na gostinske nastanitvene dejavnosti. V tem obdobju in tudi kasneje je vidna spremenjena amplituda nihanja, ki je v primerjavi z obdobjem pred tem večja. 
+
+## Časovna vrsta "Dejavnost strežbe jedi in pijač"
+
+```{r fig.dim=c(6,3.7)}
+plot.ts(ts_strezba, type = "o", pch = 16, cex=0.6, xlab = "Leto", ylab = "Indeks prihodka")
+
+# gladilnik
+gladilnik <- lowess(time(ts_strezba),ts_strezba)
+points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+```
+
+
+## Časovna vrsta "Gostinstvo zasedena delovna mesta 1+"
+
+```{r fig.dim=c(6,3.7)}
+plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "Leto", ylab = "Stevilo delovnih mest")
+
+# gladilnik
+gladilnik <- lowess(time(ts_zasedena),ts_zasedena)
+points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+```
+
+
+## Časovna vrsta "Gostinstvo prosta delovna mesta 1+"
+
+```{r fig.dim=c(6,3.7)}
+plot.ts(ts_prosta, type = "o", pch = 16, cex=0.6, xlab = "Leto", ylab = "Stevilo delovnih mest")
+
+# gladilnik
+gladilnik <- lowess(time(ts_prosta),ts_prosta)
+points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+```
+
+
+
+
+
 
