@@ -261,8 +261,7 @@ kable(data.frame(class = c(1,2,3), round(dm, digits=3)), caption="Povprečja po 
       col.names = c("skupina", "LD1", "LD2")) %>% 
   kable_styling(full_width=F, latex_options="hold_position")
 ```
-<!--Neza: tole nis zih kako tocno interpretiras...
-Tom: jst bi tukej reku da prva funkcija dobro locuje med sorto vina (to se tudi na spodnji slikci dobro vidi), medtem ko druga dobro locuje med 2 in ostalima dvema sortama (ostali dve imata skor enako vrednost)(to se tudi na spodnji slikci dobro vidi)...sicer mi je mal cudno k sm mislu da morjo bit vrednosti med [-1,1] ampak ne najdem kje bi blo kej narobe tko da izgleda je OK-->
+
 Prva linearna diskriminantna funkcija najbolj ločuje med sorto vina **1** in sorto vina **3**. Druga linearna diskriminantna funkcija pa najbolje ločuje med sorto vina **1** in **2**.
 
 Poglejmo si spremenljivke, ki imajo največji vpliv na vrednosti diskriminantne funkcije, ker so z posamezno funkcijo močno korelirane. Torej spremenjivke, ki najbolj ločujejo med skupinami. 
