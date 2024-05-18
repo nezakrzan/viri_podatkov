@@ -89,6 +89,8 @@ gladilnik <- lowess(time(ts_strezba),ts_strezba)
 points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 ```
 
+Ponovno opazimo prisotnost trenda ki je čez celotno obdobje naraščajoče, naklon pa je bil največji med letoma 2015 in 2018. Sprva bi glede na vzorec spreminjanja (nihanja) indeksa lahko rekli, da je prisotna sezonskost. Če natančneje pogledamo sta v posameznem letu ekstremni vrednosti poleti in meseca decembra. Do leta 2018 je bila najvišja vrednost indeksa v posameznem letu dosežena decembra, nato pa je bila višja vrednost dosežena poleti. Iz tega bi lahko rekli, da je nekoliko prisotno ciklično nihanje, vendar ni enako čez celotno opazovano obdobje. \
+Prav tako je dobro vidno ekstremno gibanje v času pandemije covid-19, saj se je takrat zgodil velik padec vrednosti indeksa. Tudi aplituda nihanja se je drastično spremenila v primerjavi s predhodnjim opazovanim obdobjem.
 
 ## Časovna vrsta "Gostinstvo zasedena delovna mesta 1+"
 
@@ -100,6 +102,7 @@ gladilnik <- lowess(time(ts_zasedena),ts_zasedena)
 points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 ```
 
+Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta je sprva strmo pada do leta 2014 nato pa spremeni predznak in začne strmo naraščati. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot da bi se ponavljali v ciklu. Ponovno pa je vidno ekstrmeno obdobje (čas pandemije covid-19).
 
 ## Časovna vrsta "Gostinstvo prosta delovna mesta 1+"
 
@@ -112,7 +115,7 @@ points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 ```
 
 
-
+Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta cež celotno opazovano obdobje narašča. Sprva nekoliko bolj položno, po letu 2013 pa se naklon poveča. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot da bi se ponavljali v ciklu. Ponovno pa je vidno ekstrmeno obdobje (čas pandemije covid-19).
 
 
 
