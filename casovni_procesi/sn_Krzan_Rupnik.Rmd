@@ -12,14 +12,18 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE,
-                      fig.align = "center")
+knitr::opts_chunk$set(echo = FALSE, fig.pos = "H", out.extra = "", fig.height = 4, fig.width = 5, fig.align = 'center')
 
 # install.packages("readxl")
 
 library(readxl)
 library(astsa)
 ```
+
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
 
 ```{r}
 # imena posameznih sheet-ov
@@ -41,10 +45,13 @@ strezba_jedi_pjac = data2[, "Dejavnost strežbe jedi in pijač"]
 
 # Uvod
 
-Za analizo sva si izbrala podatke, ki spadajo pod temo Gostinstvo. \
-Natančneje sva si za indeks prihodka po dejavnosti izbrala "Gostinske nastanitvene dejavnosti" in "Dejavnost strežbe jedi in pijač". Podatki so podani za časovno obdobje od 2010M01 do 2024M01. Frekvenca vzorčenja je približno enakomerna in enaka 12, torej gre za mesečno vzročenje. \
-Nato sva analiziral še časovni vrsti za prosta in zasedena delovna mesta v gostinstvu, kjer je zaposlena vsa 1 oseba. Podatki so podani za časovno obdobje od 2008Q1 do 2023Q4. Frekvenca vzorčenja je približno enakomerna in enaka 4, torej gre za četrtletno vzročenje.
+Za analizo sva si izbrala podatke, ki spadajo pod temo _Gostinstvo_. 
 
+Za indeks prihodka po dejavnosti sva si izbrala _Gostinske nastanitvene dejavnosti_ in _Dejavnost strežbe jedi in pijač_. Podatki so podani za časovno obdobje od januarja 2010 do januarja 2024(`2010M01` do `2024M01`). Frekvenca vzorčenja je približno enakomerna in enaka 12, torej gre za mesečno vzročenje. 
+
+Nato sva analiziral še časovni vrsti za prosta in zasedena delovna mesta v gostinstvu, kjer je zaposlena vsaj 1 oseba. Podatki so podani za časovno obdobje od leta 2008 do leta 2023(`2008Q1` do `2023Q4`) po kvartalih. Frekvenca vzorčenja je približno enakomerna in enaka 4, torej gre za četrtletno vzročenje.
+
+Ker sta frekvenci vzorčenja enakomerni imamo opravka z ekvidistantnimi časovnimi vrstami.
 
 # Predstavitev časovnih vrst
 
@@ -66,56 +73,62 @@ ts_prosta = ts(prosta_1, start = c(2008, 1), frequency = 4)
 # end(ts_prosta)
 ```
 
-## Časovna vrsta "Gostinske nastanitvene dejavnosti"
+## Časovna vrsta _Gostinske nastanitvene dejavnosti_
 
-```{r fig.dim=c(6,3.7)}
-plot.ts(ts_nastanitve, type = "o", pch = 16, cex=0.6, xlab = "Leto", ylab = "Indeks prihodka")
+```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta indeksa prihodka za 'Gostinske nastanitvene dejavnosti'."}
+plot.ts(ts_nastanitve, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka", xaxt="s")
 
 # gladilnik
 gladilnik <- lowess(time(ts_nastanitve),ts_nastanitve)
 points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 ```
 
-V časovni vrsti je prisotnostnih več različnih komponent časovnega procesa. Sprva opazimo trend, ki je najprej nekoliko padajoč, nato pa se proti koncu leta 2014 obrne in postane pozitiven. Dobro je vidna tudi prisotnost sezonskosti. Indeks v posameznem letu se nekoliko poveča v začetku leta (januarja), nato nekoliko pade in ponovno raste do poletja (avgusta). Potem sledi padanje do konca let, ko je ponovno nekolikšno povišanje decembra. Tako gibanje je bilo tudi pričakovano, saj ne to ravno obdobje poletne in zimske sezone. \
-Med letoma 2020 in 2022 je opazno neobičajno gibanje vrednosti. Gre namreč za obdobje pandemije covid-19, ko so veljali izredni ukrepi, ki so tako ali drugače vplivali tudi na gostinske nastanitvene dejavnosti. V tem obdobju in tudi kasneje je vidna spremenjena amplituda nihanja, ki je v primerjavi z obdobjem pred tem večja. 
+V časovni vrsti je prisotnostnih več različnih komponent časovnega procesa. Sprva opazimo trend, ki je najprej nekoliko padajoč, nato pa se proti koncu leta 2014 obrne in postane pozitiven. Dobro je vidna tudi prisotnost sezonskosti. Indeks se v vsakem letu poveča v začetku leta (januarja), nato nekoliko pade in ponovno raste do poletja (avgusta). Potem sledi padanje do konca let, ko je ponovno nekolikšno povišanje decembra. Tako gibanje je bilo tudi pričakovano, saj je to obdobje poletne in zimske sezone. 
 
-## Časovna vrsta "Dejavnost strežbe jedi in pijač"
+Med letoma 2020 in 2022 je opazno neobičajno gibanje vrednosti. Gre namreč za obdobje pandemije Covid-19, ko so veljali izredni ukrepi, ki so vplivali na gostinske nastanitvene dejavnosti. Opazno je vidno tudi povišanje po letu 2022 oz. sprememba v amplitudnem nihanju. Tudi to je verjetno posledica pandemija ovid-19, saj smo se po dolgem času lahko kam odpravili, država pa je pomagala z izdajo t.i. bonov.
 
-```{r fig.dim=c(6,3.7)}
-plot.ts(ts_strezba, type = "o", pch = 16, cex=0.6, xlab = "Leto", ylab = "Indeks prihodka")
+## Časovna vrsta _Dejavnost strežbe jedi in pijač_
+
+```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta indeksa prihodka za 'Dejavnost strežbe jedi in pijač'."}
+plot.ts(ts_strezba, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka",  xaxt="s")
 
 # gladilnik
 gladilnik <- lowess(time(ts_strezba),ts_strezba)
 points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 ```
 
-Ponovno opazimo prisotnost trenda ki je čez celotno obdobje naraščajoče, naklon pa je bil največji med letoma 2015 in 2018. Sprva bi glede na vzorec spreminjanja (nihanja) indeksa lahko rekli, da je prisotna sezonskost. Če natančneje pogledamo sta v posameznem letu ekstremni vrednosti poleti in meseca decembra. Do leta 2018 je bila najvišja vrednost indeksa v posameznem letu dosežena decembra, nato pa je bila višja vrednost dosežena poleti. Iz tega bi lahko rekli, da je nekoliko prisotno ciklično nihanje, vendar ni enako čez celotno opazovano obdobje. \
-Prav tako je dobro vidno ekstremno gibanje v času pandemije covid-19, saj se je takrat zgodil velik padec vrednosti indeksa. Tudi aplituda nihanja se je drastično spremenila v primerjavi s predhodnjim opazovanim obdobjem.
+Ponovno opazimo prisotnost trenda, ki je čez celotno obdobje naraščajoče, naklon pa je bil največji med letoma 2015 in 2018. Sprva bi glede na vzorec spreminjanja (nihanja) indeksa lahko rekli, da je prisotna sezonskost. Če natančneje pogledamo sta v posameznem letu ekstremni vrednosti poleti in meseca decembra. Do leta 2018 je bila najvišja vrednost indeksa v posameznem letu dosežena decembra, nato pa je bila višja vrednost dosežena poleti. Iz tega bi lahko rekli, da je nekoliko prisotno ciklično nihanje, vendar ni enako čez celotno opazovano obdobje. 
 
-## Časovna vrsta "Gostinstvo zasedena delovna mesta 1+"
+Prav tako je dobro vidno ekstremno gibanje v času pandemije Covid-19, saj se je takrat zgodil velik padec vrednosti indeksa. Tudi aplituda nihanja se je drastično spremenila v primerjavi s predhodnjim opazovanim obdobjem, za kar je verjetno ponovno krivo obnašanje in potrebe ljudi po pandemiji in izdaja državnih bonov.
 
-```{r fig.dim=c(6,3.7)}
-plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "Leto", ylab = "Stevilo delovnih mest")
+## Časovna vrsta _Gostinstvo zasedena delovna mesta 1+_
+
+```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta za zasedena delovna mesta v gostinstvu, kjer je zaposlena vsaj 1 oseba."}
+plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "število delovnih mest",  xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 
 # gladilnik
 gladilnik <- lowess(time(ts_zasedena),ts_zasedena)
 points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 ```
 
-Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta je sprva strmo pada do leta 2014 nato pa spremeni predznak in začne strmo naraščati. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot da bi se ponavljali v ciklu. Ponovno pa je vidno ekstrmeno obdobje (čas pandemije covid-19).
+Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta je sprva strmo pada do leta 2014 nato pa spremeni predznak in začne strmo naraščati. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot, da bi se ponavljali v ciklu. 
 
-## Časovna vrsta "Gostinstvo prosta delovna mesta 1+"
+Vidna sta, da dva 'ekstremna obdobja'. Hud padec okoli leta 2012, ki je vztrajal do leta 2015, ko si celotno gospodarstvo še vedno ni dobro opomoglo od začetka krize leta 2008 ter okoli leta 2020, ko je bil čas pandemije Covid-19.
 
-```{r fig.dim=c(6,3.7)}
-plot.ts(ts_prosta, type = "o", pch = 16, cex=0.6, xlab = "Leto", ylab = "Stevilo delovnih mest")
+
+## Časovna vrsta _Gostinstvo prosta delovna mesta 1+_
+
+```{r echo=FALSE, fig.cap="Časovna vrsta za prosta delovna mesta v gostinstvu, kjer je zaposlena vsaj 1 oseba.", fig.dim=c(6,3.7)}
+plot.ts(ts_prosta, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "število delovnih mest",  xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 
 # gladilnik
 gladilnik <- lowess(time(ts_prosta),ts_prosta)
 points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 ```
 
+Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta čez celotno opazovano obdobje narašča. Sprva nekoliko bolj položno, po letu 2013 pa se naklon poveča. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot da bi se ponavljali v ciklu. Ponovno pa je vidno ekstrmeno obdobje (čas pandemije Covid-19).
 
-Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta cež celotno opazovano obdobje narašča. Sprva nekoliko bolj položno, po letu 2013 pa se naklon poveča. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot da bi se ponavljali v ciklu. Ponovno pa je vidno ekstrmeno obdobje (čas pandemije covid-19).
-
-
+<!--Neza: misls da bi mogla na x-osi narisat vec let? da ni sam na 5 ampak da je npr na 3?-->
 
