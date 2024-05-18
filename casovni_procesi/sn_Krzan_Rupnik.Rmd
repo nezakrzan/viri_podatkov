@@ -130,5 +130,4 @@ points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 
 Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta čez celotno opazovano obdobje narašča. Sprva nekoliko bolj položno, po letu 2013 pa se naklon poveča. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot da bi se ponavljali v ciklu. Ponovno pa je vidno ekstrmeno obdobje (čas pandemije Covid-19).
 
-<!--Neza: misls da bi mogla na x-osi narisat vec let? da ni sam na 5 ampak da je npr na 3?-->
 
