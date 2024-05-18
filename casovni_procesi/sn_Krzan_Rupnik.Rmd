@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = FALSE, fig.pos = "H", out.extra = "", fig.height = 
 
 library(readxl)
 library(astsa)
+library(car)
 ```
 
 \tableofcontents
@@ -130,4 +131,62 @@ points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 
 Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta čez celotno opazovano obdobje narašča. Sprva nekoliko bolj položno, po letu 2013 pa se naklon poveča. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot da bi se ponavljali v ciklu. Ponovno pa je vidno ekstrmeno obdobje (čas pandemije Covid-19).
 
+
+# _Gostinske nastanitvene dejavnosti_
+
+Ponovno narišimo časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
+
+```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta indeksa prihodka za 'Gostinske nastanitvene dejavnosti'."}
+plot.ts(ts_nastanitve, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka", xaxt="s")
+
+# gladilnik
+gladilnik <- lowess(time(ts_nastanitve),ts_nastanitve)
+points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+```
+
+## Transformacija
+
+Kot smo že ugotovili imamo prisotno nekonstantno variabilnost. Da se prepričamo ali je potrebna transformacija (in tudi kakšna), naredimo box-cox test.
+
+```{r results='hide'}
+time = 1 + frequency(ts_nastanitve) * (time(ts_nastanitve) - start(ts_nastanitve)[1])
+
+model_nast1 = lm(ts_nastanitve~ time)
+model_nast2 = lm(ts_nastanitve~ time + I(time^2))
+
+# izbereva s kvadratnim ker boljsi
+anova(model_nast1, model_nast2)
+```
+
+```{r fig.cap="Box-Cox za 'Gostinske nastanitvene dejavnosti'."}
+boxCox(model_nast2)
+```
+
+Ker je $\lambda = 1$ znotraj intervala zaupanja, to pomeni da transformacija ni potrebna.
+
+
+## Analiza avtokoreliranosti 
+
+```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za 'Gostinske nastanitvene dejavnosti'."}
+acf2(ts_nastanitve, main = "")
+```
+
+Zgornji ACF graf je precej pričakovan, saj sta v časovni vrsti prisotna tako rahel trend kot tudi sezonskost. Trend se izraža s počasnim padanjem verednosti avtokorelacijskih koeficientov z odlogi. Sezona pa je vidna z nihanjem vrednosti koeficientov in izrazitimi vrhovi, ki se ponavljajo.
+
+<!--Tom18: za PACF se ne spomnem zdej nic pametnega-->
+
+Tako iz ACF kot tudi PACF je razvidno, da imamo nestacionarno časovno vrsto, saj so koeficienti avtokorelacije statistično značilni.
+
+S postopnim diferenciranjem bomo najprej odpravili trend nato pa še sezonskost.
+
+```{r fig.dim=c(6,5)}
+par(mfrow=c(2,2), oma=c(1,1,0,0))
+plot(ts_nastanitve, main="Originalna", xlab="", ylab="")
+plot(diff(ts_nastanitve, lag=1), main="Lag=1", xlab="", ylab="")
+plot(diff(ts_nastanitve, lag=12), main="Lag=12", xlab="", ylab="")
+plot(diff(diff(ts_nastanitve, lag=1),lag=12), main="Lag=1 in Lag=12", xlab="", ylab="")
+
+mtext("leto",side=1,line=0,outer=TRUE,cex=1)
+mtext("indeks prihodka",side=2,line=0,outer=TRUE,cex=1,las=0)
+```
 
