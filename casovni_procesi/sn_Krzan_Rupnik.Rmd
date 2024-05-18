@@ -175,8 +175,6 @@ Zgornji ACF graf je precej pričakovan, saj sta v časovni vrsti prisotna tako r
 
 <!--Tom18: za PACF se ne spomnem zdej nic pametnega-->
 
-Tako iz ACF kot tudi PACF je razvidno, da imamo nestacionarno časovno vrsto, saj so koeficienti avtokorelacije statistično značilni.
-
 S postopnim diferenciranjem bomo najprej odpravili trend nato pa še sezonskost.
 
 ```{r fig.dim=c(6,5)}
