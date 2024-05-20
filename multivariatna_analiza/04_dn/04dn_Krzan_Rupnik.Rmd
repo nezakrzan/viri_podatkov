@@ -146,8 +146,8 @@ tabela
 
 ```{r, results=T}
 df_vel_skupin = data.frame("skupina" = c(1:3),
-                           "koliko" = c(59,71,48),
-                           "delež" = round(c(59,71,48)/178*100,2))
+                           "število vin" = c(59,71,48),
+                           "delež(%)" = round(c(59,71,48)/178*100,2))
 
 kable(df_vel_skupin, digits = 2,
       caption="Velikost skupin.") %>% 
