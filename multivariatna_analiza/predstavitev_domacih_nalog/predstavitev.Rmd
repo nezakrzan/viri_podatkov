@@ -25,9 +25,97 @@ knitr::opts_chunk$set(
 library(kableExtra)
 library(MASS)
 library(mclust)
+library(haven)
+library(psych)
+library(ggplot2)
+library(reshape2)
+library(dplyr)
+library(kableExtra)
+library(blockmodeling)
 
 set.seed(2024)
 ```
+
+
+# Metoda glavnih komponent
+
+## Slide 1
+
+Podatki testa osebnosti - spremenljivke energije in čustvene stabilnosti. Želiva pojasniti, s prvimi dvema nekoreliranima glavnima komponentama kar, največ variabilnosti originalnih spremenljivk in zmanjšati razsežnost podatkov tako, da se izgubi čim manj informacij.
+
+```{r}
+# vsi podatki
+dataframe <- read_sav("dn3_big5.sav") 
+
+# samo najni stolpci
+stolpci = c("EXT1","EXT2","EXT3","EXT4","EXT5","EXT6","EXT7","EXT8","EXT9","EXT10",
+            "EST1","EST2","EST3","EST4","EST5","EST6","EST7","EST8","EST9","EST10")
+
+# najni podatki
+podatki = dataframe[dataframe$country == "FR", stolpci]
+n_prej = nrow(podatki) # stevilo vrstic pred odstranitvijo NA
+podatki = na.omit(podatki) # odstranjene vrstice, ki vsebujejo NA
+razlika = n_prej - nrow(podatki) # stevilo odtrajenih vrstic
+
+negativne = c("EXT2", "EXT4", "EXT6", "EXT8", "EXT10",
+              "EST1", "EST3", "EST5", "EST6", "EST7", "EST8", "EST9", "EST10")
+
+# negativne = c("EXT2", "EXT4", "EXT6", "EXT8", "EXT10",
+#               "EST2", "EST4")
+
+for(el in negativne){
+  podatki[[el]] = -1*podatki[[el]]
+}
+Rlik <- cor(podatki)
+mgk <- princomp(x=podatki, cor=T, scores=T)
+mgk <- princomp(x=podatki, cor=T, scores=T)
+loadings.orig <- mgk$loadings[,1:2]
+eig <- eigen(x=Rlik, symmetric=T, only.values=T)$values
+loadings.res <- loadings.orig %*% diag(sqrt(eig[1:2]))
+matplot(x=seq_along(stolpci), y=loadings.res, type="o", pch=16,
+        xlab="", ylab="Korelacije", ylim=c(-1, 1), las=1,
+        xaxt = "n")
+legend("bottomleft", legend=c("GK1", "GK2"), col=1:2, pch=16)
+abline(h=0, v=10.5)
+axis(side = 1, at = 1:20, labels = stolpci, rotation='vertical', las=2)
+```
+
+
+
+Obe glavni komponenti sta v levi polovici pozitivno korelirani, ampak glavna komponenta 2 je v območju, ki nam povzroča probleme, saj korelacija ni zanemerljiva, ampak ni tudi tako visoka, da bi jo z zagotovostjo povezali z lastnostmi energije. Na desni polovici pa se glavni komponenti lepo ločita na pozitivno in negativno koreliranost.
+
+# Faktorska analiza
+
+## Slide 1
+
+Želimo poenostaviti kompleksnost povezav med spremenljivkami energije in čustvene stabilnosti tako, da sva našla novo dva faktorja, ki predstavlja skupno opazovanim spremenljivkam. Na grafu vidimo, da pa se tokrat spremenljivke, ki so v povezavi z energijo in spremenljivke čustvene stabilnosti lepo ločujejo glede na faktorja.
+
+```{r}
+# standardizirani podatki
+dfz <- scale(x=podatki)
+
+# metoda ML, posevna rotacija oblimin
+fa.obli <- fa(r=dfz, nfactors=2, rotate="oblimin", scores="none", covar=T, fm="ml")
+
+
+# metoda ML, pravokotna rotacija varimax, faktorske vrednosti regresija
+# TLI (Tucker Lewis Index) > 0.95
+# RMSEA  < 0.05
+fa.vari <- fa(r=dfz, nfactors=2, rotate="varimax", scores="regression",
+              covar=F, fm="ml")
+
+CM.vari <- fa.vari$loadings %*% t(fa.vari$loadings) 
+razlika <- Rlik - CM.vari
+
+matplot(x=seq_along(stolpci), y=fa.vari$loadings[, ], type="o", pch=16,
+        main="Pattern", xlab="", ylab="utezi", ylim=c(-1, 1),
+        las=1, xaxt="n")
+legend("bottomleft", legend=c("FA1", "FA2"), col=1:2, pch=16)
+abline(h=0, v=10.5)
+axis(side = 1, at = 1:20, labels = stolpci, rotation='vertical', las=2)
+```
+
+Jasno je videti, da za te podatke in spremenljivke faktorska analiza ločuje bolje.
 
 # Diskriminantna analiza
 
