@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = FALSE, fig.pos = "H", out.extra = "", fig.height = 
 library(readxl)
 library(astsa)
 library(car)
+library(splines)
 ```
 
 \tableofcontents
@@ -105,7 +106,7 @@ Prav tako je dobro vidno ekstremno gibanje v času pandemije Covid-19, saj se je
 ## Časovna vrsta _Gostinstvo zasedena delovna mesta 1+_
 
 ```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta za zasedena delovna mesta v gostinstvu, kjer je zaposlena vsaj 1 oseba."}
-plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "število delovnih mest",  xaxt="n")
+plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest",  xaxt="n")
 axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 
 # gladilnik
@@ -121,7 +122,7 @@ Vidna sta, da dva 'ekstremna obdobja'. Hud padec okoli leta 2012, ki je vztrajal
 ## Časovna vrsta _Gostinstvo prosta delovna mesta 1+_
 
 ```{r echo=FALSE, fig.cap="Časovna vrsta za prosta delovna mesta v gostinstvu, kjer je zaposlena vsaj 1 oseba.", fig.dim=c(6,3.7)}
-plot.ts(ts_prosta, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "število delovnih mest",  xaxt="n")
+plot.ts(ts_prosta, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest",  xaxt="n")
 axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 
 # gladilnik
@@ -146,6 +147,8 @@ points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 
 ## Transformacija
 
+<!-- Tom21: zdej sm naredu se model s cleni sin()/cos() pa se ta najbolj prilega ampak je box-cox potem bolj cuden-->
+
 Kot smo že ugotovili imamo prisotno nekonstantno variabilnost. Da se prepričamo ali je potrebna transformacija (in tudi kakšna), naredimo box-cox test.
 
 ```{r results='hide'}
@@ -153,9 +156,15 @@ time = 1 + frequency(ts_nastanitve) * (time(ts_nastanitve) - start(ts_nastanitve
 
 model_nast1 = lm(ts_nastanitve~ time)
 model_nast2 = lm(ts_nastanitve~ time + I(time^2))
+model_nast3 = lm(ts_nastanitve~ time + I(time^2)+
+                 I(sin(2 * pi/12 * time)) + I(cos(2 * pi/12 * time))+ 
+                 I(sin(2 * pi/6 * time)) + I(cos(2 * pi/6 * time)))
 
 # izbereva s kvadratnim ker boljsi
-anova(model_nast1, model_nast2)
+anova(model_nast1, model_nast2, model_nast3)
+
+# plot(time, ts_nastanitve, type = "o");
+# points(time, model_nast3$fitted.values, type="l", col = "red")
 ```
 
 ```{r fig.cap="Box-Cox za 'Gostinske nastanitvene dejavnosti'."}
@@ -262,6 +271,9 @@ model_str3 = lm(ts_strezba~ time + I(time^2) + I(time^3))
 
 # izbereva s kvadratnim ker boljsi
 anova(model_str1, model_str2, model_str3)
+
+# plot(time, ts_strezba, type = "o");
+# points(time, model_str3$fitted.values, type="l", col = "red")
 ```
 
 ```{r eval = F}
@@ -280,6 +292,103 @@ boxCox(model_str1)
 ```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za 'Dejavnost strežbe jedi in pijač'."}
 acf2(ts_strezba, main = "")
 ```
+
+<!-- Tom21: hmm a bi tukej ti dala za ACF da je prisotna sezonskost...ker na grafu osnovne casovne vrste ni glih izgledalo pa se spremeni se vrh iz decembra na poletje...ampak tukej pa izgleda kot da bi bila prisotna sezonskost...-->
+
+
+
+```{r fig.dim=c(6,5)}
+par(mfrow=c(2,2), oma=c(1,1,0,0))
+plot(ts_strezba, main="Originalna", xlab="", ylab="")
+plot(diff(ts_strezba, lag=1), main="Lag=1", xlab="", ylab="")
+plot(diff(ts_strezba, lag=12), main="Lag=12", xlab="", ylab="")
+plot(diff(diff(ts_strezba, lag=1),lag=12), main="Lag=1 in Lag=12", xlab="", ylab="")
+
+mtext("leto",side=1,line=0,outer=TRUE,cex=1)
+mtext("indeks prihodka",side=2,line=0,outer=TRUE,cex=1,las=0)
+```
+
+<!-- Tom21: tudi tukej ce diferencirava z 12 torej sezonskost men izgleda bolse tko da mogoce je res prisotna se sezonskost...ampak potem bo treba popravit se besedilo v prvem poglavju-->
+
+
+
+# Gostinstvo zasedena delovna mesta 1+
+
+Ponovno narišimo časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
+
+```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta 'Gostinstvo zasedena delovna mesta 1+'."}
+plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest", xaxt="s")
+
+# gladilnik
+gladilnik3 <- lowess(time(ts_zasedena),ts_zasedena)
+points(gladilnik3$x, gladilnik3$y, type="l", col = "blue")
+```
+
+## Transformacija
+
+Da preverimo ali je potrebna transformacija (in tudi kakšna), naredimo box-cox test.
+
+```{r results='hide'}
+time = 1 + frequency(ts_zasedena) * (time(ts_zasedena) - start(ts_zasedena)[1])
+
+model_zasedena1 = lm(ts_zasedena~ time)
+model_zasedena2 = lm(ts_zasedena~ time + I(time^2))
+model_zasedena3 = lm(ts_zasedena~ time + I(time^2) + I(time^3))
+model_zasedena4 = lm(ts_zasedena~ ns(time, df = 6))
+
+# izbereva s kvadratnim ker boljsi
+anova(model_zasedena1, model_zasedena2, model_zasedena3, model_zasedena4)
+
+# plot(time, ts_zasedena, type = "o", cex=0.5)
+# points(time, model_zasedena4$fitted.values, type="l", col = "red")
+```
+
+```{r fig.cap="Box-Cox za 'Gostinstvo zasedena delovna mesta 1+'."}
+boxCox(model_zasedena4)
+```
+
+<!-- Tom21: tukej kaze na transformacijo log() ampak jst k si narisem mi ne izgleda neki velika razlika, razn da se skala na y osi spremeni...ja pa res da je znotrej 95% intervala tudi 1 kar pomeni ni potrebna transformacija-->
+
+## Analiza avtokoreliranosti 
+
+```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za 'Gostinstvo zasedena delovna mesta 1+'."}
+acf2(ts_zasedena, main = "")
+```
+
+
+Iz zgornjega ACF grafa se dobro vidi prisotnost trenda, saj vrednosti koeficientov počasi padajo proti 0. Kot smo že iz osnovnega prikaza časovne vrste lahko opazili, ni izrazite sezonskosti, kar se vidi tudi na avtokorelogramu, saj ni ponavljajočih se vrhov (ekstremnih vrednosti).
+
+Z diferenciranjem trenda bomo poskusili dobiti stacionarno časovno vrsto.
+
+```{r fig.dim=c(7,3.5)}
+par(mfrow=c(1,2))
+plot(ts_zasedena, main="Originalna", xlab="leto", ylab="stevilo delovnih mest")
+plot(diff(ts_zasedena, lag=1), main="Lag=1", xlab="leto", ylab="stevilo delovnih mest")
+```
+
+Z diferenciranjem trenda smo res dobili stacionarno časovno vrsto. Pričakovana vrednost je enaka 0, variabilnost pa je končna. 
+
+
+## Izbira ustreznega modela
+
+```{r}
+# shraniva si diferencirano casovno vrsto
+ts_stac3 = diff(ts_zasedena, lag=1)
+```
+
+```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Gostinske nastanitvene dejavnosti'."}
+acf2(ts_stac1, main = "")
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
