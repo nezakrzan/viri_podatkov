@@ -118,7 +118,6 @@ Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta je sprva strm
 
 Vidna sta, da dva 'ekstremna obdobja'. Hud padec okoli leta 2012, ki je vztrajal do leta 2015, ko si celotno gospodarstvo še vedno ni dobro opomoglo od začetka krize leta 2008 ter okoli leta 2020, ko je bil čas pandemije Covid-19.
 
-
 ## Časovna vrsta _Gostinstvo prosta delovna mesta 1+_
 
 ```{r echo=FALSE, fig.cap="Časovna vrsta za prosta delovna mesta v gostinstvu, kjer je zaposlena vsaj 1 oseba.", fig.dim=c(6,3.7)}
@@ -131,7 +130,6 @@ points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 ```
 
 Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta čez celotno opazovano obdobje narašča. Sprva nekoliko bolj položno, po letu 2013 pa se naklon poveča. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot da bi se ponavljali v ciklu. Ponovno pa je vidno ekstrmeno obdobje (čas pandemije Covid-19).
-
 
 # _Gostinske nastanitvene dejavnosti_
 
@@ -173,16 +171,16 @@ boxCox(model_nast2)
 
 Ker je $\lambda = 1$ znotraj intervala zaupanja, to pomeni da transformacija ni potrebna.
 
-
 ## Analiza avtokoreliranosti 
 
 ```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za 'Gostinske nastanitvene dejavnosti'."}
 acf2(ts_nastanitve, main = "")
 ```
 
-Zgornji ACF graf je precej pričakovan, saj sta v časovni vrsti prisotna tako rahel trend kot tudi sezonskost. Trend se izraža s počasnim padanjem verednosti avtokorelacijskih koeficientov z odlogi. Sezona pa je vidna z nihanjem vrednosti koeficientov in izrazitimi vrhovi, ki se ponavljajo.
+Zgornji ACF graf je precej pričakovan, saj sta v časovni vrsti prisotna tako rahel trend kot tudi sezonskost. Trend se izraža s počasnim padanjem vrednosti avtokorelacijskih koeficientov z odlogi. Sezona pa je vidna z nihanjem vrednosti koeficientov oz. periodničnostjo in izrazitimi vrhovi, ki se ponavljajo.
 
-<!--Tom18: za PACF se ne spomnem zdej nic pametnega-->
+<!--Tom18: za PACF se ne spomnem zdej nic pametnega
+Neza21: ker tud nc pametnega ne pokaze hahahah-->
 
 S postopnim diferenciranjem bomo najprej odpravili trend nato pa še sezonskost.
 
@@ -197,7 +195,7 @@ mtext("leto",side=1,line=0,outer=TRUE,cex=1)
 mtext("indeks prihodka",side=2,line=0,outer=TRUE,cex=1,las=0)
 ```
 
-Na desnem spodnjem grafu (odstranjen trend in sezonskost) vidimo, da je pričakovana vrednost konstantna (enak 0) in variabilnost je končna (se s časom ne povečuje ali zmanjšuje). Torej lahko zaključimo, da imamo stacionarno časovno vrsto
+Na desnem spodnjem grafu (odstranjen trend in sezonskost) vidimo, da je pričakovana vrednost konstantna (enak 0) in variabilnost je končna (se s časom ne povečuje ali zmanjšuje). Torej lahko zaključimo, da imamo stacionarno časovno vrsto.
 
 ## Izbira ustreznega modela
 
@@ -233,7 +231,7 @@ best.order
 best.arma
 ```
 
-Algoritem nam kot model z najnižjo AIC vrednostjo vrne model ARMA(0,12).
+Algoritem nam kot model z najnižjo AIC vrednostjo vrne model ARMA(0,12). <!-- Neza21: misls da ni to velik 12?, a ni zadnic rekla, da je ponavad okol 4, 5. pa tud koeficienti so vsi po 0.3, kar je kr precej majno ne ze tko na splosno ce ignorirava 95% iz, vem da algoritem tko vrze, sam tko morda v razmislek... tud za naprej da se ne bo model prevec prilegu-->
 
 ```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram 'Gostinske nastanitvene dejavnosti' model ARMA(0,12)."}
 # to je ker je zgonji chunk eval=F
@@ -243,7 +241,6 @@ acf2(best.arma$resid, main = "")
 ```
 
 Iz zgornjih dveh grafov vidimo, da smo se z modeliranjem $MA(12)$ res znebili koreliranosti (koeficienti pri vseh odlogih so znotraj 95% intervala zaupanja).
-
 
 # _Dejavnost strežbe jedi in pijač_
 
@@ -293,9 +290,8 @@ boxCox(model_str1)
 acf2(ts_strezba, main = "")
 ```
 
-<!-- Tom21: hmm a bi tukej ti dala za ACF da je prisotna sezonskost...ker na grafu osnovne casovne vrste ni glih izgledalo pa se spremeni se vrh iz decembra na poletje...ampak tukej pa izgleda kot da bi bila prisotna sezonskost...-->
-
-
+<!-- Tom21: hmm a bi tukej ti dala za ACF da je prisotna sezonskost...ker na grafu osnovne casovne vrste ni glih izgledalo pa se spremeni se vrh iz decembra na poletje...ampak tukej pa izgleda kot da bi bila prisotna sezonskost...
+Neza21: pomojem da ni, ker koef. ful hitr padejo, sicer je periodicno sam a ni tko da morjo in za trend in za sozono ce je koef ful pocas padat da lahko recemo da je prisotna?-->
 
 ```{r fig.dim=c(6,5)}
 par(mfrow=c(2,2), oma=c(1,1,0,0))
@@ -308,9 +304,8 @@ mtext("leto",side=1,line=0,outer=TRUE,cex=1)
 mtext("indeks prihodka",side=2,line=0,outer=TRUE,cex=1,las=0)
 ```
 
-<!-- Tom21: tudi tukej ce diferencirava z 12 torej sezonskost men izgleda bolse tko da mogoce je res prisotna se sezonskost...ampak potem bo treba popravit se besedilo v prvem poglavju-->
-
-
+<!-- Tom21: tudi tukej ce diferencirava z 12 torej sezonskost men izgleda bolse tko da mogoce je res prisotna se sezonskost...ampak potem bo treba popravit se besedilo v prvem poglavju
+Neza21: ne rabis popravlat, tm se nama je tko zdel, zdej po podrobni analizi pa ugotoviva drugac, sej toj cist normalno, pa zih ji bo vsec-->
 
 # Gostinstvo zasedena delovna mesta 1+
 
@@ -347,12 +342,17 @@ anova(model_zasedena1, model_zasedena2, model_zasedena3, model_zasedena4)
 boxCox(model_zasedena4)
 ```
 
-<!-- Tom21: tukej kaze na transformacijo log() ampak jst k si narisem mi ne izgleda neki velika razlika, razn da se skala na y osi spremeni...ja pa res da je znotrej 95% intervala tudi 1 kar pomeni ni potrebna transformacija-->
+<!-- Tom21: tukej kaze na transformacijo log() ampak jst k si narisem mi ne izgleda neki velika razlika, razn da se skala na y osi spremeni...ja pa res da je znotrej 95% intervala tudi 1 kar pomeni ni potrebna transformacija
+Neza21: sm resla problem-->
+
+Na zgornjem graf vidimo, da bi bila priporočljiva logaritemska transformacija, ampak ker imamo v 95\% intervalu zaupanja tudi $\lambda=1$ se zaenkrat ne odločiva za logritemsko transformacijo.
 
 ## Analiza avtokoreliranosti 
 
 ```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za 'Gostinstvo zasedena delovna mesta 1+'."}
 acf2(ts_zasedena, main = "")
+# Neza21: ce povecava lage gre mogoc v periodicnost?
+acf(ts_zasedena, lag=500)
 ```
 
 
@@ -380,7 +380,7 @@ ts_stac3 = diff(ts_zasedena, lag=1)
 acf2(ts_stac1, main = "")
 ```
 
-
+Neza21: men se zdi dase zdej kle ful vid periodicnost, kaj ti misls? na acf...
 
 
 
