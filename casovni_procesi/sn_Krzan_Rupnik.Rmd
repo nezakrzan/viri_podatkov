@@ -136,7 +136,8 @@ Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta čez celotno 
 Ponovno narišimo časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
 
 ```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta indeksa prihodka za 'Gostinske nastanitvene dejavnosti'."}
-plot.ts(ts_nastanitve, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka", xaxt="s")
+plot.ts(ts_nastanitve, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka", xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 
 # gladilnik
 gladilnik <- lowess(time(ts_nastanitve),ts_nastanitve)
@@ -247,7 +248,8 @@ Iz zgornjih dveh grafov vidimo, da smo se z modeliranjem $MA(12)$ res znebili ko
 Ponovno narišimo časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
 
 ```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta indeksa prihodka za 'Dejavnost strežbe jedi in pijač'."}
-plot.ts(ts_strezba, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka", xaxt="s")
+plot.ts(ts_strezba, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka", xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 
 # gladilnik
 gladilnik2 <- lowess(time(ts_strezba),ts_strezba)
@@ -312,7 +314,8 @@ Neza21: ne rabis popravlat, tm se nama je tko zdel, zdej po podrobni analizi pa 
 Ponovno narišimo časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
 
 ```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta 'Gostinstvo zasedena delovna mesta 1+'."}
-plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest", xaxt="s")
+plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest", xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 
 # gladilnik
 gladilnik3 <- lowess(time(ts_zasedena),ts_zasedena)
@@ -331,7 +334,6 @@ model_zasedena2 = lm(ts_zasedena~ time + I(time^2))
 model_zasedena3 = lm(ts_zasedena~ time + I(time^2) + I(time^3))
 model_zasedena4 = lm(ts_zasedena~ ns(time, df = 6))
 
-# izbereva s kvadratnim ker boljsi
 anova(model_zasedena1, model_zasedena2, model_zasedena3, model_zasedena4)
 
 # plot(time, ts_zasedena, type = "o", cex=0.5)
@@ -376,21 +378,90 @@ Z diferenciranjem trenda smo res dobili stacionarno časovno vrsto. Pričakovana
 ts_stac3 = diff(ts_zasedena, lag=1)
 ```
 
-```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Gostinske nastanitvene dejavnosti'."}
-acf2(ts_stac1, main = "")
+```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Gostinstvo zasedena delovna mesta 1+'."}
+acf2(ts_stac3, main = "")
 ```
 
+<!--
 Neza21: men se zdi dase zdej kle ful vid periodicnost, kaj ti misls? na acf...
+Tom22: bi pomagalo ce bi jst spremenil kodo, ce ze kopiram od drugje haha zdej je mal drugacna situacija
+-->
+
+Grafa prikazujeta idelani izid. Koeficienti pri vseh odlogih so znotraj 95% intervala, torej v modelu ni statistično značilne korelacije med členi. Iz tega lahko zaključimo, da časovna vrsta predstavlja beli šum.
 
 
+# Gostinstvo prosta delovna mesta 1+
+
+Ponovno narišimo časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
+
+```{r echo=FALSE, fig.cap="Časovna vrsta 'Gostinstvo prosta delovna mesta 1+'.", fig.dim=c(6,3.7)}
+plot.ts(ts_prosta, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest",  xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
+
+# gladilnik
+gladilnik <- lowess(time(ts_prosta),ts_prosta)
+points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+```
+
+## Transformacija
+
+Da preverimo ali je potrebna transformacija (in tudi kakšna), naredimo box-cox test.
+
+```{r results='hide'}
+time = 1 + frequency(ts_prosta) * (time(ts_prosta) - start(ts_prosta)[1])
+
+model_prosta1 = lm(ts_prosta~ time)
+model_prosta2 = lm(ts_prosta~ time + I(time^2))
+model_prosta3 = lm(ts_prosta~ time + I(time^2) + I(time^3))
+model_prosta4 = lm(ts_prosta~ ns(time, df = 8))
+
+anova(model_prosta1, model_prosta2, model_prosta3, model_prosta4)
+
+# plot(time, ts_prosta, type = "o", cex=0.5)
+# points(time, model_prosta4$fitted.values, type="l", col = "red")
+```
+
+```{r fig.cap="Box-Cox za 'Gostinstvo prosta delovna mesta 1+'."}
+boxCox(model_prosta4)
+```
+
+Na zgornjem graf vidimo, da je $\lambda=0$ znotraj 95% intervala, torej je priporočljiva logaritemska transformacija.
+
+```{r}
+ts_prosta_log = log(ts_prosta) 
+```
 
 
+## Analiza avtokoreliranosti 
+
+```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za 'Gostinstvo prosta delovna mesta 1+'."}
+acf2(ts_prosta_log, main = "")
+```
+
+Iz zgornjega ACF grafa se dobro vidi prisotnost trenda, saj vrednosti koeficientov počasi padajo proti 0. Vendar pa ni opaziti periodičnega nihanja, kar pomeni da časovna vrsta res ne vsebuje sezonskosti. 
+
+Z diferenciranjem trenda bomo poskusili dobiti stacionarno časovno vrsto.
+
+```{r fig.dim=c(7,3.5)}
+par(mfrow=c(1,2))
+plot(ts_prosta_log, main="Originalna", xlab="leto", ylab="stevilo delovnih mest")
+plot(diff(ts_prosta_log, lag=1), main="Lag=1", xlab="leto", ylab="stevilo delovnih mest")
+```
+
+Z diferenciranjem linearnega trenda smo res dobili stacionarno časovno vrsto. Če si ogledamo graf na desni opazimo, da je pričakovana vrednost enak 0, variabilnost pa je končna. S temi pogoji zadostimo stacionarnost.
 
 
+## Izbira ustreznega modela
 
+```{r}
+# shraniva si diferencirano casovno vrsto
+ts_stac4 = diff(ts_prosta_log, lag=1)
+```
 
+```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Gostinstvo prosta delovna mesta 1+'."}
+acf2(ts_stac4, main = "")
+```
 
-
-
+Grafa ponovno prikazujeta idelani izid. Koeficienti pri vseh odlogih so znotraj 95% intervala, torej v modelu ni statistično značilne korelacije med členi. Iz tega lahko zaključimo, da časovna vrsta predstavlja beli šum.
 
 
