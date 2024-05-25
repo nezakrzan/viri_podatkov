@@ -12,7 +12,7 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.pos = "H", out.extra = "", fig.height = 4, fig.width = 5, fig.align = 'center')
+knitr::opts_chunk$set(echo = FALSE, fig.pos = "H", out.extra = "", fig.height = 4, fig.width = 5, fig.align = 'center', warning = F)
 
 # install.packages("readxl")
 
@@ -200,14 +200,21 @@ Na desnem spodnjem grafu (odstranjen trend in sezonskost) vidimo, da je pričako
 
 ## Izbira ustreznega modela
 
+Sprva časovno vrsto diferenciramo tako, da odstranimo linearni trend in sezonskost. Za nadaljno izbiro ustreznega modela si izrišimo avtokorelogram in parcialni avtokorelogram.
+
 ```{r}
 # shraniva si diferencirano casovno vrsto
-ts_stac1 = diff(diff(ts_nastanitve, lag=1),lag=12)
+ts_stac1 = arima(ts_nastanitve, order = c(0, 1, 0),
+                 seasonal = list(order = c(0, 1, 0),
+                                 period = frequency(ts_nastanitve)),
+                 method = "CSS-ML" )
 ```
 
 ```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Gostinske nastanitvene dejavnosti'."}
-acf2(ts_stac1, main = "")
+acf2(ts_stac1$residuals, main = "")
 ```
+
+<!-- Tom25: sm zdej tole mal popravu ker je blo p=12 in q=12 res mal veliko
 
 Iz avtokorelograma in parcialnega avtokorelograma vidimo, da je nekaj koeficientov statistično zančilnih (izven 95% intervala). Na podlagi njiju težko ocenimo, za kateri ARMA(p, q) proces gre. Kot največji možni vrednosti za $p$ in $q$ izberemo pmax=12 in qmax=12. 
 
@@ -234,7 +241,39 @@ best.arma
 
 Algoritem nam kot model z najnižjo AIC vrednostjo vrne model ARMA(0,12). <!-- Neza21: misls da ni to velik 12?, a ni zadnic rekla, da je ponavad okol 4, 5. pa tud koeficienti so vsi po 0.3, kar je kr precej majno ne ze tko na splosno ce ignorirava 95% iz, vem da algoritem tko vrze, sam tko morda v razmislek... tud za naprej da se ne bo model prevec prilegu-->
 
-```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram 'Gostinske nastanitvene dejavnosti' model ARMA(0,12)."}
+
+
+
+
+```{r message=FALSE, results="hide"}
+# mod.sarima_nast <- arima(ts_nastanitve, order = c(3, 1, 3),
+#                      seasonal = list(order = c(2, 1, 2),
+#                                      period = frequency(ts_nastanitve)))
+# AIC: 1218
+
+mod.sarima_nast <- arima(ts_nastanitve, order = c(4, 1, 4),
+                     seasonal = list(order = c(2, 1, 2),
+                                     period = frequency(ts_nastanitve)))
+# AIC: 1216
+# ker je AIC manjsi izbereva tega
+# sm probal se p=8 in q=8 pa pride vecji AIC...
+
+Box.test(mod.sarima_nast$resid, lag = 48, type = c("Ljung-Box"),
+         fitdf = mod.sarima_nast$arma[1] + mod.sarima_nast$arma[2] +
+           mod.sarima_nast$arma[3] + mod.sarima_nast$arma[4])
+
+# p-vrednost: 0.377 kar je ok
+
+# ocene <- sarima(ts_nastanitve, p = 4, d = 1, q = 4, P=2, D=1, Q=2, S=12,
+#                 details = TRUE)
+# 
+# ocene$ttable
+# vecino clenov je stat. zancilnih
+```
+
+<!-- Tom25: to sm tud zakomentiral ker se nanasa na zgonje zakomentirano
+
+```{r eval=F, results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram 'Gostinske nastanitvene dejavnosti' model ARMA(0,12)."}
 # to je ker je zgonji chunk eval=F
 best.arma = arima(ts_stac1, order = c(0,0,12))
 
@@ -242,6 +281,35 @@ acf2(best.arma$resid, main = "")
 ```
 
 Iz zgornjih dveh grafov vidimo, da smo se z modeliranjem $MA(12)$ res znebili koreliranosti (koeficienti pri vseh odlogih so znotraj 95% intervala zaupanja).
+-->
+
+```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za model sarima((4,1,4),(2,1,2)) 'Gostinske nastanitvene dejavnosti'."}
+acf2(mod.sarima_nast$resid, main="")
+```
+
+Iz zgornjih dveh grafov vidimo, da smo se z modelom SARIMA$(4,1,4)(2,1,2)_{12}$ res znebili koreliranosti (koeficienti pri vseh odlogih so znotraj 95% intervala zaupanja).
+
+## Napoved
+
+```{r results=F}
+sarima.for(ts_nastanitve, n.ahead = 36, p = 4, d = 1, q = 4,
+           P = 2, D = 1, Q = 2, S = 12,
+           plot.all = TRUE)
+```
+
+Na grafu je prikazana napoved za naslednje 3 leta (36 mesecev). Vidimo, da napoved ni preveč dobra, saj je amplituda nihanja dosti velika. Še večje vrednosti pa zavzamejo intervali zaupanja, ki so zelo široki. 
+
+Časovno vrsto razdelimo še na učno (1.2010-12.2021) in testno statistiko (1.2022-1.2024). S tem želimo na znanih podatkih preveriti pravilnost napovedi, ki jih naredimo na podlagi modela in predhodnjih vrednosti.
+
+```{r results=F}
+nastanitev.ucna <- window(ts_nastanitve, start = c(2010, 1), end = c(2021, 12))
+nastanitev.test <- window(ts_nastanitve, start = c(2022, 1), end = c(2024, 1))
+
+sarima.for(nastanitev.ucna, n.ahead = 24, p = 4, d = 1, q = 4, P = 2, D = 1, Q = 2, S = 12, plot.all = TRUE)
+points(nastanitev.test, type = "o")
+```
+
+Opazimo, da z napovedjo (rdeča) podcenimo vrednosti časovne vrste (črna). So pa vrednosti časovne vrste vseeno v intervalu zaupanja napovedi.
 
 # _Dejavnost strežbe jedi in pijač_
 
@@ -295,6 +363,8 @@ acf2(ts_strezba, main = "")
 <!-- Tom21: hmm a bi tukej ti dala za ACF da je prisotna sezonskost...ker na grafu osnovne casovne vrste ni glih izgledalo pa se spremeni se vrh iz decembra na poletje...ampak tukej pa izgleda kot da bi bila prisotna sezonskost...
 Neza21: pomojem da ni, ker koef. ful hitr padejo, sicer je periodicno sam a ni tko da morjo in za trend in za sozono ce je koef ful pocas padat da lahko recemo da je prisotna?-->
 
+Sprva nas graf ACF nekoliko spominja na vsebovanost seznoske komponente vendar vrednosti dokaj hitro padajo in je pri kasnejših (sezonskih) odlogih postane zanemarljiva. Ali bomo pri modeliranju upoštevali tudi seznoskost se bomo odločili v naslednjem razdelku, kjer bomo časovno vrsto ustrezno diferencirali in primerjali ACF ter PACF. Zagotovo pa imamo prisotnost trenda, saj vrednosti postopamo padajo proti 0.
+
 ```{r fig.dim=c(6,5)}
 par(mfrow=c(2,2), oma=c(1,1,0,0))
 plot(ts_strezba, main="Originalna", xlab="", ylab="")
@@ -306,8 +376,115 @@ mtext("leto",side=1,line=0,outer=TRUE,cex=1)
 mtext("indeks prihodka",side=2,line=0,outer=TRUE,cex=1,las=0)
 ```
 
+Iz zgornjih grafov bi lahko rekli, da časovna vrsta pri kateri diferenciramo trend in seznoskost, izgleda nekoliko boljše. Ta je nekoliko bolj gladka in tudi amplituda nihanja je manjša, z izjemo ekstremnih let.
+
 <!-- Tom21: tudi tukej ce diferencirava z 12 torej sezonskost men izgleda bolse tko da mogoce je res prisotna se sezonskost...ampak potem bo treba popravit se besedilo v prvem poglavju
 Neza21: ne rabis popravlat, tm se nama je tko zdel, zdej po podrobni analizi pa ugotoviva drugac, sej toj cist normalno, pa zih ji bo vsec-->
+
+## Izbira ustreznega modela
+
+Sprva diferenciramo le linearni trend.
+
+```{r}
+# shraniva si diferencirano casovno vrsto
+ts_stac2_1 = arima(ts_strezba, order = c(0, 1, 0),
+                 seasonal = list(order = c(0, 0, 0),
+                                 period = frequency(ts_nastanitve)),
+                 method = "CSS-ML" )
+```
+
+```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Dejavnost strežbe jedi in pijač'."}
+acf2(ts_stac2_1$residuals, main = "")
+```
+
+Na grafu ACF so statistično značilni koef. avtokorelacije pri vseh (sezonskih) odlogih. To nakazuje, da je mogoče res potrebno diferencirati tudi seznosko komponento. 
+
+```{r}
+# shraniva si diferencirano casovno vrsto
+ts_stac2_2 = arima(ts_strezba, order = c(0, 1, 0),
+                 seasonal = list(order = c(0, 1, 0),
+                                 period = frequency(ts_nastanitve)),
+                 method = "CSS-ML" )
+```
+
+```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Dejavnost strežbe jedi in pijač'."}
+acf2(ts_stac2_2$residuals, main = "")
+```
+
+Grafa sedaj res izgledata bolje. Z izjemo nekaj odlogov na začetku je večino vrednosti znotraj 95% intervala. Prav tako smo se znebili statistično značilnih vrednosti, ki so očitno nakazovale na prsotnost sezonskosti.
+
+
+```{r message=FALSE, results="hide"}
+mod.sarima_str <- arima(ts_strezba, order = c(5, 1, 5),
+                     seasonal = list(order = c(2, 1, 1),
+                                     period = frequency(ts_strezba)))
+# AIC: 1207.3
+
+mod.sarima_str2 <- arima(ts_strezba, order = c(5, 1, 8),
+                     seasonal = list(order = c(2, 1, 1),
+                                     period = frequency(ts_strezba)))
+# AIC: 1203.5
+
+mod.sarima_str3 <- arima(ts_strezba, order = c(5, 1, 8),
+                     seasonal = list(order = c(2, 1, 2),
+                                     period = frequency(ts_strezba)))
+# nic se ne izboljsa v primerjavi s prejsnim
+
+mod.sarima_str4 <- arima(ts_strezba, order = c(5, 1, 8),
+                     seasonal = list(order = c(3, 1, 1),
+                                     period = frequency(ts_strezba)))
+# AIC: 1205
+
+# ker imata 2 in 3 najmanjšo AIC vrednost probamo to
+
+# Box.test(mod.sarima_str2$resid, lag = 48, type = c("Ljung-Box"),
+#          fitdf = mod.sarima_str2$arma[1] + mod.sarima_str2$arma[2] +
+#            mod.sarima_str2$arma[3] + mod.sarima_str2$arma[4])
+
+# p-vrednost: 0.52 kar je ok
+
+# ocene <- sarima(ts_strezba, p = 5, d = 1, q = 8, P=2, D=1, Q=1, S=12,
+#                 details = TRUE)
+# 
+# ocene$ttable
+# # kaj je s tem p-vrednostmi haha
+
+# Box.test(mod.sarima_str3$resid, lag = 48, type = c("Ljung-Box"),
+#          fitdf = mod.sarima_str3$arma[1] + mod.sarima_str3$arma[2] +
+#            mod.sarima_str3$arma[3] + mod.sarima_str3$arma[4])
+
+# p-vrednost: 0.48 kar je ok
+
+# ocene <- sarima(ts_strezba, p = 5, d = 1, q = 8, P=2, D=1, Q=2, S=12,
+#                 details = TRUE)
+# 
+# ocene$ttable
+# # p-vrednosti izgledajo boljse...
+
+# za nadaljevanje bom vzel mod.sarima_str3
+```
+
+## Napoved
+
+```{r results=F}
+sarima.for(ts_strezba, n.ahead = 36, p = 5, d = 1, q = 8,
+           P = 2, D = 1, Q = 2, S = 12,
+           plot.all = TRUE)
+```
+
+Na grafu je prikazana napoved za naslednje 3 leta (36 mesecev). Vidimo, da napoved ni preveč dobra, saj napovedi ne sledijo naraščajočemu trendu. Tudi intervali zaupanja so zelo široki in zato je napoved zelo neinformativna.
+
+Časovno vrsto razdelimo še na učno (1.2010-12.2021) in testno statistiko (1.2022-1.2024). S tem želimo na znanih podatkih preveriti pravilnost napovedi, ki jih naredimo na podlagi modela in predhodnjih vrednosti.
+
+```{r results=F}
+strezba.ucna <- window(ts_strezba, start = c(2010, 1), end = c(2021, 12))
+strezba.test <- window(ts_strezba, start = c(2022, 1), end = c(2024, 1))
+
+sarima.for(strezba.ucna, n.ahead = 24, p = 4, d = 1, q = 4, P = 2, D = 1, Q = 2, S = 12, plot.all = TRUE)
+points(strezba.test, type = "o")
+```
+
+Opazimo, da z napovedjo (rdeča) podcenimo vrednosti časovne vrste (črna). So pa vrednosti časovne vrste vseeno v intervalu zaupanja napovedi.
 
 # Gostinstvo zasedena delovna mesta 1+
 
@@ -370,16 +547,18 @@ plot(diff(ts_zasedena, lag=1), main="Lag=1", xlab="leto", ylab="stevilo delovnih
 
 Z diferenciranjem trenda smo res dobili stacionarno časovno vrsto. Pričakovana vrednost je enaka 0, variabilnost pa je končna. 
 
-
 ## Izbira ustreznega modela
 
 ```{r}
 # shraniva si diferencirano casovno vrsto
-ts_stac3 = diff(ts_zasedena, lag=1)
+ts_stac3 = arima(ts_zasedena, order = c(0, 1, 0),
+                 seasonal = list(order = c(0, 0, 0),
+                                 period = frequency(ts_nastanitve)),
+                 method = "CSS-ML" )
 ```
 
 ```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Gostinstvo zasedena delovna mesta 1+'."}
-acf2(ts_stac3, main = "")
+acf2(ts_stac3$residuals, main = "")
 ```
 
 <!--
@@ -389,6 +568,23 @@ Tom22: bi pomagalo ce bi jst spremenil kodo, ce ze kopiram od drugje haha zdej j
 
 Grafa prikazujeta idelani izid. Koeficienti pri vseh odlogih so znotraj 95% intervala, torej v modelu ni statistično značilne korelacije med členi. Iz tega lahko zaključimo, da časovna vrsta predstavlja beli šum.
 
+## Napoved
+
+```{r results=F}
+sarima.for(ts_zasedena, n.ahead = 12, p = 0, d = 1, q = 0, plot.all = TRUE)
+```
+
+Na grafu je prikazana napoved za naslednje 3 leta (12 kvartilov). Kot smo zaključili v prejšnjem razdelku časovna vrsta predstavlja beli šum, torej napoved ne bo preveč informativna. Temu primerni so tudi intervali zaupanja, ki so precej široki. Vidimo le, da napoved sledi narašačjočemu trendu
+
+Časovno vrsto razdelimo še na učno (2010Q1-2021Q4) in testno statistiko (2022Q1-2023Q4). S tem želimo na znanih podatkih preveriti pravilnost napovedi, ki jih naredimo na podlagi modela in predhodnjih vrednosti.
+
+```{r results=F}
+zasedena.ucna <- window(ts_zasedena, start = c(2010, 1), end = c(2021, 4))
+zasedena.test <- window(ts_zasedena, start = c(2022, 1), end = c(2023, 4))
+
+sarima.for(zasedena.ucna, n.ahead = 8, p = 0, d = 1, q = 0, plot.all = TRUE)
+points(zasedena.test, type = "o")
+```
 
 # Gostinstvo prosta delovna mesta 1+
 
@@ -455,13 +651,34 @@ Z diferenciranjem linearnega trenda smo res dobili stacionarno časovno vrsto. �
 
 ```{r}
 # shraniva si diferencirano casovno vrsto
-ts_stac4 = diff(ts_prosta_log, lag=1)
+ts_stac4 = arima(ts_prosta_log, order = c(0, 1, 0),
+                 seasonal = list(order = c(0, 0, 0),
+                                 period = frequency(ts_nastanitve)),
+                 method = "CSS-ML" )
 ```
 
 ```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Gostinstvo prosta delovna mesta 1+'."}
-acf2(ts_stac4, main = "")
+acf2(ts_stac4$residuals, main = "")
 ```
+
 
 Grafa ponovno prikazujeta idelani izid. Koeficienti pri vseh odlogih so znotraj 95% intervala, torej v modelu ni statistično značilne korelacije med členi. Iz tega lahko zaključimo, da časovna vrsta predstavlja beli šum.
 
 
+## Napoved
+
+```{r results=F}
+sarima.for(ts_prosta_log, n.ahead = 12, p = 0, d = 1, q = 0, plot.all = TRUE)
+```
+
+Na grafu je prikazana napoved za naslednje 3 leta (12 kvartilov). Kot smo zaključili v prejšnjem razdelku časovna vrsta predstavlja beli šum, torej napoved ne bo preveč informativna. Temu primerni so tudi intervali zaupanja, ki so precej široki. Vidimo le, da napoved sledi narašačjočemu trendu
+
+Časovno vrsto razdelimo še na učno (2010Q1-2021Q4) in testno statistiko (2022Q1-2023Q4). S tem želimo na znanih podatkih preveriti pravilnost napovedi, ki jih naredimo na podlagi modela in predhodnjih vrednosti.
+
+```{r results=F}
+prosta.ucna <- window(ts_prosta_log, start = c(2010, 1), end = c(2021, 4))
+prosta.test <- window(ts_prosta_log, start = c(2022, 1), end = c(2023, 4))
+
+sarima.for(prosta.ucna, n.ahead = 8, p = 0, d = 1, q = 0, plot.all = TRUE)
+points(prosta.test, type = "o")
+```
