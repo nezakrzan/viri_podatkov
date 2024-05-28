@@ -371,7 +371,7 @@ plot(x=xLD1, y=xLD2, col=lda.predict$class, xlim=c(-6, 6), ylim=c(-5, 5), main="
 legend("bottomleft", legend=levels(lda.predict$class), col=1:3, pch=16)
 ```
 
-Že iz levega grafa se vidi, da so sorte vina med seboj dobro ločene oz. se med seboj ne prekrivajo. Zato ni presenečenje, da je taka situacija tudi v primeru klasifikacije po LDA. Skupine se lepo ločujejo glede na prvo diskriminantno funkcijo(gledamo vodoravno) in sicer tudi glede na drugo(gledamo navpično), ampak slabše.<!--hoce neko oceno??-->
+Že iz levega grafa se vidi, da so sorte vina med seboj dobro ločene oz. se med seboj ne prekrivajo. Zato ni presenečenje, da je taka situacija tudi v primeru klasifikacije po LDA. Skupine se lepo ločujejo glede na prvo diskriminantno funkcijo(gledamo vodoravno) in sicer tudi glede na drugo(gledamo navpično), ampak slabše.<!--hoce neko oceno?? Prva locuje 69% med povprečji, druga pa 32%.-->
 
 Grafa sta med seboj identična zato lahko zaključimo, da diskriminantna analiza odlično ločuje med skupinami.
 
