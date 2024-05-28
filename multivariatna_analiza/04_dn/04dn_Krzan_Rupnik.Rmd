@@ -267,13 +267,16 @@ Prva linearna diskriminantna funkcija najbolj ločuje med sorto vina **1** in so
 Poglejmo si spremenljivke, ki imajo največji vpliv na vrednosti diskriminantne funkcije, ker so z posamezno funkcijo močno korelirane. Torej spremenjivke, ki najbolj ločujejo med skupinami. 
 
 V največji meri se nam splača govoriti o intenziteti barve( _Color_intensity_), razmerju ocene vsebnosti fenolnih spojin( _OD280_OD315_), aminokislinah( _Proline_) pri prvi diskriminantni funkciji. 
+<!--
 Sklepamo lahko, da je pri sorti vina **1**  pomembna predvsem razmerje OD280/OD315, aminokisline( _Proline_), pri sorti **3** pa intenziteta barve( _Color_intensity_).
+-->
 
 Prav tako se splača govoriti o aminokislinah( _Proline_), % alkohola( _Alcohol_), vsebovanost pepela( _Ash_) pri drugi diskriminantni funkciji. Šibko koreliranost z drugo diskriminantno funkcijo pa imajo tudi intenziteta barve( _Color_intensity_) in spremenljivka _Flavanoids_.
-
+<!--
 Pri sorti vina **1** je pomemben % alkohola( _Alcohol_), aminokisline( _Proline_) in vsebovanost pepela(_Ash_), pri sorti **2** pa _Flavanoids_ in alkalnost pepela(*Alcalinity_of_ash*).
+-->
 
-Poglejmo si še grafično kako je z ločevanjem po skupinah. Na spodnjem grafu vidimo, da se pri LD1 porazdelitve skupin ne prekrivajo tako zelo, s tem ko pri LD2, ne ločujemo med skupinama **1** in **3**, sorta vina **1** pa ima težičše precej v levo. Vidimo, da ne glede na to kaj smo opisali, da dejanska sposobnost ločevanja po sortah pri drugi funkciji zelo mahna, pri prvi pa bi to bilo možno.
+Poglejmo si še grafično kako je z ločevanjem po skupinah. Na spodnjem grafu vidimo, da se pri LD1 porazdelitve skupin ne prekrivajo tako zelo, s tem ko pri LD2, ne ločujemo med skupinama **1** in **3**, sorta vina **1** pa ima težičše precej v levo. Vidimo, da ne glede na to kaj smo opisali, da dejanska sposobnost ločevanja po sortah pri drugi funkciji zelo mahna, pri prvi pa bi to bilo možno, ampak druga funkcija vseeno dobro ločuje med sorto 2 od sort 1 in 3, kar je tudi dobro.
 
 ```{r, results=T, fig.cap="Grafični prikaz porazdelitev vrednosti po skupinah.", fig.width=8, fig.height=4}
 lda.predict <- predict(object=lda.fit, dimen=2)
@@ -368,7 +371,7 @@ plot(x=xLD1, y=xLD2, col=lda.predict$class, xlim=c(-6, 6), ylim=c(-5, 5), main="
 legend("bottomleft", legend=levels(lda.predict$class), col=1:3, pch=16)
 ```
 
-Že iz levega grafa se vidi, da so sorte vina med seboj dobro ločene oz. se med seboj ne prekrivajo. Zato ni presenečenje, da je taka situacija tudi v primeru klasifikacije po LDA. Skupine se lepo ločujejo glede na prvo diskriminantno funkcijo(gledamo vodoravno) in glede na drugo(gledamo navpično).
+Že iz levega grafa se vidi, da so sorte vina med seboj dobro ločene oz. se med seboj ne prekrivajo. Zato ni presenečenje, da je taka situacija tudi v primeru klasifikacije po LDA. Skupine se lepo ločujejo glede na prvo diskriminantno funkcijo(gledamo vodoravno) in sicer tudi glede na drugo(gledamo navpično), ampak slabše.<!--hoce neko oceno??-->
 
 Grafa sta med seboj identična zato lahko zaključimo, da diskriminantna analiza odlično ločuje med skupinami.
 
