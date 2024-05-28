@@ -21,7 +21,7 @@ library(splines)
 \listoftables
 \newpage
 
-```{r}
+```{r message=FALSE}
 # imena posameznih sheet-ov
 # excel_sheets("Podatki za seminarske naloge.xlsx")
 
@@ -38,18 +38,6 @@ prosta_1 = data1[,"Prosta_1+_I GOSTINSTVO"]
 nastanitvene_dejavnosti = data2[,"Gostinske nastanitvene dejavnosti"]
 strezba_jedi_pjac = data2[, "Dejavnost strežbe jedi in pijač"]
 ```
-
-# Uvod
-
-Za analizo sva si izbrala podatke, ki spadajo pod temo _Gostinstvo_. 
-
-Za indeks prihodka po dejavnosti sva si izbrala _Gostinske nastanitvene dejavnosti_ in _Dejavnost strežbe jedi in pijač_. Podatki so podani za časovno obdobje od januarja 2010 do januarja 2024(`2010M01` do `2024M01`). Frekvenca vzorčenja je približno enakomerna in enaka 12, torej gre za mesečno vzročenje. 
-
-Nato sva analiziral še časovni vrsti za prosta in zasedena delovna mesta v gostinstvu, kjer je zaposlena vsaj 1 oseba. Podatki so podani za časovno obdobje od leta 2008 do leta 2023(`2008Q1` do `2023Q4`) po kvartalih. Frekvenca vzorčenja je približno enakomerna in enaka 4, torej gre za četrtletno vzročenje.
-
-Ker sta frekvenci vzorčenja enakomerni imamo opravka z ekvidistantnimi časovnimi vrstami.
-
-# Predstavitev časovnih vrst
 
 ```{r}
 # casovni interval 2010M1-2024M1
@@ -69,55 +57,76 @@ ts_prosta = ts(prosta_1, start = c(2008, 1), frequency = 4)
 # end(ts_prosta)
 ```
 
-## Časovna vrsta _Gostinske nastanitvene dejavnosti_
+# Uvod
 
-```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta indeksa prihodka za 'Gostinske nastanitvene dejavnosti'."}
-plot.ts(ts_nastanitve, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka", xaxt="s")
+Za analizo sva si izbrala podatke, ki spadajo pod temo _Gostinstvo_. 
 
-# gladilnik
-gladilnik <- lowess(time(ts_nastanitve),ts_nastanitve)
-points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+Za indeks prihodka po dejavnosti sva si izbrala _Gostinske nastanitvene dejavnosti_ in _Dejavnost strežbe jedi in pijač_. Podatki so podani za časovno obdobje od januarja 2010 do januarja 2024(`2010M01` do `2024M01`). Frekvenca vzorčenja je približno enakomerna in enaka 12, torej gre za mesečno vzročenje. 
+
+Nato sva analiziral še časovni vrsti za prosta in zasedena delovna mesta v gostinstvu, kjer je zaposlena vsaj 1 oseba. Podatki so podani za časovno obdobje od leta 2008 do leta 2023(`2008Q1` do `2023Q4`) po kvartalih. Frekvenca vzorčenja je približno enakomerna in enaka 4, torej gre za četrtletno vzročenje.
+
+Ker sta frekvenci vzorčenja enakomerni imamo opravka z ekvidistantnimi časovnimi vrstami.
+
+\newpage
+
+# Časovna vrsta _Gostinske nastanitvene dejavnosti_
+
+## Pregled časovne vrste
+
+Podatke imamo za leta od 2010 do leta 2023 za vsak mesec v letu in za leto 2024 za mesec januar.  
+
+Na spodnjem grafu porazdelitev indeksa prihodka glede na leta lahko vidimo, da bo proti koncu variabilnost časovne vrste spet zelo nekonstantna v primerjavi z ostalimi leti. Pri časovni vrsti na začetku pričakujemo minimalni trend, ki je sprva negativen, nato pa nekoliko pozitiven in potem velike spremembe v in po letu 2020. Glede na mesece vidimo, da je prihodkov v dejavnosti največ ravno v poletnih mesecih in pa večje je tudi v mesecu januarju in decembru, kar je dokaj logično glede na življenje ljudi.
+
+```{r fig.height=3, fig.width=6, message=FALSE, warning=FALSE, fig.cap="Porazdelitev indeksa prihodka v gostinski nastanitveni dejavnosti glede na leta."}
+library(ggplot2)
+library(tidyr)
+df = data.frame(time = data2$...1, indeks.prihodka = data2$`Gostinske nastanitvene dejavnosti`)
+df <- separate(df, time, into = c("year", "mesec"), sep = "M")
+
+ggplot(df, aes(x= year, y= indeks.prihodka, fill=year)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("leto") + ylab("indeks prihodka")
 ```
 
-V časovni vrsti je prisotnostnih več različnih komponent časovnega procesa. Sprva opazimo trend, ki je najprej nekoliko padajoč, nato pa se proti koncu leta 2014 obrne in postane pozitiven. Dobro je vidna tudi prisotnost sezonskosti. Indeks se v vsakem letu poveča v začetku leta (januarja), nato nekoliko pade in ponovno raste do poletja (avgusta). Potem sledi padanje do konca let, ko je ponovno nekolikšno povišanje decembra. Tako gibanje je bilo tudi pričakovano, saj je to obdobje poletne in zimske sezone. 
 
-Med letoma 2020 in 2022 je opazno neobičajno gibanje vrednosti. Gre namreč za obdobje pandemije Covid-19, ko so veljali izredni ukrepi, ki so vplivali na gostinske nastanitvene dejavnosti. Opazno je vidno tudi povišanje po letu 2022 oz. sprememba v amplitudnem nihanju. Tudi to je verjetno posledica pandemija ovid-19, saj smo se po dolgem času lahko kam odpravili, država pa je pomagala z izdajo t.i. bonov.
+```{r fig.height=3, fig.width=6, message=FALSE, warning=FALSE, fig.cap="Porazdelitev indeksa prihodka v gostinski nastanitveni dejavnosti glede na mesec."}
+library(ggplot2)
+library(tidyr)
+df = data.frame(time = data2$...1, indeks.prihodka = data2$`Gostinske nastanitvene dejavnosti`)
+df <- separate(df, time, into = c("year", "mesec"), sep = "M")
 
-
-## Časovna vrsta _Gostinstvo zasedena delovna mesta 1+_
-
-```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta za zasedena delovna mesta v gostinstvu, kjer je zaposlena vsaj 1 oseba."}
-plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest",  xaxt="n")
-axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
-
-# gladilnik
-gladilnik <- lowess(time(ts_zasedena),ts_zasedena)
-points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+ggplot(df, aes(x= mesec, y= indeks.prihodka, fill=mesec)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("mesec") + ylab("indeks prihodka")
 ```
 
-Iz grafa časovne vrste je možno opaziti le priostnost trenda. Ta je sprva strmo pada do leta 2014 nato pa spremeni predznak in začne strmo naraščati. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni kot, da bi se ponavljali v ciklu. 
-
-Vidna sta, da dva 'ekstremna obdobja'. Hud padec okoli leta 2012, ki je vztrajal do leta 2015, ko si celotno gospodarstvo še vedno ni dobro opomoglo od začetka krize leta 2008 ter okoli leta 2020, ko je bil čas pandemije Covid-19.
-
-
-# _Gostinske nastanitvene dejavnosti_
-
-Ponovno narišimo časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
+Narišimo si sedaj časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
 
 ```{r fig.dim=c(6,3.7), fig.cap="Časovna vrsta indeksa prihodka za 'Gostinske nastanitvene dejavnosti'."}
 plot.ts(ts_nastanitve, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka", xaxt="n")
 axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
-
 # gladilnik
-gladilnik <- lowess(time(ts_nastanitve),ts_nastanitve)
-points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+gladilnik2 <- lowess(time(ts_nastanitve),ts_nastanitve)
+points(gladilnik2$x, gladilnik2$y, type="l", col = "blue")
 ```
 
+Ponovno opazimo prisotnost trenda, ki je sprva negativen, nato pa se leta 2015 obrne in postane pozitiven, naklon pa je bil v zadnjih letih največji. Dobro je vidna tudi prisotnost sezonskosti. Indeks se v vsakem letu poveča v začetku leta (januarja), nato nekoliko pade in ponovno raste do poletja (avgusta). Potem sledi padanje do konca let, ko je ponovno nekolikšno povišanje decembra. Tako gibanje je bilo tudi pričakovano, saj je to obdobje poletne in zimske sezone. 
+
+Prav tako je dobro vidno ekstremno gibanje v času pandemije Covid-19, saj se je takrat zgodil velik padec vrednosti indeksa. Tudi amplituda nihanja se je drastično spremenila v primerjavi s predhodnjim opazovanim obdobjem, za kar je verjetno ponovno krivo obnašanje in potrebe ljudi po pandemiji in izdaja državnih bonov.
+
 ## Transformacija
-
-<!-- Tom21: zdej sm naredu se model s cleni sin()/cos() pa se ta najbolj prilega ampak je box-cox potem bolj cuden-->
-
-Kot smo že ugotovili imamo prisotno nekonstantno variabilnost. Da se prepričamo ali je potrebna transformacija (in tudi kakšna), naredimo box-cox test.
 
 ```{r results='hide'}
 time = 1 + frequency(ts_nastanitve) * (time(ts_nastanitve) - start(ts_nastanitve)[1])
@@ -131,346 +140,244 @@ model_nast3 = lm(ts_nastanitve~ time + I(time^2)+
 # izbereva s kvadratnim ker boljsi
 anova(model_nast1, model_nast2, model_nast3)
 
+# Box-Cox
+rez = boxCox(model_nast3, plotit = F)
+(lambda = rez$x[which.max(rez$y)])
+
+ts_nastanitve_trans = ts_nastanitve^lambda
+
 # plot(time, ts_nastanitve, type = "o");
 # points(time, model_nast3$fitted.values, type="l", col = "red")
 ```
 
-```{r fig.cap="Box-Cox za 'Gostinske nastanitvene dejavnosti'."}
-boxCox(model_nast2)
-```
+Ker imamo priostno nekonstantno varianco, s pomočjo BoxCox testa, ugotovimo, da bi bila primerna transformacija z $\lambda=$ `r lambda`. 
 
-Ker je $\lambda = 1$ znotraj intervala zaupanja, to pomeni da transformacija ni potrebna.
-
-## Analiza avtokoreliranosti 
-
-```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za 'Gostinske nastanitvene dejavnosti'."}
-acf2(ts_nastanitve, main = "")
-```
-
-Zgornji ACF graf je precej pričakovan, saj sta v časovni vrsti prisotna tako rahel trend kot tudi sezonskost. Trend se izraža s počasnim padanjem vrednosti avtokorelacijskih koeficientov z odlogi. Sezona pa je vidna z nihanjem vrednosti koeficientov oz. periodničnostjo in izrazitimi vrhovi, ki se ponavljajo.
-
-<!--Tom18: za PACF se ne spomnem zdej nic pametnega
-Neza21: ker tud nc pametnega ne pokaze hahahah-->
-
-S postopnim diferenciranjem bomo najprej odpravili trend nato pa še sezonskost.
-
-```{r fig.dim=c(6,5)}
-par(mfrow=c(2,2), oma=c(1,1,0,0))
-plot(ts_nastanitve, main="Originalna", xlab="", ylab="")
-plot(diff(ts_nastanitve, lag=1), main="Lag=1", xlab="", ylab="")
-plot(diff(ts_nastanitve, lag=12), main="Lag=12", xlab="", ylab="")
-plot(diff(diff(ts_nastanitve, lag=1),lag=12), main="Lag=1 in Lag=12", xlab="", ylab="")
-
-mtext("leto",side=1,line=0,outer=TRUE,cex=1)
-mtext("indeks prihodka",side=2,line=0,outer=TRUE,cex=1,las=0)
-```
-
-Na desnem spodnjem grafu (odstranjen trend in sezonskost) vidimo, da je pričakovana vrednost konstantna (enak 0) in variabilnost je končna (se s časom ne povečuje ali zmanjšuje). Torej lahko zaključimo, da imamo stacionarno časovno vrsto.
-
-## Izbira ustreznega modela
-
-Sprva časovno vrsto diferenciramo tako, da odstranimo linearni trend in sezonskost. Za nadaljno izbiro ustreznega modela si izrišimo avtokorelogram in parcialni avtokorelogram.
-
-```{r}
-# shraniva si diferencirano casovno vrsto
-ts_stac1 = arima(ts_nastanitve, order = c(0, 1, 0),
-                 seasonal = list(order = c(0, 1, 0),
-                                 period = frequency(ts_nastanitve)),
-                 method = "CSS-ML" )
-```
-
-```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za stacionarno 'Gostinske nastanitvene dejavnosti'."}
-acf2(ts_stac1$residuals, main = "")
-```
-
-<!-- Tom25: sm zdej tole mal popravu ker je blo p=12 in q=12 res mal veliko
-
-Iz avtokorelograma in parcialnega avtokorelograma vidimo, da je nekaj koeficientov statistično zančilnih (izven 95% intervala). Na podlagi njiju težko ocenimo, za kateri ARMA(p, q) proces gre. Kot največji možni vrednosti za $p$ in $q$ izberemo pmax=12 in qmax=12. 
-
-```{r eval=F, message=FALSE, warning=FALSE, results='hide'}
-# dolocimo maksimalno vrednost p in q 
-
-best.order <- c(0, 0, 0)
-best.aic <- Inf
-pmax <- 12
-qmax <- 12
-for (i in 0:pmax) {
-  for (j in 0:qmax) {
-    fit.aic <- AIC(arima(ts_stac1, order = c(i, 0, j)))
-    if (fit.aic < best.aic){
-      best.order <- c(i, 0, j)
-      best.arma <- arima(ts_stac1, order = best.order)
-      best.aic <- fit.aic
-    }
-  }
-}
-best.order
-best.arma
-```
-
-Algoritem nam kot model z najnižjo AIC vrednostjo vrne model ARMA(0,12). <!-- Neza21: misls da ni to velik 12?, a ni zadnic rekla, da je ponavad okol 4, 5. pa tud koeficienti so vsi po 0.3, kar je kr precej majno ne ze tko na splosno ce ignorirava 95% iz, vem da algoritem tko vrze, sam tko morda v razmislek... tud za naprej da se ne bo model prevec prilegu-->
-
-
-
-
-
-```{r message=FALSE, results="hide"}
-# mod.sarima_nast <- arima(ts_nastanitve, order = c(3, 1, 3),
-#                      seasonal = list(order = c(2, 1, 2),
-#                                      period = frequency(ts_nastanitve)))
-# AIC: 1218
-
-mod.sarima_nast <- arima(ts_nastanitve, order = c(4, 1, 4),
-                     seasonal = list(order = c(2, 1, 2),
-                                     period = frequency(ts_nastanitve)))
-# AIC: 1216
-# ker je AIC manjsi izbereva tega
-# sm probal se p=8 in q=8 pa pride vecji AIC...
-
-Box.test(mod.sarima_nast$resid, lag = 48, type = c("Ljung-Box"),
-         fitdf = mod.sarima_nast$arma[1] + mod.sarima_nast$arma[2] +
-           mod.sarima_nast$arma[3] + mod.sarima_nast$arma[4])
-
-# p-vrednost: 0.377 kar je ok
-
-# ocene <- sarima(ts_nastanitve, p = 4, d = 1, q = 4, P=2, D=1, Q=2, S=12,
-#                 details = TRUE)
-# 
-# ocene$ttable
-# vecino clenov je stat. zancilnih
-```
-
-<!-- Tom25: to sm tud zakomentiral ker se nanasa na zgonje zakomentirano
-
-```{r eval=F, results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram 'Gostinske nastanitvene dejavnosti' model ARMA(0,12)."}
-# to je ker je zgonji chunk eval=F
-best.arma = arima(ts_stac1, order = c(0,0,12))
-
-acf2(best.arma$resid, main = "")
-```
-
-Iz zgornjih dveh grafov vidimo, da smo se z modeliranjem $MA(12)$ res znebili koreliranosti (koeficienti pri vseh odlogih so znotraj 95% intervala zaupanja).
--->
-
-```{r results=FALSE, fig.cap="Avtokorelogram in parcialni avtokorelogram za model sarima((4,1,4),(2,1,2)) 'Gostinske nastanitvene dejavnosti'."}
-acf2(mod.sarima_nast$resid, main="")
-```
-
-Iz zgornjih dveh grafov vidimo, da smo se z modelom SARIMA$(4,1,4)(2,1,2)_{12}$ res znebili koreliranosti (koeficienti pri vseh odlogih so znotraj 95% intervala zaupanja).
-
-## Napoved
-
-```{r results=F}
-sarima.for(ts_nastanitve, n.ahead = 36, p = 4, d = 1, q = 4,
-           P = 2, D = 1, Q = 2, S = 12,
-           plot.all = TRUE)
-```
-
-Na grafu je prikazana napoved za naslednje 3 leta (36 mesecev). Vidimo, da napoved ni preveč dobra, saj je amplituda nihanja dosti velika. Še večje vrednosti pa zavzamejo intervali zaupanja, ki so zelo široki. 
-
-Časovno vrsto razdelimo še na učno (1.2010-12.2021) in testno statistiko (1.2022-1.2024). S tem želimo na znanih podatkih preveriti pravilnost napovedi, ki jih naredimo na podlagi modela in predhodnjih vrednosti.
-
-```{r results=F}
-nastanitev.ucna <- window(ts_nastanitve, start = c(2010, 1), end = c(2021, 12))
-nastanitev.test <- window(ts_nastanitve, start = c(2022, 1), end = c(2024, 1))
-
-sarima.for(nastanitev.ucna, n.ahead = 24, p = 4, d = 1, q = 4, P = 2, D = 1, Q = 2, S = 12, plot.all = TRUE)
-points(nastanitev.test, type = "o")
-```
-
-Opazimo, da z napovedjo (rdeča) podcenimo vrednosti časovne vrste (črna). So pa vrednosti časovne vrste vseeno v intervalu zaupanja napovedi.
-
-
-
-# Časovna vrsta _Gostinstvo zasedena delovna mesta 1+_
-
-## Pregled časovne vrste
-
-Podatke imamo za leta od 2008 do leta 2023 za vsako kvartalno obdobje.
-
-Na spodnjem grafu porazdelitve zasedenih delovnih mest v gostinstvu glede na leta lahko vidimo, da bo proti koncu variabilnost časovne vrste zelo nekonstantna v primerjavi z ostalimi leti, predvsem v letu 2020 in 2021. Pri časovni vrsti na začetku pričakujemo padajoč trend do leta 2014, ki nato postane pozitiven ter potem velike spremembe v letu 2020. Glede na kvartal je srednja vrednost dokaj enaka, malenkost odstopa morda le tretje kvartalno obodbje. Nekaj razlik je tudi v variabilnosti vrednosti znotraj kvartalnega obdobja.
-
-```{r fig.height=3, fig.width=6, message=FALSE, warning=FALSE, fig.cap="Porazdelitev zasedenih delovnih v gostinstvu, kjer je zaposlena vsaj 1 oseba, glede na leto."}
-library(ggplot2)
-library(tidyr)
-df = data.frame(time = data1$...1, zasedena = data1$`Zasedena_1+_I GOSTINSTVO`)
-df <- separate(df, time, into = c("year", "Q"), sep = "Q")
-
-ggplot(df, aes(x= year, y= zasedena, fill=year)) +
-  geom_boxplot() +
-  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
-  geom_jitter(color="black", size=0.4, alpha=0.9) +
-  theme_light() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=11)) +
-  xlab("leto") + ylab("stevilo prostih delovnih mest")
-```
-
-```{r fig.height=3, fig.width=6, message=FALSE, warning=FALSE, fig.cap="Porazdelitev zasedenih delovnih v gostinstvu, kjer je zaposlena vsaj 1 oseba, glede na kvartal."}
-library(ggplot2)
-library(tidyr)
-ggplot(df, aes(x= Q, y= zasedena, fill=Q)) +
-  geom_boxplot() +
-  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
-  geom_jitter(color="black", size=0.4, alpha=0.9) +
-  theme_light() +
-  theme(
-    legend.position="none",
-    plot.title = element_text(size=11)) +
-  xlab("kvartal v letu") + ylab("stevilo prostih delovnih mest")
-```
-
-
-Narišimo si sedaj časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
-
-```{r echo=FALSE, fig.cap="Časovna vrsta 'Gostinstvo zasedena delovna mesta 1+'.", fig.dim=c(6,3.7)}
-plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest",  xaxt="n")
-axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
-
-# gladilnik
-gladilnik <- lowess(time(ts_zasedena),ts_zasedena)
-points(gladilnik$x, gladilnik$y, type="l", col = "blue")
-```
-
-Kot sva omenila že zgoraj je iz grafa časovne vrste možno opaziti priostnost trenda. Ta je od leta 2008 do 2014 padajoč, nato pa se obrne in začne strmo naraščati. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni, kot da bi se ponavljali v ciklu. 
-
-Vidno pa je ekstrmeno obdobje (čas pandemije Covid-19) in to ravno proti koncu časovne vrste. To obdobje bo verjetno povzorčalo težave pri iskanju ustreznega modela za napovedovanje prihodnjih zasedenih delovnih mest v gostinstvu, kjer je zaposlena 1 oseba. Če bi podate razdelili na učno in testno množico in v testno množico vzamemo zadnja 3 leta v naših podatkih, napovedi modela zagotovo ne bodo pravilne, saj se bo model učil na razmeroma normalnih in predvidljivih podatkih. 
-
-## Transformacija časovne vrste
-
-S pomočjo BoxCox testa, ugotovimo, da je 95% interval dokaj širok in vsebuje tako $\lambda=0$ in $\lambda=1$. Uporabili bomo logaritemsko transformacijo in časovno vrsto primerjali s časovno vrsto, kjer transformacije ne uporabimo.
-
-```{r results='hide'}
-time = 1 + frequency(ts_zasedena) * (time(ts_zasedena) - start(ts_zasedena)[1])
-
-model_zasedena1 = lm(ts_zasedena~ time)
-model_zasedena2 = lm(ts_zasedena~ time + I(time^2))
-model_zasedena3 = lm(ts_zasedena~ time + I(time^2) + I(time^3))
-model_zasedena4 = lm(ts_zasedena~ ns(time, df = 6))
-
-anova(model_zasedena1, model_zasedena2, model_zasedena3, model_zasedena4)
-
-# Box-Cox za 'Gostinstvo zasedena delovna mesta 1+'.
-rez = boxCox(model_zasedena4, plotit = F)
-lambda = rez$x[which.max(rez$y)]
-# vsebuje tako Lambda = 0 in Lambda = 1
-ts_zasedena_log = log(ts_zasedena)
-
-# plot(time, ts_zasedena, type = "o", cex=0.5)
-# points(time, model_zasedena4$fitted.values, type="l", col = "red")
-```
-
-```{r echo=FALSE, fig.cap="Osnovna in logaritmirana časovna vrsta 'Gostinstvo zasedena delovna mesta 1+'.", fig.dim=c(10,3.7)}
+```{r echo=FALSE, fig.cap="Osnovna in transformirana časovna vrsta 'Gostinske nastanitvene dejavnosti'.", fig.dim=c(10,3.7)}
 par(mfrow=c(1,2))
-plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest",  xaxt="n", main="osnovna")
+plot.ts(ts_nastanitve, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "indeks prihodka",  xaxt="n", main="osnovna")
 axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 # gladilnik
-gladilnik <- lowess(time(ts_zasedena),ts_zasedena)
+gladilnik <- lowess(time(ts_nastanitve),ts_nastanitve)
 points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 
-plot.ts(ts_zasedena_log, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "",  xaxt="n", main="transformirana")
+plot.ts(ts_nastanitve_trans, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "",  xaxt="n", main="transformirana")
 axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 # gladilnik
-gladilnik <- lowess(time(ts_zasedena_log),ts_zasedena_log)
+gladilnik <- lowess(time(ts_nastanitve_trans),ts_nastanitve_trans)
 points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 ```
 
-Krivulji osnovne in transponirane časovne vrste sta si identični, z izjemo razpona vrednosti na $y$-osi. Zato nadaljujmo analizo z netransformirano časovno vrsto.
+Ker variabilnost osnovne in transformirane časovne vrste izgleda dokaj podobna (razlikujejo se razponi na y-osi), se zaenkrat ne odločiva za transformacijo in analizo nadaljujeva z osnovno časovno vrsto.
 
+## Avtokorelogram in parcialni avtokorelogram
 
-## Analiza avtokoreliranosti 
+Na prvem grafu je vidno, da koeficienti avtokorelacije padajo dokaj počasi, kar nakazuje, da časovna vrsta vsebuje trend, ki ga bi bilo treba modelirati z diferenciranjem. Na avtokorelogramu koeficienti avtokorelacije nakazujejo na nihanje. Sezona je vidna z nihanjem vrednosti koeficientov oz. periodničnostjo in izrazitimi vrhovi, ki se ponavljajo. Trenutno v modelu je statistično značilna korelacija med členi časovne vrste.
 
-Na prvem grafu je vidno, da koeficienti avtokorelacije počasi padajo, torej časovna vrsta vsebuje trend, ki ga bi bilo treba modelirati. Sprva je bil narisan osnovni avtokorelogram, s katerega se je videlo, da če bi povečali odloge(_Lag_), bi morda bilo videti nihanje. Na spodnjem avtokorelogramu imamo povečane odloge in koeficienti avtokorelacije morda nakazujejo na zelo počasno nihanje.
+Tudi na parcialnem avtokorelogramu imamo nekaj koeficientov parcialne avtokorelacije, ki so statistično značilni, zato bo potrebno postvetiti nekaj pozornosti tudi temu.
 
-Parcialni avtokorelogram ne prikazuje posebnosti, imamo samo en koeficient parcialne avtokorelacije statistično značilen (kasneje sta se dva vendar jih zaradi oddaljenosti ne upoštevamo), zato sklepava, da bomo v modelu imeli red avtoregresijskega modela enak 1 ali pa celo 0.
-
-```{r, fig.cap="Avtokorelogram in parcialni avtokorelogram logaritmirane časovne vrste.", results='hide'}
-acf2(ts_zasedena, main = "", max.lag = 63)
+```{r, fig.cap="Avtokorelogram in parcialni avtokorelogram časovne vrste.", results='hide'}
+acf2(ts_nastanitve, main = "", max.lag = 63)
 ```
 
 ## Diferenciranje 
 
-Kot sva že napisala zgoraj, koeficienti avtokorelacije nakazujejo na trend v časovni vrsti, zato jo enkrat diferenciramo in poskušamo dobiti stacionarno časovno vrsto.
+Torej vidi se na avtokorelogramu, da koeficienti avtokorelacije nakazujejo na trend v časovni vrsti, zato jo enkrat diferenciramo in prevrimo ali imamo stacionarno časovno vrsto.
 
-```{r, fig.cap="Oosnovna in diferencirana časovna vrsta.", fig.dim=c(10,3.7)}
+```{r, fig.cap="Osnovna in diferencirana časovna vrsta.", fig.dim=c(10,3.7)}
 par(mfrow=c(1,2))
-plot(ts_zasedena, main="osnovna", xlab="leto", ylab="stevilo delovnih mest", xaxt="n")
+plot(ts_nastanitve, main="osnovna", xlab="leto", ylab="indeks prihodka", xaxt="n")
 axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
-plot(diff(ts_zasedena, lag=1), main="diferenciranje 1. stopnje", xlab="leto", ylab="", xaxt="n")
+plot(diff(ts_nastanitve, lag=1), main="diferenciranje 1. stopnje", xlab="leto", ylab="", xaxt="n")
 axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
 ```
 
-Lahko bi rekli, da smo z diferenciranjem linearnega trenda dobili stacionarno časovno vrsto. Bolje temu zadoščamo sicer na levi strani drugega grafa, saj izgleda da je pričakovana vrednost enaka 0 in variabilnost dokaj končna, na desni strani, pri letu 2020 pa je še veden vpliv Covid-19 epidemije.
+Z diferenciranjem linearnega trenda smo na levi strani drugega grafa ustvarili dokaj končno variabilnost in pričakovano vrednost enako 0, v letu 2020 temu ni tako, potem pa se ponovno "uredi" časovna vrsta.
 
-```{r, fig.cap="Avtokorelogram in parcialni avtokorelogram logaritmirane diferencirane časovne vrste.", results='hide'}
-acf2(diff(ts_zasedena, lag=1), main = "", max.lag = 24)
+Na spodnjem avtokorelogramu opazimo, da se pojavljajo statistično značilni koeficienti avtokorelacije na odlogih 1, 2, 3, 4; torej je prisotna izrazita sezonskost.
+
+```{r, fig.cap="Avtokorelogram in parcialni avtokorelogram diferencirane časovne vrste.", results='hide'}
+acf2(diff(ts_nastanitve, lag=1))
 ```
 
-Na zgornjem avtokorelogramu in parcialnem avtokorelogramu vidimo, da z diferenciranjem poskrbimo, da niso več prisotni statistično značilni koeficienti avtokorelacije, kar pomeni, da v modelu ni statistično značilne korelacije med členi časovne vrste. 
+Zaradi zgornje ugotovitve o sezonskosti poskušajmo diferencirati še to. Na grafu vidimo, da je varianca tokrat bolj nekonstantna na desni polovici desnega grafa, kot pri diferenciranju 1. stopnje. Še vedno se vidi velik vpliv epidemije Covid-19.
+
+```{r, fig.cap="Osnovna in diferencirana(sezonskost) časovna vrsta.", fig.dim=c(10,3.7)}
+par(mfrow=c(1,2))
+plot(ts_nastanitve, main="osnovna", xlab="leto", ylab="indeks prihodka", xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
+plot(diff(ts_nastanitve, lag=12), main="diferenciranje 12. stopnje", xlab="leto", ylab="", xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
+```
+
+
+Če diferenciramo samo sezonskost nam avtokorelogram še vedno nakazuje prisotnost trenda, zato preverimo še, kaj se zgodi če diferenciramo trend in sezonskost.
+
+```{r, fig.cap="Avtokorelogram in parcialni avtokorelogram diferencirane(sezonskost) časovne vrste.", results='hide'}
+acf2(diff(ts_nastanitve, lag=12))
+```
+
+Na spodnjem grafu vidimo dokaj konstantno varianco in pričakovano vrednost 0 do leta 2020, nato se to, zaradi epidemije Covid-19, nekoliko spremeni, kar bomo težko še bolj modelirali.
+
+```{r, fig.cap="Diferenciranje trenda in sezonskosti v časovni vrsti.", fig.dim=c(6,3.7)}
+par(mfrow=c(1,1))
+plot(diff(diff(ts_nastanitve, lag=1), lag=12), main="", xlab="leto", ylab="", xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
+```
+
+
+Vidimo, da imamo nekaj statistično značilnih koeficientov avtokorelacije in parcialne avtokorelacije, torej verjetno še vedno obstaja neka majhna avtokorelacija med podatki časovne vrste, ampak poskusimo sedaj narediti model.
+
+```{r, fig.cap="Avtokorelogram in parcialni avtokorelogram diferencirane(trend in sezonskost) časovne vrste.", results='hide'}
+acf2(diff(diff(ts_nastanitve, lag=1), lag=12))
+```
+
 
 ## Izbira ustreznega modela
 
-V model sva najprej vključila diferenciranje prvega reda. Gre za ARIMA model s koeficienti $p$ = 0, $d$ = 1 in $q$ = 0 
+Izbire modela se lotiva postopoma, zato najprej pogledava kakšne rezultate dobiva, če časovni vrsti diferencirava le trend($d=1$).
 
-```{r fig.cap="Ostanki modela, avtokorelogram in p-vrednosti Ljung-Box testa.", fig.height=5, fig.width=6, results='hide'}
+```{r fig.cap="Ostanki modela, avtokorelogram in p-vrednosti Ljung-Box testa za časovno vrsto, kjer diferenciramo trend.", fig.height=5, fig.width=6, results='hide'}
 # model za diferenciranje
-mod.dif <- arima(ts_zasedena, order = c(0, 1, 0))
+mod.dif <- arima(ts_nastanitve, order = c(0, 1, 0))
 
 # diagnostika ostankov modela
-# par(mfrow=c(1,3))
-# plot(ts(mod.dif$resid), xlab='čas', ylab = "ostanki modela")
-# acf(mod.dif$resid, main = "")
-# pacf(mod.dif$resid, main = "")
-sarima(ts_zasedena, p = 0, d = 1, q = 0, details = TRUE)
+sarima(ts_nastanitve, p = 0, d = 1, q = 0, details = TRUE)
 ```
 
-Koeficienti avtokorelacije so znotraj 95% intervala zaupanja, torej so statistično neznačilni, kar pomeni, da v modelu ni statistično značilne korelacije med ostanki(preverili smo tudi z Ljung-Box testom, kjer nismo mogli zavrnili ničelne domneve, da v tej časovni vrsti ostankov ni več avtokorelacije). Na podlagi tega lahko predpostavljamo, da ostanki so beli šum.
+Takoj nam je jasno, da je v časovni vrsti še vedno prisotna avtokorelacija na podlagi zgornje analize, sedaj nam Ljung-Box test to le še potrdi, saj vidimo na spodnjem grafu, da so vse p-vrednosti manjše od 0.05, torej zavračamo ničelno domnevo, da ni prisotne avtokorelacije med členi časovne vrste. Zato v model vključimo diferenciranje sezonskosti.
 
-```{r, results='hide'}
-Box.test(mod.dif$resid, lag = 10, type = c("Ljung-Box"))
+```{r fig.cap="Ostanki modela, avtokorelogram in p-vrednosti Ljung-Box testa za časovno vrsto, kjer diferenciramo sezonskost.", fig.height=5, fig.width=6, results='hide'}
+# model za diferenciranje
+mod.dif2 <- arima(ts_nastanitve, order = c(0, 0, 0),
+                 seasonal = list(order = c(0, 1, 0),
+                                 period = frequency(ts_nastanitve)))
+
+# diagnostika ostankov modela
+sarima(ts_nastanitve, p = 0, d = 0, q = 0,
+       P=0, D=1, Q=0, S=frequency(ts_nastanitve), details = TRUE)
+```
+
+Tudi tukaj nam nam Ljung-Box test potrdi, da je v časovni vrsti prisoten trend, saj vidimo na spodnjem grafu, da imamo p-vrednosti manjše od 0.05, torej zavračamo ničelno domnevo, da ni prisotne avtokorelacije med členi časovne vrste. Zato v model vključimo diferenciranje trenda in sezonskosti.
+
+```{r fig.cap="Ostanki modela, avtokorelogram in p-vrednosti Ljung-Box testa za časovno vrsto, kjer diferenciramo sezonskost.", fig.height=5, fig.width=6, results='hide'}
+# model za diferenciranje
+mod.dif3 <- arima(ts_nastanitve, order = c(0, 1, 0),
+                 seasonal = list(order = c(0, 1, 0),
+                                 period = frequency(ts_nastanitve)))
+
+# diagnostika ostankov modela
+sarima(ts_nastanitve, p = 0, d = 1, q = 0,
+       P=0, D=1, Q=0, S=frequency(ts_nastanitve), details = TRUE)
+```
+
+Imamo prisotnih nekaj statistično značilnih koeficientov avtokorelacije, tudi pr Ljung-Box testu imamo še vedno p-vrednosti manjše od 0.05, torej so členi časovne vrste še vedno avtokorelirani med seboj.
+
+Poglejmo si ponovno avtokorelogram in parcialni avtokorelogram diferencirane časovne vrste z odlogom 1 in 12. Iz ACF razberemo, da bi lahko poskusili parameter $q$ nastaviti za začetek na 4 in iz PACF, da lahko poskusimo parameter $p$ nastaviti na 4 - izberemo na podlagi statistično značilnih koeficientov. Kasneje raziskujem različne vrednosti parametrov $p$, $q$, $P$ in $Q$.
+
+```{r, fig.cap="Avtokorelogram in parcialni avtokorelogram diferencirane(trend in sezonskost) časovne vrste.", results='hide'}
+acf2(diff(diff(ts_nastanitve, lag=1), lag=12))
+```
+
+```{r message=FALSE, results="hide"}
+mod.sarima_nast <- arima(ts_nastanitve, order = c(4, 1, 4),
+                     seasonal = list(order = c(0, 1, 0),
+                                     period = frequency(ts_nastanitve)))
+# AIC: 1252.806
+
+mod.sarima_nast2 <- arima(ts_nastanitve, order = c(4, 1, 4),
+                     seasonal = list(order = c(2, 1, 2),
+                                     period = frequency(ts_nastanitve)))
+# AIC: 1216.153
+
+mod.sarima_nast3 <- arima(ts_nastanitve, order = c(3, 1, 3),
+                     seasonal = list(order = c(2, 1, 2),
+                                     period = frequency(ts_nastanitve)))
+# AIC: 1218.477
+
+mod.sarima_nast4 <- arima(ts_nastanitve, order = c(8, 1, 7),
+                     seasonal = list(order = c(2, 1, 2),
+                                     period = frequency(ts_nastanitve)))
+#AIC: 1215.847
+
+mod.sarima_nast5 <- arima(ts_nastanitve, order = c(8, 1, 8),
+                     seasonal = list(order = c(2, 1, 2),
+                                     period = frequency(ts_nastanitve)))
+#AIC: 1217.424
+
+mod.sarima_nast6 <- arima(ts_nastanitve, order = c(8, 1, 7),
+                     seasonal = list(order = c(2, 1, 1),
+                                     period = frequency(ts_nastanitve)))
+#AIC: 1221.499
+
+mod.sarima_nast7 <- arima(ts_nastanitve, order = c(8, 1, 7),
+                     seasonal = list(order = c(1, 1, 2),
+                                     period = frequency(ts_nastanitve)))
+# AIC: 1212.329
+```
+
+```{r message=FALSE, results=T}
+aic = data.frame(indeks = c(1,2,3,4,5,6,7), 
+                 model = c("SARIMA(4, 1, 4, 0, 1, 0)", 
+                           "SARIMA(4, 1, 4, 2, 1, 2)",
+                           "SARIMA(3, 1, 3, 2, 1, 2)", 
+                           "SARIMA(8, 1, 7, 2, 1, 2)", 
+                           "SARIMA(8, 1, 8, 2, 1, 2)",
+                           "SARIMA(8, 1, 7, 2, 1, 1)", 
+                           "SARIMA(8, 1, 7, 1, 1, 2)"),
+                 AIC = c(mod.sarima_nast$aic, mod.sarima_nast2$aic,
+                         mod.sarima_nast3$aic, mod.sarima_nast4$aic,
+                         mod.sarima_nast5$aic, mod.sarima_nast6$aic,
+                         mod.sarima_nast7$aic))
+
+library(kableExtra)
+kable(aic, caption = "SARIMA modeli in pripadajoče AIC vrednosti.",
+             format="markdown")
+```
+
+```{r results='hide'}
+# H0: avtokorelacijski koeficienti (ACF) časovne vrste enake nič
+box = Box.test(mod.sarima_nast7$res, lag = 48, type = c("Ljung-Box"),
+               fitdf = mod.sarima_nast7$arma[1] + mod.sarima_nast7$arma[2] +
+           mod.sarima_nast7$arma[3] + mod.sarima_nast7$arma[4])
+```
+
+
+Na podlagi Akaikijevega informacijskega kriterija(AIC) se odločiva za model **SARIMA(8, 1, 7, 1, 1, 2)**. Tudi na spodnjih grafih diagnostike ostankov modela vidimo, da sva se z izbranimi parametri nekoliko bolj približala idealu. p-vrednost Ljung-Box testa kaze na statistnično nežnačilen rezultat (p-vrednost = 0.477), zato bi lahko zavrnili ničelno domnevo.
+
+```{r fig.cap="Ostanki modela, avtokorelogram in p-vrednosti Ljung-Box testa za časovno vrsto, kjer diferenciramo sezonskost.", fig.height=5, fig.width=6, results='hide'}
+# diagnostika ostankov modela
+sarima(ts_nastanitve, p = 8, d = 1, q = 7, P=1, D=1, Q=2,
+       S=frequency(ts_nastanitve), details = TRUE)
 ```
 
 ## Napoved
 
-Sedaj bova poskušala z modelom še napovedati število zasedenih delovnih mest za nekaj let vnaprej. Ker naju zanima kako dober je najin model, na začetku podatke razdeliva na testne in učne. Najbolj naju zanima kako bo napovedoval po letu 2020, če tega leta nima v učnih podatkih in kako napoveduje, če ga vključiva v učne podatke in napovedujeva od leta 2021 naprej.
+S pomočjo zgornjega modela bova sedaj poskušača napovedati indeks prihodka  za nekaj let vnaprej. Ker naju zanima kako dober je najin model, na začetku ponovno podatke razdeliva na testne in učne. Najbolj naju zanima kako bo napovedoval po letu 2020, če tega leta nima v učnih podatkih in kako napoveduje, če ga vključiva v učne podatke in napovedujeva samo za mesec januar v letu 2024.
 
 ```{r results=F, fig.cap="Časovna vrsta in napovedi na podlagi modela od leta 2020 naprej.", fig.width=6, fig.height=4}
-zasedena.delovna.mesta <- window(ts_zasedena, start = c(2008, 1), end = c(2019, 4))
-zasedena.test <- window(ts_zasedena, start = c(2020, 1), end = c(2023, 4))
+indeks.prihodka <- window(ts_nastanitve, start = c(2010, 1), end = c(2019, 12))
+test <- window(ts_nastanitve, start = c(2020, 1), end = c(2024, 1))
 
-sarima.for(zasedena.delovna.mesta, n.ahead = 4*3, p = 0, d = 1, q = 0, plot.all = TRUE)
-points(zasedena.test, type = "o")
+sarima.for(indeks.prihodka, n.ahead = 12*4, p = 8, d = 1, q = 7, P=1, D=1, Q=2, S=12, plot.all = TRUE)
+points(test, type = "o")
 ```
 
-Jasno je, da napoved ni najboljša, saj ostanki vrste predstavljajo beli šum in pričakovano že na začetku poglavja, da model ne zna napovedati padca v letu 2020, saj je naučen po naraščajočem trendu, kar napovedi tudi prikazujejo. Ker so slabe napovedi, so temu primerni tudi izjemno široki 95% intervali zaupanja.
+Model prevzame naraščajoč trend in ga predpostavi tudi napovedim. Pričakovano je bilo, da za leto 2020 model ne bo napovedal ustrezno, potem pa za kasnejša leta napovedi tudi niso najboljše, so nižje kot realne, torej model nekoliko podcenjuje indkes prihodka. Tudi intervali zaupanja niso ekstremno široki. Zaenkart bi sicer rekli, da je napoved nekoliko neinformativna.
 
-Poglejmo si sedaj še, kakšne so napovedi, če v učno množico vključimo podatke iz leta 2020.
 
-```{r results=F, fig.cap="Časovna vrsta in napovedi na podlagi modela od leta 2021 naprej.", fig.width=6, fig.height=4}
-zasedena.delovna.mesta <- window(ts_zasedena, start = c(2008, 1), end = c(2020, 4))
-zasedena.test <- window(ts_zasedena, start = c(2021, 1), end = c(2023, 4))
+Poglejmo si sedaj še, kakšne so napovedi, če v učno množico vključimo podatke iz leta 2020 do sredine leta 2023.
 
-sarima.for(zasedena.delovna.mesta, n.ahead = 4*2, p = 0, d = 1, q = 0, plot.all = TRUE)
-points(zasedena.test, type = "o")
+```{r results=F, fig.cap="Časovna vrsta in napovedi na podlagi modela od sredine leta 2023 naprej.", fig.width=6, fig.height=4}
+indeks.prihodka <- window(ts_nastanitve, start = c(2010, 1), end = c(2023, 6))
+test <- window(ts_nastanitve, start = c(2023, 7), end = c(2024, 1))
+
+sarima.for(indeks.prihodka, n.ahead = 8, p = 8, d = 1, q = 7, P=1, D=1, Q=2, S=12, plot.all = TRUE)
+points(test, type = "o")
 ```
 
-Pričakovano tudi sedaj napovedi niso ravno informativne, model je prevzel trend zadnjega leta in ga je nadaljeval tudi naprej.
+Tokrat pa vidimo, da napovedane vrednosti niso tako zelo slabe, model določene napovedi skoraj zadane z realnimi indeksi prihodka, interval zaupanja sicer še vedno ni pretirano ozek. Torej s tega bi lahko sklepala, da je najin model dober za napovedovanje vrednosti indeksa prihodka za kratke časovne intervale naprej.
 
-Sedaj pa napovejmo samo za zadnje leto, leto 2023, da bo časovna vrsta imela v učnih podatkih in padec leta 2020 ter potem ponovno rast.
-
-```{r results=F, fig.cap="Časovna vrsta in napovedi na podlagi modela od leta 2023 naprej.", fig.width=6, fig.height=4}
-zasedena.delovna.mesta <- window(ts_zasedena, start = c(2008, 1), end = c(2022, 4))
-zasedena.test <- window(ts_zasedena, start = c(2023, 1), end = c(2023, 4))
-
-sarima.for(zasedena.delovna.mesta, n.ahead = 4, p = 0, d = 1, q = 0, plot.all = TRUE)
-points(zasedena.test, type = "o")
-```
-
-Napovedi tudi tukaj niso pravilne in ne ravno najbolj informativne, najbolje zadane samo za en trenutek naprej, 95% interavli zaupanja pa so še vedno izjemno široki.
-
-Ker je časovna vrsta tako zelo razgibana in ima veliko variabilnost ravno v zadnjih letih, težko uporabljamo ARIMA oz. SARIMA modele za napovedovanje prihodnjih vrednosti.
-
+\newpage
 
 # Časovna vrsta _Dejavnost strežbe jedi in pijač_
 
@@ -731,6 +638,15 @@ kable(aic, caption = "SARIMA modeli in pripadajoče AIC vrednosti.",
              format="markdown")
 ```
 
+
+<!--Tom28: fitdf bi vrjetno mogu bit 
+fitdf = mod.sarima_nast7$arma[1] + mod.sarima_nast7$arma[2] +
+           mod.sarima_nast7$arma[3] + mod.sarima_nast7$arma[4]
+ker je enak p+q+P+Q
+oz vsaj tko smo mi na predavanjih
+pa lag smo imeli 60 oz 48
+-->
+
 ```{r results='hide'}
 # H0: avtokorelacijski koeficienti (ACF) časovne vrste enake nič
 box = Box.test(mod.sarima_str5$res, lag = 20, type = c("Ljung-Box"), fitdf = 2)
@@ -768,6 +684,8 @@ points(test, type = "o")
 ```
 
 Tokrat pa vidimo, da napovedane vrednosti niso tako zelo slabe, model določene napovedi skoraj zadane z realnimi indeksi prihodka, interval zaupanja sicer še vedno ni pretirano ozek. Torej s tega bi lahko sklepala, da je najin model dober za napovedovanje vrednosti indeksa prihodka za kratke časovne intervale naprej.
+
+\newpage
 
 # Časovna vrsta _Gostinstvo prosta delovna mesta 1+_
 
@@ -962,7 +880,195 @@ Napovedi tudi tukaj niso pravilne in ne ravno najbolj informativne, najbolje zad
 
 Ker je časovna vrsta tako zelo razgibana in ima veliko variabilnost ravno v zadnjih letih, težko uporabljamo ARIMA oz. SARIMA modele za napovedovanje prihodnjih vrednosti.
 
+\newpage
 
+# Časovna vrsta _Gostinstvo zasedena delovna mesta 1+_
+
+## Pregled časovne vrste
+
+Podatke imamo za leta od 2008 do leta 2023 za vsako kvartalno obdobje.
+
+Na spodnjem grafu porazdelitve zasedenih delovnih mest v gostinstvu glede na leta lahko vidimo, da bo proti koncu variabilnost časovne vrste zelo nekonstantna v primerjavi z ostalimi leti, predvsem v letu 2020 in 2021. Pri časovni vrsti na začetku pričakujemo padajoč trend do leta 2014, ki nato postane pozitiven ter potem velike spremembe v letu 2020. Glede na kvartal je srednja vrednost dokaj enaka, malenkost odstopa morda le tretje kvartalno obodbje. Nekaj razlik je tudi v variabilnosti vrednosti znotraj kvartalnega obdobja.
+
+```{r fig.height=3, fig.width=6, message=FALSE, warning=FALSE, fig.cap="Porazdelitev zasedenih delovnih v gostinstvu, kjer je zaposlena vsaj 1 oseba, glede na leto."}
+library(ggplot2)
+library(tidyr)
+df = data.frame(time = data1$...1, zasedena = data1$`Zasedena_1+_I GOSTINSTVO`)
+df <- separate(df, time, into = c("year", "Q"), sep = "Q")
+
+ggplot(df, aes(x= year, y= zasedena, fill=year)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("leto") + ylab("stevilo prostih delovnih mest")
+```
+
+```{r fig.height=3, fig.width=6, message=FALSE, warning=FALSE, fig.cap="Porazdelitev zasedenih delovnih v gostinstvu, kjer je zaposlena vsaj 1 oseba, glede na kvartal."}
+library(ggplot2)
+library(tidyr)
+ggplot(df, aes(x= Q, y= zasedena, fill=Q)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("kvartal v letu") + ylab("stevilo prostih delovnih mest")
+```
+
+Narišimo si sedaj časovno vrsto, ki jo bomo v nadaljevanju podrobneje analizirali.
+
+```{r echo=FALSE, fig.cap="Časovna vrsta 'Gostinstvo zasedena delovna mesta 1+'.", fig.dim=c(6,3.7)}
+plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest",  xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
+
+# gladilnik
+gladilnik <- lowess(time(ts_zasedena),ts_zasedena)
+points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+```
+
+Kot sva omenila že zgoraj je iz grafa časovne vrste možno opaziti priostnost trenda. Ta je od leta 2008 do 2014 padajoč, nato pa se obrne in začne strmo naraščati. Sezonskosti ni mogoče zaznati, saj so lokalni ekstremi bolj naključni, kot da bi se ponavljali v ciklu. 
+
+Vidno pa je ekstrmeno obdobje (čas pandemije Covid-19) in to ravno proti koncu časovne vrste. To obdobje bo verjetno povzorčalo težave pri iskanju ustreznega modela za napovedovanje prihodnjih zasedenih delovnih mest v gostinstvu, kjer je zaposlena 1 oseba. Če bi podate razdelili na učno in testno množico in v testno množico vzamemo zadnja 3 leta v naših podatkih, napovedi modela zagotovo ne bodo pravilne, saj se bo model učil na razmeroma normalnih in predvidljivih podatkih. 
+
+## Transformacija časovne vrste
+
+S pomočjo BoxCox testa, ugotovimo, da je 95% interval dokaj širok in vsebuje tako $\lambda=0$ in $\lambda=1$. Uporabili bomo logaritemsko transformacijo in časovno vrsto primerjali s časovno vrsto, kjer transformacije ne uporabimo.
+
+```{r results='hide'}
+time = 1 + frequency(ts_zasedena) * (time(ts_zasedena) - start(ts_zasedena)[1])
+
+model_zasedena1 = lm(ts_zasedena~ time)
+model_zasedena2 = lm(ts_zasedena~ time + I(time^2))
+model_zasedena3 = lm(ts_zasedena~ time + I(time^2) + I(time^3))
+model_zasedena4 = lm(ts_zasedena~ ns(time, df = 6))
+
+anova(model_zasedena1, model_zasedena2, model_zasedena3, model_zasedena4)
+
+# Box-Cox za 'Gostinstvo zasedena delovna mesta 1+'.
+rez = boxCox(model_zasedena4, plotit = F)
+lambda = rez$x[which.max(rez$y)]
+# vsebuje tako Lambda = 0 in Lambda = 1
+ts_zasedena_log = log(ts_zasedena)
+
+# plot(time, ts_zasedena, type = "o", cex=0.5)
+# points(time, model_zasedena4$fitted.values, type="l", col = "red")
+```
+
+```{r echo=FALSE, fig.cap="Osnovna in logaritmirana časovna vrsta 'Gostinstvo zasedena delovna mesta 1+'.", fig.dim=c(10,3.7)}
+par(mfrow=c(1,2))
+plot.ts(ts_zasedena, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "stevilo delovnih mest",  xaxt="n", main="osnovna")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
+# gladilnik
+gladilnik <- lowess(time(ts_zasedena),ts_zasedena)
+points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+
+plot.ts(ts_zasedena_log, type = "o", pch = 16, cex=0.6, xlab = "leto", ylab = "",  xaxt="n", main="transformirana")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
+# gladilnik
+gladilnik <- lowess(time(ts_zasedena_log),ts_zasedena_log)
+points(gladilnik$x, gladilnik$y, type="l", col = "blue")
+```
+
+Krivulji osnovne in transponirane časovne vrste sta si identični, z izjemo razpona vrednosti na $y$-osi. Zato nadaljujmo analizo z netransformirano časovno vrsto.
+
+
+## Analiza avtokoreliranosti 
+
+Na prvem grafu je vidno, da koeficienti avtokorelacije počasi padajo, torej časovna vrsta vsebuje trend, ki ga bi bilo treba modelirati. Sprva je bil narisan osnovni avtokorelogram, s katerega se je videlo, da če bi povečali odloge(_Lag_), bi morda bilo videti nihanje. Na spodnjem avtokorelogramu imamo povečane odloge in koeficienti avtokorelacije morda nakazujejo na zelo počasno nihanje.
+
+Parcialni avtokorelogram ne prikazuje posebnosti, imamo samo en koeficient parcialne avtokorelacije statistično značilen (kasneje sta se dva vendar jih zaradi oddaljenosti ne upoštevamo), zato sklepava, da bomo v modelu imeli red avtoregresijskega modela enak 1 ali pa celo 0.
+
+```{r, fig.cap="Avtokorelogram in parcialni avtokorelogram logaritmirane časovne vrste.", results='hide'}
+acf2(ts_zasedena, main = "", max.lag = 63)
+```
+
+## Diferenciranje 
+
+Kot sva že napisala zgoraj, koeficienti avtokorelacije nakazujejo na trend v časovni vrsti, zato jo enkrat diferenciramo in poskušamo dobiti stacionarno časovno vrsto.
+
+```{r, fig.cap="Oosnovna in diferencirana časovna vrsta.", fig.dim=c(10,3.7)}
+par(mfrow=c(1,2))
+plot(ts_zasedena, main="osnovna", xlab="leto", ylab="stevilo delovnih mest", xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
+plot(diff(ts_zasedena, lag=1), main="diferenciranje 1. stopnje", xlab="leto", ylab="", xaxt="n")
+axis(1, at=c(2008, 2011, 2014, 2017, 2020, 2023), labels=c("2008", "2011", "2014", "2017", "2020", "2023"))
+```
+
+Lahko bi rekli, da smo z diferenciranjem linearnega trenda dobili stacionarno časovno vrsto. Bolje temu zadoščamo sicer na levi strani drugega grafa, saj izgleda da je pričakovana vrednost enaka 0 in variabilnost dokaj končna, na desni strani, pri letu 2020 pa je še veden vpliv Covid-19 epidemije.
+
+```{r, fig.cap="Avtokorelogram in parcialni avtokorelogram logaritmirane diferencirane časovne vrste.", results='hide'}
+acf2(diff(ts_zasedena, lag=1), main = "", max.lag = 24)
+```
+
+Na zgornjem avtokorelogramu in parcialnem avtokorelogramu vidimo, da z diferenciranjem poskrbimo, da niso več prisotni statistično značilni koeficienti avtokorelacije, kar pomeni, da v modelu ni statistično značilne korelacije med členi časovne vrste. 
+
+## Izbira ustreznega modela
+
+V model sva najprej vključila diferenciranje prvega reda. Gre za ARIMA model s koeficienti $p$ = 0, $d$ = 1 in $q$ = 0 
+
+```{r fig.cap="Ostanki modela, avtokorelogram in p-vrednosti Ljung-Box testa.", fig.height=5, fig.width=6, results='hide'}
+# model za diferenciranje
+mod.dif <- arima(ts_zasedena, order = c(0, 1, 0))
+
+# diagnostika ostankov modela
+# par(mfrow=c(1,3))
+# plot(ts(mod.dif$resid), xlab='čas', ylab = "ostanki modela")
+# acf(mod.dif$resid, main = "")
+# pacf(mod.dif$resid, main = "")
+sarima(ts_zasedena, p = 0, d = 1, q = 0, details = TRUE)
+```
+
+Koeficienti avtokorelacije so znotraj 95% intervala zaupanja, torej so statistično neznačilni, kar pomeni, da v modelu ni statistično značilne korelacije med ostanki(preverili smo tudi z Ljung-Box testom, kjer nismo mogli zavrnili ničelne domneve, da v tej časovni vrsti ostankov ni več avtokorelacije). Na podlagi tega lahko predpostavljamo, da ostanki so beli šum.
+
+```{r, results='hide'}
+Box.test(mod.dif$resid, lag = 10, type = c("Ljung-Box"))
+```
+
+## Napoved
+
+Sedaj bova poskušala z modelom še napovedati število zasedenih delovnih mest za nekaj let vnaprej. Ker naju zanima kako dober je najin model, na začetku podatke razdeliva na testne in učne. Najbolj naju zanima kako bo napovedoval po letu 2020, če tega leta nima v učnih podatkih in kako napoveduje, če ga vključiva v učne podatke in napovedujeva od leta 2021 naprej.
+
+```{r results=F, fig.cap="Časovna vrsta in napovedi na podlagi modela od leta 2020 naprej.", fig.width=6, fig.height=4}
+zasedena.delovna.mesta <- window(ts_zasedena, start = c(2008, 1), end = c(2019, 4))
+zasedena.test <- window(ts_zasedena, start = c(2020, 1), end = c(2023, 4))
+
+sarima.for(zasedena.delovna.mesta, n.ahead = 4*3, p = 0, d = 1, q = 0, plot.all = TRUE)
+points(zasedena.test, type = "o")
+```
+
+Jasno je, da napoved ni najboljša, saj ostanki vrste predstavljajo beli šum in pričakovano že na začetku poglavja, da model ne zna napovedati padca v letu 2020, saj je naučen po naraščajočem trendu, kar napovedi tudi prikazujejo. Ker so slabe napovedi, so temu primerni tudi izjemno široki 95% intervali zaupanja.
+
+Poglejmo si sedaj še, kakšne so napovedi, če v učno množico vključimo podatke iz leta 2020.
+
+```{r results=F, fig.cap="Časovna vrsta in napovedi na podlagi modela od leta 2021 naprej.", fig.width=6, fig.height=4}
+zasedena.delovna.mesta <- window(ts_zasedena, start = c(2008, 1), end = c(2020, 4))
+zasedena.test <- window(ts_zasedena, start = c(2021, 1), end = c(2023, 4))
+
+sarima.for(zasedena.delovna.mesta, n.ahead = 4*2, p = 0, d = 1, q = 0, plot.all = TRUE)
+points(zasedena.test, type = "o")
+```
+
+Pričakovano tudi sedaj napovedi niso ravno informativne, model je prevzel trend zadnjega leta in ga je nadaljeval tudi naprej.
+
+Sedaj pa napovejmo samo za zadnje leto, leto 2023, da bo časovna vrsta imela v učnih podatkih in padec leta 2020 ter potem ponovno rast.
+
+```{r results=F, fig.cap="Časovna vrsta in napovedi na podlagi modela od leta 2023 naprej.", fig.width=6, fig.height=4}
+zasedena.delovna.mesta <- window(ts_zasedena, start = c(2008, 1), end = c(2022, 4))
+zasedena.test <- window(ts_zasedena, start = c(2023, 1), end = c(2023, 4))
+
+sarima.for(zasedena.delovna.mesta, n.ahead = 4, p = 0, d = 1, q = 0, plot.all = TRUE)
+points(zasedena.test, type = "o")
+```
+
+Napovedi tudi tukaj niso pravilne in ne ravno najbolj informativne, najbolje zadane samo za en trenutek naprej, 95% interavli zaupanja pa so še vedno izjemno široki.
+
+Ker je časovna vrsta tako zelo razgibana in ima veliko variabilnost ravno v zadnjih letih, težko uporabljamo ARIMA oz. SARIMA modele za napovedovanje prihodnjih vrednosti.
 
 
 
