@@ -1,0 +1,79 @@
+---
+output:
+  pdf_document: default
+  # html_document: default
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.pos = "H", out.extra = "", fig.height = 4, fig.width = 5, fig.align = 'center', warning = F)
+
+# install.packages("readxl")
+
+library(readxl)
+library(astsa)
+library(car)
+library(splines)
+
+library(geoR)
+```
+
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
+
+```{r}
+data = read.table("podatki.txt", header=T)
+
+podatki = data[,c("vrsta", "lokacija", "NDRE_jul", 
+                  "swc", "gostota", "pF2", "pF4.2", "aw")]
+
+prostorski = as.geodata(podatki, coords.col = 1:2, data.col = 3,
+                        covar.col = 4:8,
+                        covar.names = c("swc", "gostota", "pF2", "pF4.2", "aw"))
+```
+
+# Predstavitev podatkov
+
+Podatki so bili pridobljeni kot meritev več različnih spremenljivk na izbrani njivi v
+Šempasu. Podatki tal so pridobljeni 18. 7. 2023 iz globine tal 20 cm:
+
+* _swc_ je gravimetrična vsebnost vode v tleh (vol. %)
+* _gostota_ je gostota tal (g/cm3)
+* _pF2_ je vsebnost vode pri matričnem potencialu vode pF 2.0
+* _pF4.2_ je vsebnost vode pri matričnem potencialu vode pF 4.2
+* _aw_ je rastlinam razpoložljiva voda v tleh (available water) (pF 2.0 – pF 4.2)
+
+To so tudi spremenljivke, ki jih bova upoštevala da lahko še poleg lokacije vplivajo na vrednost obravnavane spremneljvke. V najnem primeru bova podrobneje obravnavala vegetacijski indeks *NDRE* v mesecu juliju.
+
+Na spodnji sliki si lahko ogledamo še načrt meritev.
+
+![](Šempas merilna shema.pdf){width=60%}
+
+
+\newpage
+
+# Grafični prikaz
+
+Na spodnjem grafu lahko vidimo lokacije meritev, na katerem sta ploščina in barva krogcev sta sorazmerna z vrednostjo spremenljivke _NDRE_jul_, podatki so razdeljeni v štiri razrede, ki so določeni s kvantili.
+
+```{r}
+points(prostorski, pt.div = "quartile", cex.min = 0.8, cex.max = 2, col = c(4, 3, 7, 2))
+```
+
+Poglejmo si še nekoliko podrobnejši prikaz, kjer nas bosta zanimala predvsem razsevna grafikona *vrsta* in *NDRE_jul*, ter *lokacija* in *NDRE_jul*. 
+
+```{r}
+plot(prostorski)
+```
+
+Iz razsevnih grafikonov ni videti odvisnosti spremenljivke *NDRE_jul* od koordinat lokacije. Iz prvega grafa in pa zgornjega levega grafa lahko opazimo nek vzorec, kar nam nakazuje na prisotnost prostorske korelacije.
+
+
+
+
+
+
+
+
