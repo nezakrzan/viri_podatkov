@@ -16,6 +16,9 @@ library(car)
 library(splines)
 
 library(geoR)
+library(gstat)
+library(sp) 
+# mogoce tudi library(raster) 
 ```
 
 \tableofcontents
@@ -28,6 +31,9 @@ data = read.table("podatki.txt", header=T)
 
 podatki = data[,c("vrsta", "lokacija", "NDRE_jul", 
                   "swc", "gostota", "pF2", "pF4.2", "aw")]
+
+# uporabiva pri "Analiza prostorske korelacije"
+pod = podatki
 
 prostorski = as.geodata(podatki, coords.col = 1:2, data.col = 3,
                         covar.col = 4:8,
@@ -71,9 +77,83 @@ plot(prostorski)
 Iz razsevnih grafikonov ni videti odvisnosti spremenljivke *NDRE_jul* od koordinat lokacije. Iz prvega grafa in pa zgornjega levega grafa lahko opazimo nek vzorec, kar nam nakazuje na prisotnost prostorske korelacije.
 
 
+# Analiza morebitne nestacionarnosti
+
+<!-- Tom: jst bi reku da tukej nimava kej velik za narest ker se vsaj men zdi da 
+grafi ne kazejo nekega trenda niti nekonstantne variance...-->
 
 
+Ponovno si oglejmo prikaz iz katerega lahko razberemo prisotnost trenda in morebitne nekonstantne variance glede na spremenljivki _vrsta_ in _lokacija_. To lahko razberemo in zgornjega desnega grafa (vrednosti v odvisnoti od _lokacija_) in spodnjega levega grafa (vrednosti v odvisnoti od _vrsta_).
+
+```{r}
+plot(prostorski)
+```
+
+Iz nobenega od zgoraj naštetih grafov ni možno razbrati priostnosti trenda in nekonstantne varinace, zato ne bova naredila podrobnejše analize.
+
+# Analiza prostorske korelacije
+
+## Razsevni grafikon
+
+```{r}
+# razsevni grafikon
+
+coordinates(pod) = c("vrsta", "lokacija")
+
+hscat(NDRE_jul ~ 1, pod, 0:6)
+```
+
+Iz rasevnih grafikonov za pare podatkov o **NDRE_jul** glede na razrede oddaljenosti lahko vidimo, da se z oddaljenostjo prostorska korelacija zmanjšuje (Pearsonov koeficient korelacije).
+
+## Oblak semivariagrama
+
+```{r results=F}
+variog1.cloud <- variog(prostorski, option = "cloud", max.dist = 10)
+plot(variog1.cloud)
+```
 
 
+## Vzorčni semivariogram
 
+Okvirji z ročaji za vrednosti klasičnega in robustnega vzročnega variograma:
 
+```{r results=F}
+par(mfrow=c(1,2))
+# klasicni vzorcni variogram
+variog1.cloud.bin <- variog(prostorski, bin.cloud = TRUE, max.dist = 10)
+plot(variog1.cloud.bin, bin.cloud = TRUE)
+# robustni vzorcni variogram
+variog1.cloud.bin.c <- variog(prostorski, bin.cloud = TRUE,
+                              estimator.type = "modulus", max.dist = 8) 
+plot(variog1.cloud.bin.c, bin.cloud = TRUE)
+```
+
+Vzorčni variogram s povprečji za posamezne razrede razdalje: 
+
+```{r results=F}
+variog1 = variog(prostorski, max.dist = 10)
+plot(variog1, pch = 16, type ="o")
+```
+
+Do sedaj sva proučevala prostorsko korelacjo ne glede na smer v prostoru, torej sva predpostavila izotropni prostorski proces. Zato narišimo še usmerjene semivariograme za določene smeri v prostoru in s tem preverimo ali je predpostavka izotropnosti upravičena.
+
+```{r results=F}
+variog1.4 <- variog4(prostorski, uvec = seq(1, 10, by = 1))
+plot(variog1.4, type = "b", main = "", pch = 16, lwd = 2)
+```
+
+<!-- Tom: jst bi glede na vrednosti na zacetku reku da ni izpolnena predpostavka izotropnosti...kaj pravis? -->
+
+## Ovojnice za vzorčni semivariogram
+
+<!-- Tom: jst bootstrap ovojnic nism nasu nikjer smo pa delal Monte Carlo ovojnice tko da je vrjetno to mislna...-->
+
+```{r results=F}
+# Monte Carlo ovojnica semivariograma za s100
+par(mfrow = c(1, 1))
+bin <- variog(prostorski, uvec = c(0:10))
+env.mc <- variog.mc.env(prostorski, obj.var = bin)
+plot(bin, envelope = env.mc)
+```
+
+<!-- Tom: jst bi za vse tri reku da ni neke izrazite koreliranosti oz mogoce "Vzorčni variogram s povprečji za posamezne razrede razdalje" je se najbolj tak da bi lahko prikazoval neko korelacijo-->
