@@ -1,7 +1,14 @@
 ---
+title: "Seminarska naloga pri predmetu Modeliranje časovnih in prostorskih procesov"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
 output:
-  pdf_document: default
-  # html_document: default
+  pdf_document:
+    number_sections: true
+    fig_caption: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
 ---
 
 
@@ -14,12 +21,37 @@ library(readxl)
 library(astsa)
 library(car)
 library(splines)
+
+library(geoR)
+library(gstat)
+library(sp) 
+library(raster) 
+
+library(kableExtra)
+library(ggplot2)
 ```
 
+\newpage
 \tableofcontents
 \listoffigures
 \listoftables
 \newpage
+
+# Uvod {-}
+
+Seminarska naloga je sestavljena iz dveh delov. 
+
+V prvem delu sva analizirala štiri izbrane časovne vrste, ki spadajo pod temo _Gostinstvo_. Obravnavala sva indeks prihodka za _Gostinske nastanitvene dejavnosti_ in _Dejavnost strežbe jedi in pijač_ ter prosta in zasedena delovna mesta v gostinstvu. Za vse štiri časovne vrste sva naredila podrobnejšo analizo in skušala najti model, ki najbolje napoveduje indeks prihodka v obeh dejavnostih ter prosta in zasedena delovna mesta v gostinstvu.
+
+V drugem delu sledi analiza prostorskega procesa. Podrobneje sva obravnala vegetacijski indeks *NDRE* v mesecu juliju in izmerjene parametre, ki lahko, poleg lokacije, tudi vplivajo na vegetacijski indeks.
+
+<!--
+###############################################################################
+ČASOVNI PROCES
+###############################################################################
+-->
+
+# Analiza časovnih vrst
 
 ```{r message=FALSE}
 # imena posameznih sheet-ov
@@ -57,7 +89,7 @@ ts_prosta = ts(prosta_1, start = c(2008, 1), frequency = 4)
 # end(ts_prosta)
 ```
 
-# Uvod
+## Predstavitev podatkov
 
 Za analizo sva si izbrala podatke, ki spadajo pod temo _Gostinstvo_. 
 
@@ -69,9 +101,9 @@ Ker sta frekvenci vzorčenja enakomerni imamo opravka z ekvidistantnimi časovni
 
 \newpage
 
-# Časovna vrsta _Gostinske nastanitvene dejavnosti_
+## Časovna vrsta _Gostinske nastanitvene dejavnosti_
 
-## Pregled časovne vrste
+### Pregled časovne vrste
 
 Podatke imamo za leta od 2010 do leta 2023 za vsak mesec v letu in za leto 2024 za mesec januar.  
 
@@ -126,7 +158,7 @@ Ponovno opazimo prisotnost trenda, ki je sprva negativen, nato pa se leta 2015 o
 
 Prav tako je dobro vidno ekstremno gibanje v času pandemije Covid-19, saj se je takrat zgodil velik padec vrednosti indeksa. Tudi amplituda nihanja se je drastično spremenila v primerjavi s predhodnjim opazovanim obdobjem, za kar je verjetno ponovno krivo obnašanje in potrebe ljudi po pandemiji in izdaja državnih bonov.
 
-## Transformacija
+### Transformacija
 
 ```{r results='hide'}
 time = 1 + frequency(ts_nastanitve) * (time(ts_nastanitve) - start(ts_nastanitve)[1])
@@ -169,7 +201,7 @@ points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 
 Ker variabilnost osnovne in transformirane časovne vrste izgleda dokaj podobna (razlikujejo se razponi na y-osi), se zaenkrat ne odločiva za transformacijo in analizo nadaljujeva z osnovno časovno vrsto.
 
-## Avtokorelogram in parcialni avtokorelogram
+### Avtokorelogram in parcialni avtokorelogram
 
 Na prvem grafu je vidno, da koeficienti avtokorelacije padajo dokaj počasi, kar nakazuje, da časovna vrsta vsebuje trend, ki ga bi bilo treba modelirati z diferenciranjem. Na avtokorelogramu koeficienti avtokorelacije nakazujejo na nihanje. Sezona je vidna z nihanjem vrednosti koeficientov oz. periodičnostjo in izrazitimi vrhovi, ki se ponavljajo. Trenutno v modelu je statistično značilna korelacija med členi časovne vrste.
 
@@ -179,7 +211,7 @@ Tudi na parcialnem avtokorelogramu imamo nekaj koeficientov parcialne avtokorela
 acf2(ts_nastanitve, main = "", max.lag = 63)
 ```
 
-## Diferenciranje 
+### Diferenciranje 
 
 Torej na avtokorelogramu se vidi, da koeficienti avtokorelacije nakazujejo na trend v časovni vrsti, zato jo enkrat diferenciramo in preverimo ali imamo stacionarno časovno vrsto.
 
@@ -232,7 +264,7 @@ acf2(diff(diff(ts_nastanitve, lag=1), lag=12))
 ```
 
 
-## Izbira ustreznega modela
+### Izbira ustreznega modela
 
 Izbire modela se lotiva postopoma, zato najprej pogledava kakšne rezultate dobiva, če časovni vrsti diferencirava le trend($d=1$).
 
@@ -350,7 +382,7 @@ sarima(ts_nastanitve, p = 8, d = 1, q = 7, P=1, D=1, Q=2,
        S=frequency(ts_nastanitve), details = TRUE)
 ```
 
-## Napoved
+### Napoved
 
 S pomočjo zgornjega modela bova sedaj poskušala napovedati indeks prihodka  za nekaj let vnaprej. Ker naju zanima kako dober je najin model, na začetku ponovno podatke razdeliva na testne in učne. Najbolj naju zanima kako bo napovedoval po letu 2020, če tega leta nima v učnih podatkih in kako napoveduje, če ga vključiva v učne podatke in napovedujeva samo za mesec januar v letu 2024.
 
@@ -379,9 +411,9 @@ Tokrat pa vidimo, da napovedane vrednosti niso tako zelo slabe, model določene 
 
 \newpage
 
-# Časovna vrsta _Dejavnost strežbe jedi in pijač_
+## Časovna vrsta _Dejavnost strežbe jedi in pijač_
 
-## Pregled časovne vrste
+### Pregled časovne vrste
 
 Podatke imamo za leta od 2010 do leta 2023 za vsak mesec v letu in za leto 2024 za mesec januar.  
 
@@ -435,7 +467,7 @@ Ponovno opazimo prisotnost trenda, ki je čez celotno obdobje naraščajoče, na
 
 Prav tako je dobro vidno ekstremno gibanje v času pandemije Covid-19, saj se je takrat zgodil velik padec vrednosti indeksa. Tudi amplituda nihanja se je drastično spremenila v primerjavi s predhodnjim opazovanim obdobjem, za kar je verjetno ponovno krivo obnašanje in potrebe ljudi po pandemiji in izdaja državnih bonov.
 
-## Transformacija
+### Transformacija
 
 ```{r results='hide'}
 time = 1 + frequency(ts_strezba) * (time(ts_strezba) - start(ts_strezba)[1])
@@ -473,7 +505,7 @@ points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 
 Ker variabilnost osnovne in transformirane časovne vrste izgleda dokaj podobna, se zaenkrat ne odločiva za transformacijo in analizo nadaljujeva z osnovno časovno vrsto.
 
-## Avtokorelogram in parcialni avtokorelogram
+### Avtokorelogram in parcialni avtokorelogram
 
 Na prvem grafu je vidno, da koeficienti avtokorelacije padajo dokaj počasi, kar nakazuje, da časovna vrsta vsebuje trend, ki ga bi bilo treba modelirati z diferenciranjem. Na avtokorelogramu koeficienti avtokorelacije nakazujejo na nihanje, sicer šele pri kasnejših odlogih in tudi težko ocenimo ali gre za počasno padanje ali ne, ampak vseeno to vzamemo v razmislek za vključitev modeliranja sezonskosti, ki se na osnovnem grafu časovne vrste ni videla. Trenutno v modelu je statistično značilna korelacija med členi časovne vrste.
 
@@ -483,7 +515,7 @@ Parcialni avtokorelogram ne prikazuje posebnosti, imamo nekaj koeficientov parci
 acf2(ts_strezba, main = "", max.lag = 63)
 ```
 
-## Diferenciranje 
+### Diferenciranje 
 
 Torej vidi se na avtokorelogramu, da koeficienti avtokorelacije nakazujejo na trend v časovni vrsti, zato jo enkrat diferenciramo in poskušamo dobiti stacionarno časovno vrsto.
 
@@ -533,7 +565,7 @@ Vidimo, da imamo nekaj statistično značilnih koeficientov avtokorelacije in pa
 acf2(diff(diff(ts_strezba, lag=1), lag=12))
 ```
 
-## Izbira ustreznega modela
+### Izbira ustreznega modela
 
 Izbire modela se lotiva postopoma, zato najprej pogledava kakšne rezultate dobiva, če časovni vrsti diferencirava le trend($d=1$).
 
@@ -659,7 +691,7 @@ Na podlagi Akaikijevega informacijskega kriterija(AIC) se odločiva za model **S
 sarima(ts_strezba, p = 5, d = 1, q = 6, P=2, D=1, Q=2, S=frequency(ts_strezba), details = TRUE)
 ```
 
-## Napoved
+### Napoved
 
 S pomočjo zgornjega modela bova sedaj poskušača napovedati indeks prihodka  za nekaj let vnaprej. Ker naju zanima kako dober je najin model, na začetku ponovno podatke razdeliva na testne in učne. Najbolj naju zanima kako bo napovedoval po letu 2020, če tega leta nima v učnih podatkih in kako napoveduje, če ga vključiva v učne podatke in napovedujeva samo za mesec januar v letu 2024.
 
@@ -687,9 +719,9 @@ Tokrat pa vidimo, da napovedane vrednosti niso tako zelo slabe, model določene 
 
 \newpage
 
-# Časovna vrsta _Gostinstvo prosta delovna mesta 1+_
+## Časovna vrsta _Gostinstvo prosta delovna mesta 1+_
 
-## Pregled časovne vrste
+### Pregled časovne vrste
 
 Podatke imamo za leta od 2008 do leta 2023 za vsako kvartalno obdobje.
 
@@ -742,7 +774,7 @@ Kot sva omenila že zgoraj je iz grafa časovne vrste možno opaziti prisotnost 
 
 Vidno pa je ekstremno obdobje (čas pandemije Covid-19) in to ravno proti koncu časovne vrste. To obdobje bo verjetno povzročalo težave pri iskanju ustreznega modela za napovedovanje prihodnjih prostih delovnih mest v gostinstvu, kjer je zaposlena 1 oseba. Če bi podate razdelili na učno in testno množico in v testno množico vzamemo zadnja 3 leta v naših podatkih, napovedi modela zagotovo ne bodo pravilne, saj se bo model učil na razmeroma normalnih in predvidljivih podatkih. 
 
-## Transformacija časovne vrste
+### Transformacija časovne vrste
 
 S pomočjo BoxCox testa, ugotovimo, da je primerno časovno vrsto transformirati in se s tem morda poskušamo malenkost znebiti nekonstantne variance. Primerna je logaritemska transformacija.
 
@@ -780,7 +812,7 @@ points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 
 Krivulji osnovne in transponirane časovne vrste sta si dokaj podobni, ampak nadaljujmo analizo z transformirano časovno vrsto.
 
-## Avtokorelogram in parcialni avtokorelogram
+### Avtokorelogram in parcialni avtokorelogram
 
 Na prvem grafu je vidno, da koeficienti avtokorelacije počasi padajo, torej časovna vrsta vsebuje trend, ki ga bi bilo treba modelirati. Sprva je bil narisan osnovni avtokorelogram, s katerega se je videlo, da če bi povečali odloge(_Lag_), bi morda bilo videti nihanje. Na spodnjem avtokorelogramu imamo povečane odloge in koeficienti avtokorelacije morda nakazujejo na zelo počasno nihanje.
 
@@ -798,7 +830,7 @@ acf2(ts_prosta, main = "", max.lag = 63)
 
 Kot pri avtokorelogramu in parcialnem avtokorelogramu je zelo podobna situacija kot pri logaritmirani časovni vrsti.
 
-## Diferenciranje 
+### Diferenciranje 
 
 Kot sva že napisala zgoraj, koeficienti avtokorelacije nakazujejo na trend v logaritmirani časovni vrsti, zato jo enkrat diferenciramo in poskušamo dobiti stacionarno časovno vrsto.
 
@@ -818,7 +850,7 @@ acf2(diff(ts_prosta_log, lag=1), main = "", max.lag = 24)
 
 Na zgornjem avtokorelogramu in parcialnem avtokorelogramu vidimo, da z diferenciranjem poskrbimo, da niso več prisotni statistično značilni koeficienti avtokorelacije, kar pomeni, da v modelu ni statistično značilne korelacije med členi časovne vrste. Zanimivo je le videti, da imamo nekoliko večji koeficient od ostalih pri odlogu "1.5" in pri odlogu "3" - morda je to nekaj kar še vedno malo bolj vpliva na avtokorelacijo, ampak je statistično neznačilno.
 
-## Izbira ustreznega modela
+### Izbira ustreznega modela
 
 V model sva najprej vključila diferenciranje prvega reda. Gre za ARIMA model s koeficienti $p$ = 0, $d$ = 1 in $q$ = 0 
 
@@ -840,7 +872,7 @@ Koeficienti avtokorelacije so znotraj 95% intervala zaupanja, torej so statisti�
 Box.test(mod.dif$resid, lag = 10, type = c("Ljung-Box"))
 ```
 
-## Napoved
+### Napoved
 
 Sedaj bova poskušala z modelom še napovedati število prostih delovnih mest za nekaj let vnaprej. Ker naju zanima kako dober je najin model, na začetku podatke razdeliva na testne in učne. Najbolj naju zanima kako bo napovedoval po letu 2020, če tega leta nima v učnih podatkih in kako napoveduje, če ga vključiva v učne podatke in napovedujeva od leta 2021 naprej.
 
@@ -882,9 +914,9 @@ Ker je časovna vrsta tako zelo razgibana in ima veliko variabilnost ravno v zad
 
 \newpage
 
-# Časovna vrsta _Gostinstvo zasedena delovna mesta 1+_
+## Časovna vrsta _Gostinstvo zasedena delovna mesta 1+_
 
-## Pregled časovne vrste
+### Pregled časovne vrste
 
 Podatke imamo za leta od 2008 do leta 2023 za vsako kvartalno obdobje.
 
@@ -936,7 +968,7 @@ Kot sva omenila že zgoraj je iz grafa časovne vrste možno opaziti priostnost 
 
 Vidno pa je ekstremno obdobje (čas pandemije Covid-19) in to ravno proti koncu časovne vrste. To obdobje bo verjetno povzorčalo težave pri iskanju ustreznega modela za napovedovanje prihodnjih zasedenih delovnih mest v gostinstvu, kjer je zaposlena 1 oseba. Če bi podate razdelili na učno in testno množico in v testno množico vzamemo zadnja 3 leta v naših podatkih, napovedi modela zagotovo ne bodo pravilne, saj se bo model učil na razmeroma normalnih in predvidljivih podatkih. 
 
-## Transformacija časovne vrste
+### Transformacija časovne vrste
 
 S pomočjo BoxCox testa, ugotovimo, da je 95% interval dokaj širok in vsebuje tako $\lambda=0$ in $\lambda=1$. Uporabili bomo logaritemsko transformacijo in časovno vrsto primerjali s časovno vrsto, kjer transformacije ne uporabimo.
 
@@ -978,7 +1010,7 @@ points(gladilnik$x, gladilnik$y, type="l", col = "blue")
 Krivulji osnovne in transponirane časovne vrste sta si identični, z izjemo razpona vrednosti na $y$-osi. Zato nadaljujmo analizo z netransformirano časovno vrsto.
 
 
-## Analiza avtokoreliranosti 
+### Analiza avtokoreliranosti 
 
 Na prvem grafu je vidno, da koeficienti avtokorelacije počasi padajo, torej časovna vrsta vsebuje trend, ki ga bi bilo treba modelirati. Sprva je bil narisan osnovni avtokorelogram, s katerega se je videlo, da če bi povečali odloge(_Lag_), bi morda bilo videti nihanje. Na spodnjem avtokorelogramu imamo povečane odloge in koeficienti avtokorelacije morda nakazujejo na zelo počasno nihanje.
 
@@ -988,7 +1020,7 @@ Parcialni avtokorelogram ne prikazuje posebnosti, imamo samo en koeficient parci
 acf2(ts_zasedena, main = "", max.lag = 63)
 ```
 
-## Diferenciranje 
+### Diferenciranje 
 
 Kot sva že napisala zgoraj, koeficienti avtokorelacije nakazujejo na trend v časovni vrsti, zato jo enkrat diferenciramo in poskušamo dobiti stacionarno časovno vrsto.
 
@@ -1008,7 +1040,7 @@ acf2(diff(ts_zasedena, lag=1), main = "", max.lag = 24)
 
 Na zgornjem avtokorelogramu in parcialnem avtokorelogramu vidimo, da z diferenciranjem poskrbimo, da niso več prisotni statistično značilni koeficienti avtokorelacije, kar pomeni, da v modelu ni statistično značilne korelacije med členi časovne vrste. 
 
-## Izbira ustreznega modela
+### Izbira ustreznega modela
 
 V model sva najprej vključila diferenciranje prvega reda. Gre za ARIMA model s koeficienti $p$ = 0, $d$ = 1 in $q$ = 0 
 
@@ -1030,7 +1062,7 @@ Koeficienti avtokorelacije so znotraj 95% intervala zaupanja, torej so statisti�
 Box.test(mod.dif$resid, lag = 10, type = c("Ljung-Box"))
 ```
 
-## Napoved
+### Napoved
 
 Sedaj bova poskušala z modelom še napovedati število zasedenih delovnih mest za nekaj let vnaprej. Ker naju zanima kako dober je najin model, na začetku podatke razdeliva na testne in učne. Najbolj naju zanima kako bo napovedoval po letu 2020, če tega leta nima v učnih podatkih in kako napoveduje, če ga vključiva v učne podatke in napovedujeva od leta 2021 naprej.
 
@@ -1069,6 +1101,174 @@ points(zasedena.test, type = "o")
 Napovedi tudi tukaj niso pravilne in ne ravno najbolj informativne, najbolje zadane samo za en trenutek naprej, 95% intervali zaupanja pa so še vedno izjemno široki.
 
 Ker je časovna vrsta tako zelo razgibana in ima veliko variabilnost ravno v zadnjih letih, težko uporabljamo ARIMA oz. SARIMA modele za napovedovanje prihodnjih vrednosti.
+
+\newpage
+
+<!--
+###############################################################################
+PROSTORSKI PROCES
+###############################################################################
+-->
+
+# Analiza prostorskega procesa
+
+```{r}
+data = read.table("podatki.txt", header=T)
+
+podatki = data[,c("vrsta", "lokacija", "NDRE_jul", 
+                  "swc", "gostota", "pF2", "pF4.2", "aw")]
+
+# uporabiva pri "Analiza prostorske korelacije"
+pod = podatki
+
+prostorski = as.geodata(podatki, coords.col = 1:2, data.col = 3,
+                        covar.col = 4:8,
+                        covar.names = c("swc", "gostota", "pF2", "pF4.2", "aw"))
+```
+
+## Predstavitev podatkov
+
+Podatki so bili pridobljeni kot meritev več različnih spremenljivk na izbrani njivi v
+Šempasu. Podatki tal so pridobljeni 18. 7. 2023 iz globine tal 20 cm, izmerjeni parametri pa so bili:
+
+* _swc_ je gravimetrična vsebnost vode v tleh (vol. %)
+* _gostota_ je gostota tal (g/cm3)
+* _pF2_ je vsebnost vode pri matričnem potencialu vode pF 2.0
+* _pF4.2_ je vsebnost vode pri matričnem potencialu vode pF 4.2
+* _aw_ je rastlinam razpoložljiva voda v tleh (available water) (pF 2.0 - pF 4.2)
+
+Podrobneje bova obravnala vegetacijski indeks *NDRE* v mesecu juliju in zgoraj napisani izmerjeni parametri lahko, poleg lokacije, tudi vplivajo na vegetacijski indeks.
+
+Na spodnji sliki si lahko ogledamo še načrt meritev.
+
+![](Šempas merilna shema.pdf){width=60%}
+
+### Vegetacijski indeks NDRE {-}
+
+Vegetacijski indeks NDRE (Normalized Difference Red Edge) je spektralni indeks, ki se uporablja v daljinskem zaznavanju za merjenje vsebnosti klorofila v rastlinah. Pogosto se uporablja v preciznem kmetijstvu za optimizacijo pridelkov, spremljanje zdravja rastlin, določanje potreb po gnojilih in drugih kmetijskih praks. Uporaba tega indeksa omogoča bolj ciljno usmerjene in učinkovite kmetijske posege, kar lahko vodi k večji produktivnosti in trajnosti.
+
+<!--https://eos.com/make-an-analysis/ndre/-->
+
+
+### Grafični prikaz parametrov
+
+Najprej si poglejmo s kakšnimi podatki imamo opravka v našem podatkovnem okvirju.
+
+```{r fig.height=4, fig.width=10, message=FALSE, warning=FALSE, fig.cap="Porazdelitev parametrov glede na vrsto.", results=T}
+library(ggplot2)
+df = data 
+df$vrsta <- factor(df$vrsta)
+df$lokacija <- factor(df$lokacija)
+
+g1=ggplot(df, aes(x= vrsta, y= swc, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("gravimetrična vsebnost vode v tleh (vol. %)")
+
+g2=ggplot(df, aes(x= vrsta, y= gostota, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("gostota tal (g/cm3)")
+
+g3=ggplot(df, aes(x= vrsta, y= pF2, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("vsebnost vode pri pF 2.0")
+
+g4=ggplot(df, aes(x= vrsta, y= pF4.2, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("vsebnost vode pri pF 4.2")
+
+g5=ggplot(df, aes(x= vrsta, y= aw, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("available water(pF 2.0 - pF 4.2)")
+
+library(gridExtra)
+grid.arrange(g1, g2, g3, g4, g5, nrow = 2, ncol = 3)
+```
+
+```{r fig.height=5, fig.width=10, message=FALSE, warning=FALSE, fig.cap="Porazdelitev parametrov glede na lokacijo.", results=T}
+g1=ggplot(df, aes(x= lokacija, y= swc, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("gravimetrična vsebnost vode v tleh (vol. %)")
+
+g2=ggplot(df, aes(x= lokacija, y= gostota, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("gostota tal (g/cm3)")
+
+g3=ggplot(df, aes(x= lokacija, y= pF2, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("vsebnost vode pri pF 2.0")
+
+g4=ggplot(df, aes(x= lokacija, y= pF4.2, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("vsebnost vode pri pF 4.2")
+
+g5=ggplot(df, aes(x= lokacija, y= aw, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("available water(pF 2.0 - pF 4.2)")
+
+grid.arrange(g1, g2, g3, g4, g5, nrow = 2, ncol = 3)
+```
+
+Glede na vrsto in lokacijo vidimo, da imajo parametri različne variabilnosti, prav tako je razpon vrednosti, še posebaj glede na lokacijo, zelo različen. 
 
 
 

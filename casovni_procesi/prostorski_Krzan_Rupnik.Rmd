@@ -1,8 +1,14 @@
 ---
+title: "Seminarska naloga pri predmetu Modeliranje časovnih in prostorskih procesov"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
 output:
-  pdf_document: default
-  # html_document: default
-
+  pdf_document:
+    number_sections: true
+    fig_caption: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
 ---
 
 ```{r setup, include=FALSE}
@@ -24,7 +30,10 @@ library(sp)
 \tableofcontents
 \listoffigures
 \listoftables
+
 \newpage
+
+# Analiza prostorskega procesa
 
 ```{r}
 data = read.table("podatki.txt", header=T)
@@ -40,85 +49,197 @@ prostorski = as.geodata(podatki, coords.col = 1:2, data.col = 3,
                         covar.names = c("swc", "gostota", "pF2", "pF4.2", "aw"))
 ```
 
-# Predstavitev podatkov
+## Predstavitev podatkov
 
 Podatki so bili pridobljeni kot meritev več različnih spremenljivk na izbrani njivi v
-Šempasu. Podatki tal so pridobljeni 18. 7. 2023 iz globine tal 20 cm:
+Šempasu. Podatki tal so pridobljeni 18. 7. 2023 iz globine tal 20 cm, izmerjeni parametri pa so bili:
 
 * _swc_ je gravimetrična vsebnost vode v tleh (vol. %)
 * _gostota_ je gostota tal (g/cm3)
 * _pF2_ je vsebnost vode pri matričnem potencialu vode pF 2.0
 * _pF4.2_ je vsebnost vode pri matričnem potencialu vode pF 4.2
-* _aw_ je rastlinam razpoložljiva voda v tleh (available water) (pF 2.0 – pF 4.2)
+* _aw_ je rastlinam razpoložljiva voda v tleh (available water) (pF 2.0 - pF 4.2)
 
-To so tudi spremenljivke, ki jih bova upoštevala da lahko še poleg lokacije vplivajo na vrednost obravnavane spremneljvke. V najnem primeru bova podrobneje obravnavala vegetacijski indeks *NDRE* v mesecu juliju.
+Podrobneje bova obravnala vegetacijski indeks *NDRE* v mesecu juliju in zgoraj napisani izmerjeni parametri lahko, poleg lokacije, tudi vplivajo na vegetacijski indeks.
 
 Na spodnji sliki si lahko ogledamo še načrt meritev.
 
 ![](Šempas merilna shema.pdf){width=60%}
 
+### Vegetacijski indeks NDRE {-}
 
-\newpage
+Vegetacijski indeks NDRE (Normalized Difference Red Edge) je spektralni indeks, ki se uporablja v daljinskem zaznavanju za merjenje vsebnosti klorofila v rastlinah. Pogosto se uporablja v preciznem kmetijstvu za optimizacijo pridelkov, spremljanje zdravja rastlin, določanje potreb po gnojilih in drugih kmetijskih praks. Uporaba tega indeksa omogoča bolj ciljno usmerjene in učinkovite kmetijske posege, kar lahko vodi k večji produktivnosti in trajnosti.
 
-# Grafični prikaz
+<!--https://eos.com/make-an-analysis/ndre/-->
 
-Na spodnjem grafu lahko vidimo lokacije meritev, na katerem sta ploščina in barva krogcev sta sorazmerna z vrednostjo spremenljivke _NDRE_jul_, podatki so razdeljeni v štiri razrede, ki so določeni s kvantili.
 
-```{r}
+### Grafični prikaz parametrov
+
+Najprej si poglejmo s kakšnimi podatki imamo opravka v našem podatkovnem okvirju.
+
+```{r fig.height=3, fig.width=10, message=FALSE, warning=FALSE, fig.cap="Porazdelitev parametrov glede na vrsto.", results=T}
+library(ggplot2)
+df = data 
+df$vrsta <- factor(df$vrsta)
+df$lokacija <- factor(df$lokacija)
+
+g1=ggplot(df, aes(x= vrsta, y= swc, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("gravimetrična vsebnost vode v tleh (vol. %)")
+
+g2=ggplot(df, aes(x= vrsta, y= gostota, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("gostota tal (g/cm3)")
+
+g3=ggplot(df, aes(x= vrsta, y= pF2, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("vsebnost vode pri pF 2.0")
+
+g4=ggplot(df, aes(x= vrsta, y= pF4.2, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("vsebnost vode pri pF 4.2")
+
+g5=ggplot(df, aes(x= vrsta, y= aw, fill=vrsta)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("vrsta") + ylab("available water(pF 2.0 - pF 4.2)")
+
+library(gridExtra)
+grid.arrange(g1, g2, g3, g4, g5, nrow = 2, ncol = 3)
+```
+
+```{r fig.height=3, fig.width=10, message=FALSE, warning=FALSE, fig.cap="Porazdelitev parametrov glede na lokacijo.", results=T}
+g1=ggplot(df, aes(x= lokacija, y= swc, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("gravimetrična vsebnost vode v tleh (vol. %)")
+
+g2=ggplot(df, aes(x= lokacija, y= gostota, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("gostota tal (g/cm3)")
+
+g3=ggplot(df, aes(x= lokacija, y= pF2, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("vsebnost vode pri pF 2.0")
+
+g4=ggplot(df, aes(x= lokacija, y= pF4.2, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("vsebnost vode pri pF 4.2")
+
+g5=ggplot(df, aes(x= lokacija, y= aw, fill=lokacija)) +
+  geom_boxplot() +
+  #scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+  geom_jitter(color="black", size=0.4, alpha=0.9) +
+  theme_light() +
+  theme(
+    legend.position="none",
+    plot.title = element_text(size=11)) +
+  xlab("lokacija") + ylab("available water(pF 2.0 - pF 4.2)")
+
+grid.arrange(g1, g2, g3, g4, g5, nrow = 2, ncol = 3)
+```
+
+Glede na vrsto in lokacijo vidimo, da imajo parametri različne variabilnosti, prav tako je razpon vrednosti, še posebaj glede na lokacijo, zelo različen. 
+
+## Grafični prikaz
+
+Na spodnjem grafu lahko vidimo lokacije meritev, na katerem sta ploščina in barva krogcev sorazmerna z vrednostjo spremenljivke _NDRE_jul_, podatki so razdeljeni v štiri razrede, ki so določeni s kvantili.
+
+```{r fig.cap="Grafični prikaz lokacij in relativne vrednosti spremenljivke 'NDRE'."}
 points(prostorski, pt.div = "quartile", cex.min = 0.8, cex.max = 2, col = c(4, 3, 7, 2))
+par(xpd = TRUE)
+legend(1, 13, c("0-25%", "25-50%","50-75%","75-100%"), ncol = 2, 
+       col = c(4, 3, 7, 2), pch = 16, box.lty = 0)
 ```
 
 Poglejmo si še nekoliko podrobnejši prikaz, kjer nas bosta zanimala predvsem razsevna grafikona *vrsta* in *NDRE_jul*, ter *lokacija* in *NDRE_jul*. 
 
-```{r}
+```{r fig.cap="Predstavitev realizacije prostorskega procesa 'NDRE'.", fig.height=5, fig.width=8}
 plot(prostorski)
 ```
 
 Iz razsevnih grafikonov ni videti odvisnosti spremenljivke *NDRE_jul* od koordinat lokacije. Iz prvega grafa in pa zgornjega levega grafa lahko opazimo nek vzorec, kar nam nakazuje na prisotnost prostorske korelacije.
 
-
-# Analiza morebitne nestacionarnosti
+Torej iz zgornjega desnega grafa (vrednosti v odvisnoti od _lokacija_) in spodnjega levega grafa (vrednosti v odvisnoti od _vrsta_) ni možno razbrati priostnosti trenda in nekonstantne varinace, zato ne bova naredila podrobnejše analize morebitne nestacionarnosti.
 
 <!-- Tom: jst bi reku da tukej nimava kej velik za narest ker se vsaj men zdi da 
-grafi ne kazejo nekega trenda niti nekonstantne variance...-->
+grafi ne kazejo nekega trenda niti nekonstantne variance...
+Neza: tole sm dodala kr zgorej ker brezveze, da mava šeenkrat isti graf...-->
 
+## Analiza prostorske korelacije
 
-Ponovno si oglejmo prikaz iz katerega lahko razberemo prisotnost trenda in morebitne nekonstantne variance glede na spremenljivki _vrsta_ in _lokacija_. To lahko razberemo in zgornjega desnega grafa (vrednosti v odvisnoti od _lokacija_) in spodnjega levega grafa (vrednosti v odvisnoti od _vrsta_).
+### Razsevni grafikon
 
-```{r}
-plot(prostorski)
-```
+Ker naju natančneje zanima izražanje prostorske korelacije, si nariševa razsevne grafikone, na katerih so prikazani pari podatkov na različnih prostorskih odlogih. Črta nam prikazuje idealno povezanost z vrednostjo korelacijskega koeficienta 1.
 
-Iz nobenega od zgoraj naštetih grafov ni možno razbrati priostnosti trenda in nekonstantne varinace, zato ne bova naredila podrobnejše analize.
-
-# Analiza prostorske korelacije
-
-## Razsevni grafikon
-
-```{r}
+```{r fig.cap="Prostorska korelacija za 'NDRE(jul)'.", fig.height=5, fig.width=7}
 # razsevni grafikon
-
 coordinates(pod) = c("vrsta", "lokacija")
-
 hscat(NDRE_jul ~ 1, pod, 0:6)
 ```
 
-Iz rasevnih grafikonov za pare podatkov o **NDRE_jul** glede na razrede oddaljenosti lahko vidimo, da se z oddaljenostjo prostorska korelacija zmanjšuje (Pearsonov koeficient korelacije).
+Za pare podatkov o **NDRE_jul** glede na razrede oddaljenosti lahko vidimo, da se z oddaljenostjo prostorska korelacija zmanjšuje (Pearsonov koeficient korelacije). Lahko bi torej reki, da na zelo kratkih razdaljah imamo majhno povezanost, ki na daljših razdaljah še pada.
 
-## Oblak semivariagrama
+### Oblak semivariagrama in vzorčni semivariogram
 
-```{r results=F}
+Poglejmo analizo prostorske korelacije še s pomočjo oblaka semivariograma in vzorčnega semivariograma.
+
+```{r fig.cap="Oblak semivariograma za 'NDRE(jul)'(levo), okvirji z ročaji za vrednosti klasičnega variaograma po razdaljah med lokacijami(sredina) in za vrednosti robustnega vzorčnega variograma(desno)." , fig.height=3.5, fig.width=10, results=F}
+par(mfrow=c(1,3))
 variog1.cloud <- variog(prostorski, option = "cloud", max.dist = 10)
 plot(variog1.cloud)
-```
-
-
-## Vzorčni semivariogram
-
-Okvirji z ročaji za vrednosti klasičnega in robustnega vzročnega variograma:
-
-```{r results=F}
-par(mfrow=c(1,2))
 # klasicni vzorcni variogram
 variog1.cloud.bin <- variog(prostorski, bin.cloud = TRUE, max.dist = 10)
 plot(variog1.cloud.bin, bin.cloud = TRUE)
@@ -128,28 +249,38 @@ variog1.cloud.bin.c <- variog(prostorski, bin.cloud = TRUE,
 plot(variog1.cloud.bin.c, bin.cloud = TRUE)
 ```
 
-Vzorčni variogram s povprečji za posamezne razrede razdalje: 
+Na skrajno levem zgornjem grafu vidimo, da vrednosti _NDRE_jul_ predstavljajo meritve v pravilni mreži točk, saj oblak variograma prikazuje diskretne vrednosti razdalj med lokcijami in so točke narisane v črtah. Porazdelitve vrednosti vzorčnega variograma pa so asimetrične v vsakem razredu(razredi predstavljajo razdalje), prav tako pa imamo nekaj osamelcev. Na zadnjem, robustnem vzorčnem variogramu, kjer na nek način "posekamo" vpliv vrednosti, ki zelo odstopajo, vidimo, da so porazdelitve glede na razrede  sedaj bistveno drugačne in nekateri osamelci izginejo.
 
-```{r results=F}
+Na spodnjem vzorčnem semivariogram s povprečji za posamezne razrede razdalje lahko iz razporeditve točk razberemo, da so pri manjših razdaljah vzorčne variogramske vrednosti manjše, z naraščajočo razdaljo se povečujejo in se z nadaljnjim večanjem razdalje ne ustalijo ravno oz. ne izgleda, kot da bi se približevale določenemu pragu.
+
+```{r results=F, fig.cap="Vzorčni semivariogram za 'NDRE(jul)'."}
 variog1 = variog(prostorski, max.dist = 10)
 plot(variog1, pch = 16, type ="o")
 ```
 
 Do sedaj sva proučevala prostorsko korelacjo ne glede na smer v prostoru, torej sva predpostavila izotropni prostorski proces. Zato narišimo še usmerjene semivariograme za določene smeri v prostoru in s tem preverimo ali je predpostavka izotropnosti upravičena.
 
-```{r results=F}
+```{r results=F, fig.cap="Vzorčni variogrami za 'NDRE(jul)' za štiri glavne smeri."}
 variog1.4 <- variog4(prostorski, uvec = seq(1, 10, by = 1))
 plot(variog1.4, type = "b", main = "", pch = 16, lwd = 2)
 ```
 
-<!-- Tom: jst bi glede na vrednosti na zacetku reku da ni izpolnena predpostavka izotropnosti...kaj pravis? -->
+Vzorčni variogrami za _NDRE_jul_ za štiri glavne smeri izraža izotropijo, saj že na krajših razdaljah vidimo razlike v vzorčnih variogramih za različne smeri. Torej bi glede na graf bilo potrebno modeliranje prostorske korelacije na kratke razdalje.
 
-## Ovojnice za vzorčni semivariogram
+<!-- Tom: jst bi glede na vrednosti na zacetku reku da ni izpolnena predpostavka izotropnosti...kaj pravis? 
+Neza: torej korva modelirat prosorsko korelacijo? Sam 3 smeri so okej oziroma nekak da so premice vzporedne vsaj na zacetku, s tem k smer 45 stopin gre pa čist po svoje na začetku, misls da morva to kako opisat? Torej 45 stopinj to je potem severo-vzhod? 
+Zdej sm sla gledat tiste padavine v sloveniji al kaj, tm tud niso na zacetku cist okej, pa nic neki ful ne komplicira
+-->
+
+
+### Ovojnice za vzorčni semivariogram
+
+Da bi dobila širšo sliko o prostorski povezanosti procesa, pri raziskovanju prostorske povezanosti uporabiva Monte Carlo simulacije na podlagi te realizacij prostorskega procesa. Če padejo vse vrednosti osnovnega vzorčnega variograma znotraj ovojnice, ki je določena z robnima variogramoma permutiranih vrednosti, potem podatki ne nakazujejo prostorske povezanosti. Predvsem naju zanima nekaj prvih točk, ki odražajo korelacijo na manjših razdaljah.
 
 <!-- Tom: jst bootstrap ovojnic nism nasu nikjer smo pa delal Monte Carlo ovojnice tko da je vrjetno to mislna...-->
 
-```{r results=F}
-# Monte Carlo ovojnica semivariograma za s100
+```{r results=F, fig.cap="Monte Carlo ovojnica semivariograma."}
+# Monte Carlo ovojnica semivariograma
 par(mfrow = c(1, 1))
 bin <- variog(prostorski, uvec = c(0:10))
 env.mc <- variog.mc.env(prostorski, obj.var = bin)
@@ -157,3 +288,65 @@ plot(bin, envelope = env.mc)
 ```
 
 <!-- Tom: jst bi za vse tri reku da ni neke izrazite koreliranosti oz mogoce "Vzorčni variogram s povprečji za posamezne razrede razdalje" je se najbolj tak da bi lahko prikazoval neko korelacijo-->
+
+Vidimo, da ni izrazite koreliranosti oz. podatki niso prostorsko korelirani.
+
+## Model semivariograma za dane podatke
+
+### Sferični model variograma brez zlatega zrna
+
+Najprej sva parametre semivariograma ocenila z metodo Maximum Likelihood(ML), ki za začetne vrednosti vzame ocene dobljene s funkcijo `variofit`.
+
+```{r}
+# sferični model variograma brez zlatega zrna
+variogram1 <- variog(prostorski, max.dist = 10)
+
+fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = c(8*10^(-4), 30),
+                 fix.nugget = TRUE, nugget = 0, max.dist = 10,
+                 weights = "npairs")
+fit1.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "sph",
+                  fix.nugget = TRUE, lik.met = "ML") 
+fit1.ml
+```
+
+```{r, fig.cap="Profile-log-likelihood za parametra sferičnega modela semivariograma brez zlatega zrna kaže na napačno izbiro modela prostorske korelacije."}
+par(mfrow = c(1, 2))
+plot(proflik(fit1.ml, geodata = prostorski, sill.val = seq(10, 70, l = 20),
+             range.val = seq(1, 10, l = 12), uni.only = TRUE)) 
+```
+
+```{r, fig.cap="Modela vzorčnega semivariograma za prostorski trend, na podlagi vzorčnega variograma in na podlagi oblaka variograma z ML."}
+plot(variog1, pch = 16)
+lines(fit1, col = "red", lwd = 2)
+lines(fit1.ml, col = "green", lwd = 2)
+legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
+legend = c("fit1", "fit1.ml"))
+```
+
+V naslednjem koraku pri uporabi funkcije likfit dopustiva,da dobimo tudi oceno za zlato zrno.
+
+```{r}
+# za oceno parametrov semivariograma z ML, ki za začetne vrednosti vzame 
+# ocene dobljene s funkcijo variofit fit1, ki ocenjuje tudi zlato zrno
+fit2.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "sph",
+                  fix.nugget = FALSE, lik.met = "ML")  # fix.nugget = FALSE
+fit2.ml
+```
+
+```{r, fig.cap="Profile-log-likelihood za parametra sferičnega modela semivariograma z zlatim zrnom."}
+par(mfrow = c(1, 3))
+plot(proflik(fit2.ml, geodata = prostorski, sill.val = seq(1, 20, l = 5),
+             range.val = seq(1, 50, l = 12), nugget.val = seq(0, 10, l = 20),
+             uni.only = TRUE))
+```
+
+<!-- Okej wtf je to???-->
+
+```{r, fig.cap="Modela vzorčnega semivariograma za prostorski trend, na podlagi vzorčnega variograma in na podlagi oblaka variograma z ML."}
+plot(variog1, pch = 16)
+lines(fit2.ml, col = "green", lwd = 2)
+legend("bottomright", col = c("green"), lty = 1, lwd = 2,
+legend = c("fit2.ml"))
+```
+
+
