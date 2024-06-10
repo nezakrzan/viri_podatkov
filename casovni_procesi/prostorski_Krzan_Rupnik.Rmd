@@ -243,6 +243,7 @@ Torej iz zgornjega desnega grafa (vrednosti v odvisnoti od _lokacija_) in spodnj
 grafi ne kazejo nekega trenda niti nekonstantne variance...
 Neza: tole sm dodala kr zgorej ker brezveze, da mava šeenkrat isti graf...-->
 
+
 ## Analiza prostorske korelacije
 
 ### Razsevni grafikon
@@ -276,11 +277,16 @@ plot(variog1.cloud.bin.c, bin.cloud = TRUE)
 
 Na skrajno levem zgornjem grafu vidimo, da vrednosti _NDRE_jul_ predstavljajo meritve v pravilni mreži točk, saj oblak variograma prikazuje diskretne vrednosti razdalj med lokcijami in so točke narisane v črtah. Porazdelitve vrednosti vzorčnega variograma pa so asimetrične v vsakem razredu(razredi predstavljajo razdalje), prav tako pa imamo nekaj osamelcev. Na zadnjem, robustnem vzorčnem variogramu, kjer na nek način "posekamo" vpliv vrednosti, ki zelo odstopajo, vidimo, da so porazdelitve glede na razrede  sedaj bistveno drugačne in nekateri osamelci izginejo.
 
-Na spodnjem vzorčnem semivariogram s povprečji za posamezne razrede razdalje lahko iz razporeditve točk razberemo, da so pri manjših razdaljah vzorčne variogramske vrednosti manjše, z naraščajočo razdaljo se povečujejo in se z nadaljnjim večanjem razdalje ne ustalijo ravno oz. ne izgleda, kot da bi se približevale določenemu pragu.
+Na spodnjem levem vzorčnem semivariogram s povprečji za posamezne razrede razdalje lahko iz razporeditve točk razberemo, da so pri manjših razdaljah vzorčne variogramske vrednosti manjše, z naraščajočo razdaljo se povečujejo in se z nadaljnjim večanjem razdalje ne ustalijo ravno oz. ne izgleda, kot da bi se približevale določenemu pragu, torej kaže na prisotnost prostorskega trenda v podatkih.
 
-```{r results=F, fig.cap="Vzorčni semivariogram za 'NDRE(jul)'."}
+Vzorčni variogram za ostanke prostorskega trenda(desno) pokaže, da je prostorska korelacija med ostanki precej šibkejša.
+
+```{r results=F, fig.cap="Vzorčni semivariogram za 'NDRE(jul)'(levo) in za ostanke regresijskega modela (desno)."}
 variog1 = variog(prostorski, max.dist = 10)
 plot(variog1, pch = 16, type ="o")
+# tole nevem če rabva
+variog2 <- variog(prostorski, trend = ~coords[,1] * coords[,2], max.dist = 10)
+plot(variog2, pch = 16, type ="o")
 ```
 
 Do sedaj sva proučevala prostorsko korelacjo ne glede na smer v prostoru, torej sva predpostavila izotropni prostorski proces. Zato narišimo še usmerjene semivariograme za določene smeri v prostoru in s tem preverimo ali je predpostavka izotropnosti upravičena.
@@ -290,13 +296,14 @@ variog1.4 <- variog4(prostorski, uvec = seq(1, 10, by = 1))
 plot(variog1.4, type = "b", main = "", pch = 16, lwd = 2)
 ```
 
-Vzorčni variogrami za _NDRE_jul_ za štiri glavne smeri izraža izotropijo, saj že na krajših razdaljah vidimo razlike v vzorčnih variogramih za različne smeri. Torej bi glede na graf bilo potrebno modeliranje prostorske korelacije na kratke razdalje.
+Vzorčni variogrami za _NDRE_jul_ za štiri glavne smeri izraža izotropijo, saj že na krajših razdaljah vidimo razlike v vzorčnih variogramih za različne smeri. Torej bi glede na graf bilo potrebno modeliranje prostorske korelacije na kratke razdalje. 
 
 <!-- Tom: jst bi glede na vrednosti na zacetku reku da ni izpolnena predpostavka izotropnosti...kaj pravis? 
 Neza: torej korva modelirat prosorsko korelacijo? Sam 3 smeri so okej oziroma nekak da so premice vzporedne vsaj na zacetku, s tem k smer 45 stopin gre pa čist po svoje na začetku, misls da morva to kako opisat? Torej 45 stopinj to je potem severo-vzhod? 
 Zdej sm sla gledat tiste padavine v sloveniji al kaj, tm tud niso na zacetku cist okej, pa nic neki ful ne komplicira
--->
 
+Tole zdej sploh nevem več, pomojem je tole pr nama čist okej in je komentar k je napisan narobe, ker tm pr zadnjem primeru za slovenijo je kr neki, pa ni nic napisan da ne bi blo okej...
+-->
 
 ### Ovojnice za vzorčni semivariogram
 
@@ -326,7 +333,12 @@ Najprej sva parametre semivariograma ocenila z metodo Maximum Likelihood(ML), ki
 # sferični model variograma brez zlatega zrna
 variogram1 <- variog(prostorski, max.dist = 10)
 
-fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = c(8*10^(-4), 30),
+# na osnovi slike Vzorčni semivariogram za 'NDRE(jul)'
+# prag variograma: nevem če ga imava, zadnja največja vrednost je 8e-04
+# variogramski razmik: iz 4e-04 gre do 8e-04
+# vpliv zlatega zrna: 
+
+fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = c(8e-04, 4e-04),
                  fix.nugget = TRUE, nugget = 0, max.dist = 10,
                  weights = "npairs")
 fit1.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "sph",
@@ -360,8 +372,9 @@ fit2.ml
 
 ```{r, fig.cap="Profile-log-likelihood za parametra sferičnega modela semivariograma z zlatim zrnom."}
 par(mfrow = c(1, 3))
-plot(proflik(fit2.ml, geodata = prostorski, sill.val = seq(1, 20, l = 5),
-             range.val = seq(1, 50, l = 12), nugget.val = seq(0, 10, l = 20),
+# ni mi cist jasno kako dolocva sill.val, range.val, nugget.val
+plot(proflik(fit2.ml, geodata = prostorski, sill.val = seq(),
+             range.val = seq(), nugget.val = seq()),
              uni.only = TRUE))
 ```
 
@@ -374,4 +387,14 @@ legend("bottomright", col = c("green"), lty = 1, lwd = 2,
 legend = c("fit2.ml"))
 ```
 
+```{r}
+xy.napovedi = data.frame(x=data$vrsta, y=data$lokacija)
+nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "sph",
+              cov.pars = c(fit2.ml$sigmasq, fit2.ml$phi),
+              nugget = fit2.ml$nugget, locations = xy.napovedi)
 
+levelplot(nap$predict ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fill",
+          contour = FALSE)
+```
+
+okej men tole ni cist nc jasn... kako sploh nardis model in ves da je okej...
