@@ -241,7 +241,9 @@ Torej iz zgornjega desnega grafa (vrednosti v odvisnoti od _lokacija_) in spodnj
 
 <!-- Tom: jst bi reku da tukej nimava kej velik za narest ker se vsaj men zdi da 
 grafi ne kazejo nekega trenda niti nekonstantne variance...
-Neza: tole sm dodala kr zgorej ker brezveze, da mava šeenkrat isti graf...-->
+Neza: tole sm dodala kr zgorej ker brezveze, da mava šeenkrat isti graf...
+Tom: ok super
+-->
 
 
 ## Analiza prostorske korelacije
@@ -329,7 +331,7 @@ Vidimo, da ni izrazite koreliranosti oz. podatki niso prostorsko korelirani.
 
 Najprej sva parametre semivariograma ocenila z metodo Maximum Likelihood(ML), ki za začetne vrednosti vzame ocene dobljene s funkcijo `variofit`.
 
-```{r}
+```{r results=F}
 # sferični model variograma brez zlatega zrna
 variogram1 <- variog(prostorski, max.dist = 10)
 
@@ -338,19 +340,36 @@ variogram1 <- variog(prostorski, max.dist = 10)
 # variogramski razmik: iz 4e-04 gre do 8e-04
 # vpliv zlatega zrna: 
 
-fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = c(8e-04, 4e-04),
+# interval seq(4e-04, 1e-03, l=20) za prag variograma
+# interval seq(2, 8, by = 1) za variogramski razmik
+
+initial.values <- expand.grid(seq(4e-04, 1e-03, l=20), seq(2, 8, by = 1))
+
+# fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = c(8e-04, 4e-04),
+#                  fix.nugget = TRUE, nugget = 0, max.dist = 10,
+#                  weights = "npairs")
+
+fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = initial.values,
                  fix.nugget = TRUE, nugget = 0, max.dist = 10,
                  weights = "npairs")
+
 fit1.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "sph",
                   fix.nugget = TRUE, lik.met = "ML") 
 fit1.ml
 ```
 
-```{r, fig.cap="Profile-log-likelihood za parametra sferičnega modela semivariograma brez zlatega zrna kaže na napačno izbiro modela prostorske korelacije."}
+```{r, results=F, fig.cap="Profile-log-likelihood za parametra sferičnega modela semivariograma brez zlatega zrna kaže na napačno izbiro modela prostorske korelacije."}
 par(mfrow = c(1, 2))
-plot(proflik(fit1.ml, geodata = prostorski, sill.val = seq(10, 70, l = 20),
-             range.val = seq(1, 10, l = 12), uni.only = TRUE)) 
+# plot(proflik(fit1.ml, geodata = prostorski, sill.val = seq(10, 70, l = 20),
+#              range.val = seq(1, 10, l = 12), uni.only = TRUE)) 
+
+# sill.val pomeni interval sigma^2
+# range.val interval za phi
+plot(proflik(fit1.ml, geodata = prostorski, sill.val = seq(0.0001, 0.003, l = 20),
+             range.val = seq(0.1, 6, l = 12), uni.only = TRUE))
 ```
+
+Izgleda kot da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1** dobimo optimalne rešitve za parametre semivariograma.
 
 ```{r, fig.cap="Modela vzorčnega semivariograma za prostorski trend, na podlagi vzorčnega variograma in na podlagi oblaka variograma z ML."}
 plot(variog1, pch = 16)
@@ -360,9 +379,11 @@ legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
 legend = c("fit1", "fit1.ml"))
 ```
 
+Vidimo, da z modelom _fit1.ml_ kjer smo kot metodo uporabili ML, nekoliko bolje opisali vrednosti semivarianc za manjše razdalje. V celoti pa bi lahko rekli da z modelom _fit1_ bolje opišemo vrednosti semivarianc za razdalje od 1 do 10.
+
 V naslednjem koraku pri uporabi funkcije likfit dopustiva,da dobimo tudi oceno za zlato zrno.
 
-```{r}
+```{r results=F}
 # za oceno parametrov semivariograma z ML, ki za začetne vrednosti vzame 
 # ocene dobljene s funkcijo variofit fit1, ki ocenjuje tudi zlato zrno
 fit2.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "sph",
@@ -370,24 +391,32 @@ fit2.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "sph",
 fit2.ml
 ```
 
-```{r, fig.cap="Profile-log-likelihood za parametra sferičnega modela semivariograma z zlatim zrnom."}
+```{r, results=F,  fig.cap="Profile-log-likelihood za parametre sferičnega modela semivariograma z zlatim zrnom."}
 par(mfrow = c(1, 3))
 # ni mi cist jasno kako dolocva sill.val, range.val, nugget.val
-plot(proflik(fit2.ml, geodata = prostorski, sill.val = seq(),
-             range.val = seq(), nugget.val = seq()),
+# sm zdej popravu tko da so lepsi grafi...ce jst prou razumem so to samo intervali
+# na katerih narise grafe
+plot(proflik(fit2.ml, geodata = prostorski, sill.val = seq(0.0001, 0.001, l = 20),
+             range.val = seq(0, 20, l = 20), nugget.val = seq(0, 0.001, l = 20)),
              uni.only = TRUE)
 ```
 
-<!-- Okej wtf je to???-->
+Iz grafov lahko vidimo da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1** ne dobimo optimalne rešitve za $\sigma^2$ (prag semivariograma-sill) in $\phi$ (razmik-range). Le za $\tau$ (varianca zlatega zrna) dobimo optimalno rešitev. To nakazuje na napačno izbiro modela prostorske korelacije.
+
+<!-- Okej wtf je to???
+Tom: upam da ti je zdej malenkost bolj vsec-->
 
 ```{r, fig.cap="Modela vzorčnega semivariograma za prostorski trend, na podlagi vzorčnega variograma in na podlagi oblaka variograma z ML."}
 plot(variog1, pch = 16)
+lines(fit1.ml, col = "red", lwd = 2)
 lines(fit2.ml, col = "green", lwd = 2)
-legend("bottomright", col = c("green"), lty = 1, lwd = 2,
-legend = c("fit2.ml"))
+legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
+legend = c("fit1.ml", "fit2.ml"))
 ```
 
-```{r}
+Če med seboj primerjamo modela, pri katerem je vrednost zlatega zrna fiksna (rdeča) in model pri katerem ocenjujemo vrednost zlatega zrna (zelena). Izkaže se, da v primeru fiksne vrednosti zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje.
+
+```{r results=F}
 xy.napovedi = data.frame(x=data$vrsta, y=data$lokacija)
 nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "sph",
               cov.pars = c(fit1.ml$sigmasq, fit1.ml$phi),
@@ -397,6 +426,108 @@ levelplot(nap$predict ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fi
           contour = FALSE)
 ```
 
-okej men tole ni cist nc jasn... kako sploh nardis model in ves da je okej...
+<!-- okej men tole ni cist nc jasn... kako sploh nardis model in ves da je okej...-->
+
+### Gaussov model variograma brez zlatega zrna
+
+Poskusila bova modelirati še z uporabo Gaussove kovariančne funkcije. Preverila bova ali z uporabo metode ML dobimo boljše prileganje vrednostim variograma. 
+
+```{r results=F}
+# Gaussov model variograma brez zlatega zrna
+variogram2 <- variog(prostorski, max.dist = 10)
+
+# na osnovi slike Vzorčni semivariogram za 'NDRE(jul)'
+# prag variograma: nevem če ga imava, zadnja največja vrednost je 8e-04
+# variogramski razmik: iz 4e-04 gre do 8e-04
+# vpliv zlatega zrna: 
+
+# interval seq(4e-04, 1e-03, l=20) za prag variograma
+# interval seq(2, 8, by = 1) za variogramski razmik
+
+initial.values <- expand.grid(seq(4e-04, 1e-03, l=20), seq(2, 8, by = 1))
+
+# fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = c(8e-04, 4e-04),
+#                  fix.nugget = TRUE, nugget = 0, max.dist = 10,
+#                  weights = "npairs")
+
+fit1_g <- variofit(variogram1, cov.model = "gaussian",
+                   ini.cov.pars = initial.values,
+                 fix.nugget = TRUE, nugget = 0, max.dist = 10,
+                 weights = "npairs")
+
+fit1_g.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "gaussian",
+                  fix.nugget = TRUE, lik.met = "ML") 
+fit1_g.ml
+```
+
+```{r, results=F, fig.cap="Profile-log-likelihood za parametra Gaussovega modela semivariograma brez zlatega zrna kaže na napačno izbiro modela prostorske korelacije."}
+par(mfrow = c(1, 2))
+# plot(proflik(fit1.ml, geodata = prostorski, sill.val = seq(10, 70, l = 20),
+#              range.val = seq(1, 10, l = 12), uni.only = TRUE)) 
+
+# sill.val pomeni interval sigma^2
+# range.val interval za phi
+plot(proflik(fit1_g.ml, geodata = prostorski, 
+             sill.val = seq(0.0001, 0.0015, l = 20),
+             range.val = seq(0.1, 5, l = 12), uni.only = TRUE))
+```
+
+Izgleda kot da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1_g** dobimo optimalne rešitve za parametre semivariograma.
+
+```{r, fig.cap="Modela vzorčnega semivariograma za prostorski trend, na podlagi vzorčnega variograma in na podlagi oblaka variograma z ML."}
+plot(variogram2, pch = 16)
+lines(fit1_g, col = "red", lwd = 2)
+lines(fit1_g.ml, col = "green", lwd = 2)
+legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
+legend = c("fit1", "fit1.ml"))
+```
+
+Ponovno vidimo, da z uporabo metode ML, torej modelom _fit1.ml_ bolje opišemo le prvi dve vrednosti vzorčnega semivariograma. Z modelom _fit1_ pa bolje opišemo vrednosti tudi pri večjih razdaljah.
+
+V naslednjem koraku pri uporabi funkcije _likfit_ dopustiva,da dobimo tudi oceno za zlato zrno.
+
+```{r results=F}
+# za oceno parametrov semivariograma z ML, ki za začetne vrednosti vzame 
+# ocene dobljene s funkcijo variofit fit1, ki ocenjuje tudi zlato zrno
+fit2_g.ml <- likfit(prostorski, ini.cov.pars = fit1_g, cov.model = "gaussian",
+                  fix.nugget = FALSE, lik.met = "ML")  # fix.nugget = FALSE
+fit2_g.ml
+```
+<!-- Tom: neki se skoz prtozuje zato je zakomentirano-->
+```{r, results=F,  fig.cap="Profile-log-likelihood za parametre Gaussovega modela semivariograma z zlatim zrnom."}
+# par(mfrow = c(1, 3))
+# # ni mi cist jasno kako dolocva sill.val, range.val, nugget.val
+# # sm zdej popravu tko da so lepsi grafi...ce jst prou razumem so to samo intervali
+# # na katerih narise grafe
+# plot(proflik(fit2_g.ml, geodata = prostorski, sill.val = seq(0.0001, 0.001, l = 20),
+#              range.val = seq(0, 20, l = 20), nugget.val = seq(0, 0.001, l = 20)),
+#              uni.only = TRUE)
+```
+
+```{r, fig.cap="Modela vzorčnega semivariograma za prostorski trend, na podlagi vzorčnega variograma in na podlagi oblaka variograma z ML."}
+plot(variog1, pch = 16)
+lines(fit1_g.ml, col = "red", lwd = 2)
+lines(fit2_g.ml, col = "green", lwd = 2)
+legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
+legend = c("fit1.ml", "fit2.ml"))
+```
+
+Če med seboj primerjamo modela, pri katerem je vrednost zlatega zrna fiksna (rdeča) in model pri katerem ocenjujemo vrednost zlatega zrna (zelena). Izkaže se, da v primeru fiksne vrednosti zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje.
+
+```{r results=F}
+xy.napovedi = data.frame(x=data$vrsta, y=data$lokacija)
+nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "gaussian",
+              cov.pars = c(fit1_g.ml$sigmasq, fit1_g.ml$phi),
+              nugget = fit1_g.ml$nugget, locations = xy.napovedi)
+library(lattice)
+levelplot(nap$predict ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fill",
+          contour = FALSE)
+```
+
+
+<!-- Tom: sploh nevem kater model nej recem da je boljsi ker nevem a more samo pri manjsih razdaljah dobr opisat al pri vseh razdaljah (pri nama 1-10)...-->
+
+
+
 
 
