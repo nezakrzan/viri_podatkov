@@ -391,7 +391,7 @@ fit2.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "sph",
 fit2.ml
 ```
 
-```{r, results=F,  fig.cap="Profile-log-likelihood za parametre sferičnega modela semivariograma z zlatim zrnom."}
+```{r, results=F, fig.cap="Profile-log-likelihood za parametre sferičnega modela semivariograma z zlatim zrnom."}
 par(mfrow = c(1, 3))
 # ni mi cist jasno kako dolocva sill.val, range.val, nugget.val
 # sm zdej popravu tko da so lepsi grafi...ce jst prou razumem so to samo intervali
@@ -416,7 +416,7 @@ legend = c("fit1.ml", "fit2.ml"))
 
 Če med seboj primerjamo modela, pri katerem je vrednost zlatega zrna fiksna (rdeča) in model pri katerem ocenjujemo vrednost zlatega zrna (zelena). Izkaže se, da v primeru fiksne vrednosti zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje.
 
-```{r results=F}
+```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1.ml."}
 xy.napovedi = data.frame(x=data$vrsta, y=data$lokacija)
 nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "sph",
               cov.pars = c(fit1.ml$sigmasq, fit1.ml$phi),
@@ -514,7 +514,7 @@ legend = c("fit1.ml", "fit2.ml"))
 
 Če med seboj primerjamo modela, pri katerem je vrednost zlatega zrna fiksna (rdeča) in model pri katerem ocenjujemo vrednost zlatega zrna (zelena). Izkaže se, da v primeru fiksne vrednosti zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje.
 
-```{r results=F}
+```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1_g.ml."}
 xy.napovedi = data.frame(x=data$vrsta, y=data$lokacija)
 nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "gaussian",
               cov.pars = c(fit1_g.ml$sigmasq, fit1_g.ml$phi),
@@ -526,6 +526,8 @@ levelplot(nap$predict ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fi
 
 
 <!-- Tom: sploh nevem kater model nej recem da je boljsi ker nevem a more samo pri manjsih razdaljah dobr opisat al pri vseh razdaljah (pri nama 1-10)...-->
+
+
 
 
 
