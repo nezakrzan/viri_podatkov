@@ -24,6 +24,13 @@ library(splines)
 library(geoR)
 library(gstat)
 library(sp) 
+library(raster) 
+library(lattice)
+
+library(kableExtra)
+library(ggplot2)
+library(tidyr)
+library(gridExtra)
 # mogoce tudi library(raster) 
 ```
 
@@ -32,6 +39,7 @@ library(sp)
 \listoftables
 
 \newpage
+\newpage
 
 # Analiza prostorskega procesa
 
@@ -39,12 +47,12 @@ library(sp)
 data = read.table("podatki.txt", header=T)
 
 podatki = data[,c("vrsta", "lokacija", "NDRE_jul", 
-                  "swc", "gostota", "pF2", "pF4.2", "aw")]
+                  "swc", "gostota", "pF2", "pF4.2", "aw", "X", "Y")]
 
 # uporabiva pri "Analiza prostorske korelacije"
 pod = podatki
 
-prostorski = as.geodata(podatki, coords.col = 1:2, data.col = 3,
+prostorski = as.geodata(podatki, coords.col = 9:10, data.col = 3,
                         covar.col = 4:8,
                         covar.names = c("swc", "gostota", "pF2", "pF4.2", "aw"))
 ```
@@ -78,7 +86,6 @@ Vegetacijski indeks NDRE (Normalized Difference Red Edge) je spektralni indeks, 
 Najprej si poglejmo s kakšnimi podatki imamo opravka v našem podatkovnem okvirju.
 
 ```{r fig.height=3.5, fig.width=10, message=FALSE, warning=FALSE, fig.cap="Porazdelitev parametrov glede na vrsto.", results=T}
-library(ggplot2)
 df = data 
 df$vrsta <- factor(df$vrsta)
 df$lokacija <- factor(df$lokacija)
@@ -133,7 +140,6 @@ g5=ggplot(df, aes(x= vrsta, y= aw, fill=vrsta)) +
     plot.title = element_text(size=11)) +
   xlab("vrsta") + ylab("available water(pF 2.0 - pF 4.2)")
 
-library(gridExtra)
 grid.arrange(g1, g2, g3, g4, g5, nrow = 2, ncol = 3)
 ```
 
@@ -223,10 +229,10 @@ Tudi porazdelitve indeksa NDRE se glede na vrsto in lokacijo razlikujejo, njihov
 Na spodnjem grafu lahko vidimo lokacije meritev, na katerem sta ploščina in barva krogcev sorazmerna z vrednostjo spremenljivke _NDRE_jul_, podatki so razdeljeni v štiri razrede, ki so določeni s kvantili.
 
 ```{r fig.cap="Grafični prikaz lokacij in relativne vrednosti spremenljivke 'NDRE'."}
-points(prostorski, pt.div = "quartile", cex.min = 0.8, cex.max = 2, col = c(4, 3, 7, 2))
+points(prostorski, pt.div = "quartile", cex.min = 0.6, cex.max = 2, col = c(4, 3, 7, 2))
 par(xpd = TRUE)
-legend(1, 13, c("0-25%", "25-50%","50-75%","75-100%"), ncol = 2, 
-       col = c(4, 3, 7, 2), pch = 16, box.lty = 0)
+legend(-55, 245, c("0-25%", "25-50%","50-75%","75-100%"), ncol = 2, 
+       col = c(4, 3, 10, 2), pch = 16, box.lty = 0)
 ```
 
 Poglejmo si še nekoliko podrobnejši prikaz, kjer nas bosta zanimala predvsem razsevna grafikona *vrsta* in *NDRE_jul*, ter *lokacija* in *NDRE_jul*. 
@@ -245,7 +251,6 @@ Neza: tole sm dodala kr zgorej ker brezveze, da mava šeenkrat isti graf...
 Tom: ok super
 -->
 
-
 ## Analiza prostorske korelacije
 
 ### Razsevni grafikon
@@ -254,8 +259,8 @@ Ker naju natančneje zanima izražanje prostorske korelacije, si nariševa razse
 
 ```{r fig.cap="Prostorska korelacija za 'NDRE(jul)'.", fig.height=5, fig.width=7}
 # razsevni grafikon
-coordinates(pod) = c("vrsta", "lokacija")
-hscat(NDRE_jul ~ 1, pod, 0:6)
+coordinates(pod) = c("X", "Y")
+hscat(NDRE_jul ~ 1, pod, 0:50)
 ```
 
 Za pare podatkov o **NDRE_jul** glede na razrede oddaljenosti lahko vidimo, da se z oddaljenostjo prostorska korelacija zmanjšuje (Pearsonov koeficient korelacije). Lahko bi torej reki, da na zelo kratkih razdaljah imamo majhno povezanost, ki na daljših razdaljah še pada.
@@ -266,14 +271,14 @@ Poglejmo analizo prostorske korelacije še s pomočjo oblaka semivariograma in v
 
 ```{r fig.cap="Oblak semivariograma za 'NDRE(jul)'(levo), okvirji z ročaji za vrednosti klasičnega variaograma po razdaljah med lokacijami(sredina) in za vrednosti robustnega vzorčnega variograma(desno)." , fig.height=3.5, fig.width=10, results=F}
 par(mfrow=c(1,3))
-variog1.cloud <- variog(prostorski, option = "cloud", max.dist = 10)
+variog1.cloud <- variog(prostorski, option = "cloud", max.dist = 180)
 plot(variog1.cloud)
 # klasicni vzorcni variogram
-variog1.cloud.bin <- variog(prostorski, bin.cloud = TRUE, max.dist = 10)
+variog1.cloud.bin <- variog(prostorski, bin.cloud = TRUE, max.dist = 180)
 plot(variog1.cloud.bin, bin.cloud = TRUE)
 # robustni vzorcni variogram
 variog1.cloud.bin.c <- variog(prostorski, bin.cloud = TRUE,
-                              estimator.type = "modulus", max.dist = 8) 
+                              estimator.type = "modulus", max.dist = 180) 
 plot(variog1.cloud.bin.c, bin.cloud = TRUE)
 ```
 
@@ -283,22 +288,19 @@ Na spodnjem levem vzorčnem semivariogram s povprečji za posamezne razrede razd
 
 Vzorčni variogram za ostanke prostorskega trenda(desno) pokaže, da je prostorska korelacija med ostanki precej šibkejša.
 
-```{r results=F, fig.cap="Vzorčni semivariogram za 'NDRE(jul)'(levo) in za ostanke regresijskega modela (desno)."}
-variog1 = variog(prostorski, max.dist = 10)
+```{r results=F, fig.cap="Vzorčni semivariogram za 'NDRE(jul)'."}
+variog1 = variog(prostorski, max.dist = 180)
 plot(variog1, pch = 16, type ="o")
-# tole nevem če rabva
-variog2 <- variog(prostorski, trend = ~coords[,1] * coords[,2], max.dist = 10)
-plot(variog2, pch = 16, type ="o")
 ```
 
 Do sedaj sva proučevala prostorsko korelacjo ne glede na smer v prostoru, torej sva predpostavila izotropni prostorski proces. Zato narišimo še usmerjene semivariograme za določene smeri v prostoru in s tem preverimo ali je predpostavka izotropnosti upravičena.
 
 ```{r results=F, fig.cap="Vzorčni variogrami za 'NDRE(jul)' za štiri glavne smeri."}
-variog1.4 <- variog4(prostorski, uvec = seq(1, 10, by = 1))
-plot(variog1.4, type = "b", main = "", pch = 16, lwd = 2)
+variog1.4 <- variog4(prostorski, uvec = seq(0, 180, by = 20))
+plot(variog1.4, type = "b", main = "", pch = 16, lwd = 2, ylim=c(0,180))
 ```
 
-Vzorčni variogrami za _NDRE_jul_ za štiri glavne smeri izraža izotropijo, saj že na krajših razdaljah vidimo razlike v vzorčnih variogramih za različne smeri. Torej bi glede na graf bilo potrebno modeliranje prostorske korelacije na kratke razdalje. 
+Vzorčni variogrami za _NDRE_jul_ za štiri glavne smeri izraža izotropijo, saj že na krajših razdaljah vidimo razlike v vzorčnih variogramih za različne smeri, ki se potem sicer zelo hitro zmanjša(_pri razdalji 50_). Tudi začetne razlike so dokaj majhne. Torej bi glede na graf morda bilo potrebno modeliranje prostorske korelacije na kratke razdalje. 
 
 <!-- Tom: jst bi glede na vrednosti na zacetku reku da ni izpolnena predpostavka izotropnosti...kaj pravis? 
 Neza: torej korva modelirat prosorsko korelacijo? Sam 3 smeri so okej oziroma nekak da so premice vzporedne vsaj na zacetku, s tem k smer 45 stopin gre pa čist po svoje na začetku, misls da morva to kako opisat? Torej 45 stopinj to je potem severo-vzhod? 
@@ -316,7 +318,7 @@ Da bi dobila širšo sliko o prostorski povezanosti procesa, pri raziskovanju pr
 ```{r results=F, fig.cap="Monte Carlo ovojnica semivariograma."}
 # Monte Carlo ovojnica semivariograma
 par(mfrow = c(1, 1))
-bin <- variog(prostorski, uvec = c(0:10))
+bin <- variog(prostorski, uvec = c(0:180))
 env.mc <- variog.mc.env(prostorski, obj.var = bin)
 plot(bin, envelope = env.mc)
 ```
@@ -333,24 +335,24 @@ Najprej sva parametre semivariograma ocenila z metodo Maximum Likelihood(ML), ki
 
 ```{r results=F}
 # sferični model variograma brez zlatega zrna
-variogram1 <- variog(prostorski, max.dist = 10)
+variogram1 <- variog(prostorski, max.dist = 180)
 
 # na osnovi slike Vzorčni semivariogram za 'NDRE(jul)'
 # prag variograma: nevem če ga imava, zadnja največja vrednost je 8e-04
 # variogramski razmik: iz 4e-04 gre do 8e-04
 # vpliv zlatega zrna: 
 
-# interval seq(4e-04, 1e-03, l=20) za prag variograma
+# interval seq(4e-04, 8e-04, l=20) za prag variograma
 # interval seq(2, 8, by = 1) za variogramski razmik
 
-initial.values <- expand.grid(seq(4e-04, 1e-03, l=20), seq(2, 8, by = 1))
+initial.values <- expand.grid(seq(4e-04, 8e-04, l=20), seq(40, 140, by = 20))
 
 # fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = c(8e-04, 4e-04),
 #                  fix.nugget = TRUE, nugget = 0, max.dist = 10,
 #                  weights = "npairs")
 
 fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = initial.values,
-                 fix.nugget = TRUE, nugget = 0, max.dist = 10,
+                 fix.nugget = TRUE, nugget = 0, max.dist = 180,
                  weights = "npairs")
 
 fit1.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "sph",
@@ -365,21 +367,21 @@ par(mfrow = c(1, 2))
 
 # sill.val pomeni interval sigma^2
 # range.val interval za phi
-plot(proflik(fit1.ml, geodata = prostorski, sill.val = seq(0.0001, 0.003, l = 20),
-             range.val = seq(0.1, 6, l = 12), uni.only = TRUE))
+plot(proflik(fit1.ml, geodata = prostorski, sill.val = seq(0.00001, 0.003, l = 20),
+             range.val = seq(0.1, 100, l = 20), uni.only = TRUE))
 ```
 
 Izgleda kot da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1** dobimo optimalne rešitve za parametre semivariograma.
+<!-- Neza25: hmm kle mava zdej v opisu grafa napisan eno spodi pod grafi pa drugo...-->
 
 ```{r, fig.cap="Modela vzorčnega semivariograma za prostorski trend, na podlagi vzorčnega variograma in na podlagi oblaka variograma z ML."}
 plot(variog1, pch = 16)
 lines(fit1, col = "red", lwd = 2)
 lines(fit1.ml, col = "green", lwd = 2)
-legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
-legend = c("fit1", "fit1.ml"))
+legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2, legend = c("fit1", "fit1.ml"))
 ```
 
-Vidimo, da z modelom _fit1.ml_ kjer smo kot metodo uporabili ML, nekoliko bolje opisali vrednosti semivarianc za manjše razdalje. V celoti pa bi lahko rekli da z modelom _fit1_ bolje opišemo vrednosti semivarianc za razdalje od 1 do 10.
+Vidimo, da z modelom _fit1.ml_, kjer smo kot metodo uporabili Maximum likelihood, nekoliko bolje opisali vrednosti semivarianc za manjše razdalje. V celoti pa bi lahko rekli da z modelom _fit1_ bolje opišemo vrednosti semivarianc za razdalje od 1 do 10.
 
 V naslednjem koraku pri uporabi funkcije likfit dopustiva,da dobimo tudi oceno za zlato zrno.
 
@@ -396,13 +398,16 @@ par(mfrow = c(1, 3))
 # ni mi cist jasno kako dolocva sill.val, range.val, nugget.val
 # sm zdej popravu tko da so lepsi grafi...ce jst prou razumem so to samo intervali
 # na katerih narise grafe
-plot(proflik(fit2.ml, geodata = prostorski, sill.val = seq(0.0001, 0.001, l = 20),
-             range.val = seq(0, 20, l = 20), nugget.val = seq(0, 0.001, l = 20)),
+plot(proflik(fit2.ml, geodata = prostorski, sill.val = seq(0.00001, 0.001, l = 20),
+             range.val = seq(150, 200, l = 10), nugget.val = seq(0, 0.001, l = 20)),
              uni.only = TRUE)
 ```
 
-Iz grafov lahko vidimo da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1** ne dobimo optimalne rešitve za $\sigma^2$ (prag semivariograma-sill) in $\phi$ (razmik-range). Le za $\tau$ (varianca zlatega zrna) dobimo optimalno rešitev. To nakazuje na napačno izbiro modela prostorske korelacije.
+Iz grafov lahko vidimo da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1** ne dobimo optimalne rešitve za $\phi$ (razmik-range). Optimalno rešitev dobimo le za $\sigma^2$ (prag semivariograma-sill) in $\tau$ (varianca zlatega zrna).
 
+<!--
+Iz grafov lahko vidimo da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1** ne dobimo optimalne rešitve za $\sigma^2$ (prag semivariograma-sill) in $\phi$ (razmik-range). Le za $\tau$ (varianca zlatega zrna) dobimo optimalno rešitev. To nakazuje na napačno izbiro modela prostorske korelacije.
+-->
 <!-- Okej wtf je to???
 Tom: upam da ti je zdej malenkost bolj vsec-->
 
@@ -414,19 +419,38 @@ legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
 legend = c("fit1.ml", "fit2.ml"))
 ```
 
-Če med seboj primerjamo modela, pri katerem je vrednost zlatega zrna fiksna (rdeča) in model pri katerem ocenjujemo vrednost zlatega zrna (zelena). Izkaže se, da v primeru fiksne vrednosti zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje.
+Če med seboj primerjamo modela, pri katerem je vrednost zlatega zrna fiksna (rdeča) in model pri katerem ocenjujemo vrednost zlatega zrna (zelena). Izkaže se, da v primeru, ko ocenjujemo vrednost zlatega zrna bolje opišemo prvo in drugo vrednost semivariance, tretjo pa bolje opiše model s fiksnim zlatim zrnom, torej na zelo kratke razdalje je boljši model pri katerem ocenjujemo vrednost zlatega zrna (zelena, _fit2.ml_).
 
-```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1.ml."}
-xy.napovedi = data.frame(x=data$vrsta, y=data$lokacija)
-nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "sph",
+<!--Izkaže se, da v primeru fiksne vrednosti zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje.-->
+
+```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1.ml(levo)."}
+xy.napovedi = data.frame(x=data$X, y=data$Y)
+nap1 <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "sph",
               cov.pars = c(fit1.ml$sigmasq, fit1.ml$phi),
               nugget = fit1.ml$nugget, locations = xy.napovedi)
-library(lattice)
-levelplot(nap$predict ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fill",
-          contour = FALSE)
+nap2 <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "sph",
+              cov.pars = c(fit2.ml$sigmasq, fit2.ml$phi),
+              nugget = fit2.ml$nugget, locations = xy.napovedi)
+
+levelplot(nap1$predict ~ nap1$locations[,1] + nap1$locations[,2], nap1, aspect = "fill",
+          contour = FALSE, xlab = "X", ylab = "Y")
 ```
 
-<!-- okej men tole ni cist nc jasn... kako sploh nardis model in ves da je okej...-->
+```{r results=F, fig.cap="Standardna napaka napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1.ml."}
+levelplot(sqrt(nap1$krige.var) ~ nap1$locations[,1] + nap1$locations[,2], nap1, aspect = "fill",
+          contour = FALSE, xlab = "X", ylab = "Y")
+```
+
+```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit2.ml."}
+par(mfrow=c(1,1))
+levelplot(nap2$predict ~ nap2$locations[,1] + nap2$locations[,2], nap2, aspect = "fill",
+          contour = FALSE, xlab = "X", ylab = "Y")
+```
+
+```{r results=F, fig.cap="Standardna napaka napovedi NDRE za mesec julij za dano območje - model semivarigrama fit2.ml."}
+levelplot(sqrt(nap2$krige.var) ~ nap2$locations[,1] + nap2$locations[,2], nap2, aspect = "fill",
+          contour = FALSE, xlab = "X", ylab = "Y")
+```
 
 ### Gaussov model variograma brez zlatega zrna
 
@@ -434,7 +458,7 @@ Poskusila bova modelirati še z uporabo Gaussove kovariančne funkcije. Preveril
 
 ```{r results=F}
 # Gaussov model variograma brez zlatega zrna
-variogram2 <- variog(prostorski, max.dist = 10)
+variogram2 <- variog(prostorski, max.dist = 180)
 
 # na osnovi slike Vzorčni semivariogram za 'NDRE(jul)'
 # prag variograma: nevem če ga imava, zadnja največja vrednost je 8e-04
@@ -444,7 +468,7 @@ variogram2 <- variog(prostorski, max.dist = 10)
 # interval seq(4e-04, 1e-03, l=20) za prag variograma
 # interval seq(2, 8, by = 1) za variogramski razmik
 
-initial.values <- expand.grid(seq(4e-04, 1e-03, l=20), seq(2, 8, by = 1))
+initial.values <- expand.grid(seq(4e-04, 8e-04, l=20), seq(40, 140, by = 20))
 
 # fit1 <- variofit(variogram1, cov.model = "sph", ini.cov.pars = c(8e-04, 4e-04),
 #                  fix.nugget = TRUE, nugget = 0, max.dist = 10,
@@ -452,7 +476,7 @@ initial.values <- expand.grid(seq(4e-04, 1e-03, l=20), seq(2, 8, by = 1))
 
 fit1_g <- variofit(variogram1, cov.model = "gaussian",
                    ini.cov.pars = initial.values,
-                 fix.nugget = TRUE, nugget = 0, max.dist = 10,
+                 fix.nugget = TRUE, nugget = 0, max.dist = 180,
                  weights = "npairs")
 
 fit1_g.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "gaussian",
@@ -460,16 +484,11 @@ fit1_g.ml <- likfit(prostorski, ini.cov.pars = fit1, cov.model = "gaussian",
 fit1_g.ml
 ```
 
-```{r, results=F, fig.cap="Profile-log-likelihood za parametra Gaussovega modela semivariograma brez zlatega zrna kaže na napačno izbiro modela prostorske korelacije."}
+```{r, results=F, fig.cap="Profile-log-likelihood za parametra Gaussovega modela semivariograma brez zlatega zrna."}
 par(mfrow = c(1, 2))
-# plot(proflik(fit1.ml, geodata = prostorski, sill.val = seq(10, 70, l = 20),
-#              range.val = seq(1, 10, l = 12), uni.only = TRUE)) 
-
-# sill.val pomeni interval sigma^2
-# range.val interval za phi
 plot(proflik(fit1_g.ml, geodata = prostorski, 
              sill.val = seq(0.0001, 0.0015, l = 20),
-             range.val = seq(0.1, 5, l = 12), uni.only = TRUE))
+             range.val = seq(15, 30, l = 5), uni.only = TRUE))
 ```
 
 Izgleda kot da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1_g** dobimo optimalne rešitve za parametre semivariograma.
@@ -482,7 +501,7 @@ legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
 legend = c("fit1", "fit1.ml"))
 ```
 
-Ponovno vidimo, da z uporabo metode ML, torej modelom _fit1.ml_ bolje opišemo le prvi dve vrednosti vzorčnega semivariograma. Z modelom _fit1_ pa bolje opišemo vrednosti tudi pri večjih razdaljah.
+Ponovno vidimo, da z uporabo metode Maximum likelihood, torej modelom _fit1.ml_, bolje opišemo le prvi dve vrednosti vzorčnega semivariograma. Z modelom _fit1_ pa bolje opišemo vrednosti tudi pri večjih razdaljah, ampak pri velikih razdaljah(npr. 130 naprej) pa noben od modelov prav dober.
 
 V naslednjem koraku pri uporabi funkcije _likfit_ dopustiva,da dobimo tudi oceno za zlato zrno.
 
@@ -493,15 +512,17 @@ fit2_g.ml <- likfit(prostorski, ini.cov.pars = fit1_g, cov.model = "gaussian",
                   fix.nugget = FALSE, lik.met = "ML")  # fix.nugget = FALSE
 fit2_g.ml
 ```
-<!-- Tom: neki se skoz prtozuje zato je zakomentirano-->
+
+Iz spodnjih grafov lahko vidimo da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1_g** ne dobimo optimalne rešitve za $\phi$ (razmik-range). Optimalno rešitev dobimo le za $\sigma^2$ (prag semivariograma-sill) in $\tau$ (varianca zlatega zrna).
+
 ```{r, results=F,  fig.cap="Profile-log-likelihood za parametre Gaussovega modela semivariograma z zlatim zrnom."}
-# par(mfrow = c(1, 3))
+par(mfrow = c(1, 3))
 # # ni mi cist jasno kako dolocva sill.val, range.val, nugget.val
 # # sm zdej popravu tko da so lepsi grafi...ce jst prou razumem so to samo intervali
 # # na katerih narise grafe
-# plot(proflik(fit2_g.ml, geodata = prostorski, sill.val = seq(0.0001, 0.001, l = 20),
-#              range.val = seq(0, 20, l = 20), nugget.val = seq(0, 0.001, l = 20)),
-#              uni.only = TRUE)
+plot(proflik(fit2_g.ml, geodata = prostorski, sill.val = seq(0.00001, 0.002, l = 20),
+             range.val = seq(15, 35, l = 20), nugget.val = seq(0, 0.001, l = 20)),
+             uni.only = TRUE)
 ```
 
 ```{r, fig.cap="Modela vzorčnega semivariograma za prostorski trend, na podlagi vzorčnega variograma in na podlagi oblaka variograma z ML."}
@@ -509,23 +530,37 @@ plot(variog1, pch = 16)
 lines(fit1_g.ml, col = "red", lwd = 2)
 lines(fit2_g.ml, col = "green", lwd = 2)
 legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
-legend = c("fit1.ml", "fit2.ml"))
+legend = c("fit1_g.ml", "fit2_g.ml"))
 ```
 
-Če med seboj primerjamo modela, pri katerem je vrednost zlatega zrna fiksna (rdeča) in model pri katerem ocenjujemo vrednost zlatega zrna (zelena). Izkaže se, da v primeru fiksne vrednosti zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje.
+Če med seboj primerjamo modela, pri katerem je vrednost zlatega zrna fiksna (rdeča, _fit1_g.ml_) in model pri katerem ocenjujemo vrednost zlatega zrna (zelena, _fit2_g.ml_). Izkaže se, da v primeru modela, kjer ocenjujemo vrednost zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje, kasneje pa sta si modela skoraj enaka za ocenjevanje.
 
-```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1_g.ml."}
-xy.napovedi = data.frame(x=data$vrsta, y=data$lokacija)
+```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1g.ml."}
 nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "gaussian",
               cov.pars = c(fit1_g.ml$sigmasq, fit1_g.ml$phi),
               nugget = fit1_g.ml$nugget, locations = xy.napovedi)
-library(lattice)
 levelplot(nap$predict ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fill",
-          contour = FALSE)
+          contour = FALSE, xlab = "X", ylab = "Y")
 ```
 
+```{r results=F, fig.cap="Standardna napaka napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1g.ml."}
+levelplot(sqrt(nap$krige.var) ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fill",
+          contour = FALSE, xlab = "X", ylab = "Y")
+```
 
-<!-- Tom: sploh nevem kater model nej recem da je boljsi ker nevem a more samo pri manjsih razdaljah dobr opisat al pri vseh razdaljah (pri nama 1-10)...-->
+```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit2g.ml."}
+nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "gaussian",
+              cov.pars = c(fit2_g.ml$sigmasq, fit2_g.ml$phi),
+              nugget = fit2_g.ml$nugget, locations = xy.napovedi)
+
+levelplot(nap$predict ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fill",
+          contour = FALSE, xlab = "X", ylab = "Y")
+```
+
+```{r results=F, fig.cap="Standardna napaka napovedi NDRE za mesec julij za dano območje - model semivarigrama fit2g.ml."}
+levelplot(sqrt(nap$krige.var) ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fill",
+          contour = FALSE, xlab = "X", ylab = "Y")
+```
 
 
 
