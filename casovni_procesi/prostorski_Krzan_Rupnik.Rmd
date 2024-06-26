@@ -423,8 +423,23 @@ legend = c("fit1.ml", "fit2.ml"))
 
 <!--Izkaže se, da v primeru fiksne vrednosti zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje.-->
 
+**Napoved**
+
+Za napovedovanje vrednosti sva si izbrala _osnovni kriging_. Napoved bova naredila 
+za primer kjer je bila vrednost zlatega zrna fiksna in primer ko smo jo ocenjevali.
+
+
+_Fiksno zlato zrno_
+
 ```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1.ml(levo)."}
-xy.napovedi = data.frame(x=data$X, y=data$Y)
+# xy.napovedi = data.frame(x=data$X, y=data$Y)
+
+# vrednosti sm razbral iz slike njive
+# v x smeri so tocke med seboj oddaljene 12m 
+# v y smeri so tocke med seboj razmaknene 20m
+xy.napovedi = expand.grid(x = seq(from = -12, to = 48, by = 1),
+                          y = seq(from = -20, to = 210, by = 1))
+
 nap1 <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "sph",
               cov.pars = c(fit1.ml$sigmasq, fit1.ml$phi),
               nugget = fit1.ml$nugget, locations = xy.napovedi)
@@ -441,6 +456,8 @@ levelplot(sqrt(nap1$krige.var) ~ nap1$locations[,1] + nap1$locations[,2], nap1, 
           contour = FALSE, xlab = "X", ylab = "Y")
 ```
 
+_Zlato zrno ocenjujemo_
+
 ```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit2.ml."}
 par(mfrow=c(1,1))
 levelplot(nap2$predict ~ nap2$locations[,1] + nap2$locations[,2], nap2, aspect = "fill",
@@ -451,6 +468,9 @@ levelplot(nap2$predict ~ nap2$locations[,1] + nap2$locations[,2], nap2, aspect =
 levelplot(sqrt(nap2$krige.var) ~ nap2$locations[,1] + nap2$locations[,2], nap2, aspect = "fill",
           contour = FALSE, xlab = "X", ylab = "Y")
 ```
+
+Napovedi in standardne napake napovedi za modela sta precej pričakovana. Z modelom _fit1.lm_ (zlato zrno je fiksno) dokaj dobro opišemo vrednosti semivarianc zato so tudi napovedi dobre. Prav tako so standardne napake napovedi majhne v točki meritve in se večajo, ko se od njih oddaljujemo. \
+V primeru, ko vrednost zlatega zrna ni fiksna je napoved precej slabša. Sicer je možno razločiti, območje z nizkimi vrednostmi (zgornji levi kot) in območje z visokimi vrednostmi (spodnji desni kot). Prav tako so vrednosti standardne napake napovedi nekoliko višje le na skranih robovih, kjer nimamo meritev. 
 
 ### Gaussov model variograma brez zlatega zrna
 
@@ -535,6 +555,14 @@ legend = c("fit1_g.ml", "fit2_g.ml"))
 
 Če med seboj primerjamo modela, pri katerem je vrednost zlatega zrna fiksna (rdeča, _fit1_g.ml_) in model pri katerem ocenjujemo vrednost zlatega zrna (zelena, _fit2_g.ml_). Izkaže se, da v primeru modela, kjer ocenjujemo vrednost zlatega zrna bolje opišemo vrednosti semivarianc za manjše razdalje, kasneje pa sta si modela skoraj enaka za ocenjevanje.
 
+**Napoved**
+
+Za napovedovanje vrednosti sva si izbrala _osnovni kriging_. Napoved bova naredila 
+za primer kjer je bila vrednost zlatega zrna fiksna in primer ko smo jo ocenjevali.
+
+
+_Fiksno zlato zrno_
+
 ```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1g.ml."}
 nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "gaussian",
               cov.pars = c(fit1_g.ml$sigmasq, fit1_g.ml$phi),
@@ -547,6 +575,8 @@ levelplot(nap$predict ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fi
 levelplot(sqrt(nap$krige.var) ~ nap$locations[,1] + nap$locations[,2], nap, aspect = "fill",
           contour = FALSE, xlab = "X", ylab = "Y")
 ```
+
+_Zlato zrno ocenjujemo_
 
 ```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit2g.ml."}
 nap <- ksline(prostorski, trend = ~coords[,1] * coords[,2], cov.model = "gaussian",
@@ -562,7 +592,7 @@ levelplot(sqrt(nap$krige.var) ~ nap$locations[,1] + nap$locations[,2], nap, aspe
           contour = FALSE, xlab = "X", ylab = "Y")
 ```
 
-
+Kot sva zapisal že zgoraj z modelom _fit2g.ml_ (vrednost zlatega zrna ni fiksna) bolje opišemo vrednosti semivarianc, zato lahko pričakujemo tudi nekoliko boljše napovedi. Če primerjamo zgornje grafe lahko vidimo, da v primeru, ko je vrednost zlatega zrna fiksa dosti slabše napovemo vrednosti (tudi območje z višjimi vrednostmi (spodnji desni kot) ni izrazit).
 
 
 
