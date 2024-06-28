@@ -243,7 +243,7 @@ plot(prostorski)
 
 Iz razsevnih grafikonov ni videti odvisnosti spremenljivke *NDRE_jul* od koordinat lokacije. Iz prvega grafa in pa zgornjega levega grafa lahko opazimo nek vzorec, kar nam nakazuje na prisotnost prostorske korelacije.
 
-Torej iz zgornjega desnega grafa (vrednosti v odvisnoti od _lokacija_) in spodnjega levega grafa (vrednosti v odvisnoti od _vrsta_) ni možno razbrati priostnosti trenda in nekonstantne varinace, zato ne bova naredila podrobnejše analize morebitne nestacionarnosti.
+Torej iz zgornjega desnega grafa (vrednosti v odvisnoti od _lokacija_) in spodnjega levega grafa (vrednosti v odvisnoti od _vrsta_) ni možno razbrati prisotnosti trenda in nekonstantne variance, zato ne bova naredila podrobnejše analize morebitne nestacionarnosti.
 
 ## Analiza prostorske korelacije
 
@@ -263,7 +263,7 @@ Za pare podatkov o **NDRE_jul** glede na razrede oddaljenosti lahko vidimo, da s
 
 Poglejmo analizo prostorske korelacije še s pomočjo oblaka semivariograma in vzorčnega semivariograma.
 
-```{r fig.cap="Oblak semivariograma za 'NDRE(jul)'(levo), okvirji z ročaji za vrednosti klasičnega variaograma po razdaljah med lokacijami(sredina) in za vrednosti robustnega vzorčnega variograma(desno)." , fig.height=3.5, fig.width=10, results=F}
+```{r fig.cap="Oblak semivariograma za 'NDRE(jul)'(levo), okvirji z ročaji za vrednosti klasičnega variograma po razdaljah med lokacijami(sredina) in za vrednosti robustnega vzorčnega variograma(desno)." , fig.height=3.5, fig.width=10, results=F}
 par(mfrow=c(1,3))
 variog1.cloud <- variog(prostorski, option = "cloud", max.dist = 180)
 plot(variog1.cloud)
@@ -278,9 +278,11 @@ plot(variog1.cloud.bin.c, bin.cloud = TRUE)
 
 Na skrajno levem zgornjem grafu vidimo, da vrednosti _NDRE_jul_ predstavljajo meritve v pravilni mreži točk, saj oblak variograma prikazuje diskretne vrednosti razdalj med lokcijami in so točke narisane v črtah. Porazdelitve vrednosti vzorčnega variograma pa so asimetrične v vsakem razredu(razredi predstavljajo razdalje), prav tako pa imamo nekaj osamelcev. Na zadnjem, robustnem vzorčnem variogramu, kjer na nek način "posekamo" vpliv vrednosti, ki zelo odstopajo, vidimo, da so porazdelitve glede na razrede  sedaj bistveno drugačne in nekateri osamelci izginejo.
 
-Na spodnjem levem vzorčnem semivariogram s povprečji za posamezne razrede razdalje lahko iz razporeditve točk razberemo, da so pri manjših razdaljah vzorčne variogramske vrednosti manjše, z naraščajočo razdaljo se povečujejo in se z nadaljnjim večanjem razdalje ne ustalijo ravno oz. ne izgleda, kot da bi se približevale določenemu pragu, torej kaže na prisotnost prostorskega trenda v podatkih.
+Na spodnjem <!--levem--> vzorčnem semivariogram s povprečji za posamezne razrede razdalje lahko iz razporeditve točk razberemo, da so pri manjših razdaljah vzorčne variogramske vrednosti manjše, z naraščajočo razdaljo se povečujejo in se z nadaljnjim večanjem razdalje ne ustalijo ravno oz. ne izgleda, kot da bi se približevale določenemu pragu, torej kaže na prisotnost prostorskega trenda v podatkih.
 
+<!--
 Vzorčni variogram za ostanke prostorskega trenda(desno) pokaže, da je prostorska korelacija med ostanki precej šibkejša.
+-->
 
 ```{r results=F, fig.cap="Vzorčni semivariogram za 'NDRE(jul)'."}
 variog1 = variog(prostorski, max.dist = 180)
@@ -371,7 +373,7 @@ lines(fit1.ml, col = "green", lwd = 2)
 legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2, legend = c("fit1", "fit1.ml"))
 ```
 
-Vidimo, da z modelom _fit1.ml_, kjer smo kot metodo uporabili Maximum likelihood, nekoliko bolje opisali vrednosti semivarianc za manjše razdalje. V celoti pa bi lahko rekli da z modelom _fit1_ bolje opišemo vrednosti semivarianc za razdalje od 1 do 10.
+Vidimo, da z modelom _fit1.ml_, kjer smo kot metodo uporabili Maximum likelihood, nekoliko bolje opišemo vrednosti semivarianc za manjše razdalje. V celoti pa bi lahko rekli da z modelom _fit1_ bolje opišemo vrednosti semivarianc za razdalje od 1 do 10.
 
 V naslednjem koraku pri uporabi funkcije likfit dopustiva, da dobimo tudi oceno za zlato zrno.
 
@@ -420,7 +422,8 @@ za primer kjer je bila vrednost zlatega zrna fiksna in primer ko smo jo ocenjeva
 
 ##### Fiksno zlato zrno {-}
 
-<!--Neza28: jst nevem kaj tocno je problem, ampak men tale chunk ne dela... napise mi da je neka funkcija k je sicer kle notr ne najdem, lahko da je nekje v ozadju kaksne funkcije depreciated... sam nevem ker se mi zdi da nisi nc spremenu kokr je blo, mi lohka sam poves kaj si naredu drugac prosim?-->
+<!--Neza28: jst nevem kaj tocno je problem, ampak men tale chunk ne dela... napise mi da je neka funkcija k je sicer kle notr ne najdem, lahko da je nekje v ozadju kaksne funkcije depreciated... sam nevem ker se mi zdi da nisi nc spremenu kokr je blo, mi lohka sam poves kaj si naredu drugac prosim?
+Tom28: zakomentiral sm tvojo vrstico (429) in na novo dodal 431-435...ampak men vse normalno deluje...-->
 
 ```{r results=F, fig.cap="Napovedi NDRE za mesec julij za dano območje - model semivarigrama fit1.ml(levo)."}
 # xy.napovedi = data.frame(x=data$X, y=data$Y)
@@ -460,7 +463,8 @@ levelplot(sqrt(nap2$krige.var) ~ nap2$locations[,1] + nap2$locations[,2], nap2, 
           contour = FALSE, xlab = "X", ylab = "Y")
 ```
 
-Napovedi in standardne napake napovedi za modela so precej pričakovane. Z modelom _fit1.lm_ (zlato zrno je fiksno) dokaj dobro opišemo vrednosti semivarianc, zato so tudi napovedi dobre. Prav tako so standardne napake napovedi majhne v točki meritve in se večajo, ko se od njih oddaljujemo. <!--Neza28: sicer ne morm vidt kako izgleda graf ampak pomojem kle misls, da se večajo z večanjem razdalje, ne ko se oddaljujemo od točke meritve? Ker standardna napaka je za vsako točko točno tam kjer je točka a ni tko al narobe razumem-->\
+Napovedi in standardne napake napovedi za modela so precej pričakovane. Z modelom _fit1.lm_ (zlato zrno je fiksno) dokaj dobro opišemo vrednosti semivarianc, zato so tudi napovedi dobre. Prav tako so standardne napake napovedi majhne v točki meritve in se večajo, ko se od njih oddaljujemo. <!--Neza28: sicer ne morm vidt kako izgleda graf ampak pomojem kle misls, da se večajo z večanjem razdalje, ne ko se oddaljujemo od točke meritve? Ker standardna napaka je za vsako točko točno tam kjer je točka a ni tko al narobe razumem
+Tom28: ja to sm mislu da ko se razdalja povecuje...bom dal pa se pdf gor ce ti slucajno se vedno ne bo delalo da vsaj lahko vids kako izgleda...-->\
 V primeru, ko vrednost zlatega zrna ni fiksna, je napoved precej slabša. Sicer je možno razločiti območje z nizkimi vrednostmi (zgornji levi kot) in območje z visokimi vrednostmi (spodnji desni kot). Prav tako so vrednosti standardne napake napovedi nekoliko višje le na skrajnih robovih, kjer nimamo meritev. 
 
 ### Gaussov model variograma brez zlatega zrna
@@ -512,7 +516,7 @@ legend("bottomright", col = c("red", "green"), lty = 1, lwd = 2,
 legend = c("fit1", "fit1.ml"))
 ```
 
-Ponovno vidimo, da z uporabo metode Maximum likelihood, torej modelom _fit1.ml_, bolje opišemo le prvi dve vrednosti vzorčnega semivariograma. Z modelom _fit1_ pa bolje opišemo vrednosti tudi pri večjih razdaljah, ampak pri velikih razdaljah(npr. 130 naprej) pa noben od modelov prav dober.
+Ponovno vidimo, da z uporabo metode Maximum likelihood, torej modelom _fit1.ml_, bolje opišemo le prvi <!--dve--> tri vrednosti vzorčnega semivariograma. Z modelom _fit1_ pa bolje opišemo vrednosti tudi pri večjih razdaljah, ampak pri velikih razdaljah(npr. 130 naprej) pa noben od modelov prav dober.
 
 V naslednjem koraku pri uporabi funkcije _likfit_ dopustiva,da dobimo tudi oceno za zlato zrno.
 
@@ -524,7 +528,11 @@ fit2_g.ml <- likfit(prostorski, ini.cov.pars = fit1_g, cov.model = "gaussian",
 fit2_g.ml
 ```
 
-Iz spodnjih grafov lahko vidimo, da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1_g** ne dobimo optimalne rešitve za $\phi$ (razmik-range). Optimalno rešitev dobimo le za $\sigma^2$ (prag semivariograma-sill) in $\tau$ (varianca zlatega zrna).
+Iz spodnjih grafov lahko vidimo, da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1_g** dobimo optimalno rešitev za $\sigma^2$ (prag semivariograma-sill), $\phi$ (razmik-range) in $\tau$ (varianca zlatega zrna).
+
+<!-- Tom28: jst bi reku da na spodnjih grafih povsod dobiva optimalne resitve-->
+<!--
+Iz spodnjih grafov lahko vidimo, da po metodi največjega verjetja z začetnimi vrednostmi praga in razmika variograma **fit1_g** ne dobimo optimalne rešitve za $\phi$ (razmik-range). Optimalno rešitev dobimo le za $\sigma^2$ (prag semivariograma-sill) in $\tau$ (varianca zlatega zrna).-->
 
 ```{r, results=F,  fig.cap="Profile-log-likelihood za parametre Gaussovega modela semivariograma z zlatim zrnom."}
 par(mfrow = c(1, 3))
@@ -582,7 +590,7 @@ levelplot(sqrt(nap$krige.var) ~ nap$locations[,1] + nap$locations[,2], nap, aspe
           contour = FALSE, xlab = "X", ylab = "Y")
 ```
 
-Kot sva zapisal že zgoraj, z modelom _fit2g.ml_ (vrednost zlatega zrna ni fiksna) bolje opišemo vrednosti semivarianc, zato lahko pričakujemo tudi nekoliko boljše napovedi. Če primerjamo zgornje grafe lahko vidimo, da v primeru, ko je vrednost zlatega zrna fiksa, dosti slabše napovemo vrednosti (tudi območje z višjimi vrednostmi (spodnji desni kot) ni izrazit).
+Kot sva zapisal že zgoraj, z modelom _fit2g.ml_ (vrednost zlatega zrna ni fiksna) bolje opišemo vrednosti semivarianc, zato lahko pričakujemo tudi nekoliko boljše napovedi. Če primerjamo zgornje grafe lahko vidimo, da v primeru, ko je vrednost zlatega zrna fiksna, dosti slabše napovemo vrednosti (tudi območje z višjimi vrednostmi (spodnji desni kot) ni izrazit).
 
 
 
