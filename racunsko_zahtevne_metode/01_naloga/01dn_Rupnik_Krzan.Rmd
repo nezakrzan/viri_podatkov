@@ -1,0 +1,134 @@
+---
+title: "Domača naloga 1"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+output:
+  pdf_document:
+    fig_caption: true
+    number_sections: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height = 4, fig.width = 5)
+
+# potrebne knjižnice
+library(ggplot2)
+library(car)
+
+# seme
+set.seed(2024)
+```
+
+
+# Navodilo{-}
+
+Estimate the validity of a test for the difference of arithmetic means from three independent samples. Compare method where you assume:
+
+- equal variance (classic ANOVA)
+- unequal variances (Welch's ANOVA)
+- an option where you assume equal variances if you cannot reject the assumption of equality of variances (at 5% risk) with some test for equality of variances (e.g. Levene's), and unequal variances if you can.
+
+Generate the data so that the variances are equal in some places and different in others.
+
+<!--
+Prevod v SLO:
+Oceni veljavnost testa za razliko aritmetičnih sredin iz treh neodvisnih vzorcev. Primerjaj naslednje metode:
+- predpostavka enakih varianc (klasični ANOVA),
+- predpostavka neenakih varianc (Welchov ANOVA),
+- možnost, kjer predpostaviš enake variance, če ne moreš zavrniti predpostavke o enakosti varianc (pri 5 % tveganju) s kakšnim testom za enakost varianc (npr. Levenejev test), in neenake variance, če lahko.
+
+Generiraj podatke tako, da bodo variance na nekaterih mestih enake, na drugih pa različne.
+
+Ker mamo validity of a test mormo:
+If you are assessing the validity of a test, use (at least) two measures, one relating to the distribution of the p-value or test statistic and one testing the size of the test at the chosen level of risk.
+-->
+
+# Generiranje podatkov
+
+```{r generiranje podatkov, fig.cap="Primer gostote porazdelitev vzorcev za različne kombinacije varianc.", return_all = TRUE}
+generate_data <- function(n, means, vars) {
+  sample1 <- rnorm(n, mean = means, sd = sqrt(vars[1]))
+  sample2 <- rnorm(n, mean = means, sd = sqrt(vars[2]))
+  sample3 <- rnorm(n, mean = means, sd = sqrt(vars[3]))
+  data = data.frame(sample1 = sample1, sample2 = sample2, sample3 = sample3)
+  return(data)
+}
+
+n = 1000
+means = 0
+# vars = c("1,1,1", "1,10,1", "1,5,10")
+
+vars = c(1,10,1)
+data = generate_data(n, means, vars)
+data.long = data.frame(vrednosti = c(data$sample1, data$sample2, data$sample3),
+                       vzorec = c(rep("vzorec 1", n), rep("vzorec 2", n), rep("vzorec 3", n)))
+g1 = ggplot(data.long, aes(x = vrednosti, color = vzorec)) +
+  geom_density(size = 0.5) + 
+  labs(title = "var = (1,10,1)",
+       x = " ",
+       y = "density",
+       color = " ") +
+  guides(color = guide_legend(nrow = 1, override.aes = list(linetype = 1, shape = 15))) + 
+  theme_minimal() 
+
+library(cowplot)
+legend <- get_legend(g1)
+g1 = g1 + theme(legend.position = "none")
+
+vars = c(1,5,10)
+data = generate_data(n, means, vars)
+data.long = data.frame(vrednosti = c(data$sample1, data$sample2, data$sample3),
+                       vzorec = c(rep("vzorec 1", n), rep("vzorec 2", n), rep("vzorec 3", n)))
+g2 = ggplot(data.long, aes(x = vrednosti, color = vzorec)) +
+  geom_density(size = 0.5) + 
+  labs(title = "var = (1,5,10)",
+       x = " ",
+       y = " ",
+       color = " ") +
+  guides(color = guide_legend(override.aes = list(linetype = 1, shape = 15))) + 
+  theme_minimal() + 
+  theme(legend.position = "none")
+
+vars = c(1,1,1)
+data = generate_data(n, means, vars)
+data.long = data.frame(vrednosti = c(data$sample1, data$sample2, data$sample3),
+                       vzorec = c(rep("vzorec 1", n), rep("vzorec 2", n), rep("vzorec 3", n)))
+g3 = ggplot(data.long, aes(x = vrednosti, color = vzorec)) +
+  geom_density(size = 0.5) + 
+  labs(title = "var = (1,1,1)",
+       x = " ",
+       y = " ",
+       color = " ") +
+  guides(color = guide_legend(override.aes = list(linetype = 1, shape = 15))) + 
+  theme_minimal()+ 
+  theme(legend.position = "none")
+
+library(gridExtra)
+combined_plots <- plot_grid(g1, g2, g3, nrow = 1)
+plot_grid(combined_plots, legend, ncol = 1, rel_heights = c(1, 0.3))
+
+# ne vem al je bols da je box plot?
+# ggplot(data.long, aes(x = vzorec, y = vrednosti, color = vzorec)) +
+#  geom_boxplot(size = 0.5) + 
+#  labs(title = " ",
+#       x = " ",
+#       y = "density",
+#       color = " ") +
+#  guides(color = guide_legend(override.aes = list(linetype = 1, shape = 15))) + 
+#  theme_minimal()
+```
+
+
+
+
+
+
+
+
+
+
+
+
