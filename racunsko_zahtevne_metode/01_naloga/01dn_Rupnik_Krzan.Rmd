@@ -155,7 +155,7 @@ varianco v posamezni skupini in velikost posamezne skupine. Varianca, ki sva si 
 * (1, 5, 10)
 * (1,1,1)
 
-Za velikost posamezne skupine (vse tri skupine imajo enako vrednost) pa sva si izbrala \ 
+Za velikost posamezne skupine (vse tri skupine imajo enako vrednost) pa sva si izbrala \newline
 $n \in \{15, 40, 100, 200, 500\}$.
 
 Na grafih je prikazana $p$-vrednost Anderson-Darling testa z ničelno hipotezo 
@@ -215,7 +215,8 @@ ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
   geom_point()+geom_line()+
   geom_hline(yintercept = 0.05)+
   facet_wrap(vars(var))+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  ylab("p-vrednost")
 ```
 
 Kot sva že na začetku predvidela, klasična ANOVA v primeru različnih varianc ni veljavna, saj ima $p$-vrednost enako oz. blizu 0. To pomeni, da zavrnemo ničelno hipotezo. \
@@ -234,7 +235,8 @@ ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
   geom_point()+geom_smooth(se=F)+
   geom_hline(yintercept = 0.05)+
   facet_wrap(vars(var)) +
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  ylab("delez zavrnitve")
 ```
 
 Res smo potrdili zgornje predvidevanje. V primeru različnih varianc klasični ANOVA test prevečkrat zavrne ničelno hipotezo. Ko pa je varianca v vseh treh skupinah enaka $1$, so vrednosti dokaj podobne. 
@@ -304,7 +306,8 @@ ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
   geom_point()+geom_line()+
   geom_hline(yintercept = 0.05)+
   facet_wrap(vars(povp))+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  ylab("moc")
 ```
 
 Nato pa še primer, ko so variance različne. \
@@ -368,5 +371,6 @@ ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
   geom_point()+geom_line()+
   geom_hline(yintercept = 0.05)+
   facet_grid(var~povp)+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  ylab("moc")
 ```
