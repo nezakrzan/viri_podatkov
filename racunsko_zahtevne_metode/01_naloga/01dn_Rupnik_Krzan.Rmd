@@ -123,6 +123,15 @@ plot_grid(combined_plots, legend, ncol = 1, rel_heights = c(1, 0.3))
 #  theme_minimal()
 ```
 
+\newpage
+
+Podatke sva generirala tako, da je porazdelitev znotraj posamezne porazdelitve normalna s povprečjem 0 ($\mu_i = 0$). Variabilnost posamezne skupine sva nekoliko spreminjala, tako da sva lahko preverila veljavnost testa za razliko aritmetičnih sredin v primeru, da je predpostavka enakih varianc izpolnjena oz. kršena. V ta namen sva si izbrala primere treh skupin z naslednjo varianco:
+
+* (1, 10, 1)
+* (1, 5, 10)
+* (1,1,1)
+
+Pričakujeva, da bo klasični ANOVA test dobro deloval le v primeru, ko je predpostavka enakih varianc izpolnjena. Preostala dva testa pa pričakujeva, da dobro delujeta tako v primeru izpolnjene kot tudi kršene predpostavke.
 
 # Simulacije (p-vrednost)
 
@@ -139,10 +148,23 @@ pa potem se da mal spreminjava velikost skupin:
 - vse enake ([15, 15, 15], [40, 40, 40], [100, 100, 100], [1000, 1000, 1000])
 -->
 
+V simulacijah, kjer preverjava enakomerno porazdelitev $p$-vrednosti, sva spreminjala 
+varianco v posamezni skupini in velikost posamezne skupine. Varianca, ki sva si izbrala, zavzame vrednosti:
+
+* (1, 10, 1)
+* (1, 5, 10)
+* (1,1,1)
+
+Za velikost posamezne skupine (vse tri skupine imajo enako vrednost) pa sva si izbrala \ 
+$n \in \{15, 40, 100, 200, 500\}$.
+
+Na grafih je prikazana $p$-vrednost Anderson-Darling testa z ničelno hipotezo 
+$$H_0: \text{vzorec sledi zvezni enakomerni porazdelitvi}$$
+Želeli bi, da je porazdelitev $p$-vrednosti podobna zvezni enakomerni porazdelitvi, torej da enakomerno zavzame vse vrednosti na intervalu [0,1].
 
 ```{r simulacije p-vrednost}
-st_ponovitev = 1000
-velikost = c(15, 40, 100, 1000)
+st_ponovitev = 6000
+velikost = c(15, 40, 60, 100, 200, 500)
 
 settings = expand.grid(i=1:st_ponovitev, n = velikost,
                        var = c("1,10,1", "1,5,10", "1,1,1"))
@@ -196,70 +218,23 @@ ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 ```
 
-<!-- Tom: ok tale velikost testa mi je mal tko k nic posebnega ne pokaze
-ker vrednosti skoz gor pa dol skacejo...
--->
+Kot sva že na začetku predvidela, klasična ANOVA v primeru različnih varianc ni veljavna, saj ima $p$-vrednost enako oz. blizu 0. To pomeni, da zavrnemo ničelno hipotezo. \
+V primeru, ko so variance v vseh treh skupinah enake, so vse $p$-vrednosti nad mejo $0.05$, torej ne moremo zavrniti ničelne hipoteze.
 
 # Velikost testa
 
-```{r}
-st_ponovitev = 1000
-velikost = c(10, 20, 30, 50, seq(100, 500, 50))
-
-settings2 = expand.grid(i=1:st_ponovitev, n = velikost, var = "1,1,1")
-
-if(file.exists("velikost_testa.RDS")){
-  resV<-readRDS("velikost_testa.RDS")
-} else {
-  resV<-cbind(settings2, vel_ANOVA=NA, vel_ANOVA_2=NA, vel_METHOD3=NA)
-  for(row in 1:nrow(settings2)){
-    velikost = settings2$n[row]
-    var_skupaj = as.numeric(strsplit(as.character(settings2$var[row]),",")[[1]])
-    sd1 = sqrt(var_skupaj[1])
-    sd2 = sqrt(var_skupaj[2])
-    sd3 = sqrt(var_skupaj[3])
-    
-    x<-c(rnorm(velikost, 0, sd1),
-         rnorm(velikost, 0, sd2),
-         rnorm(velikost, 0, sd3))
-    gr<-factor(rep(1:3, times=c(velikost,velikost,velikost)))
-    
-    resV$vel_ANOVA[row] = summary(aov(x~gr))[[1]][["Pr(>F)"]][1]
-    resV$vel_ANOVA_2[row] = oneway.test(x~gr, var.equal = FALSE)$p.value
-    
-    p_test_enak_V = leveneTest(x~gr)$`Pr(>F)`[1]
-    if(p_test_enak_V > 0.05){
-      resV$vel_METHOD3[row] = summary(aov(x~gr))[[1]][["Pr(>F)"]][1]
-    } else {
-      resV$vel_METHOD3[row] = oneway.test(x~gr, var.equal = FALSE)$p.value
-    }
-  }
-  saveRDS(object = resV, file="velikost_testa.RDS")
-}
-
-```
-
+Na podlagi zgornjega grafa pričakujeva, da velikost testa v primeru klasičnega ANOVA testa in različnih varianc ne bo enaka oz. blizu vrednosti $0.05$. Zaradi kršenja predpostavk bomo prevečkrat oz. premalokrat zavračali ničelno hipotezo, ko ta drži.
 
 ```{r}
-resVLong = pivot_longer(resV, cols=matches("^vel_[AM]"), values_to = "velikost",
-                       names_to = "method", names_prefix = "vel_")
-
-valAnal_V = aggregate(velikost ~ n + method , data = resVLong,
+valAnal = aggregate(pVal~ n + var + method , data = resLong,
                     function(x)mean(x<0.05))
 
-valAnal_V$n<-as.factor(valAnal_V$n)
-ggplot(valAnal_V, aes(y=velikost, col=method, group=method, x=n))+
+valAnal$n<-as.factor(valAnal$n)
+ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
   geom_point()+geom_smooth(se=F)+
   geom_hline(yintercept = 0.05)+
+  facet_wrap(vars(var)) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-
-valAnal_V$n<-as.factor(valAnal_V$n)
-ggplot(valAnal_V, aes(y=velikost, col=method, group=method, x=n))+
-  geom_point()+geom_line()+
-  geom_hline(yintercept = 0.05)+
-  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-
 ```
 
-
-
+Res smo potrdili zgornje predvidevanje. V primeru različnih varianc klasični ANOVA test prevečkrat zavrne ničelno hipotezo. Ko pa je varianca v vseh treh skupinah enaka $1$, so vrednosti dokaj podobne. 
