@@ -12,7 +12,7 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =3, fig.width = 6)
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =3, fig.width = 6.5)
 
 # potrebne knjižnice
 library(ggplot2)
@@ -50,7 +50,7 @@ If you are assessing the validity of a test, use (at least) two measures, one re
 
 # Generiranje podatkov
 
-```{r generiranje podatkov, fig.cap="Primer gostote porazdelitev vzorcev za različne kombinacije varianc.", return_all = TRUE}
+```{r generiranje podatkov, fig.cap="Primer gostote porazdelitev skupin(velikost skupin 1000) za različne kombinacije varianc.", return_all = TRUE}
 generate_data <- function(n, means, vars) {
   sample1 <- rnorm(n, mean = means, sd = sqrt(vars[1]))
   sample2 <- rnorm(n, mean = means, sd = sqrt(vars[2]))
@@ -127,11 +127,13 @@ plot_grid(combined_plots, legend, ncol = 1, rel_heights = c(1, 0.3))
 
 Podatke sva generirala tako, da je porazdelitev znotraj posamezne skupine normalna s povprečjem 0 ($\mu_i = 0$). Variabilnost posamezne skupine sva nekoliko spreminjala, tako da sva lahko preverila veljavnost testa za razliko aritmetičnih sredin v primeru, da je predpostavka enakih varianc izpolnjena oz. kršena. V ta namen sva si izbrala primere treh skupin z naslednjo varianco:
 
-* (1, 10, 1)
-* (1, 5, 10)
-* (1,1,1)
+* (1, 10, 1),
+* (1, 5, 10),
+* (1, 1, 1).
 
-Pričakujeva, da bo klasični ANOVA test dobro deloval le v primeru, ko je predpostavka enakih varianc izpolnjena. Preostala dva testa pa pričakujeva, da dobro delujeta tako v primeru izpolnjene kot tudi kršene predpostavke.
+Poleg tega sva spreminjala tudi velikost skupin, izbrala sva si velikosti $n \in \{15, 40, 100, 200, 500\}$, pri čemer imajo vse skupine vedno enako velikost, torej npr. $[15, 15, 15]$. 
+
+Pričakujeva, da bo klasični ANOVA test dobro deloval le v primeru, ko je predpostavka enakih varianc izpolnjena in pričakujeva, da velikost skupin ne bo veliko vplivala na rezultate tega testa. Za druga dva testa(Welch's ANOVA in p-vrednost na podlagi Levene's testa) pa pričakujeva, da dobro delujeta tako v primeru izpolnjene kot tudi kršene predpostavke. Moč testov bo pri enakih variancah verjetno približno enaka za vse 3, s tem ko pri različnih pa bo večja pri drugih dveh testih(Welch's ANOVA in p-vrednost na podlagi Levene's testa). Pričakujeva, da se bo moč večala z večanjem vzorca.
 
 # Simulacije (p-vrednost)
 
@@ -149,14 +151,7 @@ pa potem se da mal spreminjava velikost skupin:
 -->
 
 V simulacijah, kjer preverjava enakomerno porazdelitev $p$-vrednosti, sva spreminjala 
-varianco v posamezni skupini in velikost posamezne skupine. Varianca, ki sva si jo izbrala, zavzame vrednosti:
-
-* (1, 10, 1)
-* (1, 5, 10)
-* (1,1,1)
-
-Za velikost posamezne skupine (vse tri skupine imajo enako vrednost) pa sva si izbrala \newline
-$n \in \{15, 40, 100, 200, 500\}$.
+varianco v posamezni skupini in velikost posamezne skupine.
 
 Na grafih je prikazana $p$-vrednost Anderson-Darling testa z ničelno hipotezo 
 $$H_0: \text{vzorec sledi zvezni enakomerni porazdelitvi}$$
@@ -197,20 +192,24 @@ if(file.exists("p_vrednost.RDS")){
   }
   saveRDS(object = res, file="p_vrednost.RDS")
 }
-
 ```
-
 
 ```{r risanje p-vrednost, fig.cap="Prikaz p-vrednosti Anderson-Darling testa."}
 # dava v format long
 resLong = pivot_longer(res, cols=matches("^p[AM]"), values_to = "pVal",
                        names_to = "method", names_prefix = "p")
+resLong$method[resLong$method == "ANOVA"] = "classic ANOVA"
+resLong$method[resLong$method == "ANOVA_2"] = "Welch's ANOVA"
+resLong$method[resLong$method == "METHOD3"] = "Levene's test"
 
 levels(resLong$var) = c("var = (1,10,1)", "var = (1,5,10)", "var = (1,1,1)")
 
 # testirava za enakomerno porazdelitev z Anderson-Darling testom
 valAnal = aggregate(pVal~ n + var + method , data = resLong,
                     function(x)ad.test(x, distr.fun = punif)$p.value)
+valAnal$method[valAnal$method == "ANOVA"] = "classic ANOVA"
+valAnal$method[valAnal$method == "ANOVA_2"] = "Welch's ANOVA"
+valAnal$method[valAnal$method == "METHOD3"] = "Levene's test"
 
 valAnal$n<-as.factor(valAnal$n)
 ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
@@ -218,10 +217,15 @@ ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
   geom_hline(yintercept = 0.05)+
   facet_wrap(vars(var))+
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  ylab("p-vrednost")
+  ylab("p-vrednost") + 
+  xlab("velikost skupin(n)") + 
+  labs(title = " ",
+       color = " ") + 
+  theme_minimal() +
+  theme(legend.position = "bottom")
 ```
 
-Kot sva že na začetku predvidela, klasična ANOVA v primeru različnih varianc ni veljavna, saj ima $p$-vrednost enako oz. blizu 0. To pomeni, da zavrnemo ničelno hipotezo. \
+Kot sva že na začetku predvidela, klasična ANOVA(classic ANOVA) v primeru različnih varianc ni veljavna, saj ima $p$-vrednost enako oz. blizu 0 za vse velikosti vzorca. To pomeni, da zavrnemo ničelno hipotezo. \
 V primeru, ko je varianca v vseh treh skupinah enaka, so vse $p$-vrednosti nad mejo $0.05$, torej ne moremo zavrniti ničelne hipoteze.
 
 # Velikost testa
@@ -231,28 +235,38 @@ Na podlagi zgornjega grafa pričakujeva, da velikost testa v primeru klasičnega
 ```{r risanje velikosti testa, fig.cap="Prikaz velikosti testa pri različnih parametrih."}
 valAnal = aggregate(pVal~ n + var + method , data = resLong,
                     function(x)mean(x<0.05))
+valAnal$method[valAnal$method == "ANOVA"] = "classic ANOVA"
+valAnal$method[valAnal$method == "ANOVA_2"] = "Welch's ANOVA"
+valAnal$method[valAnal$method == "METHOD3"] = "Levene's test"
 
 valAnal$n<-as.factor(valAnal$n)
 ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
-  geom_point()+geom_smooth(se=F)+
+  geom_point()+geom_line()+#geom_smooth(se=F)+
   geom_hline(yintercept = 0.05)+
   facet_wrap(vars(var)) +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  ylab("delez zavrnitve")
+  ylab("delez zavrnitve") +
+  xlab("velikost skupin(n)") + 
+  labs(title = " ",
+       color = " ") + 
+  theme_minimal() +
+  theme(legend.position = "bottom")
 ```
 
 Res smo potrdili zgornje predvidevanje. V primeru različnih varianc klasični ANOVA test prevečkrat zavrne ničelno hipotezo. Ko pa je varianca v vseh treh skupinah enaka $1$, so vrednosti dokaj podobne. 
 
 # Moč testa
 
-Glede na moč testa lahko primerjamo vse tri teste le v primeru enakih varianc. V preostalih primerih klasični ANOVA test ni veljaven, zato bomo primerjali le preostala dva.
+Glede na moč testa lahko primerjamo vse tri teste le v primeru enakih varianc. V preostalih primerih klasični ANOVA test ni veljaven, zato bomo primerjali le preostala dva. Najprej sva primerjala med seboj teste v primeru enakih varianc, nato pa še v primeru različnih.
 
-_Najprej primerjajmo med seboj teste v primeru enakih varinac._
+## Enake variance {-}
+
+<!--Neza: kle mi ta povprecje ni cist jasn, kaj tocno zeliva s tem?-->
 
 ```{r simulacije moc testa enake varinace}
 st_ponovitev = 2000
 velikost = c(15, 40, 60, 100, 200, 500)
-povp = c("0,0.5,0", "0,-0.5,0.5")
+povp = c("0,0.5,0", "0,-0.5,0.5") # Neza: kaj je tole povp?
 
 settings = expand.grid(i=1:st_ponovitev, n = velikost, povp = povp,
                        var = "1,1,1")
@@ -292,8 +306,7 @@ if(file.exists("moc_enake.RDS")){
 
 ```
 
-
-```{r risanje moci enake var, fig.cap="Prikaz moči testa v primeru enakih varianc."}
+```{r risanje moci enake var, fig.cap="Prikaz moči testa v primeru enakih varianc.", fig.height=2.5}
 # dava v format long
 resLong_P = pivot_longer(res_p, cols=matches("^p[AM]"), values_to = "power",
                        names_to = "method", names_prefix = "p")
@@ -303,6 +316,9 @@ levels(resLong_P$var) = c("var = (1,1,1)")
 # testirava za enakomerno porazdelitev z Anderson-Darling testom
 valAnal_P = aggregate(power ~ n + method + povp, data = resLong_P,
                     function(x)mean(x<0.05))
+valAnal_P$method[valAnal_P$method == "ANOVA"] = "classic ANOVA"
+valAnal_P$method[valAnal_P$method == "ANOVA_2"] = "Welch's ANOVA"
+valAnal_P$method[valAnal_P$method == "METHOD3"] = "Levene's test"
 
 valAnal_P$n<-as.factor(valAnal_P$n)
 ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
@@ -310,13 +326,16 @@ ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
   geom_hline(yintercept = 0.05)+
   facet_wrap(vars(povp))+
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  ylab("moc")
+  ylab("moc") +
+  xlab("velikost skupin(n)") + 
+  labs(title = " ",
+       color = " ") + 
+  theme_minimal()  
 ```
 
 Na podlagi zgornjega grafa ne moremo govoriti o velikih razlikah med testi. Vsi testi imajo zelo podobno moč testa. Pričakovano z naraščanjem velikosti skupin narašča tudi moč testa. Opazimo lahko tudi, da je v primeru različnega povprečja le v eni skupini manjša moč kot v primeru različnega povprečja v vseh skupinah.
 
-_Nato pa še primer, ko so variance različne._ \
-(vrstice predstavljajo varinaco skupin, stolpci pa povprečje posamezne skupine)
+## Različne variance {-}
 
 ```{r simulacije moc testa razlicne varinace}
 st_ponovitev = 2000
@@ -362,7 +381,7 @@ if(file.exists("moc_razlicne.RDS")){
 ```
 
 
-```{r risanje moci razlicne var, fig.cap="Prikaz moči testa v primeru različnih varianc."}
+```{r risanje moci razlicne var, fig.cap="Prikaz moči testa v primeru različnih varianc(vrstice predstavljajo varinaco skupin, stolpci pa povprečje posamezne skupine)."}
 # dava v format long
 resLong_P = pivot_longer(res_p, cols=matches("^p[AM]"), values_to = "power",
                        names_to = "method", names_prefix = "p")
@@ -372,6 +391,9 @@ levels(resLong_P$var) = c("var = (1,10,1)", "var = (1,5,10)")
 # testirava za enakomerno porazdelitev z Anderson-Darling testom
 valAnal_P = aggregate(power ~ n + var + method + povp, data = resLong_P,
                     function(x)mean(x<0.05))
+valAnal_P$method[valAnal_P$method == "ANOVA"] = "classic ANOVA"
+valAnal_P$method[valAnal_P$method == "ANOVA_2"] = "Welch's ANOVA"
+valAnal_P$method[valAnal_P$method == "METHOD3"] = "Levene's test"
 
 valAnal_P$n<-as.factor(valAnal_P$n)
 ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
@@ -379,7 +401,12 @@ ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
   geom_hline(yintercept = 0.05)+
   facet_grid(var~povp)+
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
-  ylab("moc")
+  ylab("moč") +
+  xlab("velikost skupin(n)") + 
+  labs(title = " ",
+       color = " ") + 
+  theme_minimal()  
 ```
 
 Ponovno imata metodi zelo podobno moč testa. Opazimo, da se moč testa spreminja z velikostjo skupine in kombinacijo variabilnosti skupine in razlike povprečja. V primeru, da je varianca skupine velika in povprečje malo odstopa od preostalih dveh, je moč testa dokaj majhna. Torej manj, kot se porazdelitve skupin med seboj prekrivajo, večja je moč testa.
+
