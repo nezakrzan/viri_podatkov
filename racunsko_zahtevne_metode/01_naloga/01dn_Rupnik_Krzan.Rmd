@@ -12,7 +12,7 @@ header-includes:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height = 4, fig.width = 5)
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =3, fig.width = 6)
 
 # potrebne knjižnice
 library(ggplot2)
@@ -125,7 +125,7 @@ plot_grid(combined_plots, legend, ncol = 1, rel_heights = c(1, 0.3))
 
 \newpage
 
-Podatke sva generirala tako, da je porazdelitev znotraj posamezne porazdelitve normalna s povprečjem 0 ($\mu_i = 0$). Variabilnost posamezne skupine sva nekoliko spreminjala, tako da sva lahko preverila veljavnost testa za razliko aritmetičnih sredin v primeru, da je predpostavka enakih varianc izpolnjena oz. kršena. V ta namen sva si izbrala primere treh skupin z naslednjo varianco:
+Podatke sva generirala tako, da je porazdelitev znotraj posamezne skupine normalna s povprečjem 0 ($\mu_i = 0$). Variabilnost posamezne skupine sva nekoliko spreminjala, tako da sva lahko preverila veljavnost testa za razliko aritmetičnih sredin v primeru, da je predpostavka enakih varianc izpolnjena oz. kršena. V ta namen sva si izbrala primere treh skupin z naslednjo varianco:
 
 * (1, 10, 1)
 * (1, 5, 10)
@@ -149,7 +149,7 @@ pa potem se da mal spreminjava velikost skupin:
 -->
 
 V simulacijah, kjer preverjava enakomerno porazdelitev $p$-vrednosti, sva spreminjala 
-varianco v posamezni skupini in velikost posamezne skupine. Varianca, ki sva si izbrala, zavzame vrednosti:
+varianco v posamezni skupini in velikost posamezne skupine. Varianca, ki sva si jo izbrala, zavzame vrednosti:
 
 * (1, 10, 1)
 * (1, 5, 10)
@@ -201,10 +201,12 @@ if(file.exists("p_vrednost.RDS")){
 ```
 
 
-```{r risanje p-vrednost}
+```{r risanje p-vrednost, fig.cap="Prikaz p-vrednosti Anderson-Darling testa."}
 # dava v format long
 resLong = pivot_longer(res, cols=matches("^p[AM]"), values_to = "pVal",
                        names_to = "method", names_prefix = "p")
+
+levels(resLong$var) = c("var = (1,10,1)", "var = (1,5,10)", "var = (1,1,1)")
 
 # testirava za enakomerno porazdelitev z Anderson-Darling testom
 valAnal = aggregate(pVal~ n + var + method , data = resLong,
@@ -220,13 +222,13 @@ ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
 ```
 
 Kot sva že na začetku predvidela, klasična ANOVA v primeru različnih varianc ni veljavna, saj ima $p$-vrednost enako oz. blizu 0. To pomeni, da zavrnemo ničelno hipotezo. \
-V primeru, ko so variance v vseh treh skupinah enake, so vse $p$-vrednosti nad mejo $0.05$, torej ne moremo zavrniti ničelne hipoteze.
+V primeru, ko je varianca v vseh treh skupinah enaka, so vse $p$-vrednosti nad mejo $0.05$, torej ne moremo zavrniti ničelne hipoteze.
 
 # Velikost testa
 
 Na podlagi zgornjega grafa pričakujeva, da velikost testa v primeru klasičnega ANOVA testa in različnih varianc ne bo enaka oz. blizu vrednosti $0.05$. Zaradi kršenja predpostavk bomo prevečkrat oz. premalokrat zavračali ničelno hipotezo, ko ta drži.
 
-```{r}
+```{r risanje velikosti testa, fig.cap="Prikaz velikosti testa pri različnih parametrih."}
 valAnal = aggregate(pVal~ n + var + method , data = resLong,
                     function(x)mean(x<0.05))
 
@@ -243,10 +245,9 @@ Res smo potrdili zgornje predvidevanje. V primeru različnih varianc klasični A
 
 # Moč testa
 
-Glede na moč testa lahko primerjamo vse tri teste le v primeru enkaih varianc. V preostalih primerih klasični ANOVA test ni veljaven zato bomo primerjali le preostala dva.
+Glede na moč testa lahko primerjamo vse tri teste le v primeru enakih varianc. V preostalih primerih klasični ANOVA test ni veljaven, zato bomo primerjali le preostala dva.
 
-Najprej primerjajmo med seboj teste v primeru enakih varinac.
-
+_Najprej primerjajmo med seboj teste v primeru enakih varinac._
 
 ```{r simulacije moc testa enake varinace}
 st_ponovitev = 2000
@@ -292,10 +293,12 @@ if(file.exists("moc_enake.RDS")){
 ```
 
 
-```{r risanje moci enake var}
+```{r risanje moci enake var, fig.cap="Prikaz moči testa v primeru enakih varianc."}
 # dava v format long
 resLong_P = pivot_longer(res_p, cols=matches("^p[AM]"), values_to = "power",
                        names_to = "method", names_prefix = "p")
+levels(resLong_P$povp) = c("povp = (0,0.5,0)", "povp = (0,-0.5,0.5)")
+levels(resLong_P$var) = c("var = (1,1,1)")
 
 # testirava za enakomerno porazdelitev z Anderson-Darling testom
 valAnal_P = aggregate(power ~ n + method + povp, data = resLong_P,
@@ -310,7 +313,9 @@ ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
   ylab("moc")
 ```
 
-Nato pa še primer, ko so variance različne. \
+Na podlagi zgornjega grafa ne moremo govoriti o velikih razlikah med testi. Vsi testi imajo zelo podobno moč testa. Pričakovano z naraščanjem velikosti skupin narašča tudi moč testa. Opazimo lahko tudi, da je v primeru različnega povprečja le v eni skupini manjša moč kot v primeru različnega povprečja v vseh skupinah.
+
+_Nato pa še primer, ko so variance različne._ \
 (vrstice predstavljajo varinaco skupin, stolpci pa povprečje posamezne skupine)
 
 ```{r simulacije moc testa razlicne varinace}
@@ -357,10 +362,12 @@ if(file.exists("moc_razlicne.RDS")){
 ```
 
 
-```{r risanje moci razlicne var}
+```{r risanje moci razlicne var, fig.cap="Prikaz moči testa v primeru različnih varianc."}
 # dava v format long
 resLong_P = pivot_longer(res_p, cols=matches("^p[AM]"), values_to = "power",
                        names_to = "method", names_prefix = "p")
+levels(resLong_P$povp) = c("povp = (0,1,0)", "povp = (0,-1,1)")
+levels(resLong_P$var) = c("var = (1,10,1)", "var = (1,5,10)")
 
 # testirava za enakomerno porazdelitev z Anderson-Darling testom
 valAnal_P = aggregate(power ~ n + var + method + povp, data = resLong_P,
@@ -374,3 +381,5 @@ ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
   ylab("moc")
 ```
+
+Ponovno imata metodi zelo podobno moč testa. Opazimo, da se moč testa spreminja z velikostjo skupine in kombinacijo variabilnosti skupine in razlike povprečja. V primeru, da je varianca skupine velika in povprečje malo odstopa od preostalih dveh, je moč testa dokaj majhna. Torej manj, kot se porazdelitve skupin med seboj prekrivajo, večja je moč testa.
