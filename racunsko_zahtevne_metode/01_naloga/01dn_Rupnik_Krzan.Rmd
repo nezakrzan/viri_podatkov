@@ -134,7 +134,7 @@ Pričakujeva, da bo klasični ANOVA test dobro deloval le v primeru, ko je predp
 
 # Simulacije 
 
-Izvedla sva simulacije z $5000$ ponovitvami, kjer sva preverjala porazdelitev $p$ - vrednosti in rezultate le te simulacije uporabila za določitev velikosti testa, ter simulacijo za moč testa pri enakih in različnih variancah.
+Izvedla sva simulacije z $5000$ ponovitvami(da so bile dokaj hitro končane), kjer sva preverjala porazdelitev $p$ - vrednosti in rezultate le te simulacije uporabila za določitev velikosti testa, ter simulacijo za moč testa pri enakih in različnih variancah.
 
 V simulaciji sva uporabila tri metode, klasični ANOVA test, Welchov ANOVA test in možnost, kjer predpostavimo enake variance, če ne moremo zavrniti predpostavke o enakosti varianc (pri $5$ \% tveganju) z Levenejevim testom za enakost varianc, in neenake variance, če to lahko.
 
