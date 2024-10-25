@@ -1,5 +1,9 @@
 set.seed(2024)
 
+library(tidyr)
+library(ADGofTest)
+library(ggplot2)
+
 st_ponovitev = 5000
 velikost = c(15, 40, 60, 100, 200, 1000)
 
