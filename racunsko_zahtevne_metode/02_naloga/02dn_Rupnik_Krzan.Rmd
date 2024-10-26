@@ -38,11 +38,11 @@ Med drugim preuči učinek dodajanja nepomembnih spremenljivk (spremenljivk, ki 
 
 # Cilj naloge
 
-Želiva preučiti 3 različne metode razvrščanja v skupine. Primerjaval bova metodo voditeljev(*k-means*), razvrščanje na podlagi modelov s pomočjo BIC kriterija in Wardowo metodo hierarhičnega razvrščanja v skupine. Zanima nas katera bo najboljša na podatkih, generiranih iz bivariatne multivariatne normalne porazdelitve. 
+Želiva preučiti 2 različni metodi razvrščanja v skupine. Primerjaval bova metodo voditeljev(*k-means*) in Wardowo metodo hierarhičnega razvrščanja v skupine. Zanima nas katera bo najboljša na podatkih, generiranih iz bivariatne multivariatne normalne porazdelitve. 
 
-Zanima naju tudi, kako na metode vpliva dodajanje nepomembnih spremenljivk, torej tistih, ki imajo enako porazdelitev v vseh skupinah.
+Zanima naju tudi, kako na metodi vpliva dodajanje nepomembnih spremenljivk, torej tistih, ki imajo enako porazdelitev v vseh skupinah.
 
-Vse te tri metode sva se odločila na podlagi jihovih predpostavk, ker so nekatere dokaj podobne, npr. vse predpostavljajo, da so skupine dovolj ločene oz. ni prekomernega prekirvanja med njimi, homogenosti variance znotraj skupine oz. podatki so v skupinah azmeroma homogeno razporejeni, razvrščanje na podlagi modelov s pomočjo BIC kriterija pa celo predpostavlja normalno porazdelitev podatkov znotrah skupine.
+Za metodi sva se odločila na podlagi njunih predpostavk, ker so nekatere dokaj podobne, npr. predpostavljajata, da so skupine dovolj ločene oz. ni prekomernega prekirvanja med njimi, homogenosti variance znotraj skupine oz. podatki so v skupinah razmeroma homogeno razporejeni in zahtevata vnaprejšnjo določitev števila skupin.
 
 # Generiranje podatkov
 
@@ -51,14 +51,15 @@ Podatke sva generirala tako, da je njihova porazdelitev bivariatna multivariatna
 Faktorji, ki jih bova še spreminjala so:
 
 - število skupin, $k = (4, 8, 10)$,
-- velikosti skupin, $n = (20, 100, 200)$, ri čemer bodo imele vse skupine vedno enako velikost in
-- število spremenljivk, $v = (8, 16, 2)$.
+- velikosti skupin, $n = (20, 100, 200)$, pri čemer bodo imele vse skupine vedno enako velikost,
+- število spremenljivk, $v = (12, 24, 36)$ in
+- vnaprejšna določitev števila skupin, $k.2 = (1, 4, 10, 100)$.
 
 Faktorji so bili izbrani na podlagi tega, da si želiva rezultate, ki bodo dobri in slabi oziroma da bodo za nekatere metode dobri za druge pa slabi.
 
 Pri generiranju podatkov bo število spremenljivk enako številu skupin, vse ostale spremenljivke bodo neinformativne, ker nas zanima tudi kako vpliva dodajanje nepomembnih oz. neinformativnih spremenljivk. 
 
-```{r generiranje podatkov, fig.cap="Primer generiranih podatkov za 4 skupine, velikosti n = 100, 8 spremenljivk in diff = 2.", return_all = TRUE, fig.height=4, fig.width=5}
+```{r generiranje podatkov, fig.cap="Primer generiranih podatkov za 4 skupine, velikosti n = 100, 12 spremenljivk in diff = 2.", return_all = TRUE, fig.height=4, fig.width=5}
 generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.skupin, diff){
   # generiranje povprečij
   M = diag(stevilo.skupin)*diff 
@@ -79,8 +80,8 @@ generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.s
   return(X)
 }
 
-data.primer1 = generiranje.podatkov(stevilo.spremenljivk = 8, velikost.skupin = 100, stevilo.skupin = 4, diff = 2)
-pairs(data.primer1[,1:4], col=data.primer1[,9])
+data.primer1 = generiranje.podatkov(stevilo.spremenljivk = 12, velikost.skupin = 100, stevilo.skupin = 4, diff = 2)
+pairs(data.primer1[,1:4], col=data.primer1[,13])
 ```
 
 
