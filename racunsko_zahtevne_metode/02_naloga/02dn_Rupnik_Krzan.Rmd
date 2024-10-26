@@ -1,0 +1,35 @@
+---
+title: "Domača naloga 2"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+output:
+  pdf_document:
+    fig_caption: true
+    number_sections: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =3, fig.width = 6.5)
+
+# potrebne knjižnice
+library(ggplot2)
+library(car)
+library(tidyr)
+library(ADGofTest)
+
+# seme
+set.seed(2024)
+```
+
+<!-- 
+Navodilo:
+
+Clustering
+
+Compare at least 2 methods and find out which one is the best. Generate data for at least 4 groups from a bivariate multivariate normal distribution.  Among other things, examine the effect of adding nonsignificant variables (variables that have the same distribution across all groups).
+
+--> 
+
