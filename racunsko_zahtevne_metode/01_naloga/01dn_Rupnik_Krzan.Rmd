@@ -47,9 +47,19 @@ Ker mamo validity of a test mormo:
 If you are assessing the validity of a test, use (at least) two measures, one relating to the distribution of the p-value or test statistic and one testing the size of the test at the chosen level of risk.
 -->
 
+# Cilj naloge
+
+Ocenjujemo veljavnost testa za razliko aritmetičnih sredin iz treh neodvisnih vzorcev, kjer primerjava naslednje tri metode:
+
+- predpostavka enakih varianc(klasični ANOVA test),
+- predpostavka različnih varianc(Welchow ANOVA test) in
+- kombiniran pristop z Levenovim testom.
+
+Pri kombiniranem pristopu z Levenovim testom gre za možnost, kjer predpostaviva enake variance, če ne moreva zavrniti predopstavke o enakosti varianc(pri $5$ \% tveganju) s testom za enakost varianc in neenake variance, če lahko. Tukaj sva za testiranje predpostavke o enakosti varianc torej uporabljala Levenejev test.
+
 # Generiranje podatkov
 
-Podatke sva generirala tako, da je porazdelitev znotraj posamezne skupine normalna s povprečjem 0 ($\mu_i = 0$). Variabilnost posamezne skupine sva nekoliko spreminjala, tako da sva lahko preverila veljavnost testa za razliko aritmetičnih sredin v primeru, da je predpostavka enakih varianc izpolnjena oz. kršena. V ta namen sva si izbrala primere treh skupin z naslednjo varianco:
+Podatke sva generirala tako, da je porazdelitev znotraj posamezne skupine normalna s povprečjem 0 ($\mu_i = 0$). Variabilnost posamezne skupine sva spreminjala, tako da sva lahko preverila veljavnost testa za razliko aritmetičnih sredin v primeru, da je predpostavka enakih varianc izpolnjena oz. kršena. V ta namen sva si izbrala primere treh skupin z naslednjo varianco:
 
 * (1, 10, 1),
 * (1, 5, 10),
@@ -130,13 +140,20 @@ plot_grid(combined_plots, legend, ncol = 1, rel_heights = c(1, 0.3))
 #  theme_minimal()
 ```
 
-Pričakujeva, da bo klasični ANOVA test dobro deloval le v primeru, ko je predpostavka enakih varianc izpolnjena in pričakujeva, da velikost skupin ne bo veliko vplivala na rezultate tega testa. Za druga dva testa(Welch's ANOVA in p-vrednost na podlagi Levene's testa) pa pričakujeva, da dobro delujeta tako v primeru izpolnjene kot tudi kršene predpostavke. Moč testov bo pri enakih variancah verjetno približno enaka za vse 3, s tem ko pri različnih pa bo večja pri drugih dveh testih(Welch's ANOVA in p-vrednost na podlagi Levene's testa). Pričakujeva, da se bo moč večala z večanjem vzorca.
+Pričakujeva, da bo klasični ANOVA test dobro deloval le v primeru, ko je predpostavka enakih varianc izpolnjena in pričakujeva, da velikost skupin ne bo veliko vplivala na rezultate tega testa. Za druga dva testa(Welch's ANOVA test in <!--p-vrednost na podlagi Levene's testa--> kombinirani pristop z Levenovim testom) pa pričakujeva, da dobro delujeta tako v primeru izpolnjene kot tudi kršene predpostavke. Moč testov bo pri enakih variancah verjetno približno enaka za vse 3, s tem ko pri različnih pa bo večja pri drugih dveh testih(Welch's ANOVA in p-vrednost na podlagi Levene's testa). Pričakujeva, da se bo moč večala z večanjem vzorca.
 
 # Simulacije 
 
+<!--
 Izvedla sva simulacije z $5000$ ponovitvami(da so bile dokaj hitro končane), kjer sva preverjala porazdelitev $p$ - vrednosti in rezultate le te simulacije uporabila za določitev velikosti testa, ter simulacijo za moč testa pri enakih in različnih variancah.
+-->
+Izvedla sva simulacije s $5000$ ponovitvami(da so bile dokaj hitro končane).
 
-V simulaciji sva uporabila tri metode, klasični ANOVA test, Welchov ANOVA test in možnost, kjer predpostavimo enake variance, če ne moremo zavrniti predpostavke o enakosti varianc (pri $5$ \% tveganju) z Levenejevim testom za enakost varianc, in neenake variance, če to lahko.
+V prvi simulaciji sva računala $p$ - vrednost in preverjala njeno porazdelitev; zanimalo naju je ali je $p$ -vrednost porazdeljena enakomerno. Na podalagi $p$ - vrednosti pa sva potem določila tudi velikost testa.
+
+Izvedla sva tudi simulacijo za ugotavljenje kakšna je moč testa pri enakih in različnih variancah. V simulaciji sva uporabila tri metode, klasični ANOVA test, Welchov ANOVA test in možnost, kjer predpostavimo enake variance, če ne moremo zavrniti predpostavke o enakosti varianc (pri $5$ \% tveganju) z Levenejevim testom za enakost varianc, in neenake variance, če to lahko.
+
+Na koncu sva izvedla še simulacijo, kjer imajo vse skupine enako varianco, vendar so različnih velikosti. V simulaciji naju je zanimala razlika med klasičnim ANOVA testom in Welchovim ANOVA testom.
 
 ## $p$ - vrednost
 
@@ -219,7 +236,13 @@ ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
   theme(legend.position = "bottom")
 ```
 
-Res smo potrdili zgornje predvidevanje. V primeru različnih varianc klasični ANOVA test prevečkrat zavrne ničelno hipotezo. Ko pa je varianca v vseh treh skupinah enaka $1$, so vrednosti dokaj podobne pri vseh treh testih. Z večanjem vzorca pa se delež zavrnitev ničelne hipoteze manjša, kar sva pričakovala.
+Res smo potrdili zgornje predvidevanje. V primeru različnih varianc klasični ANOVA test prevečkrat zavrne ničelno hipotezo. Ko pa je varianca v vseh treh skupinah enaka $1$, so vrednosti dokaj podobne pri vseh treh testih. 
+
+Opaziva tudi pri klasični ANOVI, da se pri večjih razlikah v variancah(npr. $var = (1,10,1)$) delež zavrnitev ničelne hpoteze zmanjša pri zelo veliki skupini($n = 1000$), ampak pri manjših razlikah v variancah(npr. $var = (1, 5, 1)$) pa te razlike v deležu zavrnitev ničelne hipoteze med najmanjšo($n = 15$) in največjo skupino($n = 1000$) ni.
+
+Glede na velikost skupin delež zavrnitev ničelne hipoteze niha, ampak med najmanjšo skupino($n = 15$) in največjo($n = 1000$) pri vseh treh tipih izbranih varianc, ni večjih razlik v deležu zavrnitve ničelne hipoteze.
+
+<!--Z večanjem vzorca pa se delež zavrnitev ničelne hipoteze manjša, kar sva pričakovala.-->
 
 ## Moč testa
 
@@ -227,6 +250,7 @@ Glede na moč testa lahko primerjamo vse tri teste le v primeru enakih varianc. 
 
 *$(0, 0.5, 0)$ in
 *$(0, -0.5, 0.5)$
+
 
 ### Enake variance {-}
 
@@ -258,7 +282,36 @@ ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
   theme_minimal()  
 ```
 
-Na podlagi zgornjega grafa ne moremo govoriti o velikih razlikah med testi. Vsi testi imajo zelo podobno moč testa. Pričakovano z naraščanjem velikosti skupin narašča tudi moč testa. Opazimo lahko tudi, da je v primeru različnega povprečja le v eni skupini manjša moč kot v primeru različnega povprečja v vseh skupinah.
+```{r results = T}
+povp1 = data.frame(method = c("classic ANOVA", "Welch's ANOVA", "Levene's test"),
+           n.15 = c(0.2638, 0.2592, 0.2646),
+           n.40 = c(0.6176,0.6152, 0.6186),
+           n.60 = c(0.8126, 0.8124, 0.8146),
+           n.100 = c(0.9624,0.9610, 0.9622),
+           n.200 = c(1.0000, 1.0000, 1.0000),
+           n.1000 = c(1.0000, 1.0000, 1.0000))
+colnames(povp1) <- c(" ", "n = 15", "n = 40", "n = 60", "n = 100", "n = 200", "n = 1000")
+
+library(knitr)
+library(kableExtra)
+library(dplyr)
+kable(povp1, caption = "Moč testa v primeru enakih varianc in povprečij (0, 0.5, 0).", format = "latex") %>%
+  kable_styling(latex_options = "HOLD_position")
+
+povp2 = data.frame(method = c("classic ANOVA", "Welch's ANOVA", "Levene's test"),
+                   n.15 = c(0.6542, 0.6348, 0.6542),
+                   n.40 = c(0.9828, 0.9804, 0.9826),
+                   n.60 = c(0.9996, 0.9994, 0.9996),
+                   n.100 = c(1.0000, 1.0000, 1.0000),
+                   n.200 = c(1.0000, 1.0000, 1.0000),
+                   n.1000 = c(1.0000, 1.0000, 1.0000))
+colnames(povp2) <- c(" ", "n = 15", "n = 40", "n = 60", "n = 100", "n = 200", "n = 1000")
+kable(povp2, caption = "Moč testa v primeru enakih varianc in povprečij (0, -0.5, 0.5).", format = "latex") %>%
+  kable_styling(latex_options = "HOLD_position")
+```
+
+
+Na podlagi zgornjega grafa in tabel ne moremo govoriti o velikih razlikah med testi. Vsi testi imajo zelo podobno moč testa. Pričakovano z naraščanjem velikosti skupin narašča tudi moč testa. Opazimo lahko tudi, da je v primeru različnega povprečja le v eni skupini manjša moč kot v primeru različnega povprečja v vseh skupinah - v drugem primeru je tudi razlika med povprečjema $1$, pri prvi pa $0.5$, kar je verjetno razlog za take rezultate. 
 
 ### Različne variance {-}
 
@@ -291,5 +344,86 @@ ggplot(valAnal_P, aes(y=power, col=method, group=method, x=n))+
   theme_minimal()  
 ```
 
-Ponovno imata metodi zelo podobno moč testa. Opazimo, da se moč testa spreminja z velikostjo skupine in kombinacijo variabilnosti skupine in razlike povprečja. V primeru, da je varianca skupine velika in povprečje malo odstopa od preostalih dveh, je moč testa dokaj majhna tudi pri večjih skupinah(npr. povprečja = (0, 0.5, 0), var = (1, 10, 1) in n = 200). Torej manj, kot se porazdelitve skupin med seboj prekrivajo in večje kot so, večja je moč testa.
+```{r results = T}
+# povp = (0, 0.5, 0)
+# var = (1, 10, 1)
+povp3 = data.frame(method = c("Welch's ANOVA", "Levene's test"),
+                   n.15 = c(0.0784, 0.0830),
+                   n.40 = c(0.1246, 0.1246),
+                   n.60 = c(0.1756, 0.1756),
+                   n.100 = c(0.2514, 0.2514),
+                   n.200 = c(0.4872, 0.4872),
+                   n.1000 = c(0.9950, 0.9950))
+colnames(povp3) <- c(" ", "n = 15", "n = 40", "n = 60", "n = 100", "n = 200", "n = 1000")
+kable(povp3, caption = "Moč testa v primeru različnih varianc (1, 10, 1) in povprečij (0, 0.5, 0).", format = "latex") %>%
+  kable_styling(latex_options = "HOLD_position")
+```
+
+Ponovno imata metodi zelo podobno moč testa(v tabeli vidimo, da celo za skupine velike $n = 1000$ enako). Opazimo, da se moč testa spreminja z velikostjo skupine in kombinacijo variabilnosti skupine in razlike povprečja. V primeru, da je varianca skupine velika in povprečje malo odstopa od preostalih dveh, je moč testa dokaj majhna tudi pri večjih skupinah(npr. povprečja = (0, 0.5, 0), var = (1, 10, 1) in n = 200). Torej manj, kot se porazdelitve skupin med seboj prekrivajo in večje kot so, večja je moč testa.
+
+## Razlika med klasičnim ANOVA testom in Welchovim ANOVA testom
+
+Zanima naju kakšna je razlika med klasičnim in Welchovim ANOVA testom glede na to, da so moči vseh treh testov pri enakih variancah($var = (1,1,1)$) dokaj podobne. Za simulacijo sva si izbrala tri različne kombinacije velikosti skupin, in sicer
+
+- $n = (100, 200, 1000)$, torej primer, ko so velikosti skupin med seboj precej različne,
+- $n = (20, 25, 30)$, torej primer, ko so velikosti skupin med seboj zelo malo različne in
+- $n = (500, 500, 500)$, primer, ko so velikosti skupin med seboj enake.
+
+Pričakujeva, da bosta testa dokaj podobna, ampak verjetno bo Welchov ANOVA test v primeru različnih velikosti skupin boljši, ker je glede tega bolj fleksibilen.
+
+### Velikost testa
+
+Na podlagi zgornjih rezultatov pričakujeva, da bo velikost testa v primeru Welchovega ANOVA testa bližje vrednosti $0.05$ kot klasična ANOVA, saj naj bi test boljši za različne velikosti skupin. 
+
+```{r risanje velikosti testa 2, fig.cap="Prikaz velikosti testa pri različnih velikostih skupin."}
+res = readRDS("p_vrednost_primerjava.RDS")
+
+resLong = pivot_longer(res, cols=matches("^p[AM]"), values_to = "pVal",
+                       names_to = "method", names_prefix = "p")
+resLong$method[resLong$method == "ANOVA"] = "classic ANOVA"
+resLong$method[resLong$method == "ANOVA_2"] = "Welch's ANOVA"
+resLong$method[resLong$method == "METHOD3"] = "Levene's test"
+
+levels(resLong$n) = c("n = (100, 200, 1000)", "n = (20, 25, 30)", "n = (500, 500, 500)")
+
+valAnal = aggregate(pVal~ n + method , data = resLong,
+                    function(x)mean(x<0.05))
+
+valAnal$method[valAnal$method == "ANOVA"] = "classic ANOVA"
+valAnal$method[valAnal$method == "ANOVA_2"] = "Welch's ANOVA"
+valAnal$method[valAnal$method == "METHOD3"] = "Levene's test"
+
+levels(resLong$n) = c("n = (100, 200, 1000)", "n = (20, 25, 30)", "n = (500, 500, 500)")
+
+valAnal$n<-as.factor(valAnal$n)
+ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
+  geom_point()+geom_line()+
+  geom_hline(yintercept = 0.05)+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1)) +
+  ylab("delez zavrnitve") +
+  xlab("velikost skupin(n)") + 
+  labs(title = " ",
+       color = " ") + 
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+Takoj opazimo, da v primeru enakih varianc v vseh treh skupinah, ko so velikosti le teh različne, največkrat zavrača Welchov ANOVA test, v primeru enakih velikosti skupin pa najmanjkrat in je velikost testa najbolj blizu vrednosti $0.05$. 
+
+Večja razlika v deležu zavrnitev pri klasičnem in Welchovim ANOVA testom je, če so razlike v velikosti skupin manjše($n = (20, 25, 30$).  
+
+<!-- Lahko bi rekli, da je torej pri enakih varianciah v vseh treh skupinah in različnih velikostih skupin Welchow test boljši.
+Neza: tole nism cist zihr ce je res tko... ce je res tko potem v zakljucek sam se dopiseva da je boljsi Welchov ce mamo razlicne velikosti skupin....-->
+
+# Zaključek
+
+Kot je bilo pričakovano, pri različnih variancah klasični ANOVA test ni ustrezen, v primerih enakih varianc med skupinami pa rezultati kažejo ustreznost klasičnega ANOVA testa. Velikost vzorca nima nekega pomembnega vpliva na veljavnost klasičnega ANOVA testa, saj delež zavračanja ničelne hipoteze ostaja visok, kadar variabilnost ni enaka.
+
+Welchov ANOVA test in kombinirani pristop (kjer sva uporabljala Levenov test za preverjanje enakosti varianc) se izkažeta za bolj ustrezna tako v primerih enakih kot tudi različnih varianc. Pri enakih variancah je delež zavrnitev ničelne hipoteze pri vseh treh testih podobna, vendar Welchov ANOVA in kombinirani pristop pa imata manjšo velikost pri neenakih variancah. 
+
+Klasični ANOVA test ni primeren test za razliko aritmetičnih sredin iz treh neodvisnih vzorcev z neenakimi variancami, saj, zaradi kršenja predpostavk, prepogosto nepravilno zavrne ničelno hipotezo. Welchov ANOVA test in kombinirani pristop z Levenovim testom sta v takšnih primerih bolj ustrezna in zagotavljata pravilnejše rezultate, ne glede na velikost vzorca. Sta tudi močnejša na večjih vzorcih oz. skupinah in skupinah, kjer se porazdelitve med seboj manj prekrivajo. 
+
+
+
+
 
