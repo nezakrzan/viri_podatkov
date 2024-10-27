@@ -1,0 +1,3079 @@
+starting worker pid=57044 on localhost:11522 at 07:59:14.821
+starting worker pid=57057 on localhost:11522 at 07:59:14.986
+starting worker pid=57072 on localhost:11522 at 07:59:15.149
+starting worker pid=57085 on localhost:11522 at 07:59:15.315
+starting worker pid=57098 on localhost:11522 at 07:59:15.479
+starting worker pid=57111 on localhost:11522 at 07:59:15.644
+starting worker pid=57124 on localhost:11522 at 07:59:15.810
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+starting worker pid=57158 on localhost:11522 at 07:59:49.309
+starting worker pid=57171 on localhost:11522 at 07:59:49.472
+starting worker pid=57184 on localhost:11522 at 07:59:49.634
+starting worker pid=57197 on localhost:11522 at 07:59:49.797
+starting worker pid=57211 on localhost:11522 at 07:59:49.962
+starting worker pid=57224 on localhost:11522 at 07:59:50.124
+starting worker pid=57237 on localhost:11522 at 07:59:50.285
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+starting worker pid=57262 on localhost:11522 at 08:00:36.251
+starting worker pid=57275 on localhost:11522 at 08:00:36.417
+starting worker pid=57288 on localhost:11522 at 08:00:36.582
+starting worker pid=57301 on localhost:11522 at 08:00:36.751
+starting worker pid=57314 on localhost:11522 at 08:00:36.918
+starting worker pid=57327 on localhost:11522 at 08:00:37.083
+starting worker pid=57340 on localhost:11522 at 08:00:37.275
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+starting worker pid=57372 on localhost:11522 at 08:02:03.205
+starting worker pid=57385 on localhost:11522 at 08:02:03.371
+starting worker pid=57398 on localhost:11522 at 08:02:03.536
+starting worker pid=57411 on localhost:11522 at 08:02:03.706
+starting worker pid=57424 on localhost:11522 at 08:02:03.869
+starting worker pid=57437 on localhost:11522 at 08:02:04.042
+starting worker pid=57450 on localhost:11522 at 08:02:04.206
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning messages:
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+starting worker pid=57615 on localhost:11432 at 08:03:47.849
+starting worker pid=57628 on localhost:11432 at 08:03:48.013
+starting worker pid=57641 on localhost:11432 at 08:03:48.178
+starting worker pid=57654 on localhost:11432 at 08:03:48.341
+starting worker pid=57667 on localhost:11432 at 08:03:48.504
+starting worker pid=57680 on localhost:11432 at 08:03:48.665
+starting worker pid=57693 on localhost:11432 at 08:03:48.827
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+starting worker pid=57861 on localhost:11432 at 08:13:16.877
+starting worker pid=57874 on localhost:11432 at 08:13:17.039
+starting worker pid=57887 on localhost:11432 at 08:13:17.201
+starting worker pid=57900 on localhost:11432 at 08:13:17.364
+starting worker pid=57913 on localhost:11432 at 08:13:17.530
+starting worker pid=57926 on localhost:11432 at 08:13:17.694
+starting worker pid=57939 on localhost:11432 at 08:13:17.858
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+starting worker pid=58005 on localhost:11432 at 08:17:23.887
+starting worker pid=58018 on localhost:11432 at 08:17:24.063
+starting worker pid=58031 on localhost:11432 at 08:17:24.226
+starting worker pid=58044 on localhost:11432 at 08:17:24.401
+starting worker pid=58057 on localhost:11432 at 08:17:24.567
+starting worker pid=58070 on localhost:11432 at 08:17:24.730
+starting worker pid=58083 on localhost:11432 at 08:17:24.895
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+starting worker pid=58133 on localhost:11432 at 08:19:04.109
+starting worker pid=58146 on localhost:11432 at 08:19:04.273
+starting worker pid=58159 on localhost:11432 at 08:19:04.435
+starting worker pid=58172 on localhost:11432 at 08:19:04.609
+starting worker pid=58185 on localhost:11432 at 08:19:04.775
+starting worker pid=58198 on localhost:11432 at 08:19:04.940
+starting worker pid=58211 on localhost:11432 at 08:19:05.126
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Setting 7/108 done.	2024-10-27 08:19:10
+Setting 8/108 done.	2024-10-27 08:19:11
+Setting 9/108 done.	2024-10-27 08:19:14
+Setting 6/108 done.	2024-10-27 08:19:19
+Setting 3/108 done.	2024-10-27 08:19:45
+Setting 5/108 done.	2024-10-27 08:19:55
+Setting 12/108 done.	2024-10-27 08:20:07
+Setting 13/108 done.	2024-10-27 08:20:16
+Setting 15/108 done.	2024-10-27 08:20:24
+Setting 16/108 done.	2024-10-27 08:20:26
+Setting 17/108 done.	2024-10-27 08:20:27
+Setting 18/108 done.	2024-10-27 08:20:31
+Setting 14/108 done.	2024-10-27 08:20:34
+Setting 11/108 done.	2024-10-27 08:20:35
+Setting 2/108 done.	2024-10-27 08:20:38
+Setting 21/108 done.	2024-10-27 08:20:42
+Setting 22/108 done.	2024-10-27 08:20:44
+Setting 24/108 done.	2024-10-27 08:20:47
+Setting 25/108 done.	2024-10-27 08:20:48
+Setting 26/108 done.	2024-10-27 08:20:48
+Setting 19/108 done.	2024-10-27 08:20:50
+Setting 27/108 done.	2024-10-27 08:20:51
+Setting 23/108 done.	2024-10-27 08:21:10
+Setting 20/108 done.	2024-10-27 08:21:33
+starting worker pid=58262 on localhost:11432 at 08:21:59.286
+starting worker pid=58275 on localhost:11432 at 08:21:59.456
+starting worker pid=58288 on localhost:11432 at 08:21:59.621
+starting worker pid=58301 on localhost:11432 at 08:21:59.793
+starting worker pid=58314 on localhost:11432 at 08:21:59.961
+starting worker pid=58327 on localhost:11432 at 08:22:00.127
+starting worker pid=58340 on localhost:11432 at 08:22:00.296
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Setting 1/1 done.	2024-10-27 08:22:07
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning messages:
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning messages:
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+starting worker pid=58457 on localhost:11432 at 08:24:21.106
+starting worker pid=58472 on localhost:11432 at 08:24:21.267
+starting worker pid=58486 on localhost:11432 at 08:24:21.428
+starting worker pid=58499 on localhost:11432 at 08:24:21.591
+starting worker pid=58512 on localhost:11432 at 08:24:21.756
+starting worker pid=58525 on localhost:11432 at 08:24:21.918
+starting worker pid=58538 on localhost:11432 at 08:24:22.109
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Setting 7/81 done.	2024-10-27 08:50:24
+Setting 8/81 done.	2024-10-27 09:01:05
+Setting 9/81 done.	2024-10-27 09:53:00
+Setting 6/81 done.	2024-10-27 10:11:53
+starting worker pid=62021 on localhost:11432 at 13:01:07.811
+starting worker pid=62034 on localhost:11432 at 13:01:07.976
+starting worker pid=62047 on localhost:11432 at 13:01:08.142
+starting worker pid=62060 on localhost:11432 at 13:01:08.309
+starting worker pid=62073 on localhost:11432 at 13:01:08.476
+starting worker pid=62086 on localhost:11432 at 13:01:08.640
+starting worker pid=62099 on localhost:11432 at 13:01:08.806
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 7/81 done.	2024-10-27 13:01:13
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 8/81 done.	2024-10-27 13:01:15
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 9/81 done.	2024-10-27 13:01:18
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 6/81 done.	2024-10-27 13:01:22
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 3/81 done.	2024-10-27 13:01:48
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 5/81 done.	2024-10-27 13:01:59
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 12/81 done.	2024-10-27 13:02:12
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 13/81 done.	2024-10-27 13:02:21
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 15/81 done.	2024-10-27 13:02:28
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 16/81 done.	2024-10-27 13:02:30
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 17/81 done.	2024-10-27 13:02:31
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 18/81 done.	2024-10-27 13:02:35
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 14/81 done.	2024-10-27 13:02:39
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 11/81 done.	2024-10-27 13:02:40
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 2/81 done.	2024-10-27 13:02:43
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 21/81 done.	2024-10-27 13:02:47
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 22/81 done.	2024-10-27 13:02:49
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 24/81 done.	2024-10-27 13:02:52
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 25/81 done.	2024-10-27 13:02:53
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 26/81 done.	2024-10-27 13:02:54
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 19/81 done.	2024-10-27 13:02:55
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 27/81 done.	2024-10-27 13:02:56
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+starting worker pid=62151 on localhost:11432 at 13:03:54.474
+starting worker pid=62164 on localhost:11432 at 13:03:54.638
+starting worker pid=62177 on localhost:11432 at 13:03:54.808
+starting worker pid=62190 on localhost:11432 at 13:03:54.976
+starting worker pid=62203 on localhost:11432 at 13:03:55.141
+starting worker pid=62216 on localhost:11432 at 13:03:55.305
+starting worker pid=62229 on localhost:11432 at 13:03:55.566
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+starting worker pid=62287 on localhost:11432 at 13:07:03.100
+starting worker pid=62300 on localhost:11432 at 13:07:03.266
+starting worker pid=62313 on localhost:11432 at 13:07:03.430
+starting worker pid=62326 on localhost:11432 at 13:07:03.597
+starting worker pid=62339 on localhost:11432 at 13:07:03.763
+starting worker pid=62352 on localhost:11432 at 13:07:03.930
+starting worker pid=62365 on localhost:11432 at 13:07:04.097
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 7/81 done.	2024-10-27 13:07:09
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 8/81 done.	2024-10-27 13:07:10
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 9/81 done.	2024-10-27 13:07:13
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 6/81 done.	2024-10-27 13:07:18
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 3/81 done.	2024-10-27 13:07:43
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 5/81 done.	2024-10-27 13:07:53
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 12/81 done.	2024-10-27 13:08:05
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 13/81 done.	2024-10-27 13:08:15
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 15/81 done.	2024-10-27 13:08:22
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 16/81 done.	2024-10-27 13:08:24
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 17/81 done.	2024-10-27 13:08:25
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 18/81 done.	2024-10-27 13:08:29
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 14/81 done.	2024-10-27 13:08:33
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 11/81 done.	2024-10-27 13:08:34
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 2/81 done.	2024-10-27 13:08:37
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 21/81 done.	2024-10-27 13:08:41
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 22/81 done.	2024-10-27 13:08:43
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 24/81 done.	2024-10-27 13:08:46
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 25/81 done.	2024-10-27 13:08:47
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 26/81 done.	2024-10-27 13:08:48
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 19/81 done.	2024-10-27 13:08:50
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 27/81 done.	2024-10-27 13:08:50
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 23/81 done.	2024-10-27 13:09:10
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 20/81 done.	2024-10-27 13:09:32
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+starting worker pid=62423 on localhost:11432 at 13:10:21.966
+starting worker pid=62436 on localhost:11432 at 13:10:22.133
+starting worker pid=62449 on localhost:11432 at 13:10:22.297
+starting worker pid=62462 on localhost:11432 at 13:10:22.469
+starting worker pid=62475 on localhost:11432 at 13:10:22.640
+starting worker pid=62488 on localhost:11432 at 13:10:22.808
+starting worker pid=62501 on localhost:11432 at 13:10:22.975
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 7/81 done.	2024-10-27 13:10:24
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 8/81 done.	2024-10-27 13:10:24
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 6/81 done.	2024-10-27 13:10:24
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 9/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 5/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 3/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 4/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 12/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 2/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 14/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 13/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2Stevilo zacetnih skupin:  complete! 
+4 complete! 
+Setting 16/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 17/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 15/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 18/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 11/81 done.	2024-10-27 13:10:25
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 10/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 21/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin:Stevilo zacetnih skupin:  11  complete! 
+complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 23/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 22/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 26/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 24/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 25/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 27/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 1/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 20/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 19/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 34/81 done.	2024-10-27 13:10:26
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 35/81 done.	2024-10-27 13:10:27
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 36/81 done.	2024-10-27 13:10:27
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 33/81 done.	2024-10-27 13:10:27
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 32/81 done.	2024-10-27 13:10:29
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 30/81 done.	2024-10-27 13:10:29
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 31/81 done.	2024-10-27 13:10:30
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 39/81 done.	2024-10-27 13:10:30
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 38/81 done.	2024-10-27 13:10:31
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 43/81 done.	2024-10-27 13:10:31
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 42/81 done.	2024-10-27 13:10:31
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 44/81 done.	2024-10-27 13:10:31
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 45/81 done.	2024-10-27 13:10:31
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 40/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 41/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 47/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 48/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 51/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 52/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 50/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 4 Stevilo zacetnih skupin:complete! 
+ 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 54/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 53/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 46/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 29/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 37/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 49/81 done.	2024-10-27 13:10:32
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 60/81 done.	2024-10-27 13:10:34
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 61/81 done.	2024-10-27 13:10:35
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 62/81 done.	2024-10-27 13:10:35
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 63/81 done.	2024-10-27 13:10:35
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 59/81 done.	2024-10-27 13:10:35
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 28/81 done.	2024-10-27 13:10:36
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 58/81 done.	2024-10-27 13:10:37
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 57/81 done.	2024-10-27 13:10:37
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 68/81 done.	2024-10-27 13:10:39
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 66/81 done.	2024-10-27 13:10:39
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 70/81 done.	2024-10-27 13:10:39
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 71/81 done.	2024-10-27 13:10:40
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 67/81 done.	2024-10-27 13:10:40
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 72/81 done.	2024-10-27 13:10:40
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 69/81 done.	2024-10-27 13:10:40
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 75/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 65/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 56/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 78/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 74/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 79/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 4 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 10 complete! 
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 80/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 81/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 77/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 76/81 done.	2024-10-27 13:10:41
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 73/81 done.	2024-10-27 13:10:42
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 64/81 done.	2024-10-27 13:10:42
+Stevilo zacetnih skupin: 100 complete! 
+Zanka: 2 complete! 
+Setting 55/81 done.	2024-10-27 13:10:44
+There were 50 or more warnings (use warnings() to see the first 50)
+There were 50 or more warnings (use warnings() to see the first 50)
+There were 50 or more warnings (use warnings() to see the first 50)
+There were 50 or more warnings (use warnings() to see the first 50)
+There were 50 or more warnings (use warnings() to see the first 50)There were 39 warnings (use warnings() to see them)There were 50 or more warnings (use warnings() to see the first 50)
+
+
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning messages:
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+starting worker pid=62565 on localhost:11432 at 13:11:33.548
+starting worker pid=62578 on localhost:11432 at 13:11:33.712
+starting worker pid=62591 on localhost:11432 at 13:11:33.875
+starting worker pid=62604 on localhost:11432 at 13:11:34.039
+starting worker pid=62617 on localhost:11432 at 13:11:34.202
+starting worker pid=62630 on localhost:11432 at 13:11:34.365
+starting worker pid=62643 on localhost:11432 at 13:11:34.548
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 7/81 done.	2024-10-27 13:11:36
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 8/81 done.	2024-10-27 13:11:37
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 9/81 done.	2024-10-27 13:11:37
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 6/81 done.	2024-10-27 13:11:38
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 3/81 done.	2024-10-27 13:11:45
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 5/81 done.	2024-10-27 13:11:50
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 12/81 done.	2024-10-27 13:11:51
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 13/81 done.	2024-10-27 13:11:55
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 11/81 done.	2024-10-27 13:11:56
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 16/81 done.	2024-10-27 13:11:56
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 17/81 done.	2024-10-27 13:11:56
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 15/81 done.	2024-10-27 13:11:56
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 18/81 done.	2024-10-27 13:11:58
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 2/81 done.	2024-10-27 13:11:58
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 14/81 done.	2024-10-27 13:11:59
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 21/81 done.	2024-10-27 13:12:00
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 22/81 done.	2024-10-27 13:12:00
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 24/81 done.	2024-10-27 13:12:01
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 19/81 done.	2024-10-27 13:12:01
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 25/81 done.	2024-10-27 13:12:02
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 26/81 done.	2024-10-27 13:12:02
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 27/81 done.	2024-10-27 13:12:02
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 23/81 done.	2024-10-27 13:12:09
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 20/81 done.	2024-10-27 13:12:13
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 31/81 done.	2024-10-27 13:12:24
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 1/81 done.	2024-10-27 13:12:32
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 10/81 done.	2024-10-27 13:12:32
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 34/81 done.	2024-10-27 13:12:33
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 35/81 done.	2024-10-27 13:12:34
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 36/81 done.	2024-10-27 13:12:34
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 30/81 done.	2024-10-27 13:12:39
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 28/81 done.	2024-10-27 13:12:41
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 33/81 done.	2024-10-27 13:12:45
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 4/81 done.	2024-10-27 13:12:51
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 40/81 done.	2024-10-27 13:12:51
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 39/81 done.	2024-10-27 13:12:56
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 43/81 done.	2024-10-27 13:12:57
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 44/81 done.	2024-10-27 13:12:57
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 45/81 done.	2024-10-27 13:12:57
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 37/81 done.	2024-10-27 13:12:59
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 42/81 done.	2024-10-27 13:12:59
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 48/81 done.	2024-10-27 13:13:03
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 46/81 done.	2024-10-27 13:13:03
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 32/81 done.	2024-10-27 13:13:04
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 49/81 done.	2024-10-27 13:13:04
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 52/81 done.	2024-10-27 13:13:04
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 53/81 done.	2024-10-27 13:13:05
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 54/81 done.	2024-10-27 13:13:05
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 51/81 done.	2024-10-27 13:13:07
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 29/81 done.	2024-10-27 13:13:20
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 41/81 done.	2024-10-27 13:13:21
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 47/81 done.	2024-10-27 13:13:27
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 58/81 done.	2024-10-27 13:13:28
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 50/81 done.	2024-10-27 13:13:29
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 61/81 done.	2024-10-27 13:13:30
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 38/81 done.	2024-10-27 13:13:30
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 62/81 done.	2024-10-27 13:13:31
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 63/81 done.	2024-10-27 13:13:31
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 55/81 done.	2024-10-27 13:13:39
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 60/81 done.	2024-10-27 13:13:44
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 64/81 done.	2024-10-27 13:13:48
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 67/81 done.	2024-10-27 13:13:48
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 57/81 done.	2024-10-27 13:13:56
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 70/81 done.	2024-10-27 13:13:57
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 71/81 done.	2024-10-27 13:13:57
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 72/81 done.	2024-10-27 13:13:57
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 66/81 done.	2024-10-27 13:13:59
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 69/81 done.	2024-10-27 13:14:00
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 73/81 done.	2024-10-27 13:14:01
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 76/81 done.	2024-10-27 13:14:03
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 75/81 done.	2024-10-27 13:14:05
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 59/81 done.	2024-10-27 13:14:08
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 79/81 done.	2024-10-27 13:14:08
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 80/81 done.	2024-10-27 13:14:08
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 81/81 done.	2024-10-27 13:14:08
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 78/81 done.	2024-10-27 13:14:09
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 1 complete! 
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 68/81 done.	2024-10-27 13:14:19
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 77/81 done.	2024-10-27 13:14:20
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 56/81 done.	2024-10-27 13:14:21
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 74/81 done.	2024-10-27 13:14:21
+Stevilo zacetnih skupin: 1 complete! 
+Zanka: 2 complete! 
+Setting 65/81 done.	2024-10-27 13:14:22
+Warning messages:
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+Warning message:
+Warning message:
+did not converge in 10 iterations 
+did not converge in 10 iterations 
+starting worker pid=62811 on localhost:11432 at 13:20:58.619
+starting worker pid=62824 on localhost:11432 at 13:20:58.785
+starting worker pid=62837 on localhost:11432 at 13:20:58.948
+starting worker pid=62850 on localhost:11432 at 13:20:59.113
+starting worker pid=62863 on localhost:11432 at 13:20:59.278
+starting worker pid=62876 on localhost:11432 at 13:20:59.443
+starting worker pid=62889 on localhost:11432 at 13:20:59.604
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+starting worker pid=63145 on localhost:11432 at 13:33:45.751
+starting worker pid=63158 on localhost:11432 at 13:33:45.917
+starting worker pid=63171 on localhost:11432 at 13:33:46.082
+starting worker pid=63185 on localhost:11432 at 13:33:46.251
+starting worker pid=63198 on localhost:11432 at 13:33:46.416
+starting worker pid=63211 on localhost:11432 at 13:33:46.579
+starting worker pid=63224 on localhost:11432 at 13:33:46.746
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+starting worker pid=63374 on localhost:11432 at 13:43:07.731
+starting worker pid=63387 on localhost:11432 at 13:43:07.898
+starting worker pid=63400 on localhost:11432 at 13:43:08.068
+starting worker pid=63413 on localhost:11432 at 13:43:08.231
+starting worker pid=63426 on localhost:11432 at 13:43:08.396
+starting worker pid=63439 on localhost:11432 at 13:43:08.567
+starting worker pid=63452 on localhost:11432 at 13:43:08.730
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+starting worker pid=63494 on localhost:11432 at 13:45:11.332
+starting worker pid=63507 on localhost:11432 at 13:45:11.503
+starting worker pid=63520 on localhost:11432 at 13:45:11.682
+starting worker pid=63533 on localhost:11432 at 13:45:11.850
+starting worker pid=63546 on localhost:11432 at 13:45:12.047
+starting worker pid=63559 on localhost:11432 at 13:45:12.211
+starting worker pid=63572 on localhost:11432 at 13:45:12.392
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+starting worker pid=64857 on localhost:11432 at 15:52:32.818
+starting worker pid=64870 on localhost:11432 at 15:52:32.982
+starting worker pid=64883 on localhost:11432 at 15:52:33.146
+starting worker pid=64896 on localhost:11432 at 15:52:33.309
+starting worker pid=64909 on localhost:11432 at 15:52:33.476
+starting worker pid=64922 on localhost:11432 at 15:52:33.646
+starting worker pid=64935 on localhost:11432 at 15:52:33.815
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+starting worker pid=65004 on localhost:11432 at 15:56:52.377
+starting worker pid=65017 on localhost:11432 at 15:56:52.571
+starting worker pid=65030 on localhost:11432 at 15:56:52.736
+starting worker pid=65044 on localhost:11432 at 15:56:52.900
+starting worker pid=65057 on localhost:11432 at 15:56:53.065
+starting worker pid=65070 on localhost:11432 at 15:56:53.236
+starting worker pid=65083 on localhost:11432 at 15:56:53.400
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+starting worker pid=65177 on localhost:11432 at 16:01:50.846
+starting worker pid=65190 on localhost:11432 at 16:01:51.012
+starting worker pid=65203 on localhost:11432 at 16:01:51.177
+starting worker pid=65216 on localhost:11432 at 16:01:51.348
+starting worker pid=65230 on localhost:11432 at 16:01:51.517
+starting worker pid=65243 on localhost:11432 at 16:01:51.687
+starting worker pid=65256 on localhost:11432 at 16:01:51.851
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+starting worker pid=65293 on localhost:11432 at 16:03:40.552
+starting worker pid=65306 on localhost:11432 at 16:03:40.720
+starting worker pid=65319 on localhost:11432 at 16:03:40.887
+starting worker pid=65332 on localhost:11432 at 16:03:41.055
+starting worker pid=65345 on localhost:11432 at 16:03:41.223
+starting worker pid=65358 on localhost:11432 at 16:03:41.388
+starting worker pid=65371 on localhost:11432 at 16:03:41.578
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Warning message:
+Warning message:
+did not converge in 10 iterations 
+Warning messages:
+did not converge in 10 iterations 
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning messages:
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+3: did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning messages:
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning message:
+did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning messages:
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+3: did not converge in 10 iterations 
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+In addition: Warning messages:
+1: did not converge in 10 iterations 
+2: did not converge in 10 iterations 
+Execution halted
