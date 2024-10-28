@@ -46,7 +46,7 @@ Za metodi sva se odločila na podlagi njunih predpostavk, ker so nekatere dokaj 
 
 # Generiranje podatkov
 
-Podatke sva generirala tako, da je njihova porazdelitev bivariatna multivariatna normalna. Zanima naju kako se bodo metode obnesle glede na to kako so si skupine med seboj različne. V ta namen sva si izbrala parameter, ki prilagaja povprečja v skupini, tj. $diff = (1, 2, 10)$. Želiva si, da imava primere, ko so si skupine zelo različne med seboj in ne tako zelo različne. Torej bo pri porazdelitvi povprečja generirana s pomočjo faktorja _diff_ in število skupin, kovariančna matrika pa bo po diagonali vsebovala število spremenljivk.
+Podatke sva generirala tako, da je njihova porazdelitev bivariatna multivariatna normalna. Zanima naju kako se bodo metode obnesle glede na to kako so si skupine med seboj različne. V ta namen sva si izbrala parameter, ki prilagaja povprečja v skupini, tj. $diff = (1, 2, 4, 10)$. Želiva si, da imava primere, ko so si skupine zelo različne med seboj in ne tako zelo različne. Torej bo pri porazdelitvi povprečja generirana s pomočjo faktorja _diff_ in število skupin, kovariančna matrika pa bo po diagonali vsebovala število spremenljivk.
 
 Faktorji, ki jih bova še spreminjala so:
 
@@ -84,13 +84,19 @@ data.primer1 = generiranje.podatkov(stevilo.spremenljivk = 12, velikost.skupin =
 pairs(data.primer1[,1:4], col=data.primer1[,13])
 ```
 
+```{r generiranje podatkov 2, fig.cap="Primer generiranih podatkov za 4 skupine, velikosti n = 100, 12 spremenljivk in diff = 4.", return_all = TRUE, fig.height=4, fig.width=5}
+
+data.primer2 = generiranje.podatkov(stevilo.spremenljivk = 12, velikost.skupin = 100, stevilo.skupin = 4, diff = 4)
+pairs(data.primer2[,1:4], col=data.primer2[,13])
+```
+
 # Simulacija
 
-Izvedla sva simulacijo s $1000$ ponovitvami in uporabila t.i. paralelno računanje(angl. *parallel computing*). V simulaciji sva generirala podatke in potem izvedla obe metodi razvrščanja v skupine(*metodo voditeljev* in *razvrščanje na podlagi modelov*).
+Izvedla sva simulacijo s $100$ ponovitvami in uporabila t.i. paralelno računanje(angl. *parallel computing*). V simulaciji sva generirala podatke in potem izvedla obe metodi razvrščanja v skupine(*metodo voditeljev* in *razvrščanje na podlagi modelov*).
 
-Za obe metodi sva izračunala 3 različne mere, in sicer prilagojeni Randov indeks(*ARI*), vsoto kvadratov znotraj skupine(*WSS*) in proporcija vsote kvadratov znotraj skupine(*PWSS*). 
-
+Za obe metodi sva izračunala 3 različne mere, in sicer prilagojeni Randov indeks(*ARI*), vsoto kvadratov znotraj skupine(*WSS*) in proporcija vsote kvadratov znotraj skupine(*PWSS*). \
 Prilagojeni Randovi indeksi zavzemajo vrednosti na intervalu $[-1,1]$ in želimo si, da so čim bližje 1, torej da gre za dobro ujemanje med razvrstitvami, kar je boljše od naključnega. Pri meri *WSS* si želimo majhne vrednosti, saj to pomeni, da so skupine bolj kompaktne in s tem so si točke znotraj skupine bolj podobne. Mera *PWSS* pa oceni delež variabilnosti v podatkih, ki ga pojasnjujejo skupine, v primerjavi z celotno variabilnostjo podatkov in višji kot je, bolje je, saj to pomeni, da so skupine dobro definirane in točke znotraj skupin tesno sledijo svojim centroidom.
+
 
 
 

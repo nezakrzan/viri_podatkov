@@ -23,27 +23,21 @@ generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.s
 }
 
 ################################## simulacija ##################################
-m = 1000 # st. ponovitev
+m = 100 # st. ponovitev
 
 stevilo.skupin.v = c(4, 8, 10)
 velikost.skupin.v = c(20, 100, 200)
 stevilo.spremenljivk.v = c(12, 24, 36)
-diff.v = c(1, 2, 10)
-
-# stevilo.zacetnih.skupin = c(1, 4, 10, 100)
+diff.v = c(1, 2, 4, 10)
 
 # parametri za test
 m = 2
-# stevilo.zacetnih.skupin = c(1,4) 
-# stevilo.spremenljivk.v = 12
-# velikost.skupin.v = 100
-# stevilo.skupin.v = 8
-# diff.v = 2
-# stevilo.zacetnih.skupin = 10
-# data = generiranje.podatkov(stevilo.spremenljivk, velikost.skupin, stevilo.skupin, diff)
+#stevilo.spremenljivk.v = 12
+#velikost.skupin.v = 100
+#stevilo.skupin.v = 8
+#diff.v = 2
 
-
-settings = expand.grid(stevilo.spremenljivk = rev(stevilo.spremenljivk.v), 
+settings = expand.grid(i=1:m, stevilo.spremenljivk = rev(stevilo.spremenljivk.v), 
                        velikost.skupin = rev(velikost.skupin.v), 
                        stevilo.skupin=rev(stevilo.skupin.v),
                        diff = rev(diff.v))
@@ -64,108 +58,90 @@ if(useOld&&file.exists("simulacija.RDS")){
   library(foreach)
   library(doParallel)
   library(doRNG)
+  library(mclust)
   
   # parallel computing
   nc = detectCores()-1 
   cl = makeCluster(nc, outfile="logSimulacija") # shranjujemo konzolo
   # nalozimo ustrezne pakete za vsak cluster worker
   clusterEvalQ(cl, { 
-    library(mclust)
-  })
+    library(mclust)})
   registerDoParallel(cl)
   
   set.seed(2024)
-  timePar = system.time({ # za time
-    res = foreach(i = 1:nrow(settings), .combine=rbind) %dorng% { 
-      # i = 1
-      # izberemo faktorje
-      stevilo.spremenljivk = settings$stevilo.spremenljivk[i]
-      stevilo.skupin = settings$stevilo.skupin[i]
-      velikost.skupin = settings$velikost.skupin[i]
-      diff = settings$diff[i]
-      
-      # za rezultate
-      res = data.frame(settings, #id=NA, nRep=NA, 
-                       ari.kmeans=NA, wss.kmeans=NA, pwss.kmeans=NA,
-                       ari.mclust=NA, wss.mclust=NA, pwss.mclust=NA) 
-      
-      # # pazi da bodo pravi podatki v pravi vrstici
-      # ind = 0
-      
-      for(j in 1:m){ 
-        # j = 1
-        # generiramo podatke
-        data = generiranje.podatkov(stevilo.spremenljivk= stevilo.spremenljivk, 
+
+  res = cbind(settings, 
+              ari.kmeans=NA, wss.kmeans=NA, pwss.kmeans=NA, 
+              ari.mclust=NA, wss.mclust=NA, pwss.mclust=NA)
+  for(row in 1:nrow(settings)){ 
+    # row = 1
+    # izberemo faktorje
+    stevilo.spremenljivk = settings$stevilo.spremenljivk[row]
+    stevilo.skupin = settings$stevilo.skupin[row]
+    velikost.skupin = settings$velikost.skupin[row]
+    diff = settings$diff[row]
+  
+    # generiramo podatke
+    data = generiranje.podatkov(stevilo.spremenljivk= stevilo.spremenljivk, 
                                     velikost.skupin = velikost.skupin,
                                     stevilo.skupin = stevilo.skupin, 
                                     diff = diff) 
-        # transformacija v data.frame
-        data = as.data.frame(data)
-        # skaliramo podatke za metodo razvrscanje na polagi modelov
-        # data.scale <- scale(data[,1:stevilo.spremenljivk])
+    # transformacija v data.frame
+    data = as.data.frame(data)
+    # skaliramo podatke za metodo razvrscanje na polagi modelov
+    data.scale = scale(data[,1:stevilo.spremenljivk])
         
-        # metoda kmeans
-        kmeans.res = kmeans(data[,1:stevilo.spremenljivk], centers=stevilo.skupin) #, nstart=nRep) 
-        res$ari.kmeans[j] = blockmodeling::crand(data$skupina, kmeans.res$cluster) #ari
-        res$wss.kmeans[j] = kmeans.res$tot.withinss #wss
-        res$pwss.kmeans[j] = kmeans.res$tot.withinss/kmeans.res$totss #pwss
+    # metoda kmeans
+    kmeans.res = kmeans(data[,1:stevilo.spremenljivk], centers=stevilo.skupin, nstart = 100) #, nstart=nRep) 
+    res$ari.kmeans[row] = blockmodeling::crand(data$skupina, kmeans.res$cluster) #ari
+    res$wss.kmeans[row] = kmeans.res$tot.withinss #wss
+    res$pwss.kmeans[row] = kmeans.res$tot.withinss/kmeans.res$totss #pwss
         
-        # razvrscanje na polagi modelov
-        mclust.res = mclust::Mclust(data[,1:stevilo.spremenljivk], G = stevilo.skupin) # kle nevem cist tocn, k zgori je za nstart kao zacetno stevilo skupin ane in pol sm mal googlala sam kle pa nevem cit tocn kaj nastavt...
-        res$ari.mclust[j] = blockmodeling::crand(data$skupina, mclust.res$classification) #ari
-        # wss
-        wss = sum(sapply(1:stevilo.skupin, function(k){
-          sum(rowSums((
-            data[,1:stevilo.spremenljivk][mclust.res$classification == k, ] - colMeans(data[,1:stevilo.spremenljivk][mclust.res$classification == k, ]))^2))
-        }))
-        res$wss.mclust[j] = wss
-        # pwss
-        res$pwss.mclust[j] = wss / sum((data[,1:stevilo.spremenljivk] - colMeans(data[,1:stevilo.spremenljivk]))^2)
-        
-        # dala sm vn ta nstart ker to ni to kar sm jst misla da je in zdej niti ne vem tocno vec kaj je neki da hitrejs skonvergira, uglavnem lani tega nismo delal....
-        # sm pa pustla zakomentirano za vsak slucaj ce ti ugotovis, sam men se zdi to bw ker ma samo kmeans to ostale metode nimajo....
-        
-        # for(nRep in stevilo.zacetnih.skupin){ 
-        #   # nRep = 4
-        #   # zapis v pravo vrstico
-        #   ind = ind+1 
-        #   res$id[ind] = i*m*10 + j
-        #   res$nRep[ind] = nRep
-        #   
-        #   # metoda kmeans
-        #   kmeans.res = kmeans(data[,1:stevilo.spremenljivk], centers=stevilo.skupin, nstart=nRep) 
-        #   res$ari.kmeans[ind] = blockmodeling::crand(data$skupina, kmeans.res$cluster) #ari
-        #   res$wss.kmeans[ind] = kmeans.res$tot.withinss #wss
-        #   res$pwss.kmeans[ind] = kmeans.res$tot.withinss/kmeans.res$totss #pwss
-        #   
-        #   # razvrscanje na polagi modelov
-        #   mclust.res = mclust::Mclust(data.scale, G = stevilo.skupin) # kle nevem cist tocn, k zgori je za nstart kao zacetno stevilo skupin ane in pol sm mal googlala sam kle pa nevem cit tocn kaj nastavt...
-        #   res$ari.mclust[ind] = blockmodeling::crand(data$skupina, mclust.res$classification) #ari
-        #   # wss
-        #   wss = sum(sapply(1:stevilo.skupin, function(k){
-        #     sum(rowSums((
-        #       data.scale[mclust.res$classification == k, ] - colMeans(data.scale[mclust.res$classification == k, ]))^2))
-        #   }))
-        #   res$wss.mclust[ind] = wss
-        #   # pwss
-        #   res$pwss.mclust[ind] = wss / sum((data.scale - colMeans(data.scale))^2)
-        # }
-      }
-      return(res)
+    # razvrscanje na polagi modelov
+    suppressMessages({ # v konzoli se ne izpisuje fitting
+      model = capture.output({
+        mclust.res = mclust::Mclust(data.scale, G = stevilo.skupin) # kle nevem cist tocn, k zgori je za nstart kao zacetno stevilo skupin ane in pol sm mal googlala sam kle pa nevem cit tocn kaj nastavt...
+      })
+    })
+    # ari
+    res$ari.mclust[row] = blockmodeling::crand(data$skupina, mclust.res$classification) #ari
+    # wss
+    wss.mclust = sum(sapply(1:stevilo.skupin, function(k) {
+      sum(rowSums((data.scale[mclust.res$classification == k, ] - colMeans(data.scale[mclust.res$classification == k, ]))^2))
+    }))
+    res$wss.mclust[row] = wss.mclust
+    # pwss
+    res$pwss.mclust[row] = wss.mclust / sum((data.scale - colMeans(data.scale))^2)
+    
+    # kje se nahaja zanka
+    if(row%%10==0) cat("Iteration ", row, "/", nrow(settings), "complete! \n")
     }
-  })
-  attr(res, "time") = timePar
-  cat("Time needed in min:", timePar[3]/60, "\n")
-  saveRDS(res, "simulacija.RDS")
+  saveRDS(object = res, file="simulacija.RDS")
   stopCluster(cl)
 }
 
+# na enem slajdu v predavanjih pise: Why is "sum of squares within clusters" not a good measure?
+# in moj zapisek na to je: Cilj clusteringa najti skupine ki so si čim manj podobne ampak elemnti v skupini pa čim bolj skupi. Nekatere metode optimize to mero(k-means) in nekatere ne, zato ni najboljša mera...
+# sm sla gledat v lansko kar smo delala, ampak te dve metodi nimata nobene skupne mere...
+# zdej pa nevem al dodava se wss al ne? mal sm googlala je se nek Silhuetni koeficient 
+# meri pa, kako podobne so si točke znotraj gruče v primerjavi z najbližjo sosednjo gručo. Giblje se od -1 do 1, kjer večja vrednost pomeni boljše grupiranje.
 ################################# grafični prikaz ##############################
-resAgg = aggregate(cbind(ari.kmeans, wss.kmeans, pwss.kmeans, ari.mclust, wss.mclust, pwss.mclust) ~ 
-                     stevilo.spremenljivk + velikost.skupin + stevilo.skupin, data = res, FUN = mean)
-# treba je dodat method...
+library(tidyr)
+library(dplyr)
+resLong = pivot_longer(res, cols =matches("^(ari|wss|pwss)\\."),  values_to = "value",
+                       names_to = c("metric", "method"), names_pattern = "^(ari|wss|pwss)\\.(kmeans|mclust)") 
+resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) # da so ari, wss in pwss vsaka svoj column
+
+resAgg = aggregate(cbind(ari, wss, pwss) ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method, 
+                   data = resWide, FUN = mean)
+
 library(ggplot2)
 # risemo adjR2
-ggplot(resAgg, aes(y = ari.kmeans, x = as.factor(stevilo.spremenljivk))) + # za x ponavadi dobro neki kar nima preveč vpliva
+ggplot(resAgg, aes(y = ari, x = as.factor(stevilo.spremenljivk), col=method, group=method)) + # za x ponavadi dobro neki kar nima preveč vpliva
   geom_point() + geom_line() +
   facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
+
+
+
+
+
