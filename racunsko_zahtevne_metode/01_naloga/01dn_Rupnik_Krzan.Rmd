@@ -55,7 +55,7 @@ Ocenjujemo veljavnost testa za razliko aritmetičnih sredin iz treh neodvisnih v
 - predpostavka različnih varianc(Welchow ANOVA test) in
 - kombiniran pristop z Levenovim testom.
 
-Pri kombiniranem pristopu z Levenovim testom gre za možnost, kjer predpostaviva enake variance, če ne moreva zavrniti predopstavke o enakosti varianc(pri $5$ \% tveganju) s testom za enakost varianc in neenake variance, če lahko. Tukaj sva za testiranje predpostavke o enakosti varianc torej uporabljala Levenejev test.
+Pri kombiniranem pristopu z Levenovim testom gre za možnost, kjer predpostaviva enake variance, če ne moreva zavrniti predpostavke o enakosti varianc(pri $5$ \% tveganju) s testom za enakost varianc in neenake variance, če lahko. Tukaj sva za testiranje predpostavke o enakosti varianc torej uporabljala Levenejev test.
 
 # Generiranje podatkov
 
@@ -149,7 +149,7 @@ Izvedla sva simulacije z $5000$ ponovitvami(da so bile dokaj hitro končane), kj
 -->
 Izvedla sva simulacije s $5000$ ponovitvami(da so bile dokaj hitro končane).
 
-V prvi simulaciji sva računala $p$ - vrednost in preverjala njeno porazdelitev; zanimalo naju je ali je $p$ -vrednost porazdeljena enakomerno. Na podalagi $p$ - vrednosti pa sva potem določila tudi velikost testa.
+V prvi simulaciji sva računala $p$ - vrednost in preverjala njeno porazdelitev; zanimalo naju je ali je $p$ -vrednost porazdeljena enakomerno. Na podlagi $p$ - vrednosti pa sva potem določila tudi velikost testa.
 
 Izvedla sva tudi simulacijo za ugotavljenje kakšna je moč testa pri enakih in različnih variancah. V simulaciji sva uporabila tri metode, klasični ANOVA test, Welchov ANOVA test in možnost, kjer predpostavimo enake variance, če ne moremo zavrniti predpostavke o enakosti varianc (pri $5$ \% tveganju) z Levenejevim testom za enakost varianc, in neenake variance, če to lahko.
 
@@ -238,7 +238,7 @@ ggplot(valAnal, aes(y=pVal, col=method, group=method, x=n))+
 
 Res smo potrdili zgornje predvidevanje. V primeru različnih varianc klasični ANOVA test prevečkrat zavrne ničelno hipotezo. Ko pa je varianca v vseh treh skupinah enaka $1$, so vrednosti dokaj podobne pri vseh treh testih. 
 
-Opaziva tudi pri klasični ANOVI, da se pri večjih razlikah v variancah(npr. $var = (1,10,1)$) delež zavrnitev ničelne hpoteze zmanjša pri zelo veliki skupini($n = 1000$), ampak pri manjših razlikah v variancah(npr. $var = (1, 5, 1)$) pa te razlike v deležu zavrnitev ničelne hipoteze med najmanjšo($n = 15$) in največjo skupino($n = 1000$) ni.
+Opaziva tudi pri klasični ANOVI, da se pri večjih razlikah v variancah(npr. $var = (1,10,1)$) delež zavrnitev ničelne hpoteze zmanjša pri zelo veliki skupini($n = 1000$), ampak pri manjših razlikah v variancah(npr. $var = (1, 5, 10)$) pa te razlike v deležu zavrnitev ničelne hipoteze med najmanjšo($n = 15$) in največjo skupino($n = 1000$) ni.
 
 Glede na velikost skupin delež zavrnitev ničelne hipoteze niha, ampak med najmanjšo skupino($n = 15$) in največjo($n = 1000$) pri vseh treh tipih izbranih varianc, ni večjih razlik v deležu zavrnitve ničelne hipoteze.
 
@@ -248,8 +248,8 @@ Glede na velikost skupin delež zavrnitev ničelne hipoteze niha, ampak med najm
 
 Glede na moč testa lahko primerjamo vse tri teste le v primeru enakih varianc. V preostalih primerih klasični ANOVA test ni veljaven, zato bomo primerjali le preostala dva. Najprej sva primerjala med seboj teste v primeru enakih varianc, nato pa še v primeru različnih, kjer sva si pod alternativno domnevo(_povprečja med skupinami so različna_) izbrala povprečja 
 
-*$(0, 0.5, 0)$ in
-*$(0, -0.5, 0.5)$
+* $(0, 0.5, 0)$ in
+* $(0, -0.5, 0.5)$
 
 
 ### Enake variance {-}
@@ -315,7 +315,7 @@ Na podlagi zgornjega grafa in tabel ne moremo govoriti o velikih razlikah med te
 
 ### Različne variance {-}
 
-```{r risanje moci razlicne var, fig.cap="Prikaz moči testa v primeru različnih varianc(vrstice predstavljajo varinaco skupin, stolpci pa povprečje posamezne skupine)."}
+```{r risanje moci razlicne var, fig.cap="Prikaz moči testa v primeru različnih varianc(vrstice predstavljajo varianco skupin, stolpci pa povprečje posamezne skupine)."}
 res_p<-readRDS("moc_razlicne.RDS")
 
 # dava v format long
@@ -413,17 +413,19 @@ Takoj opazimo, da v primeru enakih varianc v vseh treh skupinah, ko so velikosti
 Večja razlika v deležu zavrnitev pri klasičnem in Welchovim ANOVA testom je, če so razlike v velikosti skupin manjše($n = (20, 25, 30$).  
 
 <!-- Lahko bi rekli, da je torej pri enakih varianciah v vseh treh skupinah in različnih velikostih skupin Welchow test boljši.
-Neza: tole nism cist zihr ce je res tko... ce je res tko potem v zakljucek sam se dopiseva da je boljsi Welchov ce mamo razlicne velikosti skupin....-->
+Neza: tole nism cist zihr ce je res tko... ce je res tko potem v zakljucek sam se dopiseva da je boljsi Welchov ce mamo razlicne velikosti skupin....
+Tom28: ja lahko bi dala neki na to foro notr "Glede na rezultate simulacije bi lahko rekli, da je torej pri enakih varianciah v vseh treh skupinah in različnih velikostih skupin Welchow test boljši (najprimernješi), saj je velikost testa najbližje željeni vrednosti $0.05$."-->
 
 # Zaključek
 
-Kot je bilo pričakovano, pri različnih variancah klasični ANOVA test ni ustrezen, v primerih enakih varianc med skupinami pa rezultati kažejo ustreznost klasičnega ANOVA testa. Velikost vzorca nima nekega pomembnega vpliva na veljavnost klasičnega ANOVA testa, saj delež zavračanja ničelne hipoteze ostaja visok, kadar variabilnost ni enaka.
+Kot je bilo pričakovano, pri različnih variancah klasični ANOVA test ni ustrezen, v primerih enakih varianc med skupinami pa rezultati kažejo ustreznost klasičnega ANOVA testa. Velikost vzorca nima nekega pomembnega vpliva na veljavnost klasičnega ANOVA testa, saj delež zavračanja ničelne hipoteze ostaja visok, kadar variabilnost v skupinah ni enaka.
 
-Welchov ANOVA test in kombinirani pristop (kjer sva uporabljala Levenov test za preverjanje enakosti varianc) se izkažeta za bolj ustrezna tako v primerih enakih kot tudi različnih varianc. Pri enakih variancah je delež zavrnitev ničelne hipoteze pri vseh treh testih podobna, vendar Welchov ANOVA in kombinirani pristop pa imata manjšo velikost pri neenakih variancah. 
+Welchov ANOVA test in kombinirani pristop (kjer sva uporabljala Levenov test za preverjanje enakosti varianc) se izkažeta za bolj ustrezna tako v primerih enakih kot tudi različnih varianc. Pri enakih variancah je delež zavrnitev ničelne hipoteze pri vseh treh testih podobna, vendar Welchov ANOVA in kombinirani pristop pa imata manjšo velikost testa pri neenakih variancah. 
 
 Klasični ANOVA test ni primeren test za razliko aritmetičnih sredin iz treh neodvisnih vzorcev z neenakimi variancami, saj, zaradi kršenja predpostavk, prepogosto nepravilno zavrne ničelno hipotezo. Welchov ANOVA test in kombinirani pristop z Levenovim testom sta v takšnih primerih bolj ustrezna in zagotavljata pravilnejše rezultate, ne glede na velikost vzorca. Sta tudi močnejša na večjih vzorcih oz. skupinah in skupinah, kjer se porazdelitve med seboj manj prekrivajo. 
 
-
+<!-- Tom28: tale zadnji stavek nevem če je cist pravilen oz vsaj jst nism opazil 
+da bi bila testa boljsa oz veliko boljsa-->
 
 
 
