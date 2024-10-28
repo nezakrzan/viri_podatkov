@@ -100,6 +100,7 @@ if(useOld&&file.exists("simulacija.RDS")){
     # razvrscanje na polagi modelov
     suppressMessages({ # v konzoli se ne izpisuje fitting
       model = capture.output({
+        # Tom28: tole Mclust se mi zdi da si cist ok definirala ker G pomeni v koliko skupin jih razvrsti...ce bi dala recimo G=3 bi jih razvrstilo samo v 3 skupine
         mclust.res = mclust::Mclust(data.scale, G = stevilo.skupin) # kle nevem cist tocn, k zgori je za nstart kao zacetno stevilo skupin ane in pol sm mal googlala sam kle pa nevem cit tocn kaj nastavt...
       })
     })
@@ -125,6 +126,10 @@ if(useOld&&file.exists("simulacija.RDS")){
 # sm sla gledat v lansko kar smo delala, ampak te dve metodi nimata nobene skupne mere...
 # zdej pa nevem al dodava se wss al ne? mal sm googlala je se nek Silhuetni koeficient 
 # meri pa, kako podobne so si točke znotraj gruče v primerjavi z najbližjo sosednjo gručo. Giblje se od -1 do 1, kjer večja vrednost pomeni boljše grupiranje.
+# Tom28: ja jst imam zapisano da bi bila wss pristranska mera ker kokr si napisala jo ene metode optimizirajo ene pa ne...tko da jst 
+# kaj pa če z "Randov indeks" ang. Rand index preveriva koliko se ujema prava razporeditev v skupine in ocenjena z metodo...misls da je ta mera ok?
+# za Silhueto sm tole nasel in jo ne pohvalijo kej prevec ker nej bi spet favorizirala k-means
+# https://www.reddit.com/r/datascience/comments/yzir4v/is_it_reasonable_to_compare_different_clustering/?rdt=49702
 ################################# grafični prikaz ##############################
 library(tidyr)
 library(dplyr)
@@ -135,9 +140,15 @@ resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) # d
 resAgg = aggregate(cbind(ari, wss, pwss) ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method, 
                    data = resWide, FUN = mean)
 
+# vrednosti dava v factor zaradi risanja
+resAggFac = resAgg
+resAggFac$stevilo.spremenljivk = as.factor(resAggFac$stevilo.spremenljivk)
+resAggFac$velikost.skupin = as.factor(resAggFac$velikost.skupin)
+resAggFac$stevilo.skupin = as.factor(resAggFac$stevilo.skupin)
+
 library(ggplot2)
 # risemo adjR2
-ggplot(resAgg, aes(y = ari, x = as.factor(stevilo.spremenljivk), col=method, group=method)) + # za x ponavadi dobro neki kar nima preveč vpliva
+ggplot(resAggFac, aes(y = ari, x = stevilo.spremenljivk, col=method, group=method)) + # za x ponavadi dobro neki kar nima preveč vpliva
   geom_point() + geom_line() +
   facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
 

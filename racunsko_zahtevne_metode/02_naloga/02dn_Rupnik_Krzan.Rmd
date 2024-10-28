@@ -54,10 +54,12 @@ Faktorji, ki jih bova še spreminjala so:
 - velikosti skupin, $n = (20, 100, 200)$, pri čemer bodo imele vse skupine vedno enako velikost in
 - število spremenljivk, $v = (12, 24, 36)$.
 <!--- vnaprejšna določitev števila skupin, $k.2 = (1, 4, 10, 100)$.-->
+<!-- Tom28: ne spomnim se tocno zakaj smo na vajah tko naredil da sta bila
+stevilo skupin in stevilo spremenljivk povezana, da je stevilo spremenljivk veckratnik stevila skupin...-->
 
 Faktorji so bili izbrani na podlagi tega, da si želiva rezultate, ki bodo dobri in slabi oziroma da bodo za nekatere metode dobri za druge pa slabi.
 
-Pri generiranju podatkov bo število spremenljivk enako številu skupin, vse ostale spremenljivke bodo neinformativne, ker nas zanima tudi kako vpliva dodajanje nepomembnih oz. neinformativnih spremenljivk. 
+Pri generiranju podatkov bo število <!--Tom28: informativnih--> spremenljivk enako številu skupin, vse ostale spremenljivke bodo neinformativne, ker nas zanima tudi kako vpliva dodajanje nepomembnih oz. neinformativnih spremenljivk. 
 
 ```{r generiranje podatkov, fig.cap="Primer generiranih podatkov za 4 skupine, velikosti n = 100, 12 spremenljivk in diff = 2.", return_all = TRUE, fig.height=4, fig.width=5}
 generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.skupin, diff){
