@@ -3392,3 +3392,150 @@ Execution halted
 Error in unserialize(node$con) : error reading from connection
 Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
 Execution halted
+starting worker pid=83005 on localhost:11808 at 19:25:40.507
+starting worker pid=83019 on localhost:11808 at 19:25:40.670
+starting worker pid=83032 on localhost:11808 at 19:25:40.831
+starting worker pid=83045 on localhost:11808 at 19:25:40.995
+starting worker pid=83058 on localhost:11808 at 19:25:41.158
+starting worker pid=83071 on localhost:11808 at 19:25:41.320
+starting worker pid=83084 on localhost:11808 at 19:25:41.482
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+starting worker pid=83262 on localhost:11808 at 19:37:50.058
+starting worker pid=83275 on localhost:11808 at 19:37:50.224
+starting worker pid=83288 on localhost:11808 at 19:37:50.387
+starting worker pid=83301 on localhost:11808 at 19:37:50.555
+starting worker pid=83314 on localhost:11808 at 19:37:50.721
+starting worker pid=83327 on localhost:11808 at 19:37:50.886
+starting worker pid=83340 on localhost:11808 at 19:37:51.047
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+starting worker pid=83668 on localhost:11808 at 19:52:21.254
+starting worker pid=83681 on localhost:11808 at 19:52:21.416
+starting worker pid=83694 on localhost:11808 at 19:52:21.576
+starting worker pid=83707 on localhost:11808 at 19:52:21.738
+starting worker pid=83720 on localhost:11808 at 19:52:21.903
+starting worker pid=83733 on localhost:11808 at 19:52:22.064
+starting worker pid=83747 on localhost:11808 at 19:52:22.235
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+starting worker pid=83937 on localhost:11808 at 20:01:20.325
+starting worker pid=83950 on localhost:11808 at 20:01:20.485
+starting worker pid=83963 on localhost:11808 at 20:01:20.645
+starting worker pid=83976 on localhost:11808 at 20:01:20.808
+starting worker pid=83989 on localhost:11808 at 20:01:20.970
+starting worker pid=84002 on localhost:11808 at 20:01:21.133
+starting worker pid=84015 on localhost:11808 at 20:01:21.300
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+starting worker pid=84793 on localhost:11488 at 20:39:04.518
+starting worker pid=84806 on localhost:11488 at 20:39:04.680
+starting worker pid=84819 on localhost:11488 at 20:39:04.842
+starting worker pid=84832 on localhost:11488 at 20:39:05.005
+starting worker pid=84845 on localhost:11488 at 20:39:05.167
+starting worker pid=84858 on localhost:11488 at 20:39:05.328
+starting worker pid=84871 on localhost:11488 at 20:39:05.488
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.

@@ -31,17 +31,16 @@ stevilo.spremenljivk.v = c(12, 24, 36)
 diff.v = c(1, 2, 4, 10)
 
 # parametri za test
-m = 2
-#stevilo.spremenljivk.v = 12
-#velikost.skupin.v = 100
-#stevilo.skupin.v = 8
-#diff.v = 2
+# m = 2
+# stevilo.spremenljivk.v = 12
+# velikost.skupin.v = 100
+# stevilo.skupin.v = 8
+# diff.v = 2
 
 settings = expand.grid(i=1:m, stevilo.spremenljivk = rev(stevilo.spremenljivk.v), 
                        velikost.skupin = rev(velikost.skupin.v), 
                        stevilo.skupin=rev(stevilo.skupin.v),
                        diff = rev(diff.v))
-
 
 useOld = FALSE # ne uporabljal starega rezultata
 
@@ -73,6 +72,7 @@ if(useOld&&file.exists("simulacija.RDS")){
   res = cbind(settings, 
               ari.kmeans=NA, wss.kmeans=NA, pwss.kmeans=NA, 
               ari.mclust=NA, wss.mclust=NA, pwss.mclust=NA)
+  
   for(row in 1:nrow(settings)){ 
     # row = 1
     # izberemo faktorje
@@ -100,15 +100,15 @@ if(useOld&&file.exists("simulacija.RDS")){
     # razvrscanje na polagi modelov
     suppressMessages({ # v konzoli se ne izpisuje fitting
       model = capture.output({
-        # Tom28: tole Mclust se mi zdi da si cist ok definirala ker G pomeni v koliko skupin jih razvrsti...ce bi dala recimo G=3 bi jih razvrstilo samo v 3 skupine
-        mclust.res = mclust::Mclust(data.scale, G = stevilo.skupin) # kle nevem cist tocn, k zgori je za nstart kao zacetno stevilo skupin ane in pol sm mal googlala sam kle pa nevem cit tocn kaj nastavt...
+        mclust.res = mclust::Mclust(data.scale, G = stevilo.skupin) 
       })
     })
     # ari
-    res$ari.mclust[row] = blockmodeling::crand(data$skupina, mclust.res$classification) #ari
+    res$ari.mclust[row] = blockmodeling::crand(data$skupina, mclust.res$classification) 
     # wss
     wss.mclust = sum(sapply(1:stevilo.skupin, function(k) {
-      sum(rowSums((data.scale[mclust.res$classification == k, ] - colMeans(data.scale[mclust.res$classification == k, ]))^2))
+      sum(rowSums((as.matrix(data.scale[mclust.res$classification == k, ]) - 
+                     colMeans(as.matrix(data.scale[mclust.res$classification == k, ])))^2))
     }))
     res$wss.mclust[row] = wss.mclust
     # pwss
@@ -130,6 +130,8 @@ if(useOld&&file.exists("simulacija.RDS")){
 # kaj pa če z "Randov indeks" ang. Rand index preveriva koliko se ujema prava razporeditev v skupine in ocenjena z metodo...misls da je ta mera ok?
 # za Silhueto sm tole nasel in jo ne pohvalijo kej prevec ker nej bi spet favorizirala k-means
 # https://www.reddit.com/r/datascience/comments/yzir4v/is_it_reasonable_to_compare_different_clustering/?rdt=49702
+
+# Neza28: to mava ze ta randov index sam da mava adjusted...
 ################################# grafični prikaz ##############################
 library(tidyr)
 library(dplyr)
@@ -148,7 +150,7 @@ resAggFac$stevilo.skupin = as.factor(resAggFac$stevilo.skupin)
 
 library(ggplot2)
 # risemo adjR2
-ggplot(resAggFac, aes(y = ari, x = stevilo.spremenljivk, col=method, group=method)) + # za x ponavadi dobro neki kar nima preveč vpliva
+ggplot(resAggFac, aes(y = ari, x = stevilo.spremenljivk, col=method, group=method)) + 
   geom_point() + geom_line() +
   facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
 

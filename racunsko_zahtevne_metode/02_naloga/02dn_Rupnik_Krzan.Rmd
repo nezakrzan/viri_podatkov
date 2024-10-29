@@ -97,8 +97,9 @@ pairs(data.primer2[,1:4], col=data.primer2[,13])
 Izvedla sva simulacijo s $100$ ponovitvami in uporabila t.i. paralelno računanje(angl. *parallel computing*). V simulaciji sva generirala podatke in potem izvedla obe metodi razvrščanja v skupine(*metodo voditeljev* in *razvrščanje na podlagi modelov*).
 
 Za obe metodi sva izračunala 3 različne mere, in sicer prilagojeni Randov indeks(*ARI*), vsoto kvadratov znotraj skupine(*WSS*) in proporcija vsote kvadratov znotraj skupine(*PWSS*). \
-Prilagojeni Randovi indeksi zavzemajo vrednosti na intervalu $[-1,1]$ in želimo si, da so čim bližje 1, torej da gre za dobro ujemanje med razvrstitvami, kar je boljše od naključnega. Pri meri *WSS* si želimo majhne vrednosti, saj to pomeni, da so skupine bolj kompaktne in s tem so si točke znotraj skupine bolj podobne. Mera *PWSS* pa oceni delež variabilnosti v podatkih, ki ga pojasnjujejo skupine, v primerjavi z celotno variabilnostjo podatkov in višji kot je, bolje je, saj to pomeni, da so skupine dobro definirane in točke znotraj skupin tesno sledijo svojim centroidom.
+Prilagojeni Randovi indeksi zavzemajo vrednosti na intervalu $[-1,1]$ in želimo si, da so čim bližje 1, torej da gre za dobro ujemanje med razvrstitvami, kar je boljše od naključnega. Pri meri *WSS* si želimo majhne vrednosti, saj to pomeni, da so skupine bolj kompaktne in s tem so si točke znotraj skupine bolj podobne. Gre sicer za mero, ki je pristranska in jo nekatere metode optimizirajo(ravno metoda *kmeans*). Mera *PWSS* pa oceni delež variabilnosti v podatkih, ki ga pojasnjujejo skupine, v primerjavi z celotno variabilnostjo podatkov in višji kot je, bolje je, saj to pomeni, da so skupine dobro definirane in točke znotraj skupin tesno sledijo svojim centroidom.
 
+Pri primerjavi metod se bova na začetku osredotočala predvsem na prilagojeni Randov indeks(*ARI*), saj je mera *WSS* pristranska in jo nekatere metode optimizirajo(ravno metoda *kmeans*). Meri *WSS* in *PWSS* bosta služili zgolj kot dodaten vpogled.
 
 
 
