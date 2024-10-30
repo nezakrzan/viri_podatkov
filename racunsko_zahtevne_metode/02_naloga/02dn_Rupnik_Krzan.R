@@ -42,7 +42,7 @@ settings = expand.grid(i=1:m, stevilo.spremenljivk = rev(stevilo.spremenljivk.v)
                        stevilo.skupin=rev(stevilo.skupin.v),
                        diff = rev(diff.v))
 
-useOld = FALSE # ne uporabljal starega rezultata
+useOld = TRUE # ne uporabljal starega rezultata
 
 if(useOld&&file.exists("simulacija.RDS")){
   res = readRDS("simulacija.RDS")
@@ -139,8 +139,14 @@ resLong = pivot_longer(res, cols =matches("^(ari|wss|pwss)\\."),  values_to = "v
                        names_to = c("metric", "method"), names_pattern = "^(ari|wss|pwss)\\.(kmeans|mclust)") 
 resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) # da so ari, wss in pwss vsaka svoj column
 
+
 resAgg = aggregate(cbind(ari, wss, pwss) ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method, 
                    data = resWide, FUN = mean)
+# Tom30: dodal sem na desno stran se diff ker ga nisva se upostevala
+resAgg_diff = aggregate(cbind(ari, wss, pwss) ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method, 
+                   data = resWide, FUN = mean)
+
+# ======================= ari ================================
 
 # vrednosti dava v factor zaradi risanja
 resAggFac = resAgg
@@ -148,13 +154,33 @@ resAggFac$stevilo.spremenljivk = as.factor(resAggFac$stevilo.spremenljivk)
 resAggFac$velikost.skupin = as.factor(resAggFac$velikost.skupin)
 resAggFac$stevilo.skupin = as.factor(resAggFac$stevilo.skupin)
 
+resAggFac_diff$stevilo.spremenljivk = as.factor(resAggFac_diff$stevilo.spremenljivk)
+resAggFac_diff$velikost.skupin = as.factor(resAggFac_diff$velikost.skupin)
+resAggFac_diff$stevilo.skupin = as.factor(resAggFac_diff$stevilo.skupin)
+resAggFac_diff$diff = as.factor(resAggFac_diff$diff)
+
+
 library(ggplot2)
 # risemo adjR2
 ggplot(resAggFac, aes(y = ari, x = stevilo.spremenljivk, col=method, group=method)) + 
   geom_point() + geom_line() +
   facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
 
+# na x osi je velikost skupin
+ggplot(resAggFac, aes(y = ari, x = velikost.skupin, col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ stevilo.spremenljivk, scales="free")
 
 
+# ======================= wss ================================
+
+ggplot(resAggFac, aes(y = wss, x = stevilo.spremenljivk, col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
 
 
+# ======================= pwss ===============================
+
+ggplot(resAggFac, aes(y = pwss, x = stevilo.spremenljivk, col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")

@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message
 library(ggplot2)
 library(car)
 library(tidyr)
+library(dplyr)
 library(ADGofTest)
 
 # seme
@@ -101,11 +102,78 @@ Prilagojeni Randovi indeksi zavzemajo vrednosti na intervalu $[-1,1]$ in želimo
 
 Pri primerjavi metod se bova na začetku osredotočala predvsem na prilagojeni Randov indeks(*ARI*), saj je mera *WSS* pristranska in jo nekatere metode optimizirajo(ravno metoda *kmeans*). Meri *WSS* in *PWSS* bosta služili zgolj kot dodaten vpogled.
 
+```{r branje in sprememba podatkov za izris grafov}
+res = readRDS("simulacija.RDS")
+
+resLong = pivot_longer(res, cols =matches("^(ari|wss|pwss)\\."),
+                       values_to = "value",
+                       names_to = c("metric", "method"),
+                       names_pattern = "^(ari|wss|pwss)\\.(kmeans|mclust)") 
+resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) # da so ari, wss in pwss vsaka svoj column
+
+resAgg = aggregate(cbind(ari, wss, pwss) ~ stevilo.spremenljivk + velikost.skupin 
+                   + stevilo.skupin + method, 
+                   data = resWide, FUN = mean)
+
+resAggFac = resAgg
+resAggFac$stevilo.spremenljivk = as.factor(resAggFac$stevilo.spremenljivk)
+resAggFac$velikost.skupin = as.factor(resAggFac$velikost.skupin)
+resAggFac$stevilo.skupin = as.factor(resAggFac$stevilo.skupin)
+
+resAgg_diff = aggregate(cbind(ari, wss, pwss) ~ stevilo.spremenljivk +
+                          velikost.skupin + stevilo.skupin + method + diff, 
+                        data = resWide, FUN = mean)
+
+resAggFac_diff = resAgg_diff
+resAggFac_diff$stevilo.spremenljivk = as.factor(resAggFac_diff$stevilo.spremenljivk)
+resAggFac_diff$velikost.skupin = as.factor(resAggFac_diff$velikost.skupin)
+resAggFac_diff$stevilo.skupin = as.factor(resAggFac_diff$stevilo.skupin)
+resAggFac_diff$diff = as.factor(resAggFac_diff$diff)
+```
+
+## Popravljen Randov indeks (ARI)
+
+Poglejmo si kako se spreminja ARI vrednost v primeru, ko spreminjamo število skupin, število spremenljik in velikost skupin, pri tem pa ne upoštevamo kako so si skupine med seboj različne (`diff`). Vrstice predstavljajo spremembo števila skupin, stolpci pa spremembo velikosti skupin.
+
+```{r risanje ARI, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikost skupin in število skupin", fig.height=4, fig.width=5}
+ggplot(resAggFac, aes(y = ari, x = stevilo.spremenljivk,
+                      col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
+```
+
+Vidimo, da je v vseh kombinacijah števila skupin in velikosti skupin trend ARI vrednosti podajoč, ko povečujemo število spremenljivk. Tudi znotraj posamezne velikosti skupin se vrednost manjša z večanjem števila skupin, čeprav je ta razlika dokaj majhna. Vseeno pa lahko opazimo, da ima metoda `k-means` v vseh primerih večjo ali enako ARI vrednost kot metoda `mclust`. 
+
+Prikažimo vrednosti še nekoliko tako da tokrat vrstice predstavljajo spremembo števila skupin, stolpci pa spremembo števila spremenljivk. 
+
+```{r risanje ARI 2, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikost skupin in število skupin", fig.height=4, fig.width=5}
+ggplot(resAggFac, aes(y = ari, x = velikost.skupin,
+                      col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ stevilo.spremenljivk, scales="free")
+```
+
+Najverjetneje bi pričakovali da metodi nekoliko bolje razporedita vrednosti v prave skupine, zato si oglejmo kako se vrednosti razlikujejo če upoštevamo še spremenljivko `diff`.
+
+<!-- Tom30: kateri izmed spodjih ti je lepši? tist k ti ni ga lahko kr pobrises-->
+
+```{r}
+ggplot(resAggFac_diff, aes(y = ari, x = stevilo.spremenljivk,
+                      col=method, group=interaction(method, diff), linetype=diff)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "dotdash", "dashed", "solid"))+
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
+```
 
 
-
-
-
+```{r}
+ggplot(resAggFac_diff, aes(y = ari, x = stevilo.spremenljivk,
+                      col=diff, group=interaction(method, diff), linetype=method)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("solid", "dashed")) +
+  scale_color_manual(values = c("darkviolet", "darkgreen", "blue", "red"))+
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
+```
 
 
 
