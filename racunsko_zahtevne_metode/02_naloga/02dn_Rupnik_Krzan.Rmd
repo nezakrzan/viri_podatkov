@@ -109,6 +109,8 @@ resLong = pivot_longer(res, cols =matches("^(ari|wss|pwss)\\."),
                        values_to = "value",
                        names_to = c("metric", "method"),
                        names_pattern = "^(ari|wss|pwss)\\.(kmeans|mclust)") 
+resLong$method[resLong$method == "kmeans"] = "metoda voditeljev"
+resLong$method[resLong$method == "mclust"] = "razvrščanje na podlagi modelov"
 resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) # da so ari, wss in pwss vsaka svoj column
 
 resAgg = aggregate(cbind(ari, wss, pwss) ~ stevilo.spremenljivk + velikost.skupin 
@@ -133,47 +135,60 @@ resAggFac_diff$diff = as.factor(resAggFac_diff$diff)
 
 ## Popravljen Randov indeks (ARI)
 
-Poglejmo si kako se spreminja ARI vrednost v primeru, ko spreminjamo število skupin, število spremenljik in velikost skupin, pri tem pa ne upoštevamo kako so si skupine med seboj različne (`diff`). Vrstice predstavljajo spremembo števila skupin, stolpci pa spremembo velikosti skupin.
+Poglejmo si, kako se spreminja ARI vrednost v primeru, ko spreminjamo število skupin, število spremenljik in velikost skupin, pri tem pa ne upoštevamo, kako so si skupine med seboj različne (`diff`). Vrstice predstavljajo spremembo števila skupin, stolpci pa spremembo velikosti skupin.
 
-```{r risanje ARI, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikost skupin in število skupin", fig.height=4, fig.width=5}
+Pričakujeva, da bo pri večjih velikostih skupin indeks večji, saj se ponavadi pri večjih vzorcih moč za razlikovanje skupin običajno poveča. Z večanjem števila skupin pa pričakujeva, da se bo indeks manjšal, ker postane razvrščanje težje, saj pri več skupinah obstaja več kombinacij za razvrščanje, zato je večja verjetnost napačnih ujemanj.
+
+```{r risanje ARI, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikost skupin in število skupin.", fig.height=4, fig.width=5}
 ggplot(resAggFac, aes(y = ari, x = stevilo.spremenljivk,
                       col=method, group=method)) + 
   geom_point() + geom_line() +
-  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free") +
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") + 
+  theme(legend.position = "bottom")
 ```
 
-Vidimo, da je v vseh kombinacijah števila skupin in velikosti skupin trend ARI vrednosti podajoč, ko povečujemo število spremenljivk. Tudi znotraj posamezne velikosti skupin se vrednost manjša z večanjem števila skupin, čeprav je ta razlika dokaj majhna. Vseeno pa lahko opazimo, da ima metoda `k-means` v vseh primerih večjo ali enako ARI vrednost kot metoda `mclust`. 
+Vidimo, da je v vseh kombinacijah števila skupin in velikosti skupin trend ARI vrednosti podajoč, ko povečujemo število spremenljivk. Tudi znotraj posamezne velikosti skupin se vrednost manjša z večanjem števila skupin, čeprav je ta razlika dokaj majhna. Vseeno pa lahko opazimo, da ima metoda `k-means` v vseh primerih večjo ali enako ARI vrednost kot metoda `mclust` in je manj občutljiva na povečao števila spremenljivk. 
 
-Prikažimo vrednosti še nekoliko tako da tokrat vrstice predstavljajo spremembo števila skupin, stolpci pa spremembo števila spremenljivk. 
+Prikažimo vrednosti še tako, da vrstice predstavljajo spremembo števila skupin, stolpci pa spremembo števila spremenljivk. 
 
-```{r risanje ARI 2, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikost skupin in število skupin", fig.height=4, fig.width=5}
+```{r risanje ARI 2, fig.cap="Prikaz ARI vrednosti razdeljen glede na število spremenljivk in število skupin.", fig.height=4, fig.width=5}
 ggplot(resAggFac, aes(y = ari, x = velikost.skupin,
                       col=method, group=method)) + 
   geom_point() + geom_line() +
-  facet_grid(stevilo.skupin ~ stevilo.spremenljivk, scales="free")
+  facet_grid(stevilo.skupin ~ stevilo.spremenljivk, scales="free") + 
+  xlab("velikost skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") +
+  theme(legend.position = "bottom")
 ```
 
-Najverjetneje bi pričakovali da metodi nekoliko bolje razporedita vrednosti v prave skupine, zato si oglejmo kako se vrednosti razlikujejo če upoštevamo še spremenljivko `diff`.
+Jasno se vidi, kako se z večanjem skupin viša tudi ARI, kar sva pričakovala. Na zgornjem grafu pa lahko bolje opazimo očitno razliko med metodama pri večjem številu spremenljivk. Metoda *razvrščanje na podlagi modelov* ima zelo nizke vrednosti indeksa, še posebaj pri 4 skpinah in 36 spremenljivkah(tudi za velike skupine). Pri manjšem številu spremenljivk(npr. 12) pa je razlika med metodama zelo majhna, še posebaj pri velikih skupinah(npr. velikost skupin je 200).
 
-<!-- Tom30: kateri izmed spodjih ti je lepši? tist k ti ni ga lahko kr pobrises-->
+Več spremenljivk naj bi pomagalo izboljšati ARI, vendar samo, če te spremenljivke dejansko prispevajo k razlikovanju skupin. Ker pa sva dodajala t.i. nepomembne spremenljivke(spremenljivke, ki imajo enako porazdelitev v vseh skupinah) pa se indeks ne boljša, pri metodi *razvrščanje na podlagi modelov* se celo manjša.
+
+Najverjetneje bi pričakovali, da metodi nekoliko bolje razporedita vrednosti v prave skupine, zato si oglejmo kako se vrednosti razlikujejo, če upoštevamo še spremenljivko `diff`. <!--Neza: tale stavk mi ni cist jasn, sploh zacetek: metodi nekoliko bolje razporedita vrednosti v prave skupine... bolje kot kaj?-->
+Pričakujeva, da bo metoda voditeljev pri večjih vrednostih `diff` nekoliko boljša, saj dobro deluje v primerih, ko so skupine med seboj dobro ločene.
+
+<!-- Tom30: kateri izmed spodjih ti je lepši? tist k ti ni ga lahko kr pobrises
+Neza: sm zbrisala sam pomojem morva tale graf se mal razclent ker se ful slabo kej razbere iz njega....-->
 
 ```{r}
 ggplot(resAggFac_diff, aes(y = ari, x = stevilo.spremenljivk,
                       col=method, group=interaction(method, diff), linetype=diff)) + 
   geom_point() + geom_line() +
   scale_linetype_manual(values=c("dotted", "dotdash", "dashed", "solid"))+
-  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")+
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:")
 ```
 
-
-```{r}
-ggplot(resAggFac_diff, aes(y = ari, x = stevilo.spremenljivk,
-                      col=diff, group=interaction(method, diff), linetype=method)) + 
-  geom_point() + geom_line() +
-  scale_linetype_manual(values=c("solid", "dashed")) +
-  scale_color_manual(values = c("darkviolet", "darkgreen", "blue", "red"))+
-  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
-```
 
 
 
