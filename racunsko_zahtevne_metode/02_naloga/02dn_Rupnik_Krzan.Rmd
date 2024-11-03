@@ -133,7 +133,77 @@ resAggFac_diff$stevilo.skupin = as.factor(resAggFac_diff$stevilo.skupin)
 resAggFac_diff$diff = as.factor(resAggFac_diff$diff)
 ```
 
-## Popravljen Randov indeks (ARI)
+# Popravljen Randov indeks (ARI)
+
+## Spreminjanje faktorja ločljivosti med skupinami
+
+Najprej si poglejmo, kakšne vrednosti ARI imamo, če spremninjamo ločljivost med skupinami(`diff`). Pričakujeva, da bo metoda voditeljev pri večjih vrednostih `diff` nekoliko boljša, saj dobro deluje v primerih, ko so skupine med seboj dobro ločene.
+
+<!--
+to sm zaenkar zakomentirala, ker ne razumem čist
+
+Najverjetneje bi pričakovali, da metodi nekoliko bolje razporedita vrednosti v prave skupine, zato si oglejmo kako se vrednosti razlikujejo, če upoštevamo še spremenljivko `diff`. <!--Neza: tale stavk mi ni cist jasn, sploh zacetek: metodi nekoliko bolje razporedita vrednosti v prave skupine... bolje kot kaj?
+
+-->
+
+<!-- Tom30: kateri izmed spodjih ti je lepši? tist k ti ni ga lahko kr pobrises
+Neza: sm zbrisala sam pomojem morva tale graf se mal razclent ker se ful slabo kej razbere iz njega....-->
+
+```{r diff 1, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikos in število skupin.", fig.height=4, fig.width=8}
+ggplot(resAggFac_diff, aes(y = ari, x = stevilo.spremenljivk,
+                      col=method, group=interaction(method, diff), linetype=diff)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "dotdash", "dashed", "solid"))+
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")+
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") 
+```
+
+Takoj opazimo razliko med majhnim in velikim `diff` - pri `diff = 1` so vrednosti ARI dokaj nizke, pri `diff = 10` pa previsoke, kar pomeni, da so skupine preveč ločene in s tem slabi oziroma nerealni rezultati. 
+
+Poglejmo si razliko med  `diff = 1` in  `diff = 2`. 
+
+```{r diff 2, fig.cap="Prikaz ARI vrednosti razdeljen glede na število spremenljivk in število skupin.", fig.height=4, fig.width=8}
+resAggFac_diff_12 <- resAggFac_diff %>%
+  filter(diff %in% c(1, 2))
+
+ggplot(resAggFac_diff_12, aes(y = ari, x = velikost.skupin,
+                      col=method, group=interaction(method, diff), linetype=diff)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "solid"))+
+  facet_grid(stevilo.spremenljivk ~ stevilo.skupin, scales="free")+
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:")
+```
+
+Opazno je *metoda voditeljev* boljša od metode *razvrščanja na podlagi modelov*. Opazimo tudi, da je razlika v metodah večja s povečanjem faktorja `diff` in z manjšimi velikostmi skupin. Z dodajanjem nepomembnih spremenljivk pa se manjša tudi ARI. Lahko bi ocenila, da so rezultati boljši in lažje berljivi za primerjavo metod, če je faktor `diff` nastavljen na `2`, ker pri nastavljeni vrednosti na  `1` težko ločimo med metodami, skupine so si med seboj preveč podobne, kar ne ustreza ravno metodi voditeljev in težko ocenimo katera metoda je boljša.
+
+Vseeno pa si poglejmo še razliko med `diff = 2` in `diff = 4`.
+
+```{r diff 3, fig.cap="Prikaz ARI vrednosti razdeljen glede na število spremenljivk in število skupin.", fig.height=4, fig.width=8}
+resAggFac_diff_24 <- resAggFac_diff %>%
+  filter(diff %in% c(2, 4))
+
+ggplot(resAggFac_diff_24, aes(y = ari, x = velikost.skupin,
+                      col=method, group=interaction(method, diff), linetype=diff)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "solid"))+
+  facet_grid(stevilo.spremenljivk ~ stevilo.skupin, scales="free")+
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:")
+```
+
+Razlika med metodama pri  `diff = 4` je velika, tudi ARI za metodo voditeljev je previsok, da bi lahko rekli, da so rezultati dobri oziroma realni. 
+
+Na podlagi zgornje analize se odločiva, da je primerna ločljivost med skupinama nastaljena na  `diff = 2` za ustrezno primerjavo med metodama.
+
+## Analiza na podlagi števila in velikosti skupin ter števila spremenljivk
 
 Poglejmo si, kako se spreminja ARI vrednost v primeru, ko spreminjamo število skupin, število spremenljik in velikost skupin, pri tem pa ne upoštevamo, kako so si skupine med seboj različne (`diff`). Vrstice predstavljajo spremembo števila skupin, stolpci pa spremembo velikosti skupin.
 
@@ -171,31 +241,9 @@ Jasno se vidi, kako se z večanjem skupin viša tudi ARI, kar sva pričakovala. 
 
 Več spremenljivk naj bi pomagalo izboljšati ARI, vendar samo, če te spremenljivke dejansko prispevajo k razlikovanju skupin. Ker pa sva dodajala t.i. nepomembne spremenljivke(spremenljivke, ki imajo enako porazdelitev v vseh skupinah) pa se indeks ne boljša, pri metodi *razvrščanje na podlagi modelov* se celo manjša.
 
-Najverjetneje bi pričakovali, da metodi nekoliko bolje razporedita vrednosti v prave skupine, zato si oglejmo kako se vrednosti razlikujejo, če upoštevamo še spremenljivko `diff`. <!--Neza: tale stavk mi ni cist jasn, sploh zacetek: metodi nekoliko bolje razporedita vrednosti v prave skupine... bolje kot kaj?-->
-Pričakujeva, da bo metoda voditeljev pri večjih vrednostih `diff` nekoliko boljša, saj dobro deluje v primerih, ko so skupine med seboj dobro ločene.
+# Meri WSS in PWSS
 
-<!-- Tom30: kateri izmed spodjih ti je lepši? tist k ti ni ga lahko kr pobrises
-Neza: sm zbrisala sam pomojem morva tale graf se mal razclent ker se ful slabo kej razbere iz njega....-->
-
-```{r}
-ggplot(resAggFac_diff, aes(y = ari, x = stevilo.spremenljivk,
-                      col=method, group=interaction(method, diff), linetype=diff)) + 
-  geom_point() + geom_line() +
-  scale_linetype_manual(values=c("dotted", "dotdash", "dashed", "solid"))+
-  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")+
-  xlab("stevilo spremenljivk") + 
-  ylab("ARI") + 
-  theme_minimal() + 
-  labs(color = "Metoda:")
-```
-
-
-
-
-
-
-
-
+Kot sva že zgoraj omenila, je za glavno analizo med metodama služila mera popravljen Randov indeks (ARI), bova pa še pogledala primerjavo metod za meri *WSS* in *PWSS*.
 
 
 
