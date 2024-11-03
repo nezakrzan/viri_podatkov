@@ -9,6 +9,8 @@ header-includes:
 - \usepackage[slovene]{babel}
 - \usepackage{float}
 - \usepackage[T1]{fontenc}
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -144,6 +146,7 @@ to sm zaenkar zakomentirala, ker ne razumem čist
 
 Najverjetneje bi pričakovali, da metodi nekoliko bolje razporedita vrednosti v prave skupine, zato si oglejmo kako se vrednosti razlikujejo, če upoštevamo še spremenljivko `diff`. <!--Neza: tale stavk mi ni cist jasn, sploh zacetek: metodi nekoliko bolje razporedita vrednosti v prave skupine... bolje kot kaj?
 
+Tom03: ko nisva upostevala diff so ble vrednosti tm okol 0.6 kar se mi zdi da je dokaj slabo ker pac ARI primerja koliko se razporeditev v skupine ujema z dejansko razporeditivijo v skupine (to kar vsa generirala)...in pac mislu sm to da bi pricakovali da bi metodi nekoliko bolje razporejali...pac kot da bi bla ARI vrednost visja 
 -->
 
 <!-- Tom30: kateri izmed spodjih ti je lepši? tist k ti ni ga lahko kr pobrises
