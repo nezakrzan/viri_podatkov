@@ -251,20 +251,32 @@ Jasno se vidi, kako se z večanjem skupin viša tudi ARI, kar sva pričakovala. 
 Več spremenljivk naj bi pomagalo izboljšati ARI, vendar samo, če te spremenljivke dejansko prispevajo k razlikovanju skupin. Ker pa sva dodajala t.i. nepomembne spremenljivke(spremenljivke, ki imajo enako porazdelitev v vseh skupinah) pa se indeks ne boljša, pri metodi *razvrščanje na podlagi modelov* se celo manjša.
 
 
-<!-- Tom04: tale ANOVA nevem kaj nama pove ker so povsod NaN...-->
-
 # ANOVA
 
+<!-- Tom04: problem ce imava za response razlicne podatke...ne zeli med seboj primerjati zato izbereva long data frame-->
+
 ```{r}
-options(contrasts = c("contr.sum","contr.poly"))
+# iz long formata vzameva le vrstice ki vsebujejo ari vrednost
+resLongF = as.data.frame(resLong[resLong$metric == "ari",])
+# spremeniva v faktor
+for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
+  resLongF[[sprem]] = as.factor(resLongF[[sprem]])
+}
+# stolpec 'value' preimneujeva v 'ari'
+names(resLongF) = sub('value', 'ari', names(resLongF))
 
-resAggFac$method = as.factor(resAggFac$method)
+# k-means anova
+aov.kmeans = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
+                 data = resLongF[resLongF$method == "metoda voditeljev",])
+anova(aov.kmeans) 
 
-resAri<-aov(ari~stevilo.spremenljivk*velikost.skupin*stevilo.skupin*method, data=resAggFac)
-anova(resAri)
+# mclust anova
+aov.mclust = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
+                 data = resLongF[resLongF$method == "razvrščanje na podlagi modelov",])
+anova(aov.mclust)
 
-# resMclustAri<-aov(ari~stevilo.spremenljivk*velikost.skupin*stevilo.skupin, data=resAggFac[resAggFac$method == "mclust",])
-# anova(resMclustAri)
+# primerjava
+anova(aov.mclust, aov.kmeans)
 ```
 
 

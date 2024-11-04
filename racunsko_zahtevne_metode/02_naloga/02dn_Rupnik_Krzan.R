@@ -192,11 +192,34 @@ for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin",
 }
 
 # ANOVA
-options(contains = c("contr.sum", "contr.poly"))
-aov.kmeans = aov(ari.kmeans ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff, data = resF)
+
+# options(contains = c("contr.sum", "contr.poly"))
+# aov.kmeans = aov(ari.kmeans ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff, data = resF)
+# anova(aov.kmeans) 
+# 
+# aov.mclust = aov(ari.mclust ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff, data = resF)
+# anova(aov.mclust)
+
+# iz long formata vzameva le vrstice ki vsebujejo ari vrednost
+resLongF = as.data.frame(resLong[resLong$metric == "ari",])
+# spremeniva v faktor
+for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
+  resLongF[[sprem]] = as.factor(resLongF[[sprem]])
+}
+# stolpec 'value' preimneujeva v 'ari'
+names(resLongF) = sub('value', 'ari', names(resLongF))
+
+# k-means anova
+aov.kmeans = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
+                 data = resLongF[resLongF$method == "metoda voditeljev",])
 anova(aov.kmeans) 
 
-aov.mclust = aov(ari.mclust ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff, data = resF)
+# mclust anova
+aov.mclust = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
+                 data = resLongF[resLongF$method == "razvrščanje na podlagi modelov",])
 anova(aov.mclust)
+
+# primerjava
+anova(aov.mclust, aov.kmeans)
 
 
