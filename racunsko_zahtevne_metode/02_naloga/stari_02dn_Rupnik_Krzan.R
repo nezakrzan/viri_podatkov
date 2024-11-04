@@ -68,7 +68,7 @@ if(useOld&&file.exists("simulacija.RDS")){
   registerDoParallel(cl)
   
   set.seed(2024)
-  
+
   res = cbind(settings, 
               ari.kmeans=NA, wss.kmeans=NA, pwss.kmeans=NA, 
               ari.mclust=NA, wss.mclust=NA, pwss.mclust=NA)
@@ -80,23 +80,23 @@ if(useOld&&file.exists("simulacija.RDS")){
     stevilo.skupin = settings$stevilo.skupin[row]
     velikost.skupin = settings$velikost.skupin[row]
     diff = settings$diff[row]
-    
+  
     # generiramo podatke
     data = generiranje.podatkov(stevilo.spremenljivk= stevilo.spremenljivk, 
-                                velikost.skupin = velikost.skupin,
-                                stevilo.skupin = stevilo.skupin, 
-                                diff = diff) 
+                                    velikost.skupin = velikost.skupin,
+                                    stevilo.skupin = stevilo.skupin, 
+                                    diff = diff) 
     # transformacija v data.frame
     data = as.data.frame(data)
     # skaliramo podatke za metodo razvrscanje na polagi modelov
     data.scale = scale(data[,1:stevilo.spremenljivk])
-    
+        
     # metoda kmeans
     kmeans.res = kmeans(data[,1:stevilo.spremenljivk], centers=stevilo.skupin, nstart = 100) #, nstart=nRep) 
     res$ari.kmeans[row] = blockmodeling::crand(data$skupina, kmeans.res$cluster) #ari
     res$wss.kmeans[row] = kmeans.res$tot.withinss #wss
     res$pwss.kmeans[row] = kmeans.res$tot.withinss/kmeans.res$totss #pwss
-    
+        
     # razvrscanje na polagi modelov
     suppressMessages({ # v konzoli se ne izpisuje fitting
       model = capture.output({
@@ -115,7 +115,7 @@ if(useOld&&file.exists("simulacija.RDS")){
     # res$pwss.mclust[row] = wss.mclust / sum((data.scale - colMeans(data.scale))^2)
     
     temp1 = aggregate(data[,1:stevilo.spremenljivk], by=list(mclust.res$classification),
-                      function(x) sum(scale(x, scale=FALSE)^2))
+                           function(x) sum(scale(x, scale=FALSE)^2))
     res$wss.mclust[row] = sum(temp1[, -1]) # Total (within) sum of squares
     
     # by=list(...) narediva kot da so vsi v enem clustru
@@ -125,7 +125,7 @@ if(useOld&&file.exists("simulacija.RDS")){
     
     # kje se nahaja zanka
     if(row%%10==0) cat("Iteration ", row, "/", nrow(settings), "complete! \n")
-  }
+    }
   saveRDS(object = res, file="simulacija.RDS")
   stopCluster(cl)
 }
@@ -149,12 +149,11 @@ resLong = pivot_longer(res, cols =matches("^(ari|wss|pwss)\\."),  values_to = "v
 resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) # da so ari, wss in pwss vsaka svoj column
 
 
-resAgg = aggregate(ari ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method, 
+resAgg = aggregate(cbind(ari, wss, pwss) ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method, 
                    data = resWide, FUN = mean)
 # Tom30: dodal sem na desno stran se diff ker ga nisva se upostevala
-resAgg_diff = aggregate(ari ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method + diff, 
-                        data = resWide, FUN = mean)
-
+resAgg_diff = aggregate(cbind(ari, wss, pwss) ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method + diff, 
+                   data = resWide, FUN = mean)
 
 # ======================= ari ================================
 
@@ -182,4 +181,17 @@ ggplot(resAggFac, aes(y = ari, x = velikost.skupin, col=method, group=method)) +
   geom_point() + geom_line() +
   facet_grid(stevilo.skupin ~ stevilo.spremenljivk, scales="free")
 
+
+# ======================= wss ================================
+
+ggplot(resAggFac, aes(y = wss, x = stevilo.spremenljivk, col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
+
+
+# ======================= pwss ===============================
+
+ggplot(resAggFac, aes(y = pwss, x = stevilo.spremenljivk, col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
 
