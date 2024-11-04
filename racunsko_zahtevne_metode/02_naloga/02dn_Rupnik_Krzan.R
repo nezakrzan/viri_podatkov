@@ -182,4 +182,21 @@ ggplot(resAggFac, aes(y = ari, x = velikost.skupin, col=method, group=method)) +
   geom_point() + geom_line() +
   facet_grid(stevilo.skupin ~ stevilo.spremenljivk, scales="free")
 
+################################# analiza ##############################
+head(res)
+
+# preden delamo analizo vse pretvorimo v fakorje razen rezultate
+resF = res
+for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
+  resF[[sprem]] = as.factor(resF[[sprem]])
+}
+
+# ANOVA
+options(contains = c("contr.sum", "contr.poly"))
+aov.kmeans = aov(ari.kmeans ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff, data = resF)
+anova(aov.kmeans) 
+
+aov.mclust = aov(ari.mclust ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff, data = resF)
+anova(aov.mclust)
+
 
