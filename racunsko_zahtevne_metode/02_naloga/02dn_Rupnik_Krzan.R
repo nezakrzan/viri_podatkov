@@ -191,7 +191,7 @@ for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin",
   resF[[sprem]] = as.factor(resF[[sprem]])
 }
 
-# ANOVA
+# _________ ANOVA ____________
 
 # options(contains = c("contr.sum", "contr.poly"))
 # aov.kmeans = aov(ari.kmeans ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff, data = resF)
@@ -222,4 +222,18 @@ anova(aov.mclust)
 # primerjava
 anova(aov.mclust, aov.kmeans)
 
+# _________ LMER _____________
+
+resF = res
+for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
+  resF[[sprem]] = as.factor(resF[[sprem]])
+}
+
+lmer.kmeans = lmer(ari.kmeans ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff+(1|i),
+                   data = resF)
+vred_kmeans = anova(lmer.kmeans)
+
+lmer.mclust = lmer(ari.mclust ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff+(1|i),
+                   data = resF)
+vred_mclust = anova(lmer.mclust)
 

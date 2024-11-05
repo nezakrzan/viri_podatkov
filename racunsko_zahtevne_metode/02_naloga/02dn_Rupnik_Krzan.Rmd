@@ -22,6 +22,9 @@ library(car)
 library(tidyr)
 library(dplyr)
 library(ADGofTest)
+library(lmerTest)
+library(knitr)
+library(kableExtra)
 
 # seme
 set.seed(2024)
@@ -41,7 +44,7 @@ Med drugim preuči učinek dodajanja nepomembnih spremenljivk (spremenljivk, ki 
 
 # Cilj naloge
 
-Želiva preučiti 2 različni metodi razvrščanja v skupine. Primerjaval bova metodo voditeljev(*k-means*) in razvrščanje na podlagi modelov. Zanima nas katera bo najboljša na podatkih, generiranih iz bivariatne multivariatne normalne porazdelitve. 
+Želiva preučiti 2 različni metodi razvrščanja v skupine. Primerjala bova metodo voditeljev(*k-means*) in razvrščanje na podlagi modelov. Zanima nas katera bo najboljša na podatkih, generiranih iz bivariatne multivariatne normalne porazdelitve. 
 
 Zanima naju tudi, kako na metodi vpliva dodajanje nepomembnih spremenljivk, torej tistih, ki imajo enako porazdelitev v vseh skupinah.
 
@@ -115,7 +118,7 @@ resLong = pivot_longer(res, cols =matches("^(ari|wss|pwss)\\."),
                        names_to = c("metric", "method"),
                        names_pattern = "^(ari|wss|pwss)\\.(kmeans|mclust)") 
 resLong$method[resLong$method == "kmeans"] = "metoda voditeljev"
-resLong$method[resLong$method == "mclust"] = "razvrščanje na podlagi modelov"
+resLong$method[resLong$method == "mclust"] = "razvrscanje na podlagi modelov"
 resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) # da so ari, wss in pwss vsaka svoj column
 
 # izlociva le vrednosti z diff=2, saj kasneje samo te opazujeva
@@ -183,7 +186,7 @@ ggplot(resAggFac_diff_12, aes(y = ari, x = velikost.skupin,
   geom_point() + geom_line() +
   scale_linetype_manual(values=c("dotted", "solid"))+
   facet_grid(stevilo.spremenljivk ~ stevilo.skupin, scales="free")+
-  xlab("stevilo spremenljivk") + 
+  xlab("velikost skupin") + 
   ylab("ARI") + 
   theme_minimal() + 
   labs(color = "Metoda:")
@@ -202,7 +205,7 @@ ggplot(resAggFac_diff_24, aes(y = ari, x = velikost.skupin,
   geom_point() + geom_line() +
   scale_linetype_manual(values=c("dotted", "solid"))+
   facet_grid(stevilo.spremenljivk ~ stevilo.skupin, scales="free")+
-  xlab("stevilo spremenljivk") + 
+  xlab("velikost skupin") + 
   ylab("ARI") + 
   theme_minimal() + 
   labs(color = "Metoda:")
@@ -255,9 +258,12 @@ Več spremenljivk naj bi pomagalo izboljšati ARI, vendar samo, če te spremenlj
 
 <!-- Tom04: problem ce imava za response razlicne podatke...ne zeli med seboj primerjati zato izbereva long data frame-->
 
-```{r}
+S pomočjo ANOVA testa bova med seboj primerjala metodi za razvrščanja v skupine. Najprej si bova ogledala in med seboj primerjala statistično značilnost spremenljivk (faktorji) in njihove kombinacije, nato pa še modela med seboj.
+
+```{r izracun anova}
 # iz long formata vzameva le vrstice ki vsebujejo ari vrednost
 resLongF = as.data.frame(resLong[resLong$metric == "ari",])
+
 # spremeniva v faktor
 for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
   resLongF[[sprem]] = as.factor(resLongF[[sprem]])
@@ -268,17 +274,111 @@ names(resLongF) = sub('value', 'ari', names(resLongF))
 # k-means anova
 aov.kmeans = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
                  data = resLongF[resLongF$method == "metoda voditeljev",])
-anova(aov.kmeans) 
+anova.kmeans = anova(aov.kmeans) 
 
 # mclust anova
 aov.mclust = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
-                 data = resLongF[resLongF$method == "razvrščanje na podlagi modelov",])
-anova(aov.mclust)
-
-# primerjava
-anova(aov.mclust, aov.kmeans)
+                 data = resLongF[resLongF$method == "razvrscanje na podlagi modelov",])
+anova.mclust = anova(aov.mclust)
 ```
 
 
+```{r prikaz v tabeli anova, results=T}
+df_anova = data.frame("faktorji" = row.names(anova.kmeans)[1:15],
+                      "k-means" = anova.kmeans$`Pr(>F)`[1:15],
+                      "mclust" = anova.mclust$`Pr(>F)`[1:15])
+
+kable(df_anova, align = c("l","c", "c"),
+             col.names = c("faktorji", "k-means", "mclust"),
+      caption = "Prikaz statistične značilnosti spremenljivk za k-means in mclust") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
+```
+
+Iz tabele lahko razberemo, da se statistična značilnost posameznih spremenljivk in njihovih kombinacij skoraj ne razlikuje glede na metodo. Pri metodi *razvrščanje na podlagi modelov* dobimo statistično statistično značilnost ($\alpha=0.05$) v vseh primerih. Prav tako to velja za metodo *metoda voditeljev*, z izjemo interakccije  `velikost.skupin:stevilo.skupin`, ki ni statistično značilna. 
+
+Sedaj med seboj primerjajmo še modela.
+
+```{r primerjava modelov anova, results=T}
+# primerjava modelov
+primerjava = anova(aov.mclust, aov.kmeans)
+
+kable(data.frame("metoda" = c("mclust", "kmeans"),
+                 "Res.Df" = primerjava$Res.Df,
+                 "RSS" = primerjava$RSS,
+                 "Df" = primerjava$Df,
+                 "SS" = primerjava$`Sum of Sq`), align = "c",
+      caption = "Primerjava modelov za ANOVA") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
+```
+
+Če med seboj primerjamo modela, opazimo da se razlikujeta v vrednosti `RSS`. Ta predstavlja variabilnost, ki jo z modelom nismo uspeli pojasniti. Torej želimo si da je vrednost manjša, kar smo v našem primeru dosegli z metodo *metoda voditeljev*.
+
+# Linearni mešani modeli
+
+Primerjajmo metodi za razvrščanja v skupine še s pomočjo linearnih mešanih modelov.
+
+<!-- Tom05: no tukej pa hoce da sta na istem data frame izracunana modela tko da
+uporabiva te 'originalne' podatke samo s faktorji-->
+
+```{r izracun linearnih mesanih modelov}
+resF = res
+for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
+  resF[[sprem]] = as.factor(resF[[sprem]])
+}
+
+lmer.kmeans = lmer(ari.kmeans ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff+(1|i),
+                   data = resF)
+vred_kmeans = anova(lmer.kmeans)
+
+lmer.mclust = lmer(ari.mclust ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff+(1|i),
+                   data = resF)
+vred_mclust = anova(lmer.mclust)
+```
+
+
+```{r prikaz v tabeli lmer, results=T}
+df_lmer = data.frame("faktorji" = row.names(vred_kmeans),
+                      "k-means" = vred_kmeans$`Pr(>F)`,
+                      "mclust" = vred_mclust$`Pr(>F)`)
+
+kable(df_lmer, align = c("l","c", "c"),
+             col.names = c("faktorji", "k-means", "mclust"),
+      caption = "Prikaz statistične značilnosti spremenljivk za k-means in mclust") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
+```
+
+Iz tabele lahko razberemo, da se statistična značilnost posameznih spremenljivk in njihovih kombinacij skoraj ne razlikuje glede na metodo. Rezultati so podobni kot v zgornjem razdelku. Pri metodi *razvrščanje na podlagi modelov* dobimo statistično statistično značilnost ($\alpha=0.05$) v vseh primerih. Prav tako to velja za metodo *metoda voditeljev*, z izjemo interakccije  `velikost.skupin:stevilo.skupin`, ki ni statistično značilna. 
+
+
+Sedaj med seboj primerjajmo še modela.
+
+```{r primerjava modelov lmer, results=T}
+# primerjava modelov
+primerjava.lmer = anova(lmer.kmeans, lmer.mclust)
+
+kable(data.frame("metoda" = c("kmeans", "mclust"),
+                 "npar" = primerjava.lmer$npar,
+                 "AIC" = primerjava.lmer$AIC,
+                 "BIC" = primerjava.lmer$BIC,
+                  "logLik" = primerjava.lmer$logLik,
+                 "deviance" = primerjava.lmer$deviance), align = "c",
+      caption = "Primerjava modelov za ANOVA") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
+```
+
+Tokrat modela med seboj primerjamo glede na `AIC` oz. `BIC` oz. `logLik`. Želimo da je vrednost `logLik` čim večja oziroma vrednosti `AIC` in `BIC` čim manjši. To v našem primeru velja za metodo *metoda voditeljev*. 
+
 # Zaključek
 
+Med seboj sva s pomočjo mere prilagojeni Randov indeks (ARI) primerjala dve metodi za razvrščanje v skupine, in sicer *metoda voditeljev* ter *razvrščanje na podlagi modelov*. 
+
+Zanimalo naju je kako na metodi vpliva dodajanje nepomembnih spremenljivk, torej tistih, ki imajo enako porazdelitev v vseh skupinah. Videla sva, da z dodajanjem nepomembnih spremenljivk se rezultat oz. pravila razvrstitev posameznih točk v skupine poslabša. \
+Na vrednost ARI pa ne vpliva negativno samo število nepomembnih spremenljivk, ampak tudi število skupin v katere želimo razporediti posamezne točke. S tem sva potrdila tudi najno predvidevanje, da se bo z večanjem števila skupin indeks (ARI) manjšal, ker postane razvrščanje težje, saj pri več skupinah obstaja več kombinacij za razvrščanje, zato je večja verjetnost napačnih ujemanj. V primeru, da je število skupin veliko in so te blizu skupaj, je verjetnost za napačno razporeditev velika. \
+Torej na 'kvaliteto' razporeditve v skupine vpliva tudi ločljivost med skupinami (`diff`). V primeru, da so skupine blizu skupaj metodi slabo razlikujeta posameznimi skupinami. To pa se z večanjem števila vseh spremenljivk še poslabša. Večja kot je ločljivost med skupinami, bolje lahko razlikujemo med skupinami. Vendar pa ko `diff` dosega velike vrednosti, je primerjava med metodami skoraj nemogoča, saj ne glede na metodo je *ARI* vrednost visoka oz blizu 1. \
+Z večanjem velikosti skupin pa se pričakovano povečuje vrednost indeksa.
+
+Vseeno pa se je glede na analizo izkazalo, da metoda *metoda voditeljev* nekoliko bolje razlikuje med skupinamo kot metoda *razvrščanje na podlagi modelov*. Ta je imela v vseh kombinacijah parametrov, ki sva jih spreminjala, višje ali enake vrednosti, kot smo jih dobili po metodi *razvrščanje na podlagi modelov*. Prav tako je primerjava z ANOVO v obeh primerih pokazala, da je model, ki smo ga oblikvali na podlagi metode *metoda voditeljev* primernejši (pojasnimo več variabilnosti). 
