@@ -70,8 +70,7 @@ if(useOld&&file.exists("simulacija.RDS")){
   set.seed(2024)
   
   res = cbind(settings, 
-              ari.kmeans=NA, wss.kmeans=NA, pwss.kmeans=NA, 
-              ari.mclust=NA, wss.mclust=NA, pwss.mclust=NA)
+              ari.kmeans=NA, ari.mclust=NA)
   
   for(row in 1:nrow(settings)){ 
     # row = 1
@@ -94,8 +93,6 @@ if(useOld&&file.exists("simulacija.RDS")){
     # metoda kmeans
     kmeans.res = kmeans(data[,1:stevilo.spremenljivk], centers=stevilo.skupin, nstart = 100) #, nstart=nRep) 
     res$ari.kmeans[row] = blockmodeling::crand(data$skupina, kmeans.res$cluster) #ari
-    res$wss.kmeans[row] = kmeans.res$tot.withinss #wss
-    res$pwss.kmeans[row] = kmeans.res$tot.withinss/kmeans.res$totss #pwss
     
     # razvrscanje na polagi modelov
     suppressMessages({ # v konzoli se ne izpisuje fitting
@@ -105,23 +102,6 @@ if(useOld&&file.exists("simulacija.RDS")){
     })
     # ari
     res$ari.mclust[row] = blockmodeling::crand(data$skupina, mclust.res$classification) 
-    ## wss
-    # wss.mclust = sum(sapply(1:stevilo.skupin, function(k) {
-    #   sum(rowSums((as.matrix(data.scale[mclust.res$classification == k, ])- 
-    #                  colMeans(as.matrix(data.scale[mclust.res$classification == k, ])))^2))
-    # }))
-    # res$wss.mclust[row] = wss.mclust
-    # # pwss
-    # res$pwss.mclust[row] = wss.mclust / sum((data.scale - colMeans(data.scale))^2)
-    
-    temp1 = aggregate(data[,1:stevilo.spremenljivk], by=list(mclust.res$classification),
-                      function(x) sum(scale(x, scale=FALSE)^2))
-    res$wss.mclust[row] = sum(temp1[, -1]) # Total (within) sum of squares
-    
-    # by=list(...) narediva kot da so vsi v enem clustru
-    temp2 = aggregate(data[,1:stevilo.spremenljivk], by=list(rep(1, mclust.res$n)),
-                      function(x) sum(scale(x, scale=FALSE)^2))
-    res$pwss.mclust[row] = sum(temp1[, -1]) / sum(temp2[, -1])
     
     # kje se nahaja zanka
     if(row%%10==0) cat("Iteration ", row, "/", nrow(settings), "complete! \n")
@@ -144,9 +124,9 @@ if(useOld&&file.exists("simulacija.RDS")){
 ################################# grafični prikaz ##############################
 library(tidyr)
 library(dplyr)
-resLong = pivot_longer(res, cols =matches("^(ari|wss|pwss)\\."),  values_to = "value",
-                       names_to = c("metric", "method"), names_pattern = "^(ari|wss|pwss)\\.(kmeans|mclust)") 
-resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) # da so ari, wss in pwss vsaka svoj column
+resLong = pivot_longer(res, cols =matches("^(ari)\\."),  values_to = "value",
+                       names_to = c("metric", "method"), names_pattern = "^(ari)\\.(kmeans|mclust)") 
+resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) 
 
 
 resAgg = aggregate(ari ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method, 
@@ -210,7 +190,6 @@ for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin",
 names(resLongF) = sub('value', 'ari', names(resLongF))
 
 options(contains = c("contr.sum", "contr.poly"))
-
 # k-means anova
 aov.kmeans = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
                  data = resLongF[resLongF$method == "kmeans",])
@@ -225,7 +204,6 @@ anova(aov.mclust)
 anova(aov.mclust, aov.kmeans)
 
 # _________ LMER _____________
-library(lmerTest)
 
 resF = res
 for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
