@@ -124,6 +124,9 @@ if(useOld&&file.exists("simulacija.RDS")){
 ################################# grafični prikaz ##############################
 library(tidyr)
 library(dplyr)
+
+res = select(res, -c('wss.kmeans', 'pwss.kmeans', 'wss.mclust', 'pwss.mclust'))
+
 resLong = pivot_longer(res, cols =matches("^(ari)\\."),  values_to = "value",
                        names_to = c("metric", "method"), names_pattern = "^(ari)\\.(kmeans|mclust)") 
 resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) 
@@ -204,6 +207,7 @@ anova(aov.mclust)
 anova(aov.mclust, aov.kmeans)
 
 # _________ LMER _____________
+library(lmerTest)
 
 resF = res
 for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
