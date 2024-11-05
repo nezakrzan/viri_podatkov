@@ -125,7 +125,9 @@ if(useOld&&file.exists("simulacija.RDS")){
 library(tidyr)
 library(dplyr)
 
-res = select(res, -c('wss.kmeans', 'pwss.kmeans', 'wss.mclust', 'pwss.mclust'))
+if(any(grepl("wss", colnames(res)))){
+  res = select(res, -c('wss.kmeans', 'pwss.kmeans', 'wss.mclust', 'pwss.mclust'))
+}
 
 resLong = pivot_longer(res, cols =matches("^(ari)\\."),  values_to = "value",
                        names_to = c("metric", "method"), names_pattern = "^(ari)\\.(kmeans|mclust)") 
