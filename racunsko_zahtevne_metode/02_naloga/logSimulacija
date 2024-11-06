@@ -3539,3 +3539,45 @@ Package 'mclust' version 6.1.1
 Type 'citation("mclust")' for citing this R package in publications.
 Package 'mclust' version 6.1.1
 Type 'citation("mclust")' for citing this R package in publications.
+starting worker pid=87585 on localhost:11289 at 17:13:30.458
+starting worker pid=87598 on localhost:11289 at 17:13:30.669
+starting worker pid=87611 on localhost:11289 at 17:13:30.874
+starting worker pid=87624 on localhost:11289 at 17:13:31.077
+starting worker pid=87637 on localhost:11289 at 17:13:31.283
+starting worker pid=87650 on localhost:11289 at 17:13:31.489
+starting worker pid=87663 on localhost:11289 at 17:13:31.692
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Package 'mclust' version 6.1.1
+Type 'citation("mclust")' for citing this R package in publications.
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
