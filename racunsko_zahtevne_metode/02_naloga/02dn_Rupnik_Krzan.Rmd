@@ -264,12 +264,13 @@ Več spremenljivk naj bi pomagalo izboljšati ARI, vendar samo, če te spremenlj
 
 S pomočjo ANOVA testa bova med seboj primerjala metodi za razvrščanja v skupine. Najprej si bova ogledala in med seboj primerjala statistično značilnost spremenljivk(faktorji) in njihove kombinacije, nato pa še modela med seboj.
 
-Glede na zgornjo analizo pričakujeva, da bo boljša *metoda voditeljev* in bomo z njo imeli manj variabilnosti, ki je z modelom ne uspemo pojasniti. 
+Glede na zgornjo analizo pričakujeva, da bo boljša *metoda voditeljev* in bomo z njo imeli manj variabilnosti, ki je z modelom ne uspemo pojasniti. Pričakujeva tudi, da bodo spremenljivke(faktorji) in interakcije med njimi statistično značilne pri obeh metodah, saj sva opazila pri zgornji analizi, da vplivajo na ARI.
 
 <!--
 Neza06:
 Tole nism zih, ce sm okej napisala, ce ma kak smisu:
 Pričakujeva tudi, da bodo spremenljivke(faktorji) in interakcije med njimi statistično značilne pri obeh metodah, saj sva opazila pri zgornji analizi, da vplivajo na ARI.
+Tom06: ja men se zdi da je to cist ok, da ima smisel...bom kr dodal tle zgori
 -->
 
 
