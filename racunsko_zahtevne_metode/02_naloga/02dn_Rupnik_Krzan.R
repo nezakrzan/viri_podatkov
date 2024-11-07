@@ -1,3 +1,13 @@
+# potrebne knjiznice
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(car)
+library(ADGofTest)
+library(lmerTest)
+library(knitr)
+library(kableExtra)
+
 set.seed(2024)
 
 ########################## generiranje podatkov #############################
@@ -21,6 +31,10 @@ generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.s
   X = cbind(X, skupina=rep(1:stevilo.skupin,each=velikost.skupin)) # clu = skupina
   return(X)
 }
+
+# Primer generiranih podatkov za 4 skupine, velikosti n = 100, 12 spremenljivk in diff = 2.
+data.primer1 = generiranje.podatkov(stevilo.spremenljivk = 12, velikost.skupin = 100, stevilo.skupin = 4, diff = 2)
+pairs(data.primer1[,1:4], col=data.primer1[,13])
 
 ################################## simulacija ##################################
 m = 100 # st. ponovitev
@@ -70,8 +84,7 @@ if(useOld&&file.exists("simulacija.RDS")){
   set.seed(2024)
   
   res = cbind(settings, 
-              ari.kmeans=NA, wss.kmeans=NA, pwss.kmeans=NA, 
-              ari.mclust=NA, wss.mclust=NA, pwss.mclust=NA)
+              ari.kmeans=NA, ari.mclust=NA)
   
   for(row in 1:nrow(settings)){ 
     # row = 1
@@ -94,8 +107,6 @@ if(useOld&&file.exists("simulacija.RDS")){
     # metoda kmeans
     kmeans.res = kmeans(data[,1:stevilo.spremenljivk], centers=stevilo.skupin, nstart = 100) #, nstart=nRep) 
     res$ari.kmeans[row] = blockmodeling::crand(data$skupina, kmeans.res$cluster) #ari
-    res$wss.kmeans[row] = kmeans.res$tot.withinss #wss
-    res$pwss.kmeans[row] = kmeans.res$tot.withinss/kmeans.res$totss #pwss
     
     # razvrscanje na polagi modelov
     suppressMessages({ # v konzoli se ne izpisuje fitting
@@ -105,23 +116,6 @@ if(useOld&&file.exists("simulacija.RDS")){
     })
     # ari
     res$ari.mclust[row] = blockmodeling::crand(data$skupina, mclust.res$classification) 
-    ## wss
-    # wss.mclust = sum(sapply(1:stevilo.skupin, function(k) {
-    #   sum(rowSums((as.matrix(data.scale[mclust.res$classification == k, ])- 
-    #                  colMeans(as.matrix(data.scale[mclust.res$classification == k, ])))^2))
-    # }))
-    # res$wss.mclust[row] = wss.mclust
-    # # pwss
-    # res$pwss.mclust[row] = wss.mclust / sum((data.scale - colMeans(data.scale))^2)
-    
-    temp1 = aggregate(data[,1:stevilo.spremenljivk], by=list(mclust.res$classification),
-                      function(x) sum(scale(x, scale=FALSE)^2))
-    res$wss.mclust[row] = sum(temp1[, -1]) # Total (within) sum of squares
-    
-    # by=list(...) narediva kot da so vsi v enem clustru
-    temp2 = aggregate(data[,1:stevilo.spremenljivk], by=list(rep(1, mclust.res$n)),
-                      function(x) sum(scale(x, scale=FALSE)^2))
-    res$pwss.mclust[row] = sum(temp1[, -1]) / sum(temp2[, -1])
     
     # kje se nahaja zanka
     if(row%%10==0) cat("Iteration ", row, "/", nrow(settings), "complete! \n")
@@ -130,39 +124,33 @@ if(useOld&&file.exists("simulacija.RDS")){
   stopCluster(cl)
 }
 
-# na enem slajdu v predavanjih pise: Why is "sum of squares within clusters" not a good measure?
-# in moj zapisek na to je: Cilj clusteringa najti skupine ki so si čim manj podobne ampak elemnti v skupini pa čim bolj skupi. Nekatere metode optimize to mero(k-means) in nekatere ne, zato ni najboljša mera...
-# sm sla gledat v lansko kar smo delala, ampak te dve metodi nimata nobene skupne mere...
-# zdej pa nevem al dodava se wss al ne? mal sm googlala je se nek Silhuetni koeficient 
-# meri pa, kako podobne so si točke znotraj gruče v primerjavi z najbližjo sosednjo gručo. Giblje se od -1 do 1, kjer večja vrednost pomeni boljše grupiranje.
-# Tom28: ja jst imam zapisano da bi bila wss pristranska mera ker kokr si napisala jo ene metode optimizirajo ene pa ne...tko da jst 
-# kaj pa če z "Randov indeks" ang. Rand index preveriva koliko se ujema prava razporeditev v skupine in ocenjena z metodo...misls da je ta mera ok?
-# za Silhueto sm tole nasel in jo ne pohvalijo kej prevec ker nej bi spet favorizirala k-means
-# https://www.reddit.com/r/datascience/comments/yzir4v/is_it_reasonable_to_compare_different_clustering/?rdt=49702
-
-# Neza28: to mava ze ta randov index sam da mava adjusted...
 ################################# grafični prikaz ##############################
-library(tidyr)
-library(dplyr)
-resLong = pivot_longer(res, cols =matches("^(ari|wss|pwss)\\."),  values_to = "value",
-                       names_to = c("metric", "method"), names_pattern = "^(ari|wss|pwss)\\.(kmeans|mclust)") 
-resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value) # da so ari, wss in pwss vsaka svoj column
+res = readRDS("simulacija.RDS")
 
+# ----------------------------- priprava podatkov ------------------------------
+resLong = pivot_longer(res, cols =matches("^(ari)\\."),
+                       values_to = "value",
+                       names_to = c("metric", "method"),
+                       names_pattern = "^(ari)\\.(kmeans|mclust)") 
+resLong$method[resLong$method == "kmeans"] = "metoda voditeljev"
+resLong$method[resLong$method == "mclust"] = "razvrscanje na podlagi modelov"
+resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value)
 
-resAgg = aggregate(ari ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method, 
-                   data = resWide, FUN = mean)
-# Tom30: dodal sem na desno stran se diff ker ga nisva se upostevala
-resAgg_diff = aggregate(ari ~ stevilo.spremenljivk + velikost.skupin + stevilo.skupin + method + diff, 
-                        data = resWide, FUN = mean)
+# izlociva le vrednosti z diff=2, saj kasneje samo te opazujeva
+resWide_diff2 = resWide[resWide$diff==2,]
 
+resAgg = aggregate(ari ~ stevilo.spremenljivk + velikost.skupin 
+                   + stevilo.skupin + method, 
+                   data = resWide_diff2, FUN = mean)
 
-# ======================= ari ================================
-
-# vrednosti dava v factor zaradi risanja
 resAggFac = resAgg
 resAggFac$stevilo.spremenljivk = as.factor(resAggFac$stevilo.spremenljivk)
 resAggFac$velikost.skupin = as.factor(resAggFac$velikost.skupin)
 resAggFac$stevilo.skupin = as.factor(resAggFac$stevilo.skupin)
+
+resAgg_diff = aggregate(ari ~ stevilo.spremenljivk +
+                          velikost.skupin + stevilo.skupin + method + diff, 
+                        data = resWide, FUN = mean)
 
 resAggFac_diff = resAgg_diff
 resAggFac_diff$stevilo.spremenljivk = as.factor(resAggFac_diff$stevilo.spremenljivk)
@@ -170,38 +158,79 @@ resAggFac_diff$velikost.skupin = as.factor(resAggFac_diff$velikost.skupin)
 resAggFac_diff$stevilo.skupin = as.factor(resAggFac_diff$stevilo.skupin)
 resAggFac_diff$diff = as.factor(resAggFac_diff$diff)
 
-
-library(ggplot2)
-# risemo adjR2
-ggplot(resAggFac, aes(y = ari, x = stevilo.spremenljivk, col=method, group=method)) + 
+# ----------------------------- grafi ----------------------------- 
+## Prikaz ARI vrednosti razdeljen glede na velikos in število skupin.
+ggplot(resAggFac_diff, aes(y = ari, x = stevilo.spremenljivk,
+                           col=method, group=interaction(method, diff), linetype=diff)) + 
   geom_point() + geom_line() +
-  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")
+  scale_linetype_manual(values=c("dotted", "dotdash", "dashed", "solid"))+
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")+
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") 
 
-# na x osi je velikost skupin
-ggplot(resAggFac, aes(y = ari, x = velikost.skupin, col=method, group=method)) + 
+## Prikaz ARI vrednosti razdeljen glede na število spremenljivk in število skupin.
+# izbor podatkov
+resAggFac_diff_12 <- resAggFac_diff %>%
+  filter(diff %in% c(1, 2))
+# graf
+ggplot(resAggFac_diff_12, aes(y = ari, x = velikost.skupin,
+                              col=method, group=interaction(method, diff), linetype=diff)) + 
   geom_point() + geom_line() +
-  facet_grid(stevilo.skupin ~ stevilo.spremenljivk, scales="free")
+  scale_linetype_manual(values=c("dotted", "solid"))+
+  facet_grid(stevilo.spremenljivk ~ stevilo.skupin, scales="free")+
+  xlab("velikost skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:")
+
+## Prikaz ARI vrednosti razdeljen glede na število spremenljivk in število skupin.
+# izbor podatkov
+resAggFac_diff_24 <- resAggFac_diff %>%
+  filter(diff %in% c(2, 4))
+# graf
+ggplot(resAggFac_diff_24, aes(y = ari, x = velikost.skupin,
+                              col=method, group=interaction(method, diff), linetype=diff)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "solid"))+
+  facet_grid(stevilo.spremenljivk ~ stevilo.skupin, scales="free")+
+  xlab("velikost skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:")
+
+## Prikaz ARI vrednosti razdeljen glede na velikost skupin in število skupin.
+ggplot(resAggFac, aes(y = ari, x = stevilo.spremenljivk,
+                      col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free") +
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") + 
+  theme(legend.position = "bottom")
+
+## Prikaz ARI vrednosti razdeljen glede na število spremenljivk in število skupin.
+ggplot(resAggFac, aes(y = ari, x = velikost.skupin,
+                      col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ stevilo.spremenljivk, scales="free") + 
+  xlab("velikost skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") +
+  theme(legend.position = "bottom")
+
 
 ################################# analiza ##############################
-head(res)
+# head(res)
 
-# preden delamo analizo vse pretvorimo v fakorje razen rezultate
-resF = res
-for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
-  resF[[sprem]] = as.factor(resF[[sprem]])
-}
-
-# _________ ANOVA ____________
-
-# options(contains = c("contr.sum", "contr.poly"))
-# aov.kmeans = aov(ari.kmeans ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff, data = resF)
-# anova(aov.kmeans) 
-# 
-# aov.mclust = aov(ari.mclust ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff, data = resF)
-# anova(aov.mclust)
-
+# ----------------------------- ANOVA -----------------------------
+## Priprava podatkov
 # iz long formata vzameva le vrstice ki vsebujejo ari vrednost
 resLongF = as.data.frame(resLong[resLong$metric == "ari",])
+
 # spremeniva v faktor
 for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
   resLongF[[sprem]] = as.factor(resLongF[[sprem]])
@@ -209,34 +238,71 @@ for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin",
 # stolpec 'value' preimneujeva v 'ari'
 names(resLongF) = sub('value', 'ari', names(resLongF))
 
-options(contains = c("contr.sum", "contr.poly"))
-
+## ANOVA
 # k-means anova
 aov.kmeans = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
-                 data = resLongF[resLongF$method == "kmeans",])
-anova(aov.kmeans) 
+                 data = resLongF[resLongF$method == "metoda voditeljev",])
+anova.kmeans = anova(aov.kmeans) 
 
 # mclust anova
 aov.mclust = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
-                 data = resLongF[resLongF$method == "mclust",])
-anova(aov.mclust)
+                 data = resLongF[resLongF$method == "razvrscanje na podlagi modelov",])
+anova.mclust = anova(aov.mclust)
 
-# primerjava
-anova(aov.mclust, aov.kmeans)
+## Prikaz statistične značilnosti spremenljivk za obe metodi.
+df_anova = data.frame("faktorji" = row.names(anova.kmeans)[1:15],
+                      "k-means" = anova.kmeans$`Pr(>F)`[1:15],
+                      "mclust" = anova.mclust$`Pr(>F)`[1:15])
+kable(df_anova, align = c("l","c", "c"),
+      col.names = c("faktorji", "metoda voditeljev", "razvrščanje na podlagi modelov"),
+      caption = "Prikaz statistične značilnosti spremenljivk za obe metodi.") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
 
-# _________ LMER _____________
-library(lmerTest)
+## Primerjava modelov za ANOVA.
+primerjava = anova(aov.mclust, aov.kmeans)
+kable(data.frame("metoda" = c("razvrščanje na podlagi modelov", "metoda voditeljev"),
+                 "Res.Df" = primerjava$Res.Df,
+                 "RSS" = primerjava$RSS,
+                 "Df" = primerjava$Df,
+                 "SS" = primerjava$`Sum of Sq`), align = "c",
+      caption = "Primerjava modelov za ANOVA.") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
 
+# --------------------------- linearni mesani modeli ---------------------------
 resF = res
+# izracun linearnih mesanih modelov
 for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
   resF[[sprem]] = as.factor(resF[[sprem]])
 }
-
 lmer.kmeans = lmer(ari.kmeans ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff+(1|i),
                    data = resF)
 vred_kmeans = anova(lmer.kmeans)
-
 lmer.mclust = lmer(ari.mclust ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff+(1|i),
                    data = resF)
 vred_mclust = anova(lmer.mclust)
+
+## Prikaz statistične značilnosti spremenljivk za obe metodi.
+df_lmer = data.frame("faktorji" = row.names(vred_kmeans),
+                     "k-means" = vred_kmeans$`Pr(>F)`,
+                     "mclust" = vred_mclust$`Pr(>F)`)
+kable(df_lmer, align = c("l","c", "c"),
+      col.names = c("faktorji", "metoda voditeljev", "razvrščanje na podlagi modelov"),
+      caption = "Prikaz statistične značilnosti spremenljivk za obe metodi.") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
+
+## Primerjava modelov.
+primerjava.lmer = anova(lmer.kmeans, lmer.mclust)
+
+kable(data.frame("metoda" = c("metoda voditeljev", "razvrscanje na podlagi modelov"),
+                 "npar" = primerjava.lmer$npar,
+                 "AIC" = primerjava.lmer$AIC,
+                 "BIC" = primerjava.lmer$BIC,
+                 "logLik" = primerjava.lmer$logLik,
+                 "deviance" = primerjava.lmer$deviance), align = "c",
+      caption = "Primerjava modelov") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
 
