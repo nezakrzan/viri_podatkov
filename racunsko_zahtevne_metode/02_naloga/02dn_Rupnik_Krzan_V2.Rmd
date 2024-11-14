@@ -1,0 +1,454 @@
+---
+title: "Domača naloga 2"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+output:
+  pdf_document:
+    fig_caption: true
+    number_sections: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =3, fig.width = 6.5)
+
+# potrebne knjižnice
+library(ggplot2)
+library(car)
+library(tidyr)
+library(dplyr)
+library(ADGofTest)
+library(lmerTest)
+library(knitr)
+library(kableExtra)
+
+# seme
+set.seed(2024)
+```
+
+<!-- 
+Navodilo:
+
+Clustering
+
+Compare at least 2 methods and find out which one is the best. Generate data for at least 4 groups from a bivariate multivariate normal distribution.  Among other things, examine the effect of adding nonsignificant variables (variables that have the same distribution across all groups).
+
+Primerjaj vsaj dve metodi in ugotovi, katera je najboljša. 
+Ustvari podatke za vsaj 4 skupine iz bivariatne multivariatne normalne porazdelitve. 
+Med drugim preuči učinek dodajanja nepomembnih spremenljivk (spremenljivk, ki imajo enako porazdelitev v vseh skupinah).
+--> 
+
+# Cilj naloge
+
+Želiva preučiti 2 različni metodi razvrščanja v skupine. Primerjala bova metodo voditeljev(*k-means*) in razvrščanje na podlagi modelov. Za metodo razvrščanje na podlagi modelov sva pustila, da izbere najboljši model na podlagi BIC vrednosti. Število skupin pri kateri se računa BIC vrednost sva določila glede na trenutne nastavitve (`settings`) v iteraciji. Zanima nas katera bo najboljša na podatkih, generiranih iz bivariatne multivariatne normalne porazdelitve. 
+
+Zanima naju tudi, kako na metodi vpliva dodajanje nepomembnih spremenljivk, torej tistih, ki imajo enako porazdelitev v vseh skupinah.
+
+<!-- Tom14: Tukej se nevem kako bi popravil-->
+Za metodi sva se odločila na podlagi njunih predpostavk, ker so nekatere dokaj podobne, npr. predpostavljajata, da so skupine dovolj ločene oz. ni prekomernega prekrivanja med njimi, homogenosti variance znotraj skupine oz. podatki so v skupinah razmeroma homogeno razporejeni in zahtevata vnaprejšnjo določitev števila skupin, poleg tega pri razvrščanju na podlagi modelov zahtevamo v predpostavkah, da so podatki generirani iz multivariatnih normalnih porazdelitev.
+
+# Generiranje podatkov
+
+Podatke sva generirala tako, da je njihova porazdelitev bivariatna multivariatna normalna. Zanima naju kako se bodo metode obnesle glede na to kako so si skupine med seboj različne. V ta namen sva si izbrala parameter, ki prilagaja povprečja v skupini, tj. $diff = (1, 2, 4, 10)$. Želiva si, da imava primere, ko so si skupine zelo različne med seboj in ne tako zelo različne. <!--Torej bo pri porazdelitvi povprečja generirana s pomočjo faktorja _diff_ in število skupin, kovariančna matrika pa bo po diagonali vsebovala število spremenljivk.-->
+
+
+Za lažje razumevanje si poglejmo primer, kjer je število skupin enako $8$, število spremenljivk $12$, ter velikost skupin $100$.\
+"Posameznike" želimo razporediti v $8$ skupin, zato bo imela vsaka spremenljivka $8*100$ vrednosti.Ker je število skupin enako $8$ bomo imeli 8 informativnih spremenljivk in 4 neinformativne.\
+Vrednosti neinformativnih spremenljivk generiramo iz porazdelitve tako da imajo povprečje 0 (torej na podlagi njih ne moremo "posameznike" razvrtiti v skupine). 
+Vrednosti informativnih spremenljivk pa generiramo iz porazdlitve tako da imajo 100 vrednosti s povprečjem enakim `diff`, preostalih $(8-1)*100$ vrednosti pa je generiranih iz porazdlitve s povprečjem 0. Naprimer spremenljivka, ki bo v 2. skupini ima 101.-200. vrednost iz porazdlitve s povprečjem `diff`, vse ostale vrednosti pa iz porazdelitve s povprečjem 0.
+
+Faktorji, ki jih bova še spreminjala so:
+
+- število skupin, $k = (4, 8, 10)$,
+- velikosti skupin, $n = (20, 100, 200)$, pri čemer bodo imele vse skupine vedno enako velikost in
+- število spremenljivk, $v = (12, 24, 36)$.
+<!--Tom14: ok tukej pač nevem kaj mu ni jasno ker pač ok stevilo skupin sva izbrala kot sva izbrala...mislm lahko spremeniva iz 10 na kej večjega ampak nevem kaj je tle tok bistvenega
+To s številom neinformativnih spremenljivk je men cist jasno pac st.sprem-st.skupin...pac isto imava kot smo na vajah delal tko da nevem potem je on slabo naredil..
+Za to bivariatno multivariatno pa tud ne razumem oz navem kaj bi se mogla naredit
+
+Mogoce za to dodajanje nepomembnih spremenljivk lahko dopiseva:
+"Število pomembnih spremenljivk je enako številu skupin. Vsaka spremenljivka določa eno skupino. Preostale spremenljvke (stevilo spremenljivk - število skupin) pa so nepomembne."
+
+
+-->
+
+Faktorji so bili izbrani na podlagi tega, da si želiva rezultate, ki bodo dobri in slabi oziroma da bodo za nekatere metode dobri za druge pa slabi.
+
+Pri generiranju podatkov bo število <!--Tom28: informativnih--> spremenljivk enako številu skupin, vse ostale spremenljivke bodo neinformativne, ker nas zanima tudi kako vpliva dodajanje nepomembnih oz. neinformativnih spremenljivk. 
+
+V naslednjih dveh primerih je število vseh spremenljivk enako 12, od tega so 4 pomembne (število skupin je enako 4). Torej razlike so prisotne le glede na te spremenljivke (ena od skupin odstopa od preostalih 3). Zaradi preglednosti so grafi, ki prikazujejo odvisnost od preostalih 8 spremenljivk izpuščeni. 
+
+```{r generiranje podatkov, fig.cap="Primer generiranih podatkov za 4 skupine, velikosti n = 100, 12 spremenljivk in diff = 2.", return_all = TRUE, fig.height=4, fig.width=5}
+generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.skupin, diff){
+  # generiranje povprečij
+  M = diag(stevilo.skupin)*diff 
+  
+  # neinformativne spremenljivke - same 0
+  M = cbind(M, matrix(0, nrow=stevilo.skupin, ncol=stevilo.spremenljivk-stevilo.skupin)) 
+  S = diag(stevilo.spremenljivk)
+  
+  X = NULL 
+  # generamo podatke za vsako skupino posebaj
+  for(i in 1:stevilo.skupin){
+    iX = MASS::mvrnorm(n=velikost.skupin, mu = M[i,], Sigma = S)
+    X = rbind(X,iX)
+  }
+  
+  # dodamo se skupino
+  X = cbind(X, skupina=rep(1:stevilo.skupin,each=velikost.skupin)) # clu = skupina
+  return(X)
+}
+
+data.primer1 = generiranje.podatkov(stevilo.spremenljivk = 12, velikost.skupin = 100, stevilo.skupin = 4, diff = 2)
+pairs(data.primer1[,1:4], col=data.primer1[,13])
+```
+
+```{r generiranje podatkov 2, fig.cap="Primer generiranih podatkov za 4 skupine, velikosti n = 100, 12 spremenljivk in diff = 4.", return_all = TRUE, fig.height=4, fig.width=5}
+
+data.primer2 = generiranje.podatkov(stevilo.spremenljivk = 12, velikost.skupin = 100, stevilo.skupin = 4, diff = 4)
+pairs(data.primer2[,1:4], col=data.primer2[,13])
+```
+
+# Simulacija
+
+Izvedla sva simulacijo s $100$ ponovitvami (za večje število ponovitev se nisva odločila zaradi časovne zahtevnosti) in uporabila t.i. paralelno računanje(angl. *parallel computing*). V simulaciji sva generirala podatke in potem izvedla obe metodi razvrščanja v skupine(*metodo voditeljev* in *razvrščanje na podlagi modelov*).
+
+Za obe metodi sva izračunala mero prilagojeni Randov indeks(*ARI*), ki sva jo uporabila za analizo in primerjavo metod med seboj.
+
+<!--
+Za obe metodi sva izračunala 3 različne mere, in sicer prilagojeni Randov indeks(*ARI*), vsoto kvadratov znotraj skupine(*WSS*) in proporcija vsote kvadratov znotraj skupine(*PWSS*). (Zadnji dve meri sva zaradi "neprimernosti" kasneje opustila in ju tudi nisva obravnavala) \ -->
+<!-- Tom04: tole v oklepaju sm dodal tko da nisi za bv vse tole spodi pisala ce si se ze potrudla-->
+
+Prilagojeni Randovi indeksi zavzemajo vrednosti na intervalu $[-1,1]$ in želimo si, da so čim bližje 1, torej da gre za dobro ujemanje med razvrstitvami, kar je boljše od naključnega (vrednosti blizu 0). <!--Pri meri *WSS* si želimo majhne vrednosti, saj to pomeni, da so skupine bolj kompaktne in s tem so si točke znotraj skupine bolj podobne. Gre sicer za mero, ki je pristranska in jo nekatere metode optimizirajo(ravno metoda *kmeans*). Mera *PWSS* pa oceni delež variabilnosti v podatkih, ki ga pojasnjujejo skupine, v primerjavi z celotno variabilnostjo podatkov in višji kot je, bolje je, saj to pomeni, da so skupine dobro definirane in točke znotraj skupin tesno sledijo svojim centroidom.-->
+
+<!-- Tom04: Za PWSS bi jst reku da more bit tud cim manjši ker je v stevcu WSS torej razdalje tock od centrov skupin, v imenovalcu pa WSS ce bi ble vse tocke v eni skupini...in blizje 1 kot bo vrednost ulomka, vecje bojo mogle bit WSS znotraj posamezne skupine oz zelo podobna razporeditev v skupine (slaba razporeditev) kot bi bila ce bi bile vse tocke v eni skupini-->
+
+<!--Pri primerjavi metod se bova na začetku osredotočala predvsem na prilagojeni Randov indeks(*ARI*), saj je mera *WSS* pristranska in jo nekatere metode optimizirajo(ravno metoda *kmeans*).-->
+
+Pri primerjavi metod sva se osredotočala predvsem na prilagojeni Randov indeks(*ARI*), saj so nekatere druge mere kot naprimer *WSS* pristranske in jo nekatere metode optimizirajo(ravno metoda *kmeans*).
+
+```{r branje in sprememba podatkov za izris grafov}
+res = readRDS("simulacija.RDS")
+
+resLong = pivot_longer(res, cols =matches("^(ari)\\."),
+                       values_to = "value",
+                       names_to = c("metric", "method"),
+                       names_pattern = "^(ari)\\.(kmeans|mclust)") 
+resLong$method[resLong$method == "kmeans"] = "metoda voditeljev"
+resLong$method[resLong$method == "mclust"] = "razvrscanje na podlagi modelov"
+resWide <- resLong %>% pivot_wider(names_from = metric, values_from = value)
+
+# izlociva le vrednosti z diff=2, saj kasneje samo te opazujeva
+resWide_diff2 = resWide[resWide$diff==2,]
+
+resAgg = aggregate(ari ~ stevilo.spremenljivk + velikost.skupin 
+                   + stevilo.skupin + method, 
+                   data = resWide_diff2, FUN = mean)
+
+resAggFac = resAgg
+resAggFac$stevilo.spremenljivk = as.factor(resAggFac$stevilo.spremenljivk)
+resAggFac$velikost.skupin = as.factor(resAggFac$velikost.skupin)
+resAggFac$stevilo.skupin = as.factor(resAggFac$stevilo.skupin)
+
+resAgg_diff = aggregate(ari ~ stevilo.spremenljivk +
+                          velikost.skupin + stevilo.skupin + method + diff, 
+                        data = resWide, FUN = mean)
+
+resAggFac_diff = resAgg_diff
+resAggFac_diff$stevilo.spremenljivk = as.factor(resAggFac_diff$stevilo.spremenljivk)
+resAggFac_diff$velikost.skupin = as.factor(resAggFac_diff$velikost.skupin)
+resAggFac_diff$stevilo.skupin = as.factor(resAggFac_diff$stevilo.skupin)
+resAggFac_diff$diff = as.factor(resAggFac_diff$diff)
+
+```
+
+# Popravljen Randov indeks (ARI)
+
+## Spreminjanje faktorja ločljivosti med skupinami
+
+Najprej si poglejmo, kakšne vrednosti ARI imamo, če spremninjamo ločljivost med skupinami(`diff`). Pričakujeva, da bo metoda voditeljev pri večjih vrednostih `diff` nekoliko boljša, saj dobro deluje v primerih, ko so skupine med seboj dobro ločene.
+
+<!--
+to sm zaenkar zakomentirala, ker ne razumem čist
+
+Najverjetneje bi pričakovali, da metodi nekoliko bolje razporedita vrednosti v prave skupine, zato si oglejmo kako se vrednosti razlikujejo, če upoštevamo še spremenljivko `diff`. <!--Neza: tale stavk mi ni cist jasn, sploh zacetek: metodi nekoliko bolje razporedita vrednosti v prave skupine... bolje kot kaj?
+
+Tom03: ko nisva upostevala diff so ble vrednosti tm okol 0.6 kar se mi zdi da je dokaj slabo ker pac ARI primerja koliko se razporeditev v skupine ujema z dejansko razporeditivijo v skupine (to kar vsa generirala)...in pac mislu sm to da bi pricakovali da bi metodi nekoliko bolje razporejali...pac kot da bi bla ARI vrednost visja 
+-->
+
+Sprva si oglejmo grafe pri ekstremnih vrednostih, torej `diff`=1 in `diff`=10
+
+<!--
+```{r diff, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikos in število skupin.", fig.height=4, fig.width=8}
+ggplot(resAggFac_diff, aes(y = ari, x = stevilo.spremenljivk,
+                      col=method, group=interaction(method, diff), linetype=diff)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "dotdash", "dashed", "solid"))+
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")+
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") 
+```
+-->
+
+```{r diff 1, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikost in število skupin (diff = 1).", fig.height=4, fig.width=8}
+df_diff1 = resAggFac_diff %>% filter(diff %in% c(1))
+
+ggplot(df_diff1, aes(y = ari, x = stevilo.spremenljivk,
+                      col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")+
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") +
+  ggtitle("diff = 1") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r diff 10, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikost in število skupin (diff = 10).", fig.height=4, fig.width=8}
+df_diff10 = resAggFac_diff %>% filter(diff %in% c(10))
+
+ggplot(df_diff10, aes(y = ari, x = stevilo.spremenljivk,
+                      col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free")+
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") +
+  ggtitle("diff = 10") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+Takoj opazimo razliko med majhnim in velikim `diff` - pri `diff = 1` so vrednosti ARI dokaj nizke, pri `diff = 10` pa previsoke, kar pomeni, da so skupine preveč ločene in s tem slabi oziroma nerealni rezultati. 
+
+Poglejmo si razliko med  `diff = 1` in  `diff = 2`. 
+
+```{r diff 2, fig.cap="Prikaz ARI vrednosti razdeljen glede na število spremenljivk in število skupin.", fig.height=4, fig.width=8}
+resAggFac_diff_12 <- resAggFac_diff %>%
+  filter(diff %in% c(1, 2))
+
+ggplot(resAggFac_diff_12, aes(y = ari, x = velikost.skupin,
+                      col=method, group=interaction(method, diff), linetype=diff)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "solid"))+
+  facet_grid(stevilo.spremenljivk ~ stevilo.skupin, scales="free")+
+  xlab("velikost skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:")
+```
+
+Opazno je *metoda voditeljev* boljša od metode *razvrščanja na podlagi modelov*. <!--Opazimo tudi, da je razlika v metodah večja s povečanjem faktorja `diff` in z manjšimi velikostmi skupin-->. Z dodajanjem nepomembnih spremenljivk pa se manjša tudi ARI. Lahko bi ocenila, da so rezultati boljši in lažje berljivi za primerjavo metod, če je faktor `diff` nastavljen na `2`, ker pri nastavljeni vrednosti na  `1` težko ločimo med metodami, skupine so si med seboj preveč podobne, kar ne ustreza ravno metodi voditeljev in težko ocenimo katera metoda je boljša.
+
+Vseeno pa si poglejmo še razliko med `diff = 2` in `diff = 4`.
+
+```{r diff 3, fig.cap="Prikaz ARI vrednosti razdeljen glede na število spremenljivk in število skupin.", fig.height=4, fig.width=8}
+resAggFac_diff_24 <- resAggFac_diff %>%
+  filter(diff %in% c(2, 4))
+
+ggplot(resAggFac_diff_24, aes(y = ari, x = velikost.skupin,
+                      col=method, group=interaction(method, diff), linetype=diff)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "solid"))+
+  facet_grid(stevilo.spremenljivk ~ stevilo.skupin, scales="free")+
+  xlab("velikost skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:")
+```
+
+Razlika med metodama pri  `diff = 4` je velika, tudi ARI za metodo voditeljev je previsok, da bi lahko rekli, da so rezultati dobri oziroma realni. 
+
+<!--
+Na podlagi zgornje analize se odločiva, da je primerna ločljivost med skupinama nastaljena na  `diff = 2` za ustrezno primerjavo med metodama.
+-->
+
+<!-- Tom14: tukej nevem kaj bi potem rekel a da za vsak diff posebi analizirava ampak bojo komentarji skor enaki...ker sej pol naprej obravnavava spet diff pac v anovi pa lin. mes. modeli
+-->
+
+## Analiza na podlagi števila in velikosti skupin ter števila spremenljivk
+
+Poglejmo si, kako se spreminja ARI vrednost v primeru, ko spreminjamo število skupin, število spremenljik in velikost skupin. Vrstice predstavljajo spremembo števila skupin, stolpci pa spremembo velikosti skupin.
+
+Pričakujeva, da bo pri večjih velikostih skupin indeks večji, saj se ponavadi pri večjih vzorcih moč za razlikovanje skupin običajno poveča. Z večanjem števila skupin pa pričakujeva, da se bo indeks manjšal, ker postane razvrščanje težje, saj pri več skupinah obstaja več kombinacij za razvrščanje, zato je večja verjetnost napačnih ujemanj.
+
+```{r risanje ARI, fig.cap="Prikaz ARI vrednosti razdeljen glede na velikost skupin in število skupin.", fig.height=4, fig.width=5}
+ggplot(resAggFac, aes(y = ari, x = stevilo.spremenljivk,
+                      col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ velikost.skupin, scales="free") +
+  xlab("stevilo spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") + 
+  theme(legend.position = "bottom")
+```
+
+Vidimo, da je v vseh kombinacijah števila skupin in velikosti skupin trend ARI vrednosti podajoč, ko povečujemo število spremenljivk. Tudi znotraj posamezne velikosti skupin se vrednost manjša z večanjem števila skupin, čeprav je ta razlika dokaj majhna. Vseeno pa lahko opazimo, da ima metoda `k-means` v vseh primerih večjo ali enako ARI vrednost kot metoda `mclust` in je manj občutljiva na povečao števila spremenljivk. 
+
+Prikažimo vrednosti še tako, da vrstice predstavljajo spremembo števila skupin, stolpci pa spremembo števila spremenljivk. 
+
+```{r risanje ARI 2, fig.cap="Prikaz ARI vrednosti razdeljen glede na število spremenljivk in število skupin.", fig.height=4, fig.width=5}
+ggplot(resAggFac, aes(y = ari, x = velikost.skupin,
+                      col=method, group=method)) + 
+  geom_point() + geom_line() +
+  facet_grid(stevilo.skupin ~ stevilo.spremenljivk, scales="free") + 
+  xlab("velikost skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") +
+  theme(legend.position = "bottom")
+```
+
+Jasno se vidi, kako se z večanjem skupin viša tudi ARI, kar sva pričakovala. Na zgornjem grafu pa lahko bolje opazimo očitno razliko med metodama pri večjem številu spremenljivk. Metoda *razvrščanje na podlagi modelov* ima zelo nizke vrednosti indeksa, še posebaj pri 4 skpinah in 36 spremenljivkah(tudi za velike skupine). Pri manjšem številu spremenljivk(npr. 12) pa je razlika med metodama zelo majhna, še posebaj pri velikih skupinah(npr. velikost skupin je 200).
+
+Več spremenljivk naj bi pomagalo izboljšati ARI, vendar samo, če te spremenljivke dejansko prispevajo k razlikovanju skupin. Ker pa sva dodajala t.i. nepomembne spremenljivke(spremenljivke, ki imajo enako porazdelitev v vseh skupinah) pa se indeks ne boljša, pri metodi *razvrščanje na podlagi modelov* se celo manjša.
+
+
+# ANOVA
+
+<!-- Tom04: problem ce imava za response razlicne podatke...ne zeli med seboj primerjati zato izbereva long data frame-->
+
+S pomočjo ANOVA testa bova med seboj primerjala metodi za razvrščanja v skupine. Najprej si bova ogledala in med seboj primerjala statistično značilnost spremenljivk(faktorji) in njihove kombinacije, nato pa še modela med seboj.
+
+Glede na zgornjo analizo pričakujeva, da bo boljša *metoda voditeljev* in bomo z njo imeli manj variabilnosti, ki je z modelom ne uspemo pojasniti. Pričakujeva tudi, da bodo spremenljivke(faktorji) in interakcije med njimi statistično značilne pri obeh metodah, saj sva opazila pri zgornji analizi, da vplivajo na ARI.
+
+<!--
+Neza06:
+Tole nism zih, ce sm okej napisala, ce ma kak smisu:
+Pričakujeva tudi, da bodo spremenljivke(faktorji) in interakcije med njimi statistično značilne pri obeh metodah, saj sva opazila pri zgornji analizi, da vplivajo na ARI.
+Tom06: ja men se zdi da je to cist ok, da ima smisel...bom kr dodal tle zgori
+-->
+
+<!--
+```{r izracun anova}
+# iz long formata vzameva le vrstice ki vsebujejo ari vrednost
+resLongF = as.data.frame(resLong[resLong$metric == "ari",])
+
+# spremeniva v faktor
+for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
+  resLongF[[sprem]] = as.factor(resLongF[[sprem]])
+}
+# stolpec 'value' preimneujeva v 'ari'
+names(resLongF) = sub('value', 'ari', names(resLongF))
+
+# k-means anova
+aov.kmeans = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
+                 data = resLongF[resLongF$method == "metoda voditeljev",])
+anova.kmeans = anova(aov.kmeans) 
+
+# mclust anova
+aov.mclust = aov(ari ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff,
+                 data = resLongF[resLongF$method == "razvrscanje na podlagi modelov",])
+anova.mclust = anova(aov.mclust)
+```
+-->
+
+```{r izracun anova (novo)}
+# iz long formata vzameva le vrstice ki vsebujejo ari vrednost
+resLongF = as.data.frame(resLong[resLong$metric == "ari",])
+
+# spremeniva v faktor
+for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
+  resLongF[[sprem]] = as.factor(resLongF[[sprem]])
+}
+# stolpec 'value' preimneujeva v 'ari'
+# names(resLongF) = sub('value', 'ari', names(resLongF))
+
+# k-means anova
+aov = aov(value ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff*method,
+                 data = resLongF)
+anova(aov) 
+```
+
+<!--
+```{r prikaz v tabeli anova, results=T}
+df_anova = data.frame("faktorji" = row.names(anova.kmeans)[1:15],
+                      "k-means" = anova.kmeans$`Pr(>F)`[1:15],
+                      "mclust" = anova.mclust$`Pr(>F)`[1:15])
+
+kable(df_anova, align = c("l","c", "c"),
+             col.names = c("faktorji", "metoda voditeljev", "razvrščanje na podlagi modelov"),
+      caption = "Prikaz statistične značilnosti spremenljivk za obe metodi.") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
+```
+-->
+
+Iz tabele lahko razberemo, da se statistična značilnost posameznih spremenljivk in njihovih kombinacij skoraj ne razlikuje glede na metodo. Pri metodi *razvrščanje na podlagi modelov* dobimo statistično statistično značilnost ($\alpha=0.05$) v vseh primerih. Prav tako to velja za *metodo voditeljev*, z izjemo interakccije  `velikost.skupin:stevilo.skupin`, ki ni statistično značilna. 
+
+
+# Linearni mešani modeli
+
+Primerjajmo metodi za razvrščanja v skupine še s pomočjo linearnih mešanih modelov, kjer pričakujeva podobne rezultate kot zgoraj pri ANOVA testu.
+
+<!-- Tom05: no tukej pa hoce da sta na istem data frame izracunana modela tko da
+uporabiva te 'originalne' podatke samo s faktorji-->
+
+```{r izracun linearnih mesanih modelov}
+resF = res
+for(sprem in c("i", "stevilo.spremenljivk", "velikost.skupin", "stevilo.skupin", "diff")){
+  resF[[sprem]] = as.factor(resF[[sprem]])
+}
+
+lmer.kmeans = lmer(ari.kmeans ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff+(1|i),
+                   data = resF)
+vred_kmeans = anova(lmer.kmeans)
+
+lmer.mclust = lmer(ari.mclust ~ stevilo.spremenljivk*velikost.skupin*stevilo.skupin*diff+(1|i),
+                   data = resF)
+vred_mclust = anova(lmer.mclust)
+```
+
+
+```{r prikaz v tabeli lmer, results=T}
+df_lmer = data.frame("faktorji" = row.names(vred_kmeans),
+                      "k-means" = vred_kmeans$`Pr(>F)`,
+                      "mclust" = vred_mclust$`Pr(>F)`)
+
+kable(df_lmer, align = c("l","c", "c"),
+             col.names = c("faktorji", "metoda voditeljev", "razvrščanje na podlagi modelov"),
+      caption = "Prikaz statistične značilnosti spremenljivk za obe metodi.") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
+```
+
+Iz tabele lahko razberemo, da se statistična značilnost posameznih spremenljivk in njihovih kombinacij skoraj ne razlikuje glede na metodo. Rezultati so podobni kot v zgornjem razdelku. Pri metodi *razvrščanje na podlagi modelov* dobimo statistično statistično značilnost ($\alpha=0.05$) v vseh primerih. Prav tako to velja za *metodo voditeljev*, z izjemo interakccije `velikost.skupin:stevilo.skupin`, ki ni statistično značilna. 
+
+<!--
+Sedaj med seboj primerjajmo še modela.
+
+```{r primerjava modelov lmer, results=T}
+# primerjava modelov
+primerjava.lmer = anova(lmer.kmeans, lmer.mclust)
+
+kable(data.frame("metoda" = c("metoda voditeljev", "razvrscanje na podlagi modelov"),
+                 "npar" = primerjava.lmer$npar,
+                 "AIC" = primerjava.lmer$AIC,
+                 "BIC" = primerjava.lmer$BIC,
+                  "logLik" = primerjava.lmer$logLik,
+                 "deviance" = primerjava.lmer$deviance), align = "c",
+      caption = "Primerjava modelov.") %>% 
+  row_spec(0,bold=T) %>%
+  kable_styling(full_width = F, latex_options = "HOLD_position") 
+```
+
+Tokrat modela med seboj primerjamo glede na `AIC` oz. `BIC` oz. `logLik`. Želimo da je vrednost `logLik` čim večja oziroma vrednosti `AIC` in `BIC` čim manjši. To v našem primeru velja za *metodo voditeljev*. 
+-->
+
+# Zaključek
+
+Pri primerjavi dveh metod za razvrščanje v skupine, *metodo voditeljev* ter *razvrščanje na podlagi modelov*, na podlagi mere prilagojeni Randov indeks (ARI) sva ugotovila, da na vrednost ARI pa ne vpliva negativno samo število nepomembnih spremenljivk(tistih, ki imajo enako porazdelitev v vseh skupinah), ampak tudi število skupin v katere želimo razporediti posamezne točke. S tem sva potrdila tudi najno predvidevanje, da se bo z večanjem števila skupin indeks ARI manjšal, ker postane razvrščanje težje, saj pri več skupinah obstaja več kombinacij za razvrščanje, zato je večja verjetnost napačnih ujemanj. V primeru, da je število skupin veliko in so te blizu skupaj, je verjetnost za napačno razporeditev velika. 
+
+Torej na 'kvaliteto' razporeditve v skupine vpliva tudi ločljivost med skupinami (`diff`). V primeru, da so skupine blizu skupaj, metodi slabo razlikujeta posameznimi skupinami. To pa se z večanjem števila vseh spremenljivk še poslabša. Večja kot je ločljivost med skupinami, bolje lahko razlikujemo med skupinami. Vendar pa ko `diff` dosega velike vrednosti(npr. že pri `diff = 4`), je primerjava med metodami skoraj nemogoča, saj ne glede na metodo, je *ARI* vrednost visoka oz. blizu 1. \
+Z večanjem velikosti skupin pa se pričakovano povečuje vrednost indeksa.
+
+Vseeno pa se je glede na analizo izkazalo, da *metoda voditeljev* nekoliko bolje razlikuje med skupinami kot metoda *razvrščanje na podlagi modelov*. Prva je imela v vseh kombinacijah spremenljivk(faktorjev), ki sva jih spreminjala, višje ali enake vrednosti, kot smo jih dobili pri metodi *razvrščanje na podlagi modelov*. S pomočjo ANOVA testa in linearnih mešanih modelov pa se pokaže, da je model, ki smo ga oblikvali na podlagi *metode voditeljev* primernejši (pojasnimo več variabilnosti). 
+
