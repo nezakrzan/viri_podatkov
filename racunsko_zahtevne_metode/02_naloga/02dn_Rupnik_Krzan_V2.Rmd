@@ -57,9 +57,9 @@ Podatke sva generirala tako, da je njihova porazdelitev bivariatna multivariatna
 
 
 Za lažje razumevanje si poglejmo primer, kjer je število skupin enako $8$, število spremenljivk $12$, ter velikost skupin $100$.\
-"Posameznike" želimo razporediti v $8$ skupin, zato bo imela vsaka spremenljivka $8*100$ vrednosti.Ker je število skupin enako $8$ bomo imeli 8 informativnih spremenljivk in 4 neinformativne.\
-Vrednosti neinformativnih spremenljivk generiramo iz porazdelitve tako da imajo povprečje 0 (torej na podlagi njih ne moremo "posameznike" razvrtiti v skupine). 
-Vrednosti informativnih spremenljivk pa generiramo iz porazdlitve tako da imajo 100 vrednosti s povprečjem enakim `diff`, preostalih $(8-1)*100$ vrednosti pa je generiranih iz porazdlitve s povprečjem 0. Naprimer spremenljivka, ki bo v 2. skupini ima 101.-200. vrednost iz porazdlitve s povprečjem `diff`, vse ostale vrednosti pa iz porazdelitve s povprečjem 0.
+Elemente želimo razporediti v $8$ skupin, zato bo imela vsaka spremenljivka $8*100$ vrednosti. Ker je število skupin enako $8$, bomo imeli $8$ informativnih spremenljivk in $4$ neinformativne.\
+Vrednosti neinformativnih spremenljivk generiramo iz porazdelitve tako da imajo povprečje 0 (torej na podlagi njih ne moremo elemente razvrstiti v skupine). 
+Vrednosti informativnih spremenljivk pa generiramo iz porazdlitve tako da ima $100$ vrednosti povprešje enako `diff`, preostale $(8-1)*100$ vrednosti pa so generirane iz porazdlitve s povprečjem $0$. Na primer spremenljivka, ki bo v 2. skupini ima vrednost med $101$ in $200$ iz porazdlitve s povprečjem `diff`, vse ostale vrednosti pa iz porazdelitve s povprečjem 0. <!-- Neza17: bi kle mogoče dopisala da je ta porazdelitev bivariatna multivariatna?-->
 
 Faktorji, ki jih bova še spreminjala so:
 

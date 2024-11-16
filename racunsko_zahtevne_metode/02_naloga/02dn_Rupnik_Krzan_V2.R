@@ -12,6 +12,14 @@ set.seed(2024)
 
 ########################## generiranje podatkov #############################
 # funkcija za generiranje podatkov
+
+# parametri za test
+# m = 2
+stevilo.spremenljivk = 12
+velikost.skupin = 100
+stevilo.skupin = 8
+diff = 2
+
 generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.skupin, diff){
   # generiranje povprečij
   M = diag(stevilo.skupin)*diff 
@@ -32,8 +40,28 @@ generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.s
   return(X)
 }
 
+# Load necessary package
+library(MASS) # Provides the `mvrnorm()` function
+
+# Function to generate bivariate normal data
+generiranje.biv.mult.podatkov <- function(diff, cor, covariance, stevilo.skupin, velikost.skupin){
+  # diff = za povprečje
+  # cor = korelacije med spremenljivkami
+  
+  # informativne spremenljivke
+  M = diag(stevilo.skupin)*diff # povprečje(Mu)
+  S = diag(stevilo.skupin)*corelation # kovariance(Sigma)
+  
+  return(mvrnorm(velikost.skupin, mu = diff, Sigma = covariance))
+}
+
+# Function to generate nonsignificant variables
+generate_nonsignificant_data <- function(n, num_vars) {
+  return(matrix(rnorm(n * num_vars), ncol = num_vars))
+}
+
 # Primer generiranih podatkov za 4 skupine, velikosti n = 100, 12 spremenljivk in diff = 2.
-data.primer1 = generiranje.podatkov(stevilo.spremenljivk = 12, velikost.skupin = 100, stevilo.skupin = 4, diff = 2)
+data.primer1 = generiranje.podatkov(stevilo.spremenljivk = 12, velikost.skupin = 100, stevilo.skupin = 4, diff = 0)
 pairs(data.primer1[,1:4], col=data.primer1[,13])
 
 ################################## simulacija ##################################
