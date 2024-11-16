@@ -1,5 +1,8 @@
 set.seed(2024)
 
+library(tidyr)
+library(dplyr)
+
 # ============================ simulacija podatkov ============================
 # funkcija za generiranje podatkov
 generiranje_podatkov  = function(beta0, beta1, beta2, alpha, gamma, n){
@@ -58,9 +61,8 @@ for (alpha in unique(alpha.v)){
   for (gamma in unique(gamma.v)){
     for (n in unique(n.v)){
       # podatki
-      #data = generiranje_podatkov(beta0=100, beta1=3, beta2=2, alpha=alpha, gamma=gamma, n=n)
-      data = podatki %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n ) %>%
-        select(c("x1", "x2", "y"))
+      data = podatki[c(podatki$alpha==alpha & podatki$gamma==gamma & podatki$velikost.vzorca==n),
+                     c("x1", "x2", "y")]
       
       # model
       model = lm(y ~ x1 + x2, data)
@@ -69,6 +71,7 @@ for (alpha in unique(alpha.v)){
       int = summary(model)$coef[1,1]
       x1 = summary(model)$coef[2,1]
       x2 = summary(model)$coef[3,1]
+
       
       # intervali zaupanja
       int.iz = confint(model)[1,]
@@ -78,7 +81,7 @@ for (alpha in unique(alpha.v)){
       # shranjevanje
       intervali.zaupanja.org = rbind(intervali.zaupanja.org, 
                                      data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n,
-                                                int.coef = int, x1.coef = summary(model)$coef[1,1], x2.coef = x2,
+                                                int.coef = int, x1.coef = x1, x2.coef = x2,
                                                 int.lower = int.iz[1], int.upper = int.iz[2],
                                                 x1.lower = x1.iz[1], x1.upper = x1.iz[2],
                                                 x2.lower = x2.iz[1], x2.upper = x2.iz[2]))
@@ -96,9 +99,8 @@ alpha.v = c(0.6, 1, 1.2)
 gamma.v = c(0.8, 1.4)
 n.v = c(20, 200, 500)
 
-settings = expand.grid(i=1:length(alpha.v), 
-                       alpha = rev(alpha.v), 
-                       gamma = rev(gamma.v), 
+settings = expand.grid(alpha = rev(alpha.v),
+                       gamma = rev(gamma.v),
                        n=rev(n.v))
 
 
@@ -112,8 +114,10 @@ for(i in 1:nrow(settings)){
   for(j in 1:m){ #bootstrap
     #j = 1
     ind = sample(settings$n[i], replace = T)
-    data = podatki %>% filter(alpha == settings$alpha[i] & gamma == settings$gamma[i] & velikost.vzorca == settings$n[i]) %>%
-      select(c("x1", "x2", "y"))
+    # data = podatki %>% filter(alpha == settings$alpha[i] & gamma == settings$gamma[i] & velikost.vzorca == settings$n[i]) %>%
+    #   select(c("x1", "x2", "y"))
+    data = podatki[c(podatki$alpha==settings$alpha[i] & podatki$gamma==settings$gamma[i] & podatki$velikost.vzorca==settings$n[i]),
+                   c("x1", "x2", "y")]
 
     # lm model
     iFitLm = lm(y ~ x1 + x2, data=data[ind,])
@@ -138,14 +142,16 @@ intervali.zaupanja  = data.frame(alpha = numeric(), gamma = numeric(), velikost.
                                  x1.lower = numeric(), x1.upper = numeric(), 
                                  x2.lower = numeric(), x2.upper = numeric())
 alpha.iz = 0.05
+df = data.frame(res)
 
 # izračun intervalov zaupanja za vsako kombinacijo parametrov
 for (alpha in unique(rezultati$alpha)){
   for (gamma in unique(rezultati$gamma)){
     for (n in unique(rezultati$velikost.vzorca)){
       # filtriraj podatke za trenutno kombinacijo parametrov
-      subset.res  = data.frame(res) %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n) %>% 
-        select(c("int", "x1", "x2"))
+      # subset.res  = data.frame(res) %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n) %>% 
+      #   select(c("int", "x1", "x2"))
+      subset.res = df[c(df$alpha==alpha & df$gamma==gamma & df$velikost.vzorca==n),]
       
       # izračun intervalov zaupanja
       int.iz  = quantile(subset.res$int, probs = c(alpha.iz/2, 1-alpha.iz/2))
@@ -181,8 +187,10 @@ for (alpha in unique(alpha.v)){
   for (gamma in unique(gamma.v)){
     for (n in unique(n.v)){
       # podatki
-      data = podatki %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n ) %>%
-        select(c("x1", "x2", "y"))
+      # data = podatki %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n ) %>%
+      #   select(c("x1", "x2", "y"))
+      data = podatki[c(podatki$alpha==alpha & podatki$gamma==gamma & podatki$velikost.vzorca==n),
+                     c("x1", "x2", "y")]
       
       # model
       model = lm(log(y) ~ x1 + x2, data)
@@ -200,7 +208,7 @@ for (alpha in unique(alpha.v)){
       # shranjevanje
       intervali.zaupanja.org = rbind(intervali.zaupanja.org, 
                                      data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n,
-                                                int.coef = int, x1.coef = summary(model)$coef[1,1], x2.coef = x2,
+                                                int.coef = int, x1.coef = x1, x2.coef = x2,
                                                 int.lower = int.iz[1], int.upper = int.iz[2],
                                                 x1.lower = x1.iz[1], x1.upper = x1.iz[2],
                                                 x2.lower = x2.iz[1], x2.upper = x2.iz[2]))
@@ -218,8 +226,7 @@ alpha.v = c(0.6, 1, 1.2)
 gamma.v = c(0.8, 1.4)
 n.v = c(20, 200, 500)
 
-settings = expand.grid(i=1:length(alpha.v), 
-                       alpha = rev(alpha.v), 
+settings = expand.grid(alpha = rev(alpha.v), 
                        gamma = rev(gamma.v), 
                        n=rev(n.v))
 
@@ -234,11 +241,13 @@ for(i in 1:nrow(settings)){
   for(j in 1:m){ #bootstrap
     #j = 1
     ind = sample(settings$n[i], replace = T)
-    data = podatki %>% filter(alpha == settings$alpha[i] & gamma == settings$gamma[i] & velikost.vzorca == settings$n[i]) %>%
-      select(c("x1", "x2", "y"))
+    # data = podatki %>% filter(alpha == settings$alpha[i] & gamma == settings$gamma[i] & velikost.vzorca == settings$n[i]) %>%
+    #   select(c("x1", "x2", "y"))
+    data = podatki[c(podatki$alpha==settings$alpha[i] & podatki$gamma==settings$gamma[i] & podatki$velikost.vzorca==settings$n[i]),
+                   c("x1", "x2", "y")]
     
     # lm model
-    iFitLm = lm(log(y) ~ x1 + x2, data=podatki[ind,])
+    iFitLm = lm(log(y) ~ x1 + x2, data=data[ind,])
     iEst = summary(iFitLm)$coef
     
     # shranimo rezultate
@@ -260,14 +269,16 @@ intervali.zaupanja  = data.frame(alpha = numeric(), gamma = numeric(), velikost.
                                  x1.lower = numeric(), x1.upper = numeric(), 
                                  x2.lower = numeric(), x2.upper = numeric())
 alpha.iz = 0.05
+df = data.frame(res)
 
 # izračun intervalov zaupanja za vsako kombinacijo parametrov
 for (alpha in unique(rezultati$alpha)){
   for (gamma in unique(rezultati$gamma)){
     for (n in unique(rezultati$velikost.vzorca)){
       # filtriraj podatke za trenutno kombinacijo parametrov
-      subset.res  = data.frame(res) %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n) %>% 
-        select(c("int", "x1", "x2"))
+      # subset.res  = data.frame(res) %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n) %>% 
+      #   select(c("int", "x1", "x2"))
+      subset.res = df[c(df$alpha==alpha & df$gamma==gamma & df$velikost.vzorca==n),]
       
       # izračun intervalov zaupanja
       int.iz  = quantile(subset.res$int, probs = c(alpha.iz/2, 1-alpha.iz/2))
@@ -285,9 +296,6 @@ for (alpha in unique(rezultati$alpha)){
 }
 
 saveRDS(object = intervali.zaupanja, file="intervali.zaupanja.transf.RDS") 
-
-
-
 
 
 

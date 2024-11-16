@@ -40,7 +40,10 @@ Aa okej dojamem zdej, najina klasična metoda je linearna regresija, najina drug
 
 In simulations, vary at least two factors that could influence the suitability or success of the methods. - 
 Torej modva bova za to spreminjala linearnost pa heteroskedasticnost?
-Sam, ne razumem cist dobr, al morva spreminjat tud neki kar bi vplival na bootstrap?-->
+Sam, ne razumem cist dobr, al morva spreminjat tud neki kar bi vplival na bootstrap?
+
+Tom16: ja jst sm tako razumel, da je najna osnovna metoda lin. reg. ampak ker zaradi krsenja predpostavk ni dobra metoda primerjava še z bootstrap metodo. 
+Zdej se mi zdi da spreminjava dovolj faktorjev k imava še velikost vzorca...sicer pa ja heteroskedastičnost se lepo vidi, ta nelinernost je pa bolj boga haha-->
 
 Želiva preučiti uporabo metode ponovnega vzorčenja, v primeru ko klasičnimi testom ne moremo popolno zaupati zaradi kršenja predpostavk. Generirala bova podatke, na katerih bova izračunala intervale zaupanja koeficientov linearne regresije. 
 
@@ -52,9 +55,10 @@ Za uporabno linearne regresije je potrebno izpolniti določene predpostavke, da 
 - brez multikolinearnosti: _neodvisne spremenljivke ne smejo biti preveč povezane med seboj_,
 - zadostno število podatkov.
 
-<!--Neza17: mislm da sm use nastela...-->
+<!--Neza17: mislm da sm use nastela...
+Tom16: ja se mi zdi da si kr use naštela-->
 
-Podatke bova generirala tako, da bodo nekatere izmed teh predpostavk kršene(opisano v naslednjem poglavju) in zaradi tega bova s pomočjo testa `boxCox` izvedla primerno transformacijo odzivne spremenljivke (ta bo v vseh primerih `log` transformacija). Na koncu bova med seboj primerjala intervale zaupanja dobljene z linearno regresijo (`lm`) in metodo ponovnega vzorčenja(bootstrap in permutacijski test). Primerjavo bova naredila tako na rezultatih pred in po transformaciji, vendar pa moramo paziti, saj rezultati pred in po transformaciji med seboj niso primerljivi. 
+Podatke bova generirala tako, da bodo nekatere izmed teh predpostavk kršene(opisano v naslednjem poglavju) in zaradi tega bova s pomočjo testa `boxCox` izvedla primerno transformacijo odzivne spremenljivke (ta bo v vseh primerih `log` transformacija). Na koncu bova med seboj primerjala intervale zaupanja dobljene z linearno regresijo (`lm`) in metodo ponovnega vzorčenja(bootstrap in permutacijski test).<!--Tom16: bova tudi permutacijski test baredila?--> Primerjavo bova naredila tako na rezultatih pred in po transformaciji, vendar pa moramo paziti, saj rezultati pred in po transformaciji med seboj niso primerljivi. 
 
 Pričakujeva, da bomo z metodo ponovnega vzorčenja dobili boljše rezultate.
 
@@ -83,7 +87,8 @@ Velikost vzorca pa enak  $n = 500$, saj je to dovolj velik vzorec za pravilno de
 
 <!--Neza17: misls da morva kej napisat zakaj sva zbrala 100, 3, 2 pa potem za apha pa gamma?
 Pa jst sm velikost vzorca povecala, ker mora bit velik
-?-->
+?
+Tom16: ne men se zdi da to ne rabiva ravno utemeljevat...pac tko sva si izbrala...-->
 
 Pri generiranju posameznih vrednosti v enačbi linearne regresije($x_{1i}, x_{2i}$) sva se odločila za generiranje iz enakomerne porazdelitve, in sicer $x_{1i} \sim Unif(20, 60)$ ter $x_{2i} \sim Unif(2, 10)$, torej, da imamo v podatkih majhne vrednosti in nekoliko večje.
 
@@ -139,8 +144,9 @@ plot(model06_08, which = c(1,3))
 par(mfrow=c(1,2))
 plot(model12_14, which = c(1,3))
 ```
-<!-- sori ampak jst tega ne vidim čist tko kt nsi ti napisu hah, sploh za levi graf, na katerih robovih točno? Jst bi rajs kej tko napisala za levi graf da pač je vidno da se varibilnost med podatki več ko gremo čez graf od leve proti desni v obeh primerih, pa da je za manjši gamma to večanje variabilnosti pač večje oziroma, da je bolj opazno no?-->
-V obeh primerih lahko na desnem grafu opazimo, da se z večanjem vrednosti povečuje tudi variabilnost napak (naraščajoč trend). Na levem grafu lahko sorazmerno s faktorjem $\gamma$ pričakujemo odstopanje vrednosti na robovih. V primeru $\gamma=0.8$ opazimo, da so na robovih nekoliko nižje vrednosti, v primeru $\gamma=1.4$ pa nekoliko višje vrednosti.
+<!-- sori ampak jst tega ne vidim čist tko kt nsi ti napisu hah, sploh za levi graf, na katerih robovih točno? Jst bi rajs kej tko napisala za levi graf da pač je vidno da se varibilnost med podatki več ko gremo čez graf od leve proti desni v obeh primerih, pa da je za manjši gamma to večanje variabilnosti pač večje oziroma, da je bolj opazno no?
+Tom16: tudi jst ne opazim vec tega na levem grafu haha ne k sva povecala vzorec se ne vidi vec tega k sm pisal za levi graf...bom zdej popravil neki na to foro k si napisala-->
+V obeh primerih lahko na desnem grafu opazimo, da se z večanjem vrednosti povečuje tudi variabilnost napak (naraščajoč trend). To lahko opazimo, tudi iz levega grafa, saj se od leve proti desni s povečevanjem vrednosti, povečuje tudi variabilnost ostankov. Prav tako je vidna razlika, ko povečamo vrednost parametra $\alpha$, saj se vrednosti ostankov povečajo (variabilnost se poveča).  
 
 Kot sva že napisala zgoraj, bova zaradi kršenja dveh predpostavk(linerana odvisnost in homoskedastičnost) podatke ustrezno transformirala. Za tako kršene predpostavke ponavadi uporabljamo logaritemske transformacije podatkov.\
 Za izbiro primerne transformacije si bova pomagala s `boxCox` testom - za vsako kombinacijo parametrov preverimo ali se vrednost $\lambda=0$ (`log` transformacija) nahaja znotraj 95% intervala optimalnega parametra $\lambda$, ki ga vrne funkija `powerTransform`. V spodnji tabeli lahko vidimo, da je $\lambda=0$ res vsebovana v vseh 95% intervalih zaupanja, razen v zadnjem primeru, torej je primerna transformacija podatkov logaritemska. Pri zadnjem primeru, pa je spodnja meja 95% intervala zaupanja tako blizu vrendosti $0$, da prav tako lahko uporabimo logaritemsko transformacijo, ker bomo dobili boljše rezultate in bodo predopstavke bolje izpolnjene.
@@ -161,7 +167,7 @@ zgornja = c(summary(powerTransform(model06_08))$result[4],
             summary(powerTransform(model12_14))$result[4])
 
 opt_lambda = data.frame("alpha" = c(0.6, 0.6, 1, 1, 1.2, 1.2),
-                        "lambda" = c(rep(c(0.8, 1.4), 3)), # Neza17: kle je verjetno gamma?
+                        "gamma" = c(rep(c(0.8, 1.4), 3)), 
                         "spodnji" = round(spodnja, 3),
                         "zgornji" = round(zgornja,3))
 
@@ -191,7 +197,87 @@ plot(model06_14_log, which = c(1,3))
 Pri ponovnem vzorčenju bova uporabila metodo bootstrap, pri kateri bo število bootstrap vzorcev enako $m=1000$. Za vsako kombinacijo faktorjev( _alpha_, _gamma_ in _velikost vzorca_) sva generirala podatke, na katerih sva za vsako kombinacijo faktorjev torej izvedla linearno regresijo in poračunala intervale zaupanja za vse tri koeficiente(`Intercept`, `x1`, `x2`). \
 Enak postopek sva ponovila z metodo ponovnega vzorčenja bootstrap - naključno sva iz generiranih podatkov za vse kombinacije faktorjev izbrala podatke, na katerih sva potem izvedla linearno regresijo in izračunala intervale zaupanja za vse tri koeficiente (`Intercept`, `x1`, `x2`). Tak postopek ponovnega vzorčenja sva ponovila $m = 1000$, zato smo torej imeli $1000$ bootstrap vzorcev.
 
+# Analiza rezultatov pred transformacijo
+
+```{r}
+IZ_org = readRDS("intervali.zaupanja.org.RDS") %>% 
+  select(-c("int.coef", "x1.coef", "x2.coef"))
+IZ_bootstrap = readRDS("intervali.zaupanja.RDS")
+
+IZ_skupaj = rbind(IZ_org, IZ_bootstrap)
+IZ_skupaj = cbind(IZ_skupaj, rep(c("originalni", "bootstrap"), each=nrow(IZ_org)))
+colnames(IZ_skupaj)[10] = "metoda"
+
+resLong = pivot_longer(IZ_skupaj, cols =matches("^(int|x1|x2)\\."),
+                       values_to = "value",
+                       names_to = c("parameter", "tip"),
+                       names_pattern = "^(int|x1|x2)\\.(lower|upper)") 
+```
 
 
+```{r "risanje IZ pred transformacijo int", fig.cap="Grafi intervalov zaupanja pred transformacijo int."}
+pod_int = resLong %>%
+  filter(parameter == "int") 
 
+ggplot(pod_int, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
+  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+```
+
+```{r "risanje IZ pred transformacijo x1", fig.cap="Grafi intervalov zaupanja pred transformacijo x1."}
+pod_x1 = resLong %>%
+  filter(parameter == "x1") 
+
+ggplot(pod_x1, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
+  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+```
+
+```{r "risanje IZ pred transformacijo x2", fig.cap="Grafi intervalov zaupanja pred transformacijo x2."}
+pod_x2 = resLong %>%
+  filter(parameter == "x2") 
+
+ggplot(pod_x2, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
+  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+```
+
+# Analiza rezultatov po transformaciji
+
+```{r}
+IZ_org_transf = readRDS("intervali.zaupanja.org.transf.RDS") %>% 
+  select(-c("int.coef", "x1.coef", "x2.coef"))
+IZ_bootstrap_transf = readRDS("intervali.zaupanja.transf.RDS")
+
+IZ_skupaj_transf = rbind(IZ_org_transf, IZ_bootstrap_transf)
+IZ_skupaj_transf = cbind(IZ_skupaj_transf, rep(c("originalni", "bootstrap"), each=nrow(IZ_org)))
+colnames(IZ_skupaj_transf)[10] = "metoda"
+
+resLong_transf = pivot_longer(IZ_skupaj_transf, cols =matches("^(int|x1|x2)\\."),
+                       values_to = "value",
+                       names_to = c("parameter", "tip"),
+                       names_pattern = "^(int|x1|x2)\\.(lower|upper)") 
+```
+
+
+```{r "risanje IZ po transformaciji int", fig.cap="Grafi intervalov zaupanja pred transformacijo int."}
+pod_int_transf = resLong_transf %>%
+  filter(parameter == "int") 
+
+ggplot(pod_int_transf, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
+  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+```
+
+```{r "risanje IZ po transformaciji x1", fig.cap="Grafi intervalov zaupanja pred transformacijo x1."}
+pod_x1_transf = resLong_transf %>%
+  filter(parameter == "x1") 
+
+ggplot(pod_x1_transf, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
+  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+```
+
+```{r "risanje IZ po transformaciji x2", fig.cap="Grafi intervalov zaupanja pred transformacijo x2."}
+pod_x2_transf = resLong_transf %>%
+  filter(parameter == "x2") 
+
+ggplot(pod_x2_transf, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
+  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+```
 
