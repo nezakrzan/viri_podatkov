@@ -1,96 +1,293 @@
 set.seed(2024)
-# ========= simulacija podatkov ============
-n = 150 # velikost vzorca
 
-generiranje_podatkov <- function(beta0, beta1, beta2, hetero, eksp) {
-  # generiranje vrednosti za x1 in x2 # x1 <- rnorm(n, 50, 3)
-  # x2 <- rnorm(n, 200, 8)
-  x1 <- runif(n, 20, 60)
-  x2 <- runif(n, 2, 10)
-  epsilon <- rnorm(n, 0,x1*hetero) # dodava heteroskedasticnost
+# ============================ simulacija podatkov ============================
+# funkcija za generiranje podatkov
+generiranje_podatkov  = function(beta0, beta1, beta2, alpha, gamma, n){
+  # generiranje vrednosti za x1 in x2
+  x1  = runif(n, 20, 60)
+  x2  = runif(n, 2, 10)
+  
+  # generiranje napake
+  epsilon  = rnorm(n, 0,x1*alpha) # dodava heteroskedasticnost
+  
   # izračun napovedne spremenljivke za model (parametri = vhodni argumenti) 
-  # z ^eksp dodava nelinearni del
-  y <- beta0 + beta1 * x1 + beta2 * x2^eksp + epsilon
+  y  = beta0 + beta1 * x1 + beta2 * x2^gamma + epsilon # z ^gamma dodava nelinearni del
+  
   # podatke spravimo v podatkovni okvir in vrnemo kot rezultat funkcije
   data.frame(x1 = x1, x2 = x2, y = y) 
 }
 
-# izracun vrednosti vzorca
-vzorec06_08 = generiranje_podatkov(100, 3, 2, 0.6, 0.8)
-vzorec06_14 = generiranje_podatkov(100, 3, 2, 0.6, 1.4)
-vzorec1_08 = generiranje_podatkov(100, 3, 2, 1, 0.8)
-vzorec1_14 = generiranje_podatkov(100, 3, 2, 1, 1.4)
-vzorec12_08 = generiranje_podatkov(100, 3, 2, 1.2, 0.8)
-vzorec12_14 = generiranje_podatkov(100, 3, 2, 1.2, 1.4)
+# generiranje podatkov
+alpha.v = c(0.6, 1, 1.2)
+gamma.v = c(0.8, 1.4)
+n.v = c(20, 200, 500)
 
-# vzorce zdruziva v data frame
-vzorec_skupaj = data.frame("alpha" = rep(c(0.6, 1, 1.2), each=2*n),
-                           "gamma" = rep(rep(c(0.8, 1.4), each=n),3),
-                           "vred" =  rbind(vzorec06_08, vzorec06_14, 
-                                      vzorec1_08, vzorec1_14,
-                                      vzorec12_08, vzorec12_14))
+podatki = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
+                     x1 = numeric(), x2 = numeric(), y = numeric())
 
-# preimenujeva zadnje tri stolpce
-colnames(vzorec_skupaj)[3:5] = c("x1", "x2", "y")
+for (alpha in unique(alpha.v)){
+  for (gamma in unique(gamma.v)){
+    for (n in unique(n.v)){
+      # generiram podatke
+      data = generiranje_podatkov(beta0=100, beta1=3, beta2=2, alpha=alpha, gamma=gamma, n=n)
+      
+      # shranim podatke
+      podatki = rbind(podatki, data.frame(alpha = c(rep(alpha, n)),
+                                          gamma=c(rep(gamma, n)), 
+                                          velikost.vzorca = c(rep(n, n)),
+                                          x1 = data$x1,
+                                          x2 = data$x2,
+                                          y = data$y))
+    }
+  }
+}
+saveRDS(object = podatki, file="podatki.RDS")
 
-# modeli (brez transformacije)
-model06_08 = lm(y ~ x1 + x2, vzorec06_08)
-model06_14 = lm(y ~ x1 + x2, vzorec06_14)
-model1_08 = lm(y ~ x1 + x2, vzorec1_08)
-model1_14 = lm(y ~ x1 + x2, vzorec1_14)
-model12_08 = lm(y ~ x1 + x2, vzorec12_08)
-model12_14 = lm(y ~ x1 + x2, vzorec12_14)
 
-# primer grafa ostankov
-par(mfrow=c(1,2))
-plot(model06_08, which = c(1,3))
+# ====================== primerjava IZ (brez transformacije) ===================
 
-# ==================== primerjava IZ (brez transformacije) =================
+# ------------------------------- klasicni test --------------------------------
+podatki = readRDS("podatki.RDS")
+intervali.zaupanja.org = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
+                                    int.coef = numeric(), x1.coef = numeric(), x2.coef = numeric(),
+                                    int.lower = numeric(), int.upper = numeric(),
+                                    x1.lower = numeric(), x1.upper = numeric(), 
+                                    x2.lower = numeric(), x2.upper = numeric())
 
-# klasicna analiza
-par(mfrow=c(2,2))
-plot(model06_08)
-par(mfrow=c(1,1))
-summary(model06_08)
-confint(model06_08)
-orgEst = summary(model06_08)$coef
+for (alpha in unique(alpha.v)){
+  for (gamma in unique(gamma.v)){
+    for (n in unique(n.v)){
+      # podatki
+      #data = generiranje_podatkov(beta0=100, beta1=3, beta2=2, alpha=alpha, gamma=gamma, n=n)
+      data = podatki %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n ) %>%
+        select(c("x1", "x2", "y"))
+      
+      # model
+      model = lm(y ~ x1 + x2, data)
+      
+      # koeficienti
+      int = summary(model)$coef[1,1]
+      x1 = summary(model)$coef[2,1]
+      x2 = summary(model)$coef[3,1]
+      
+      # intervali zaupanja
+      int.iz = confint(model)[1,]
+      x1.iz = confint(model)[2,]
+      x2.iz = confint(model)[3,]
+      
+      # shranjevanje
+      intervali.zaupanja.org = rbind(intervali.zaupanja.org, 
+                                     data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n,
+                                                int.coef = int, x1.coef = summary(model)$coef[1,1], x2.coef = x2,
+                                                int.lower = int.iz[1], int.upper = int.iz[2],
+                                                x1.lower = x1.iz[1], x1.upper = x1.iz[2],
+                                                x2.lower = x2.iz[1], x2.upper = x2.iz[2]))
+    }
+  }
+}
 
-# __________ bootstrap __________
+saveRDS(object = intervali.zaupanja.org, file="intervali.zaupanja.org.RDS")
+
+# --------------------------------- bootstrap ----------------------------------
+# bootstrap vzorci
 m = 1000
 
-alpha_v = c(0.6, 0.6, 1, 1, 1.2, 1.2)
-gamma_v = c(0.8, 1.4, 0.8, 1.4, 0.8, 1.4)
+alpha.v = c(0.6, 1, 1.2)
+gamma.v = c(0.8, 1.4)
+n.v = c(20, 200, 500)
 
-res = matrix(NA, nrow = m*length(alpha_v), ncol = 5)
-colnames(res) = c("alpha", "gamma", "int", "x1", "x2")
+settings = expand.grid(i=1:length(alpha.v), 
+                       alpha = rev(alpha.v), 
+                       gamma = rev(gamma.v), 
+                       n=rev(n.v))
+
+
+res = matrix(NA, nrow = nrow(settings) * m, ncol = 6)
+colnames(res) = c("alpha", "gamma", "velikost.vzorca", "int", "x1", "x2")
 set.seed(2024)
 
+ind_res = 1 # indeks za rezultate
+for(i in 1:nrow(settings)){
+  #i = 1
+  for(j in 1:m){ #bootstrap
+    #j = 1
+    ind = sample(settings$n[i], replace = T)
+    data = podatki %>% filter(alpha == settings$alpha[i] & gamma == settings$gamma[i] & velikost.vzorca == settings$n[i]) %>%
+      select(c("x1", "x2", "y"))
 
-ind_res=1 # indeks za pisanje v res
-for(kateri in 1:length(alpha_v)){
-  for(i in 1:m){
-    # n velikost vzorcev x1 in x2
-    ind = sample(n, replace = TRUE)
-    # izbereva podatke za trenutni alpha in gamma
-    podatki = vzorec_skupaj %>% 
-      filter(alpha == alpha_v[kateri] & gamma == gamma_v[kateri]) %>%
-      select(c("x1", "x2", "y")) # izlociva le stolpce x1, x2, y
-    
-    iFitLm = lm(y ~ x1 + x2, data=podatki[ind,])
+    # lm model
+    iFitLm = lm(y ~ x1 + x2, data=data[ind,])
     iEst = summary(iFitLm)$coef
     
-    res[ind_res, 1:2] = c(alpha_v[kateri], gamma_v[kateri])
-    res[ind_res, 3:5] = iEst[,1]
+    # shranimo rezultate
+    res[ind_res, 1:3] = c(settings$alpha[i], settings$gamma[i], settings$n[i])
+    res[ind_res, 4:6] = iEst[,1]
     
     ind_res = ind_res + 1
   }
 }
+# shranjevanje
+saveRDS(object = res, file="bootstrap.RDS")
 
-# primer izracuna IZ s quantile
-res_izbrani = data.frame(res) %>% 
-  filter(alpha == 0.6 & gamma == 0.8) %>%
-  select(c("int", "x1", "x2"))
+res = readRDS("bootstrap.RDS")
+rezultati = data.frame(res)
 
-alpha = 0.05
-percCI = t(apply(res_izbrani[,1:3], 2, quantile, probs = c(alpha/2, 1-alpha/2)))
+# za shranjevanje intervalov zaupanja
+intervali.zaupanja  = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
+                                 int.lower = numeric(), int.upper = numeric(),
+                                 x1.lower = numeric(), x1.upper = numeric(), 
+                                 x2.lower = numeric(), x2.upper = numeric())
+alpha.iz = 0.05
+
+# izračun intervalov zaupanja za vsako kombinacijo parametrov
+for (alpha in unique(rezultati$alpha)){
+  for (gamma in unique(rezultati$gamma)){
+    for (n in unique(rezultati$velikost.vzorca)){
+      # filtriraj podatke za trenutno kombinacijo parametrov
+      subset.res  = data.frame(res) %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n) %>% 
+        select(c("int", "x1", "x2"))
+      
+      # izračun intervalov zaupanja
+      int.iz  = quantile(subset.res$int, probs = c(alpha.iz/2, 1-alpha.iz/2))
+      x1.iz  = quantile(subset.res$x1, probs = c(alpha.iz/2, 1-alpha.iz/2))
+      x2.iz  = quantile(subset.res$x2, probs = c(alpha.iz/2, 1-alpha.iz/2))
+      
+      # shranjevanje 
+      intervali.zaupanja = rbind(intervali.zaupanja, 
+                                 data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n,
+                                            int.lower = int.iz[1], int.upper = int.iz[2],
+                                            x1.lower = x1.iz[1], x1.upper = x1.iz[2],
+                                            x2.lower = x2.iz[1], x2.upper = x2.iz[2]))
+    }
+  }
+}
+
+saveRDS(object = intervali.zaupanja, file="intervali.zaupanja.RDS") 
+  
+# ====================== primerjava IZ (s transformacijo) ===================
+
+# ------------------------------- klasicni test --------------------------------
+alpha.v = c(0.6, 1, 1.2)
+gamma.v = c(0.8, 1.4)
+n.v = c(20, 200, 500)
+
+intervali.zaupanja.org = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
+                                    int.coef = numeric(), x1.coef = numeric(), x2.coef = numeric(),
+                                    int.lower = numeric(), int.upper = numeric(),
+                                    x1.lower = numeric(), x1.upper = numeric(), 
+                                    x2.lower = numeric(), x2.upper = numeric())
+
+for (alpha in unique(alpha.v)){
+  for (gamma in unique(gamma.v)){
+    for (n in unique(n.v)){
+      # podatki
+      data = podatki %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n ) %>%
+        select(c("x1", "x2", "y"))
+      
+      # model
+      model = lm(log(y) ~ x1 + x2, data)
+      
+      # koeficienti
+      int = summary(model)$coef[1,1]
+      x1 = summary(model)$coef[2,1]
+      x2 = summary(model)$coef[3,1]
+      
+      # intervali zaupanja
+      int.iz = confint(model)[1,]
+      x1.iz = confint(model)[2,]
+      x2.iz = confint(model)[3,]
+      
+      # shranjevanje
+      intervali.zaupanja.org = rbind(intervali.zaupanja.org, 
+                                     data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n,
+                                                int.coef = int, x1.coef = summary(model)$coef[1,1], x2.coef = x2,
+                                                int.lower = int.iz[1], int.upper = int.iz[2],
+                                                x1.lower = x1.iz[1], x1.upper = x1.iz[2],
+                                                x2.lower = x2.iz[1], x2.upper = x2.iz[2]))
+    }
+  }
+}
+
+saveRDS(object = intervali.zaupanja.org, file="intervali.zaupanja.org.transf.RDS")
+
+# --------------------------------- bootstrap ----------------------------------
+# bootstrap vzorci
+m = 1000
+
+alpha.v = c(0.6, 1, 1.2)
+gamma.v = c(0.8, 1.4)
+n.v = c(20, 200, 500)
+
+settings = expand.grid(i=1:length(alpha.v), 
+                       alpha = rev(alpha.v), 
+                       gamma = rev(gamma.v), 
+                       n=rev(n.v))
+
+
+res = matrix(NA, nrow = nrow(settings) * m, ncol = 6)
+colnames(res) = c("alpha", "gamma", "velikost.vzorca", "int", "x1", "x2")
+set.seed(2024)
+
+ind_res = 1 # indeks za rezultate
+for(i in 1:nrow(settings)){
+  #i = 1
+  for(j in 1:m){ #bootstrap
+    #j = 1
+    ind = sample(settings$n[i], replace = T)
+    data = podatki %>% filter(alpha == settings$alpha[i] & gamma == settings$gamma[i] & velikost.vzorca == settings$n[i]) %>%
+      select(c("x1", "x2", "y"))
+    
+    # lm model
+    iFitLm = lm(log(y) ~ x1 + x2, data=podatki[ind,])
+    iEst = summary(iFitLm)$coef
+    
+    # shranimo rezultate
+    res[ind_res, 1:3] = c(settings$alpha[i], settings$gamma[i], settings$n[i])
+    res[ind_res, 4:6] = iEst[,1]
+    
+    ind_res = ind_res + 1
+  }
+}
+# shranjevanje
+saveRDS(object = res, file="bootstrap.transformirano.RDS")
+
+res = readRDS("bootstrap.transformirano.RDS")
+rezultati = data.frame(res)
+
+# za shranjevanje intervalov zaupanja
+intervali.zaupanja  = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
+                                 int.lower = numeric(), int.upper = numeric(),
+                                 x1.lower = numeric(), x1.upper = numeric(), 
+                                 x2.lower = numeric(), x2.upper = numeric())
+alpha.iz = 0.05
+
+# izračun intervalov zaupanja za vsako kombinacijo parametrov
+for (alpha in unique(rezultati$alpha)){
+  for (gamma in unique(rezultati$gamma)){
+    for (n in unique(rezultati$velikost.vzorca)){
+      # filtriraj podatke za trenutno kombinacijo parametrov
+      subset.res  = data.frame(res) %>% filter(alpha == alpha & gamma == gamma & velikost.vzorca == n) %>% 
+        select(c("int", "x1", "x2"))
+      
+      # izračun intervalov zaupanja
+      int.iz  = quantile(subset.res$int, probs = c(alpha.iz/2, 1-alpha.iz/2))
+      x1.iz  = quantile(subset.res$x1, probs = c(alpha.iz/2, 1-alpha.iz/2))
+      x2.iz  = quantile(subset.res$x2, probs = c(alpha.iz/2, 1-alpha.iz/2))
+      
+      # shranjevanje 
+      intervali.zaupanja = rbind(intervali.zaupanja, 
+                                 data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n,
+                                            int.lower = int.iz[1], int.upper = int.iz[2],
+                                            x1.lower = x1.iz[1], x1.upper = x1.iz[2],
+                                            x2.lower = x2.iz[1], x2.upper = x2.iz[2]))
+    }
+  }
+}
+
+saveRDS(object = intervali.zaupanja, file="intervali.zaupanja.transf.RDS") 
+
+
+
+
+
 

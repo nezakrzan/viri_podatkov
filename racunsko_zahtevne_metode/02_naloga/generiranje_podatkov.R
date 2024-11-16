@@ -2,12 +2,11 @@ library(MASS)
 
 set.seed(2024)
 
-stevilo.spremenljivk = 5
-stevilo.neinformativnih.sprem = 4
+stevilo.neinformativnih.sprem = 1
 velikost.skupin = 100
 stevilo.skupin = 4
 diff = 2
-cor = 0.1
+cor = 0
 
 # njegov komentar:
 # Navodila pravijo, da morate v osnovi generirati podatke iz bivariatne normalne porazdelitve. 
@@ -32,25 +31,25 @@ cor = 0.1
 
 # generiram podatke za informativne spremenljivke
 generiranje.podatkov = function(
-    velikost.skupin, stevilo.skupin, stevilo.spremenljivk = 5, stevilo.neinformativnih.sprem, diff, cor){
+    velikost.skupin, stevilo.skupin, stevilo.neinformativnih.sprem, diff, cor){
   ## informativne spremenljivke
   # povprecja
-  Mu = diag(stevilo.spremenljivk)*diff
+  Mu = diag(stevilo.skupin)*diff
   # sigma
-  st.spremenljivk = stevilo.spremenljivk+stevilo.neinformativnih.sprem
+  st.spremenljivk = stevilo.skupin+stevilo.neinformativnih.sprem
   Sigma = matrix(cor, ncol=st.spremenljivk, nrow=st.spremenljivk)
   diag(Sigma) = 1
   
   ## neinformativne spremenljivke
   # generiranje neinformativnih spremenljivk
-  non.infor = matrix(0, nrow=stevilo.spremenljivk, ncol=stevilo.neinformativnih.sprem)
+  non.infor = matrix(0, nrow=stevilo.skupin, ncol=stevilo.neinformativnih.sprem)
   # zdruzimo
   M = cbind(Mu, non.infor)
  
   # generamo podatke
   X = NULL 
   for(i in 1:stevilo.skupin){
-    iX = mvrnorm(n=velikost.skupin, mu = M[i,], Sigma = Sigma)
+    iX = MASS::mvrnorm(n=velikost.skupin, mu = M[i,], Sigma = Sigma)
     X = rbind(X,iX)
   } 
   
@@ -59,11 +58,6 @@ generiranje.podatkov = function(
   
   return(X)
 }
-
-data.primer1 = generiranje.podatkov(velikost.skupin, stevilo.skupin, stevilo.spremenljivk = 5, 
-                     stevilo.neinformativnih.sprem, diff, cor)
-pairs(data.primer1[,1:5], col=data.primer1[,10])
-
 
 
 

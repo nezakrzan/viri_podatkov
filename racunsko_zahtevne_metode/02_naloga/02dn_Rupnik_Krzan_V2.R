@@ -11,91 +11,62 @@ library(kableExtra)
 set.seed(2024)
 
 ########################## generiranje podatkov #############################
-# funkcija za generiranje podatkov
+# # funkcija za generiranje podatkov
+# 
+# generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.skupin, diff){
+#   # generiranje povprečij
+#   M = diag(stevilo.skupin)*diff 
+#   
+#   # neinformativne spremenljivke - same 0
+#   M = cbind(M, matrix(0, nrow=stevilo.skupin, ncol=stevilo.spremenljivk-stevilo.skupin)) 
+#   S = diag(stevilo.spremenljivk)
+#   
+#   X = NULL 
+#   # generamo podatke za vsako skupino posebaj
+#   for(i in 1:stevilo.skupin){
+#     iX = MASS::mvrnorm(n=velikost.skupin, mu = M[i,], Sigma = S)
+#     X = rbind(X,iX)
+#   }
+#   
+#   # dodamo se skupino
+#   X = cbind(X, skupina=rep(1:stevilo.skupin,each=velikost.skupin)) # clu = skupina
+#   return(X)
+# }
 
-# parametri za test
-# m = 2
-stevilo.spremenljivk = 12
-velikost.skupin = 100
-stevilo.skupin = 8
-diff = 2
-
-generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.skupin, diff){
-  # generiranje povprečij
-  M = diag(stevilo.skupin)*diff 
-  
-  # neinformativne spremenljivke - same 0
-  M = cbind(M, matrix(0, nrow=stevilo.skupin, ncol=stevilo.spremenljivk-stevilo.skupin)) 
-  S = diag(stevilo.spremenljivk)
-  
-  X = NULL 
-  # generamo podatke za vsako skupino posebaj
-  for(i in 1:stevilo.skupin){
-    iX = MASS::mvrnorm(n=velikost.skupin, mu = M[i,], Sigma = S)
-    X = rbind(X,iX)
-  }
-  
-  # dodamo se skupino
-  X = cbind(X, skupina=rep(1:stevilo.skupin,each=velikost.skupin)) # clu = skupina
-  return(X)
-}
-
-# Load necessary package
-library(MASS) # Provides the `mvrnorm()` function
-
-# Function to generate bivariate normal data
-generiranje.biv.mult.podatkov <- function(diff, cor, covariance, stevilo.skupin, velikost.skupin){
-  # diff = za povprečje
-  # cor = korelacije med spremenljivkami
-  
-  # informativne spremenljivke
-  M = diag(stevilo.skupin)*diff # povprečje(Mu)
-  S = diag(stevilo.skupin)*corelation # kovariance(Sigma)
-  
-  return(mvrnorm(velikost.skupin, mu = diff, Sigma = covariance))
-}
-
-# Function to generate nonsignificant variables
-generate_nonsignificant_data <- function(n, num_vars) {
-  return(matrix(rnorm(n * num_vars), ncol = num_vars))
-}
-
-# Primer generiranih podatkov za 4 skupine, velikosti n = 100, 12 spremenljivk in diff = 2.
-data.primer1 = generiranje.podatkov(stevilo.spremenljivk = 12, velikost.skupin = 100, stevilo.skupin = 4, diff = 0)
-pairs(data.primer1[,1:4], col=data.primer1[,13])
-
+source("generiranje_podatkov.R")
 ################################## simulacija ##################################
 m = 100 # st. ponovitev
 
-stevilo.skupin.v = c(4, 8, 10)
+stevilo.neinformativnih.sprem.v = c(1, 4, 10)
 velikost.skupin.v = c(20, 100, 200)
-stevilo.spremenljivk.v = c(12, 24, 36)
+stevilo.skupin.v = c(4, 8, 14)
 diff.v = c(1, 2, 4, 10)
+cor.v = c(0, 0.2, 0.9)
 
-# parametri za test
+# stevilo.skupin.v = c(4, 8, 10)
+# velikost.skupin.v = c(20, 100, 200)
+# stevilo.spremenljivk.v = c(12, 24, 36)
+# diff.v = c(1, 2, 4, 10)
+
+# # parametri za test
 # m = 2
-# stevilo.spremenljivk.v = 12
+# stevilo.neinformativnih.sprem.v = 1
 # velikost.skupin.v = 100
-# stevilo.skupin.v = 8
+# stevilo.skupin.v = 4
 # diff.v = 2
+# cor.v = 0.2
 
-settings = expand.grid(i=1:m, stevilo.spremenljivk = rev(stevilo.spremenljivk.v), 
+settings = expand.grid(i=1:m, stevilo.neinformativnih.sprem = rev(stevilo.neinformativnih.sprem.v), 
                        velikost.skupin = rev(velikost.skupin.v), 
                        stevilo.skupin=rev(stevilo.skupin.v),
-                       diff = rev(diff.v))
+                       diff = rev(diff.v),
+                       cor = rev(cor.v))
 
-useOld = TRUE # ne uporabljal starega rezultata
+useOld = FALSE # ne uporabljal starega rezultata
 
-if(useOld&&file.exists("simulacija.RDS")){
+if(useOld&&file.exists("simulacijaV3.RDS")){
   res = readRDS("simulacija.RDS")
 }else{
-  # potrebne knjiznice
-  # neke tezave z mclust zato je tkole zdej
-  # potrebne.knjiznice <- c("foreach", "doParallel", "doRNG", "mclust", "blockmodeling")
-  # nove.knjiznice <- potrebne.knjiznice[!(potrebne.knjiznice %in% installed.packages()[,"Package"])]
-  # if (length(nove.knjiznice)) install.packages(nove.knjiznice)
-  # lapply(potrebne.knjiznice, library, character.only = TRUE)
-  
   library(foreach)
   library(doParallel)
   library(doRNG)
@@ -117,23 +88,25 @@ if(useOld&&file.exists("simulacija.RDS")){
   res2 = foreach(row = 1:nrow(settings), .combine=rbind) %dorng%{ 
     # row = 1
     # izberemo faktorje
-    stevilo.spremenljivk = settings$stevilo.spremenljivk[row]
+    stevilo.neinformativnih.sprem = settings$stevilo.neinformativnih.sprem[row]
     stevilo.skupin = settings$stevilo.skupin[row]
     velikost.skupin = settings$velikost.skupin[row]
     diff = settings$diff[row]
+    cor = settings$cor[row]
     
     # generiramo podatke
-    data = generiranje.podatkov(stevilo.spremenljivk= stevilo.spremenljivk, 
-                                velikost.skupin = velikost.skupin,
-                                stevilo.skupin = stevilo.skupin, 
-                                diff = diff) 
+    data = generiranje.podatkov(velikost.skupin, 
+                                stevilo.skupin, 
+                                stevilo.neinformativnih.sprem, 
+                                diff, 
+                                cor)
     # transformacija v data.frame
     data = as.data.frame(data)
     # skaliramo podatke za metodo razvrscanje na polagi modelov
-    data.scale = scale(data[,1:stevilo.spremenljivk])
+    data.scale = scale(data[, -ncol(data)])
     
     # metoda kmeans
-    kmeans.res = kmeans(data[,1:stevilo.spremenljivk], centers=stevilo.skupin, nstart = 100) #, nstart=nRep) 
+    kmeans.res = kmeans(data[, -ncol(data)], centers=stevilo.skupin, nstart = 100) #, nstart=nRep) 
     ari.kmeans = blockmodeling::crand(data$skupina, kmeans.res$cluster) #ari
     
     # razvrscanje na polagi modelov
@@ -152,7 +125,7 @@ if(useOld&&file.exists("simulacija.RDS")){
   }
   res$ari.kmeans = res2[,1]
   res$ari.mclust = res2[,2]
-  saveRDS(object = res, file="simulacija.RDS")
+  saveRDS(object = res, file="simulacijaV3.RDS")
   stopCluster(cl)
 }
 
