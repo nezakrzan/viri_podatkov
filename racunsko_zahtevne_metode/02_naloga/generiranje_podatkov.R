@@ -37,7 +37,9 @@ generiranje.podatkov = function(
   # povprecja
   Mu = diag(stevilo.spremenljivk)*diff
   # sigma
-  Sigma = diag(stevilo.spremenljivk+stevilo.neinformativnih.sprem)*cor
+  st.spremenljivk = stevilo.spremenljivk+stevilo.neinformativnih.sprem
+  Sigma = matrix(cor, ncol=st.spremenljivk, nrow=st.spremenljivk)
+  diag(Sigma) = 1
   
   ## neinformativne spremenljivke
   # generiranje neinformativnih spremenljivk
@@ -61,8 +63,6 @@ generiranje.podatkov = function(
 data.primer1 = generiranje.podatkov(velikost.skupin, stevilo.skupin, stevilo.spremenljivk = 5, 
                      stevilo.neinformativnih.sprem, diff, cor)
 pairs(data.primer1[,1:5], col=data.primer1[,10])
-
-
 
 
 
