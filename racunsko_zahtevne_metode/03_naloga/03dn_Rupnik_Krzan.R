@@ -20,7 +20,7 @@ generiranje_podatkov  = function(beta0, beta1, beta2, alpha, gamma, n){
   data.frame(x1 = x1, x2 = x2, y = y) 
 }
 
-# generiranje podatkov
+# ============================ generiranje podatkov ============================
 alpha.v = c(0.6, 1, 1.2)
 gamma.v = c(0.8, 1.4)
 n.v = c(20, 200, 500)
@@ -94,10 +94,6 @@ saveRDS(object = intervali.zaupanja.org, file="intervali.zaupanja.org.RDS")
 # --------------------------------- bootstrap ----------------------------------
 # bootstrap vzorci
 m = 1000
-
-alpha.v = c(0.6, 1, 1.2)
-gamma.v = c(0.8, 1.4)
-n.v = c(20, 200, 500)
 
 settings = expand.grid(alpha = rev(alpha.v),
                        gamma = rev(gamma.v),
@@ -173,10 +169,6 @@ saveRDS(object = intervali.zaupanja, file="intervali.zaupanja.RDS")
 # ====================== primerjava IZ (s transformacijo) ===================
 
 # ------------------------------- klasicni test --------------------------------
-alpha.v = c(0.6, 1, 1.2)
-gamma.v = c(0.8, 1.4)
-n.v = c(20, 200, 500)
-
 intervali.zaupanja.org = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
                                     int.coef = numeric(), x1.coef = numeric(), x2.coef = numeric(),
                                     int.lower = numeric(), int.upper = numeric(),
@@ -219,13 +211,6 @@ for (alpha in unique(alpha.v)){
 saveRDS(object = intervali.zaupanja.org, file="intervali.zaupanja.org.transf.RDS")
 
 # --------------------------------- bootstrap ----------------------------------
-# bootstrap vzorci
-m = 1000
-
-alpha.v = c(0.6, 1, 1.2)
-gamma.v = c(0.8, 1.4)
-n.v = c(20, 200, 500)
-
 settings = expand.grid(alpha = rev(alpha.v), 
                        gamma = rev(gamma.v), 
                        n=rev(n.v))

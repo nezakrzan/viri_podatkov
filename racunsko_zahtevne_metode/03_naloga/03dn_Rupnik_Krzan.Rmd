@@ -88,7 +88,8 @@ Velikost vzorca pa enak  $n = 500$, saj je to dovolj velik vzorec za pravilno de
 <!--Neza17: misls da morva kej napisat zakaj sva zbrala 100, 3, 2 pa potem za apha pa gamma?
 Pa jst sm velikost vzorca povecala, ker mora bit velik
 ?
-Tom16: ne men se zdi da to ne rabiva ravno utemeljevat...pac tko sva si izbrala...-->
+Tom16: ne men se zdi da to ne rabiva ravno utemeljevat...pac tko sva si izbrala...
+-->
 
 Pri generiranju posameznih vrednosti v enačbi linearne regresije($x_{1i}, x_{2i}$) sva se odločila za generiranje iz enakomerne porazdelitve, in sicer $x_{1i} \sim Unif(20, 60)$ ter $x_{2i} \sim Unif(2, 10)$, torej, da imamo v podatkih majhne vrednosti in nekoliko večje.
 
@@ -175,7 +176,6 @@ kable(opt_lambda, align = "c", col.names = c("alpha", "gamma", "spodnja meja IZ"
   kable_styling(position = "center")
 ```
 
-
 Če si sedaj ponovno pogledamo grafe ostankov transformiranih podatkov z istimi kombinacijami faktorjev kot na zgornjih grafih ostankov, vidimo, da so ostanki na grafih razpršeni naključno, torej predpostavki(linearna odvisnost in homoskedastičnost) nista kršeni.
 
 ```{r "graf ostankov 0.6 in 0.8 + trans", fig.dim=c(5,3), fig.cap="Grafi ostankov transformiranih podatkov pri paramatrih alpha=0,6 in gamma=0,8."}
@@ -192,12 +192,18 @@ par(mfrow=c(1,2))
 plot(model06_14_log, which = c(1,3))
 ```
 
-# Metoda ponovnega vzorčenja
+# Klasični test in metoda ponovnega vzorčenja
 
-Pri ponovnem vzorčenju bova uporabila metodo bootstrap, pri kateri bo število bootstrap vzorcev enako $m=1000$. Za vsako kombinacijo faktorjev( _alpha_, _gamma_ in _velikost vzorca_) sva generirala podatke, na katerih sva za vsako kombinacijo faktorjev torej izvedla linearno regresijo in poračunala intervale zaupanja za vse tri koeficiente(`Intercept`, `x1`, `x2`). \
+Pri ponovnem vzorčenju bova uporabila metodo bootstrap, pri kateri bo število bootstrap vzorcev enako $m=1000$. 
+
+Za vsako kombinacijo faktorjev( _alpha_, _gamma_ in _velikost vzorca_) sva generirala podatke, na katerih sva za vsako kombinacijo faktorjev torej izvedla linearno regresijo in poračunala intervale zaupanja za vse tri koeficiente(`Intercept`, `x1`, `x2`). \
 Enak postopek sva ponovila z metodo ponovnega vzorčenja bootstrap - naključno sva iz generiranih podatkov za vse kombinacije faktorjev izbrala podatke, na katerih sva potem izvedla linearno regresijo in izračunala intervale zaupanja za vse tri koeficiente (`Intercept`, `x1`, `x2`). Tak postopek ponovnega vzorčenja sva ponovila $m = 1000$, zato smo torej imeli $1000$ bootstrap vzorcev.
 
-# Analiza rezultatov pred transformacijo
+## Analiza rezultatov podatkov brez transformacije
+
+Jasno nam torej je, da se na rezultate, pridobljene s podatki pred transformacijo ne moremo ravno zanesti, saj kršenje predpostavk pri linearni regresiji močno vpliva na intervale zaupanja(tudi na ocene koeficientov). Pri majhnem vzorcu($n = 20$) seveda pričakujemo najširše intervale zaupanja, ki pa se potem z večanjem vzorca ožajo. Verjetno bodo intervali zaupanja pri obeh metodah približno enako široki. 
+
+<!-- misls da bi mogla v intervale dodat se ocene za koeficiente? pac a nismo to delal pr linearnih modelih da smo gledal kam pade v IZ ocena koeficienta? pa bi pr bootstrapu dala pac povprecje vseh ocen v vseh vzorcih?-->
 
 ```{r}
 IZ_org = readRDS("intervali.zaupanja.org.RDS") %>% 
@@ -205,7 +211,7 @@ IZ_org = readRDS("intervali.zaupanja.org.RDS") %>%
 IZ_bootstrap = readRDS("intervali.zaupanja.RDS")
 
 IZ_skupaj = rbind(IZ_org, IZ_bootstrap)
-IZ_skupaj = cbind(IZ_skupaj, rep(c("originalni", "bootstrap"), each=nrow(IZ_org)))
+IZ_skupaj = cbind(IZ_skupaj, rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
 colnames(IZ_skupaj)[10] = "metoda"
 
 resLong = pivot_longer(IZ_skupaj, cols =matches("^(int|x1|x2)\\."),
@@ -214,39 +220,51 @@ resLong = pivot_longer(IZ_skupaj, cols =matches("^(int|x1|x2)\\."),
                        names_pattern = "^(int|x1|x2)\\.(lower|upper)") 
 ```
 
-
-```{r "risanje IZ pred transformacijo int", fig.cap="Grafi intervalov zaupanja pred transformacijo int."}
+```{r "risanje IZ pred transformacijo int", fig.cap="Grafi intervalov zaupanja za prosti koeficient(Intercept)."}
 # pod_int = resLong %>%
 #   filter(parameter == "int")
 
 pod_int = IZ_skupaj %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "metoda"))
 pod_int$velikost.vzorca = factor(pod_int$velikost.vzorca)
 
-# ggplot(pod_int, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
-#   geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+custom_labeller <- labeller(
+  alpha = function(x) paste("\u03b1 =", x),
+  gamma = function(x) paste("\u03b3 =", x)
+)
 
 ggplot(pod_int, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
-  facet_grid(alpha~gamma, scales="free")
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
 ```
 
-```{r "risanje IZ pred transformacijo x1", fig.cap="Grafi intervalov zaupanja pred transformacijo x1."}
-pod_x1 = resLong %>%
-  filter(parameter == "x1") 
+```{r "risanje IZ pred transformacijo x1", fig.cap="Grafi intervalov zaupanja za koeficient pri x1(beta1)."}
+pod_x1 = IZ_skupaj %>% select(c("alpha", "gamma", "velikost.vzorca", "x1.lower", "x1.upper", "metoda"))
+pod_x1$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 
-ggplot(pod_x1, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
-  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+ggplot(pod_x1, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
 ```
 
-```{r "risanje IZ pred transformacijo x2", fig.cap="Grafi intervalov zaupanja pred transformacijo x2."}
-pod_x2 = resLong %>%
-  filter(parameter == "x2") 
+```{r "risanje IZ pred transformacijo x2", fig.cap="Grafi intervalov zaupanja za koeficient pri x2(beta2)."}
+pod_x2 = IZ_skupaj %>% select(c("alpha", "gamma", "velikost.vzorca", "x2.lower", "x2.upper", "metoda"))
+pod_x2$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 
-ggplot(pod_x2, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
-  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+ggplot(pod_x2, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
 ```
 
-# Analiza rezultatov po transformaciji
+## Analiza rezultatov podatkov z transformacijo
 
 ```{r}
 IZ_org_transf = readRDS("intervali.zaupanja.org.transf.RDS") %>% 
@@ -254,7 +272,7 @@ IZ_org_transf = readRDS("intervali.zaupanja.org.transf.RDS") %>%
 IZ_bootstrap_transf = readRDS("intervali.zaupanja.transf.RDS")
 
 IZ_skupaj_transf = rbind(IZ_org_transf, IZ_bootstrap_transf)
-IZ_skupaj_transf = cbind(IZ_skupaj_transf, rep(c("originalni", "bootstrap"), each=nrow(IZ_org)))
+IZ_skupaj_transf = cbind(IZ_skupaj_transf, rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
 colnames(IZ_skupaj_transf)[10] = "metoda"
 
 resLong_transf = pivot_longer(IZ_skupaj_transf, cols =matches("^(int|x1|x2)\\."),
@@ -263,28 +281,46 @@ resLong_transf = pivot_longer(IZ_skupaj_transf, cols =matches("^(int|x1|x2)\\.")
                        names_pattern = "^(int|x1|x2)\\.(lower|upper)") 
 ```
 
+```{r "risanje IZ po transformacijo int", fig.cap="Grafi intervalov zaupanja za prosti koeficient(Intercept)."}
+# pod_int = resLong %>%
+#   filter(parameter == "int")
 
-```{r "risanje IZ po transformaciji int", fig.cap="Grafi intervalov zaupanja pred transformacijo int."}
-pod_int_transf = resLong_transf %>%
-  filter(parameter == "int") 
+pod_int = IZ_skupaj_transf %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "metoda"))
+pod_int$velikost.vzorca = factor(pod_int$velikost.vzorca)
 
-ggplot(pod_int_transf, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
-  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+custom_labeller <- labeller(
+  alpha = function(x) paste("\u03b1 =", x),
+  gamma = function(x) paste("\u03b3 =", x)
+)
+
+ggplot(pod_int, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
 ```
 
-```{r "risanje IZ po transformaciji x1", fig.cap="Grafi intervalov zaupanja pred transformacijo x1."}
-pod_x1_transf = resLong_transf %>%
-  filter(parameter == "x1") 
+```{r "risanje IZ po transformacijo x1", fig.cap="Grafi intervalov zaupanja za koeficient pri x1(beta1)."}
+pod_x1 = IZ_skupaj_transf %>% select(c("alpha", "gamma", "velikost.vzorca", "x1.lower", "x1.upper", "metoda"))
+pod_x1$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 
-ggplot(pod_x1_transf, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
-  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+ggplot(pod_x1, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
 ```
 
-```{r "risanje IZ po transformaciji x2", fig.cap="Grafi intervalov zaupanja pred transformacijo x2."}
-pod_x2_transf = resLong_transf %>%
-  filter(parameter == "x2") 
+```{r "risanje IZ po transformacijo x2", fig.cap="Grafi intervalov zaupanja za koeficient pri x2(beta2)."}
+pod_x2 = IZ_skupaj_transf %>% select(c("alpha", "gamma", "velikost.vzorca", "x2.lower", "x2.upper", "metoda"))
+pod_x2$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 
-ggplot(pod_x2_transf, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
-  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+ggplot(pod_x2, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
 ```
-
