@@ -216,11 +216,18 @@ resLong = pivot_longer(IZ_skupaj, cols =matches("^(int|x1|x2)\\."),
 
 
 ```{r "risanje IZ pred transformacijo int", fig.cap="Grafi intervalov zaupanja pred transformacijo int."}
-pod_int = resLong %>%
-  filter(parameter == "int") 
+# pod_int = resLong %>%
+#   filter(parameter == "int")
 
-ggplot(pod_int, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
-  geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+pod_int = IZ_skupaj %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "metoda"))
+pod_int$velikost.vzorca = factor(pod_int$velikost.vzorca)
+
+# ggplot(pod_int, aes(x=velikost.vzorca, y=value, col=metoda, group=interaction(metoda, tip))) +
+#   geom_line() + geom_point(cex=0.7) + facet_grid(alpha~gamma, scales="free")
+
+ggplot(pod_int, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  facet_grid(alpha~gamma, scales="free")
 ```
 
 ```{r "risanje IZ pred transformacijo x1", fig.cap="Grafi intervalov zaupanja pred transformacijo x1."}
