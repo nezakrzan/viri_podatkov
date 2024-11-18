@@ -55,8 +55,6 @@ Za uporabno linearne regresije je potrebno izpolniti določene predpostavke, da 
 - brez multikolinearnosti: _neodvisne spremenljivke ne smejo biti preveč povezane med seboj_,
 - zadostno število podatkov.
 
-<!--Neza17: mislm da sm use nastela...
-Tom16: ja se mi zdi da si kr use naštela-->
 
 Podatke bova generirala tako, da bodo nekatere izmed teh predpostavk kršene(opisano v naslednjem poglavju) in zaradi tega bova s pomočjo testa `boxCox` izvedla primerno transformacijo odzivne spremenljivke (ta bo v vseh primerih `log` transformacija). Na koncu bova med seboj primerjala intervale zaupanja dobljene z linearno regresijo (`lm`) in metodo ponovnega vzorčenja(bootstrap in permutacijski test).<!--Tom16: bova tudi permutacijski test baredila?--> Primerjavo bova naredila tako na rezultatih pred in po transformaciji, vendar pa moramo paziti, saj rezultati pred in po transformaciji med seboj niso primerljivi. 
 
@@ -83,13 +81,7 @@ $$
 
 Kot sva že omenila bova spreminjala faktorja $\gamma$ in $\alpha$. S faktorjem $\gamma$ bomo kršili prespostavko o linearni zvezi, saj bo ta zavzel vrednosti $0.8$ in $1.4$. S faktorjem $\alpha$ pa bomo kršili predpostavko konstantne variance napak, saj se ta z večanjem vrednosti $x_1$ povečuje. Ta zavzame vrednosti $\alpha\in\{0.6, 1, 1.2\}$. 
 
-Velikost vzorca pa enak  $n = 500$, saj je to dovolj velik vzorec za pravilno delovanje linearne regresije.
-
-<!--Neza17: misls da morva kej napisat zakaj sva zbrala 100, 3, 2 pa potem za apha pa gamma?
-Pa jst sm velikost vzorca povecala, ker mora bit velik
-?
-Tom16: ne men se zdi da to ne rabiva ravno utemeljevat...pac tko sva si izbrala...
--->
+Velikost vzorca pa enak  $n = (20, 200, 500)$, ker naju zanima kako se bo bootstrap metoda obnesla tudi na zelo majhnem vzorcu - s tem je tudi kršena predpostavka o dovolj velikem vzorcu pri linearni regresiji.
 
 Pri generiranju posameznih vrednosti v enačbi linearne regresije($x_{1i}, x_{2i}$) sva se odločila za generiranje iz enakomerne porazdelitve, in sicer $x_{1i} \sim Unif(20, 60)$ ter $x_{2i} \sim Unif(2, 10)$, torej, da imamo v podatkih majhne vrednosti in nekoliko večje.
 
@@ -203,7 +195,11 @@ Enak postopek sva ponovila z metodo ponovnega vzorčenja bootstrap - naključno 
 
 Jasno nam torej je, da se na rezultate, pridobljene s podatki pred transformacijo ne moremo ravno zanesti, saj kršenje predpostavk pri linearni regresiji močno vpliva na intervale zaupanja(tudi na ocene koeficientov). Pri majhnem vzorcu($n = 20$) seveda pričakujemo najširše intervale zaupanja, ki pa se potem z večanjem vzorca ožajo. Verjetno bodo intervali zaupanja pri obeh metodah približno enako široki. 
 
-<!-- misls da bi mogla v intervale dodat se ocene za koeficiente? pac a nismo to delal pr linearnih modelih da smo gledal kam pade v IZ ocena koeficienta? pa bi pr bootstrapu dala pac povprecje vseh ocen v vseh vzorcih?-->
+Na spodnjih grafih vidimo, da se intervazli z večanjem vzorca res manjšajo, razlike med intervali s klasično analizo in bootstrapom pa so minimalne, največja razlika v širini intervala se opazi pri majhnem vzorcu($n=20$).
+
+<!-- misls da bi mogla v intervale dodat se ocene za koeficiente? pac a nismo to delal pr linearnih modelih da smo gledal kam pade v IZ ocena koeficienta? pa bi pr bootstrapu dala pac povprecje vseh ocen v vseh vzorcih?
+
+Nevem kaj nej sploh napisem za razlike glede na alho pa gammo....-->
 
 ```{r}
 IZ_org = readRDS("intervali.zaupanja.org.RDS") %>% 
@@ -214,17 +210,26 @@ IZ_skupaj = rbind(IZ_org, IZ_bootstrap)
 IZ_skupaj = cbind(IZ_skupaj, rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
 colnames(IZ_skupaj)[10] = "metoda"
 
-resLong = pivot_longer(IZ_skupaj, cols =matches("^(int|x1|x2)\\."),
-                       values_to = "value",
-                       names_to = c("parameter", "tip"),
-                       names_pattern = "^(int|x1|x2)\\.(lower|upper)") 
+# povprečja koeficientov
+IZ_org_koef = readRDS("intervali.zaupanja.org.RDS")
+IZ_bootstrap_koef = readRDS("bootstrap.RDS")
+IZ_bootstrap_koef = data.frame(IZ_bootstrap_koef)
+koef.mean.org = IZ_org_koef %>% group_by(velikost.vzorca, alpha, gamma) %>%
+  summarise(mean(int.coef), mean(x1.coef), mean(x2.coef))
+koef.mean.org = cbind(koef.mean.org, rep(c("klasična analiza(linearna regresija)"), nrow(koef.mean.org)))
+colnames(koef.mean.org) = c("velikost.vzorca", "alpha", "gamma", "mean.int", "mean.x1", "mean.x2", "metoda")
+
+koef.mean.boot = IZ_bootstrap_koef %>% group_by(velikost.vzorca, alpha, gamma) %>%
+  summarise(mean(int), mean(x1), mean(x2))
+koef.mean.boot = cbind(koef.mean.boot, rep(c("bootstrap"), nrow(koef.mean.boot)))
+colnames(koef.mean.boot) = c("velikost.vzorca", "alpha", "gamma", "mean.int", "mean.x1", "mean.x2", "metoda")
+
+IZ_skupaj_coef = rbind(koef.mean.org, koef.mean.boot)
+IZ_vse = full_join(IZ_skupaj, IZ_skupaj_coef, by = c("velikost.vzorca", "alpha", "gamma", "metoda"))
 ```
 
-```{r "risanje IZ pred transformacijo int", fig.cap="Grafi intervalov zaupanja za prosti koeficient(Intercept)."}
-# pod_int = resLong %>%
-#   filter(parameter == "int")
-
-pod_int = IZ_skupaj %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "metoda"))
+```{r "risanje IZ pred transformacijo int", fig.cap="Grafi intervalov zaupanja za prosti koeficient(Intercept) - podatki brez transformacije."}
+pod_int = IZ_vse %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "mean.int", "metoda"))
 pod_int$velikost.vzorca = factor(pod_int$velikost.vzorca)
 
 custom_labeller <- labeller(
@@ -234,37 +239,44 @@ custom_labeller <- labeller(
 
 ggplot(pod_int, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = mean.int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
   facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
 ```
 
-```{r "risanje IZ pred transformacijo x1", fig.cap="Grafi intervalov zaupanja za koeficient pri x1(beta1)."}
-pod_x1 = IZ_skupaj %>% select(c("alpha", "gamma", "velikost.vzorca", "x1.lower", "x1.upper", "metoda"))
+```{r "risanje IZ pred transformacijo x1", fig.cap="Grafi intervalov zaupanja za koeficient pri x1(beta1) - podatki brez transformacije."}
+pod_x1 = IZ_vse %>% select(c("alpha", "gamma", "velikost.vzorca", "x1.lower", "x1.upper", "mean.x1","metoda"))
 pod_x1$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 
 ggplot(pod_x1, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = mean.x1), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
   facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
 ```
 
-```{r "risanje IZ pred transformacijo x2", fig.cap="Grafi intervalov zaupanja za koeficient pri x2(beta2)."}
-pod_x2 = IZ_skupaj %>% select(c("alpha", "gamma", "velikost.vzorca", "x2.lower", "x2.upper", "metoda"))
+```{r "risanje IZ pred transformacijo x2", fig.cap="Grafi intervalov zaupanja za koeficient pri x2(beta2) - podatki brez transformacije."}
+pod_x2 = IZ_vse %>% select(c("alpha", "gamma", "velikost.vzorca", "x2.lower", "x2.upper", "mean.x2","metoda"))
 pod_x2$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 
 ggplot(pod_x2, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = mean.x2), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
   facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
 ```
 
-## Analiza rezultatov podatkov z transformacijo
+## Analiza rezultatov transformiranih podatkov
+
+Ker so podatki transformirani z ustrezno transformacijo(logaritemska) pričakujemo, da so rezultati linearne regresije pravilni in zanesljivi, torej dobimo pravile intervale zaupanja. Ponovno pričakujeva, da se bodo intervali zaupanja ožali z večanjem vzorca in da bo zožitev intervala zaupanja zelo majhna med velikostjo vzorca $n = 200$ in $n = 500$. Razlika med metodama se bo verjetno opazno razlikovala le pri majhnem vzorcu($n=20$). 
+
+Na spodnjih grafih opazimo točno to, kar smo pričakovali - ožanje intervalov z večanjem vzorca in opazne razlike med metodama pri majhnem številu podatkov($n=20$). 
 
 ```{r}
 IZ_org_transf = readRDS("intervali.zaupanja.org.transf.RDS") %>% 
@@ -275,17 +287,26 @@ IZ_skupaj_transf = rbind(IZ_org_transf, IZ_bootstrap_transf)
 IZ_skupaj_transf = cbind(IZ_skupaj_transf, rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
 colnames(IZ_skupaj_transf)[10] = "metoda"
 
-resLong_transf = pivot_longer(IZ_skupaj_transf, cols =matches("^(int|x1|x2)\\."),
-                       values_to = "value",
-                       names_to = c("parameter", "tip"),
-                       names_pattern = "^(int|x1|x2)\\.(lower|upper)") 
+# povprečja koeficientov
+IZ_org_koef_trans = readRDS("intervali.zaupanja.org.transf.RDS")
+IZ_bootstrap_koef_trans  = readRDS("bootstrap.transformirano.RDS")
+IZ_bootstrap_koef_trans  = data.frame(IZ_bootstrap_koef_trans)
+koef.mean.org_trans  = IZ_org_koef_trans  %>% group_by(velikost.vzorca, alpha, gamma) %>%
+  summarise(mean(int.coef), mean(x1.coef), mean(x2.coef))
+koef.mean.org_trans  = cbind(koef.mean.org_trans, rep(c("klasična analiza(linearna regresija)"), nrow(koef.mean.org_trans)))
+colnames(koef.mean.org_trans) = c("velikost.vzorca", "alpha", "gamma", "mean.int", "mean.x1", "mean.x2", "metoda")
+
+koef.mean.boot_trans = IZ_bootstrap_koef_trans  %>% group_by(velikost.vzorca, alpha, gamma) %>%
+  summarise(mean(int), mean(x1), mean(x2))
+koef.mean.boot_trans = cbind(koef.mean.boot_trans, rep(c("bootstrap"), nrow(koef.mean.boot_trans)))
+colnames(koef.mean.boot_trans) = c("velikost.vzorca", "alpha", "gamma", "mean.int", "mean.x1", "mean.x2", "metoda")
+
+IZ_skupaj_coef_trans = rbind(koef.mean.org_trans, koef.mean.boot_trans)
+IZ_vse_trans = full_join(IZ_skupaj_transf, IZ_skupaj_coef_trans, by = c("velikost.vzorca", "alpha", "gamma", "metoda"))
 ```
 
-```{r "risanje IZ po transformacijo int", fig.cap="Grafi intervalov zaupanja za prosti koeficient(Intercept)."}
-# pod_int = resLong %>%
-#   filter(parameter == "int")
-
-pod_int = IZ_skupaj_transf %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "metoda"))
+```{r "risanje IZ po transformacijo int", fig.cap="Grafi intervalov zaupanja za prosti koeficient(Intercept) - transformirani podatki."}
+pod_int = IZ_vse_trans %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "mean.int","metoda"))
 pod_int$velikost.vzorca = factor(pod_int$velikost.vzorca)
 
 custom_labeller <- labeller(
@@ -294,33 +315,127 @@ custom_labeller <- labeller(
 )
 
 ggplot(pod_int, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = T, 0.3)) + 
+  geom_point(aes(y = mean.int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
   facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
 ```
 
-```{r "risanje IZ po transformacijo x1", fig.cap="Grafi intervalov zaupanja za koeficient pri x1(beta1)."}
-pod_x1 = IZ_skupaj_transf %>% select(c("alpha", "gamma", "velikost.vzorca", "x1.lower", "x1.upper", "metoda"))
+```{r "risanje IZ po transformacijo x1", fig.cap="Grafi intervalov zaupanja za koeficient pri x1(beta1) - transformirani podatki."}
+pod_x1 = IZ_vse_trans %>% select(c("alpha", "gamma", "velikost.vzorca", "x1.lower", "x1.upper", "mean.x1","metoda"))
 pod_x1$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 
 ggplot(pod_x1, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = mean.x1), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
   facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
 ```
 
-```{r "risanje IZ po transformacijo x2", fig.cap="Grafi intervalov zaupanja za koeficient pri x2(beta2)."}
-pod_x2 = IZ_skupaj_transf %>% select(c("alpha", "gamma", "velikost.vzorca", "x2.lower", "x2.upper", "metoda"))
+```{r "risanje IZ po transformacijo x2", fig.cap="Grafi intervalov zaupanja za koeficient pri x2(beta2) - transformirani podatki."}
+pod_x2 = IZ_vse_trans %>% select(c("alpha", "gamma", "velikost.vzorca", "x2.lower", "x2.upper", "mean.x2","metoda"))
 pod_x2$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 
 ggplot(pod_x2, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = mean.x2), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
   facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
 ```
+
+
+## Primerjava
+
+Ker smo pri zgornji analizi opazili, da so intervali zaupaja različno široki glede na vzorec, si poglejmo njihove širine tudi glede na metodo in vrsto podatkov(ne transformirani ali transformirani podatki). 
+
+Na spodnjem grafu je še bolj opazna razlika v širini intervala pri majhnem vzorcu podatkov($n = 20$) glede na metodo, opazimo pa tudi to kako linearna odvisnot vpliva na podatke oz. posamezne koeficiente linearne regresije - npr. pri koeficientu prostega člena($\beta_0$ oz. `Intercept`) je razlika v širini intervalov glede na metodo opazna še posebaj pri majhnem vzorcu podatkov($n = 20$), s tem ko za ostala dva koeficienta težko rečemo, da faktor linerne odvisnosti($\gamma$) ali heteroskedastičnost($\alpha$) glede na metodo kako značilno vpliva na širino intervala. Pri le-tem dvem koeficientu je tudi širina intervala zaupanja dokaj podobna glede na metodo.
+
+<!-- sm razmislla da bi primerjala sirino intervala glede na transformirane in ne transformirane podatke
+sm hotla z grafom pa sm ugotovila, da so vrednosti ne tranformiranih ful velike ane tiste druge so pa logaritmirane in so ful majhne-->
+
+```{r "sirina IZ int obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri prostem členu(intercept)."}
+sirine_intervalov = IZ_vse %>%
+  mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - abs(x2.lower)) %>%
+  select(alpha, gamma, velikost.vzorca, SI_int, SI_x1, SI_x2, metoda)
+sirine_intervalov = cbind(sirine_intervalov, podatki = rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
+
+sirine_intervalov_trans = IZ_vse_trans %>%
+  mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - abs(x2.lower)) %>%
+  select(alpha, gamma, velikost.vzorca, SI_int, SI_x1, SI_x2, metoda)
+sirine_intervalov_trans = cbind(sirine_intervalov_trans, podatki = rep(c("klasična analiza(l.r.) - transformirani podatki", "bootstrap - transformirani podatki"), each=nrow(IZ_vse_trans)))
+
+ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_point(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5)) +
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+```
+
+```{r "sirina x1 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x1(beta1)."}
+ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_point(aes(y = SI_x1), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_x1), position = position_dodge2(reverse = TRUE, 0.5)) +
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+```
+
+
+```{r "sirina x2 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x2(beta2)."}
+ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_point(aes(y = SI_x2), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_x2), position = position_dodge2(reverse = TRUE, 0.5)) +
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+
+# jst nevem al mava tole kej narobe, sam nevem a je to okej al ne...
+```
+
+
+
+<!-- tole dvoje ne bo prsl v upostev verjetno...
+```{r "sirina IZ klr", fig.cap="Širina intervalov zaupanja za koeficient pri prostem členu(intercept) - klasična linearna regresija."}
+SI_int_klas_ana_1 <- sirine_intervalov[sirine_intervalov$podatki == "klasična analiza(linearna regresija)", 
+                                       c("alpha", "gamma", "SI_int","podatki", "velikost.vzorca")]
+SI_int_klas_ana_2 <- sirine_intervalov_trans[sirine_intervalov_trans$podatki == "klasična analiza(l.r.) - transformirani podatki", 
+                                             c("alpha", "gamma", "SI_int","podatki", "velikost.vzorca")]
+SI_int_klas_ana = rbind(SI_int_klas_ana_2, SI_int_klas_ana_1)
+
+ggplot(SI_int_klas_ana, aes(x=velikost.vzorca, col=podatki, group=podatki)) +
+  geom_point(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5)) +
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+```
+
+```{r "sirina IZ boot", fig.cap="Širina intervalov zaupanja za koeficient pri prostem členu(intercept) - bootstrap."}
+SI_int_boot_1 <- sirine_intervalov[sirine_intervalov$podatki == "bootstrap", 
+                                   c("alpha", "gamma", "SI_int","podatki", "velikost.vzorca")]
+SI_int_boot_2 <- sirine_intervalov_trans[sirine_intervalov_trans$podatki == "bootstrap - transformirani podatki", 
+                                         c("alpha", "gamma", "SI_int","podatki", "velikost.vzorca")]
+SI_int_boot = rbind(SI_int_boot_1, SI_int_boot_2)
+
+ggplot(SI_int_boot, aes(x=velikost.vzorca, col=podatki, group=podatki)) +
+  geom_point(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5)) +
+  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+
+```
+
+-->
