@@ -122,6 +122,7 @@ if(useOld&&file.exists("simulacijaV3.RDS")){
     if(row%%10==0) cat("Iteration ", row, "/", nrow(settings), "complete! \n")
     
     return(c(ari.kmeans, ari.mclust))
+    
   }
   res$ari.kmeans = res2[,1]
   res$ari.mclust = res2[,2]
@@ -130,7 +131,7 @@ if(useOld&&file.exists("simulacijaV3.RDS")){
 }
 
 ################################# grafični prikaz ##############################
-res = readRDS("simulacija.RDS")
+res = readRDS("simulacijaV3.RDS")
 
 # ----------------------------- priprava podatkov ------------------------------
 resLong = pivot_longer(res, cols =matches("^(ari)\\."),
