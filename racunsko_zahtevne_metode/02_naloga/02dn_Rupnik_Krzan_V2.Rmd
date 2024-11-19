@@ -53,7 +53,7 @@ Za metodi sva se odločila na podlagi njunih predpostavk, ker so nekatere dokaj 
 
 # Generiranje podatkov
 
-Podatke sva generirala tako, da je njihova porazdelitev bivariatna multivariatna normalna. Zanima naju kako se bodo metode obnesle glede na to kako so si skupine med seboj različne. V ta namen sva si izbrala parameter, ki prilagaja povprečja v skupini, tj. $diff = (1, 2, 4, 10)$. Želiva si, da imava primere, ko so si skupine zelo različne med seboj in ne tako zelo različne. <!--Torej bo pri porazdelitvi povprečja generirana s pomočjo faktorja _diff_ in število skupin, kovariančna matrika pa bo po diagonali vsebovala število spremenljivk.--> Ker si želiva rezultate, kjer bo ena metoda delovala bolje od druge, bova spreminjala tudi korelacije med skupinami, $cor = c(0, 0.2, 0.9)$.
+Podatke sva generirala tako, da je njihova porazdelitev bivariatna multivariatna normalna. Zanima naju kako se bodo metode obnesle glede na to kako so si skupine med seboj različne. V ta namen sva si izbrala parameter, ki prilagaja povprečja v skupini, tj. $diff = (1, 2, 4, 10)$. Želiva si, da imava primere, ko so si skupine zelo različne med seboj in ne tako zelo različne. <!--Torej bo pri porazdelitvi povprečja generirana s pomočjo faktorja _diff_ in število skupin, kovariančna matrika pa bo po diagonali vsebovala število spremenljivk.--> Ker si želiva rezultate, kjer bo ena metoda delovala bolje od druge, bova spreminjala tudi korelacije med spremenljivkami <!--skupinami-->, $cor = c(0, 0.2, 0.9)$.
 
 <!--
 Za lažje razumevanje si poglejmo primer, kjer je število skupin enako $8$, število informativnih spremenljivk $5$, ter velikost skupin $100$.\
@@ -70,7 +70,8 @@ Faktorji, ki jih bova še spreminjala so:
 
 Faktorji so bili izbrani na podlagi tega, da si želiva rezultate, ki bodo dobri in slabi oziroma da bodo za nekatere metode dobri za druge pa slabi.
 
-<!--Neza17: To sm zdej mal bolj splošno napisala, misls da je okej, al je treba kej bolj podrobno opisat?-->
+<!--Neza17: To sm zdej mal bolj splošno napisala, misls da je okej, al je treba kej bolj podrobno opisat?
+Tom19: ne se mi zdi da je tko cist ok-->
 Torej če opišemo postopek generiranja podatkov. Število informativnih spremenljivk sva nastavila na število skupin, število neinformativnih spremenljivk pa bova tekom simulacije spreminjala, saj naju tudi zanima vpliv dodajanja le-teh. Vse spremenljivke generirava torej iz bivariatne multivariatne normalne porazdelitve, kjer imajo informativne spremenljivke povprečje enako parametru `diff`, neinformativne pa enako $0$. Standardni odklon pa določiva s pomočjo parametra `cor`, za vse spremenljivke enako(informativne in neinformativne). Število elementov oziroma velikost vzorca, ki ga generirava za spremenljivko pa je določen s pomočjo velikosti skupin. 
 
 <!--
@@ -110,3 +111,173 @@ Prilagojeni Randovi indeksi zavzemajo vrednosti na intervalu $[-1,1]$ in želimo
 <!--Pri primerjavi metod se bova na začetku osredotočala predvsem na prilagojeni Randov indeks(*ARI*), saj je mera *WSS* pristranska in jo nekatere metode optimizirajo(ravno metoda *kmeans*).-->
 
 Pri primerjavi metod sva se osredotočala predvsem na prilagojeni Randov indeks(*ARI*), saj so nekatere druge mere kot naprimer *WSS* pristranske in jo nekatere metode optimizirajo(ravno metoda *kmeans*).
+
+
+# Analiza
+
+Analizo rezultatov bova razdelila v več podenot, saj pri simulaciji spreminjava veliko število faktorjev (*število skupin*, *število neinformativnih spremenljivk*, *velikost skupin*, razliko med skupinami (*diff*) in korelacijo (*cor*)). Odločila sva se za delitev glede na vrednost povprečja v skupini (razlike povprečja skupin).
+
+Pričakujeva, da bosta metodi pri večjih vrednostih *diff* nekoliko boljše delovali, saj so skupine med seboj dobro ločene oz. je med njimi manj prekrivanja. V nasprotju pa je s spreminjanjem korelacije med spremenljivkami, saj pričakujeva, da bosta metodi nekoliko slabše delovali, ko bo korelcija visoka.
+
+```{r}
+# prebereva in urediva podatke
+res = readRDS("simulacijaV3.RDS")
+
+resLong = pivot_longer(res, cols =matches("^(ari)\\."),
+                       values_to = "value",
+                       names_to = c("metric", "method"),
+                       names_pattern = "^(ari)\\.(kmeans|mclust)") 
+
+resAgg = aggregate(value ~ stevilo.neinformativnih.sprem +
+                          velikost.skupin + stevilo.skupin + method + diff + cor, 
+                        data = resLong, FUN = mean)
+# ce bova rabila se skupno stevilo spremneljivk
+resAgg$skupaj_sprem = resAgg$stevilo.neinformativnih.sprem + resAgg$stevilo.skupin
+
+resAgg_factor = resAgg
+resAgg_factor$stevilo.neinformativnih.sprem = factor(resAgg_factor$stevilo.neinformativnih.sprem)
+resAgg_factor$velikost.skupin = factor(resAgg_factor$velikost.skupin)
+resAgg_factor$stevilo.skupin = factor(resAgg_factor$stevilo.skupin)
+resAgg_factor$diff = factor(resAgg_factor$diff)
+resAgg_factor$cor = factor(resAgg_factor$cor)
+resAgg_factor$skupaj_sprem = factor(resAgg$skupaj_sprem)
+```
+
+
+## diff = 1
+
+Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
+
+```{r fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 1."}
+# iz podatkov izbereva le diff=1
+pod_diff1 = resAgg_factor %>% filter(diff == 1)
+
+ggplot(pod_diff1, aes(y = value, x = stevilo.skupin,
+                      col=method, group=interaction(method, velikost.skupin), linetype=velikost.skupin)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "dashed", "solid"))+
+  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free")+
+  xlab("stevilo skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") 
+```
+
+Najbolj očitna razlika med metodama je vidna s spreminjanjem korelacije med spremenljivkami. \
+Ko korelacija ni prisotna bi lahko rekli da metoda voditeljev (`k-means`) nekoliko bolje razporedi enote v skupine, čeprav je razlika med njima minimalna. Prav tako bi lahko enako trdili v primeru *cor*=2, kjer so razlike majhne in se zmanjšujejo, ko se število neinformativnih spremenljivk povečuje. Ko pa je korelacija med spremenljivkami enaka $0.9$, metoda razvrščanja na podlagi modelov veliko bolje razlikuje med skupinami. \
+V vseh kombinacijah faktorjev je možno videti, da vrednost ARI z naraščanje števila skupin pada. Prav tako vrednost pada, ko število neinformativnih spremenljivk narašča. 
+
+
+## diff = 2
+
+Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
+
+```{r fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 2."}
+# iz podatkov izbereva le diff=1
+pod_diff2 = resAgg_factor %>% filter(diff == 2)
+
+ggplot(pod_diff2, aes(y = value, x = stevilo.skupin,
+                      col=method, group=interaction(method, velikost.skupin), linetype=velikost.skupin)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "dashed", "solid"))+
+  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free")+
+  xlab("stevilo skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") 
+```
+
+Tokrat je očitna razlika med metodam vidna le v primeru, ko je korelacija enaka $0.9$. V preostalih dveh primerih pa se vrednosti izračunane po metodi voditeljev in razvrščanja na podlagi modelov med seboj prepletajo. Nekoliko večja razlika je le desnem grafu *cor*=0.2, ko metoda voditeljev v vseh primerih vrne boljše rezultate.
+
+Tako kot v predhodnem razdelku je v vseh kombinacijah faktorjev možno videti, da vrednost ARI z naraščanje števila skupin pada. Prav tako vrednost pada, ko število neinformativnih spremenljivk narašča. 
+
+## diff = 4
+
+Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
+
+```{r fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 4."}
+# iz podatkov izbereva le diff=1
+pod_diff4 = resAgg_factor %>% filter(diff == 4)
+
+ggplot(pod_diff4, aes(y = value, x = stevilo.skupin,
+                      col=method, group=interaction(method, velikost.skupin), linetype=velikost.skupin)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "dashed", "solid"))+
+  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free")+
+  xlab("stevilo skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") 
+```
+
+Kot lahko opazimo se z večanjem razlike povprečja skupin, razlike v ARI vrednosti med metodama manjšajo. Izjema je le *cor*=0.9, kjer z metodo voditeljev ne dobimo dobrih rezultatov. 
+
+Če si ogledamo 3. stolpec (*število neinformativnih sprmeneljivk* = 10) opazimo, da metoda *razvrščanja na podlagi modelov* vrne nekoliko slabše rezultate v primeru, ko imamo majhno velikost skupin. 
+
+Izpostavimo lahko še zadnjo vrstico (*cor*=0.9), kjer opazimo, da *metoda voditeljev* vrne dober rezultat, le v primeru, ko je število skupin in število neinformativnih spremenljivk majhno. Ko pa se te dve vrednosti povečata, ARI vrednost dosti pade. 
+
+
+## diff = 10
+
+Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
+
+```{r fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 10."}
+# iz podatkov izbereva le diff=1
+pod_diff10 = resAgg_factor %>% filter(diff == 10)
+
+ggplot(pod_diff10, aes(y = value, x = stevilo.skupin,
+                      col=method, group=interaction(method, velikost.skupin), linetype=velikost.skupin)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "dashed", "solid"))+
+  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free")+
+  xlab("stevilo skupin") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") 
+```
+
+Tokrat dobimo dokaj nezanimive rezultate, saj so vse vrednosti blizu 1, kar naj bi pomenilo smo enote popolnoma pravilno razporedili v skupine. Zaključimo lahko le, da če imamo dovolj ločene skupine (povprečja) je vseeno katero metodo uporabimo, saj obe dobro ločujeta med skupinami.
+
+
+# ANOVA
+
+S pomočjo ANOVA testa bova med seboj primerjala metodi za razvrščanja v skupine.
+
+```{r}
+resLongF = resLong
+# spremeniva v faktor
+for(sprem in c("i", "stevilo.neinformativnih.sprem", "velikost.skupin", 
+               "stevilo.skupin", "diff", "cor")){
+  resLongF[[sprem]] = as.factor(resLongF[[sprem]])
+}
+# stolpec 'value' preimneujeva v 'ari'
+names(resLongF) = sub('value', 'ari', names(resLongF))
+
+useOld_aov = T # uporabi ze izracunane podatke
+if(useOld_aov == F){
+  aov_vred = aov(ari ~ stevilo.neinformativnih.sprem*velikost.skupin*stevilo.skupin*diff*cor,
+                   data = resLongF)
+  anova_vred_aov = anova(aov_vred) 
+  saveRDS(object = anova_vred_aov, file="aov_vrednosti.RDS")
+}
+anova_vred_aov = readRDS("aov_vrednosti.RDS")
+```
+
+
+
+# Linearni mešani modeli
+
+Primerjajmo metodi za razvrščanja v skupine še s pomočjo linearnih mešanih modelov, kjer pričakujeva podobne rezultate kot zgoraj pri ANOVA testu.
+
+```{r}
+useOld_lmer = T # uporabi ze izracunane podatke
+if(useOld_lmer == F){
+  lmer_vred = lmer(ari ~ stevilo.neinformativnih.sprem*velikost.skupin*stevilo.skupin*diff*cor+(1|i),
+                   data = resLongF)
+  anova_vred_lmer = anova(lmer_vred) 
+  saveRDS(object = anova_vred_lmer, file="lmer_vrednosti.RDS")
+}
+anova_vred_lmer = readRDS("lmer_vrednosti.RDS")
+```
+
+# Zaključek

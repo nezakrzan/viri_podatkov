@@ -62,7 +62,7 @@ settings = expand.grid(i=1:m, stevilo.neinformativnih.sprem = rev(stevilo.neinfo
                        diff = rev(diff.v),
                        cor = rev(cor.v))
 
-useOld = FALSE # ne uporabljal starega rezultata
+useOld = TRUE # ne uporabljal starega rezultata
 
 if(useOld&&file.exists("simulacijaV3.RDS")){
   res = readRDS("simulacija.RDS")
