@@ -119,7 +119,7 @@ Analizo rezultatov bova razdelila v več podenot, saj pri simulaciji spreminjava
 
 Pričakujeva, da bosta metodi pri večjih vrednostih *diff* nekoliko boljše delovali, saj so skupine med seboj dobro ločene oz. je med njimi manj prekrivanja. V nasprotju pa je s spreminjanjem korelacije med spremenljivkami, saj pričakujeva, da bosta metodi nekoliko slabše delovali, ko bo korelcija visoka.
 
-```{r}
+```{r "branje podatkov"}
 # prebereva in urediva podatke
 res = readRDS("simulacijaV3.RDS")
 
@@ -148,7 +148,7 @@ resAgg_factor$skupaj_sprem = factor(resAgg$skupaj_sprem)
 
 Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
 
-```{r fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 1."}
+```{r "risanje diff 1", fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 1."}
 # iz podatkov izbereva le diff=1
 pod_diff1 = resAgg_factor %>% filter(diff == 1)
 
@@ -172,7 +172,7 @@ V vseh kombinacijah faktorjev je možno videti, da vrednost ARI z naraščanje �
 
 Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
 
-```{r fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 2."}
+```{r "risanje diff 2", fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 2."}
 # iz podatkov izbereva le diff=1
 pod_diff2 = resAgg_factor %>% filter(diff == 2)
 
@@ -195,7 +195,7 @@ Tako kot v predhodnem razdelku je v vseh kombinacijah faktorjev možno videti, d
 
 Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
 
-```{r fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 4."}
+```{r "risanje diff 4", fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 4."}
 # iz podatkov izbereva le diff=1
 pod_diff4 = resAgg_factor %>% filter(diff == 4)
 
@@ -221,7 +221,7 @@ Izpostavimo lahko še zadnjo vrstico (*cor*=0.9), kjer opazimo, da *metoda vodit
 
 Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
 
-```{r fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 10."}
+```{r "risanje diff 10", fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 10."}
 # iz podatkov izbereva le diff=1
 pod_diff10 = resAgg_factor %>% filter(diff == 10)
 
@@ -243,7 +243,7 @@ Tokrat dobimo dokaj nezanimive rezultate, saj so vse vrednosti blizu 1, kar naj 
 
 S pomočjo ANOVA testa bova med seboj primerjala metodi za razvrščanja v skupine.
 
-```{r}
+```{r "anova"}
 resLongF = resLong
 # spremeniva v faktor
 for(sprem in c("i", "stevilo.neinformativnih.sprem", "velikost.skupin", 
@@ -263,13 +263,17 @@ if(useOld_aov == F){
 anova_vred_aov = readRDS("aov_vrednosti.RDS")
 ```
 
+```{r "prikaz anova", results=T}
+kable(anova_vred_aov[1:(nrow(anova_vred_aov)-1),], align = "c") %>%
+  kable_styling(font_size = 7)
+```
 
 
 # Linearni mešani modeli
 
 Primerjajmo metodi za razvrščanja v skupine še s pomočjo linearnih mešanih modelov, kjer pričakujeva podobne rezultate kot zgoraj pri ANOVA testu.
 
-```{r}
+```{r "lmer"}
 useOld_lmer = T # uporabi ze izracunane podatke
 if(useOld_lmer == F){
   lmer_vred = lmer(ari ~ stevilo.neinformativnih.sprem*velikost.skupin*stevilo.skupin*diff*cor+(1|i),
@@ -279,5 +283,11 @@ if(useOld_lmer == F){
 }
 anova_vred_lmer = readRDS("lmer_vrednosti.RDS")
 ```
+
+```{r "prikaz lmer"}
+kable(anova_vred_lmer[1:(nrow(anova_vred_lmer)-1),], align = "c") %>%
+  kable_styling(font_size = 7)
+```
+
 
 # Zaključek

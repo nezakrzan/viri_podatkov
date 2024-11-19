@@ -361,7 +361,7 @@ sm hotla z grafom pa sm ugotovila, da so vrednosti ne tranformiranih ful velike 
 
 ```{r "sirina IZ int obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri prostem členu(intercept)."}
 sirine_intervalov = IZ_vse %>%
-  mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - abs(x2.lower)) %>%
+  mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - x2.lower) %>%
   select(alpha, gamma, velikost.vzorca, SI_int, SI_x1, SI_x2, metoda)
 sirine_intervalov = cbind(sirine_intervalov, podatki = rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
 
