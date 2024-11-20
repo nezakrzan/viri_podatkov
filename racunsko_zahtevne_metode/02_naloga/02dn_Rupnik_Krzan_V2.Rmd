@@ -115,9 +115,9 @@ Pri primerjavi metod sva se osredotočala predvsem na prilagojeni Randov indeks(
 
 # Analiza
 
-Analizo rezultatov bova razdelila v več podenot, saj pri simulaciji spreminjava veliko število faktorjev (*število skupin*, *število neinformativnih spremenljivk*, *velikost skupin*, razliko med skupinami (*diff*) in korelacijo (*cor*)). Odločila sva se za delitev glede na vrednost povprečja v skupini (razlike povprečja skupin).
+Analizo rezultatov bova razdelila v več delov, saj pri simulaciji spreminjava veliko število faktorjev (*število skupin*, *število neinformativnih spremenljivk*, *velikost skupin*, razliko med skupinami (*diff*) in korelacijo (*cor*)). Odločila sva se za delitev glede na vrednost povprečja v skupini (razlike povprečja skupin).
 
-Pričakujeva, da bosta metodi pri večjih vrednostih *diff* nekoliko boljše delovali, saj so skupine med seboj dobro ločene oz. je med njimi manj prekrivanja. V nasprotju pa je s spreminjanjem korelacije med spremenljivkami, saj pričakujeva, da bosta metodi nekoliko slabše delovali, ko bo korelcija visoka.
+Pričakujeva, da bosta metodi pri večjih vrednostih `diff` nekoliko boljše delovali, saj so skupine med seboj dobro ločene oz. je med njimi manj prekrivanja. V nasprotju pa je s spreminjanjem korelacije med spremenljivkami, saj pričakujeva, da bo bo pri niži korelaciji oziroma brez korelacije metoda voditeljev delovala bolje kot razvrščanje na podlagi modelov in ravno nasportno, ko bo korelacija visoka.
 
 ```{r "branje podatkov"}
 # prebereva in urediva podatke
@@ -127,6 +127,8 @@ resLong = pivot_longer(res, cols =matches("^(ari)\\."),
                        values_to = "value",
                        names_to = c("metric", "method"),
                        names_pattern = "^(ari)\\.(kmeans|mclust)") 
+resLong$method[resLong$method == "kmeans"] = "metoda voditeljev"
+resLong$method[resLong$method == "mclust"] = "razvrscanje na podlagi modelov"
 
 resAgg = aggregate(value ~ stevilo.neinformativnih.sprem +
                           velikost.skupin + stevilo.skupin + method + diff + cor, 
@@ -144,7 +146,7 @@ resAgg_factor$skupaj_sprem = factor(resAgg$skupaj_sprem)
 ```
 
 
-## diff = 1
+## `diff` = 1
 
 Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
 
@@ -152,11 +154,16 @@ Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri �
 # iz podatkov izbereva le diff=1
 pod_diff1 = resAgg_factor %>% filter(diff == 1)
 
+custom_labeller <- labeller(
+  cor = function(x) paste("cor =", x),
+  stevilo.neinformativnih.sprem = function(x) paste("st. neinfo. sprem. =", x)
+)
+
 ggplot(pod_diff1, aes(y = value, x = stevilo.skupin,
                       col=method, group=interaction(method, velikost.skupin), linetype=velikost.skupin)) + 
   geom_point() + geom_line() +
   scale_linetype_manual(values=c("dotted", "dashed", "solid"))+
-  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free")+
+  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free", labeller = custom_labeller)+
   xlab("stevilo skupin") + 
   ylab("ARI") + 
   theme_minimal() + 
@@ -164,11 +171,11 @@ ggplot(pod_diff1, aes(y = value, x = stevilo.skupin,
 ```
 
 Najbolj očitna razlika med metodama je vidna s spreminjanjem korelacije med spremenljivkami. \
-Ko korelacija ni prisotna bi lahko rekli da metoda voditeljev (`k-means`) nekoliko bolje razporedi enote v skupine, čeprav je razlika med njima minimalna. Prav tako bi lahko enako trdili v primeru *cor*=2, kjer so razlike majhne in se zmanjšujejo, ko se število neinformativnih spremenljivk povečuje. Ko pa je korelacija med spremenljivkami enaka $0.9$, metoda razvrščanja na podlagi modelov veliko bolje razlikuje med skupinami. \
+Ko korelacija ni prisotna bi lahko rekli da metoda voditeljev nekoliko bolje razporedi enote v skupine, čeprav je razlika med njima minimalna. Prav tako bi lahko enako trdili v primeru `cor`=2, kjer so razlike majhne in se zmanjšujejo, ko se število neinformativnih spremenljivk povečuje. Ko pa je korelacija med spremenljivkami enaka $0.9$, metoda razvrščanja na podlagi modelov veliko bolje razlikuje med skupinami. \
 V vseh kombinacijah faktorjev je možno videti, da vrednost ARI z naraščanje števila skupin pada. Prav tako vrednost pada, ko število neinformativnih spremenljivk narašča. 
 
 
-## diff = 2
+## `diff` = 2
 
 Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
 
@@ -180,18 +187,39 @@ ggplot(pod_diff2, aes(y = value, x = stevilo.skupin,
                       col=method, group=interaction(method, velikost.skupin), linetype=velikost.skupin)) + 
   geom_point() + geom_line() +
   scale_linetype_manual(values=c("dotted", "dashed", "solid"))+
-  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free")+
+  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free", labeller = custom_labeller)+
   xlab("stevilo skupin") + 
   ylab("ARI") + 
   theme_minimal() + 
   labs(color = "Metoda:") 
 ```
 
-Tokrat je očitna razlika med metodam vidna le v primeru, ko je korelacija enaka $0.9$. V preostalih dveh primerih pa se vrednosti izračunane po metodi voditeljev in razvrščanja na podlagi modelov med seboj prepletajo. Nekoliko večja razlika je le desnem grafu *cor*=0.2, ko metoda voditeljev v vseh primerih vrne boljše rezultate.
+Tokrat je očitna razlika med metodam vidna le v primeru, ko je korelacija enaka $0.9$. V preostalih dveh primerih pa se vrednosti izračunane po metodi voditeljev in razvrščanja na podlagi modelov med seboj prepletajo. Nekoliko večja razlika je le desnem grafu `cor`=0.2, ko metoda voditeljev v vseh primerih vrne boljše rezultate.
 
-Tako kot v predhodnem razdelku je v vseh kombinacijah faktorjev možno videti, da vrednost ARI z naraščanje števila skupin pada. Prav tako vrednost pada, ko število neinformativnih spremenljivk narašča. 
+Tako kot v predhodnem razdelku je v vseh kombinacijah faktorjev možno videti, da vrednost ARI z naraščanje števila skupin pada. Prav tako vrednost pada, ko število neinformativnih spremenljivk narašča, kar lahko bolj natančno vidimo tudi na spodnjem grafu
 
-## diff = 4
+
+```{r "risanje diff 2 neinf sprem", fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 2 glede na število neinfomrativnih spremenljivk."}
+# iz podatkov izbereva le diff=1
+pod_diff2 = resAgg_factor %>% filter(diff == 2)
+
+custom_labeller <- labeller(
+  cor = function(x) paste("cor =", x),
+  stevilo.skupin = function(x) paste("st. skupin =", x)
+)
+
+ggplot(pod_diff2, aes(y = value, x = stevilo.neinformativnih.sprem,
+                      col=method, group=interaction(method, velikost.skupin), linetype=velikost.skupin)) + 
+  geom_point() + geom_line() +
+  scale_linetype_manual(values=c("dotted", "dashed", "solid"))+
+  facet_grid(cor~stevilo.skupin, scales="free", labeller = custom_labeller)+
+  xlab("stevilo neinformativnih spremenljivk") + 
+  ylab("ARI") + 
+  theme_minimal() + 
+  labs(color = "Metoda:") 
+```
+
+## `diff` = 4
 
 Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
 
@@ -203,21 +231,20 @@ ggplot(pod_diff4, aes(y = value, x = stevilo.skupin,
                       col=method, group=interaction(method, velikost.skupin), linetype=velikost.skupin)) + 
   geom_point() + geom_line() +
   scale_linetype_manual(values=c("dotted", "dashed", "solid"))+
-  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free")+
+  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free", labeller = custom_labeller)+
   xlab("stevilo skupin") + 
   ylab("ARI") + 
   theme_minimal() + 
   labs(color = "Metoda:") 
 ```
 
-Kot lahko opazimo se z večanjem razlike povprečja skupin, razlike v ARI vrednosti med metodama manjšajo. Izjema je le *cor*=0.9, kjer z metodo voditeljev ne dobimo dobrih rezultatov. 
+Kot lahko opazimo se z večanjem razlike povprečja skupin, razlike v ARI vrednosti med metodama manjšajo. Izjema je le `cor` = 0.9, kjer z metodo voditeljev ne dobimo dobrih rezultatov. 
 
 Če si ogledamo 3. stolpec (*število neinformativnih sprmeneljivk* = 10) opazimo, da metoda *razvrščanja na podlagi modelov* vrne nekoliko slabše rezultate v primeru, ko imamo majhno velikost skupin. 
 
-Izpostavimo lahko še zadnjo vrstico (*cor*=0.9), kjer opazimo, da *metoda voditeljev* vrne dober rezultat, le v primeru, ko je število skupin in število neinformativnih spremenljivk majhno. Ko pa se te dve vrednosti povečata, ARI vrednost dosti pade. 
+Izpostavimo lahko še zadnjo vrstico (`cor` = 0.9), kjer opazimo, da *metoda voditeljev* vrne dober rezultat, le v primeru, ko je število skupin in število neinformativnih spremenljivk majhno. Ko pa se te dve vrednosti povečata, ARI vrednost dosti pade. 
 
-
-## diff = 10
+## `diff` = 10
 
 Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
 
@@ -229,7 +256,7 @@ ggplot(pod_diff10, aes(y = value, x = stevilo.skupin,
                       col=method, group=interaction(method, velikost.skupin), linetype=velikost.skupin)) + 
   geom_point() + geom_line() +
   scale_linetype_manual(values=c("dotted", "dashed", "solid"))+
-  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free")+
+  facet_grid(cor~stevilo.neinformativnih.sprem, scales="free", labeller = custom_labeller)+
   xlab("stevilo skupin") + 
   ylab("ARI") + 
   theme_minimal() + 
@@ -238,10 +265,21 @@ ggplot(pod_diff10, aes(y = value, x = stevilo.skupin,
 
 Tokrat dobimo dokaj nezanimive rezultate, saj so vse vrednosti blizu 1, kar naj bi pomenilo smo enote popolnoma pravilno razporedili v skupine. Zaključimo lahko le, da če imamo dovolj ločene skupine (povprečja) je vseeno katero metodo uporabimo, saj obe dobro ločujeta med skupinami.
 
+## Analiza
 
-# ANOVA
+Iz zgornjih grafov je torej očitno, da spreminjanje faktorja `diff` in `cor` znatno vplivata na to, katera metoda je boljša za razvrščanje v skupine. \ Pri manjši korelaciji oz. kjer korelacije ni in je ločljivost med skupinami majhna(`diff` = 1), bolje deluje metoda voditeljev, pri večji pa metoda razvršanja na podlagi modelov. Ko pa se ločljivost med skupinami poveča(torej bolje ločimo med skupinami, `diff` = 2, 4, 10), pa je razlika med metodama pri majhnih korelacijah minimalna oz. je skoraj da ni, pokaže se šele pri večji korelaciji, ko je metoda razvrščanja na podlagi modelov vidno boljša. \
+Faktor `diff` tudi močno vpliva na koeficient ARI, ki je pri večjih ločljivostih med skupinami (skoraj) enak 1, kar kaže na preprleganje modelov oz. predobro razvršanje v skupine i je tud vseeno, ne glede na ostale fakotre, katero metodo vzamemo.
 
-S pomočjo ANOVA testa bova med seboj primerjala metodi za razvrščanja v skupine.
+Na mero ARI vpliva tudi večanje števila skupin v katere razvršačmo enote - ta se z večanjem skupin vidno manjša, torej bi lahko rekla, da razvrščanje v (pre)več skupin ne deluje dobro z obe matodama. \
+Prav tako se kakovost razvrščanja v skupine pri obeh metodah manjša(nobena ni boljša) z dodajanjem neinformativnih spremenljivk.
+
+# Primerjava metod za razvrščanje v skupine 
+
+Metodi bova primerjala s pomočjo ANOVA testa in linearnih mešanih modelov, kjer pričakujeva podobne rezultate. Na podlagi zgornjih grafov predvidevava, da bodo vrednosti fakoraj `diff` in `cor` nekoliko bolj statistično pomembno vplivala na rezultate analize, kot vrednosti drugih faktorjev.
+
+## ANOVA
+
+V spodnji tabeli lahko vidimo količina variabilnosti glede na faktorje, ki jih testiramo in informacijo o statistični značilnosti posameznih spremenljivk in njihovih kombinacij. Razvidno je, da so nekateri faktorji in kombinacije le teh statistično pomembi in razlike med različnimi vrednostmi faktorjev vplivajo na rezultate. Izrazito tako odstopata faktorji `diff` in `cor` ter njuna interakcija, kar bi lahko rekla, da vsa ugotovila že pri zgornji analizi. Prav tako nekoliko bolj na rezultate analize vplivajo interakcije z drugimi faktorji, kjer sta `diff` in `cor` tudi zraven(npr. interakcija `velikost.skupin:diff:cor`). Prav tako so vrednosti faktorja `stevilo.skupin` tud statistično pomembni in vplivajo bolj na rezultate analize, katera metoda za razvrščanje v skupine je boljša.
 
 ```{r "anova"}
 resLongF = resLong
@@ -264,14 +302,16 @@ anova_vred_aov = readRDS("aov_vrednosti.RDS")
 ```
 
 ```{r "prikaz anova", results=T}
-kable(anova_vred_aov[1:(nrow(anova_vred_aov)-1),], align = "c") %>%
-  kable_styling(font_size = 7)
+kable((anova_vred_aov[1:(nrow(anova_vred_aov)-1),] %>%
+  arrange(desc(`Sum Sq`))), align = "c",
+  caption = "Prikaz rezultatov ANOVA testa.") %>%
+  kable_styling(font_size = 7, latex_options = "HOLD_position")
 ```
 
 
-# Linearni mešani modeli
+## Linearni mešani modeli
 
-Primerjajmo metodi za razvrščanja v skupine še s pomočjo linearnih mešanih modelov, kjer pričakujeva podobne rezultate kot zgoraj pri ANOVA testu.
+Primerjajmo metodi še s pomočjo linearnih mešanih modelov, kjer je iz spodnje tabele razvidno, da res dobimo, glede na razvrstitev statistične pomembnosti, enake faktorje kot pri zgornjem testu. 
 
 ```{r "lmer"}
 useOld_lmer = T # uporabi ze izracunane podatke
@@ -284,10 +324,22 @@ if(useOld_lmer == F){
 anova_vred_lmer = readRDS("lmer_vrednosti.RDS")
 ```
 
-```{r "prikaz lmer"}
-kable(anova_vred_lmer[1:(nrow(anova_vred_lmer)-1),], align = "c") %>%
-  kable_styling(font_size = 7)
+```{r "prikaz lmer", results=T}
+kable((anova_vred_lmer[1:(nrow(anova_vred_lmer)-1),] %>%
+  arrange(desc(`Sum Sq`))), align = "c",
+  caption = "Prikaz rezultatov linearnih mešanih modelov.") %>%
+  kable_styling(font_size = 7, latex_options = "HOLD_position")
 ```
 
 
 # Zaključek
+
+Pri primerjavi dveh metod za razvrščanje v skupine, *metodo voditeljev* ter *razvrščanje na podlagi modelov*, na podlagi mere prilagojeni Randov indeks (ARI) sva ugotovila, da na vrednost ARI pa ne vpliva negativno samo število nepomembnih spremenljivk(tistih, ki imajo enako porazdelitev v vseh skupinah), ampak tudi število skupin v katere želimo razporediti posamezne točke. S tem sva potrdila tudi najno predvidevanje, da se bo z večanjem števila skupin indeks ARI manjšal, ker postane razvrščanje težje, saj pri več skupinah obstaja več kombinacij za razvrščanje, zato je večja verjetnost napačnih ujemanj. V primeru, da je število skupin veliko in so te blizu skupaj, je verjetnost za napačno razporeditev velika. 
+
+Na 'kvaliteto' razporeditve v skupine pa najbolj vpliva ločljivost med skupinami (`diff`) in korelacija(`cor`)(glede na ANOVA test in linearne mešane modele), tudi razlika v metodah je očitna. Če imamo dokaj normalno ločljivost med skupinami(npr. `diff` = 2) in nimamo korelacije je nekoliko boljša metoda voditeljev, ampak že opri majhnih korelacijah, pa je razvrščanje na podlagi modelov boljše. Torej, če imamo med spremenljivkami korelacijo je bolje za razvrščanje v skupine uporabiti metodo razvršanja na podlagi modelov, v nasprotnem primeru pa metodo voditeljev. 
+
+
+
+
+
+
