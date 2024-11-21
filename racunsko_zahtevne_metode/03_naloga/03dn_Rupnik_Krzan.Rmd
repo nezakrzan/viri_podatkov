@@ -14,7 +14,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =3, fig.width = 6.5)
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =4, fig.width = 6.5)
 
 # potrebne knjižnice
 library(ggplot2)
@@ -357,12 +357,13 @@ ggplot(pod_x2, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
 
 Ker smo pri zgornji analizi opazili, da so intervali zaupaja različno široki glede na vzorec, si poglejmo njihove širine tudi glede na metodo in vrsto podatkov(ne transformirani ali transformirani podatki). 
 
-Na spodnjem grafu je še bolj opazna razlika v širini intervala pri majhnem vzorcu podatkov($n = 20$) glede na metodo, opazimo pa tudi to kako linearna odvisnot vpliva na podatke oz. posamezne koeficiente linearne regresije - npr. pri koeficientu prostega člena($\beta_0$ oz. `Intercept`) je razlika v širini intervalov glede na metodo opazna še posebaj pri majhnem vzorcu podatkov($n = 20$), s tem ko za ostala dva koeficienta težko rečemo, da faktor linerne odvisnosti($\gamma$) ali heteroskedastičnost($\alpha$) glede na metodo kako značilno vpliva na širino intervala. Pri le-tem dvem koeficientu je tudi širina intervala zaupanja dokaj podobna glede na metodo.
+Na spodnjem grafu je še bolj opazna razlika v širini intervala pri majhnem vzorcu podatkov($n = 20$) glede na metodo, opazimo pa tudi to kako linearna odvisnot($\gamma$) vpliva na podatke oz. posamezne koeficiente linearne regresije - npr. pri koeficientu prostega člena($\beta_0$ oz. `Intercept`) je razlika v širini intervalov glede na metodo opazna še posebaj pri majhnem vzorcu podatkov($n = 20$), s tem ko za ostala dva koeficienta težko rečemo, da faktor linerne odvisnosti($\gamma$) ali heteroskedastičnost($\alpha$) glede na metodo kako značilno vpliva na širino intervala. Pri le-tem dvem koeficientu je tudi širina intervala zaupanja dokaj podobna glede na metodo. \
+Opazimo pa, da so širine intervalov pri transformiranih podatkih dokaj podobne, z izjemo pri nekaterih vrednostih $\alpha$, $\gamma$ in majhnem vzorcu($n=20$), vendar to je poledica kršenja predpostavke o dovolj velikem vzorcu pri linearno regresiji.
 
 <!-- sm razmislla da bi primerjala sirino intervala glede na transformirane in ne transformirane podatke
 sm hotla z grafom pa sm ugotovila, da so vrednosti ne tranformiranih ful velike ane tiste druge so pa logaritmirane in so ful majhne-->
 
-```{r "sirina IZ int obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri prostem členu(intercept)."}
+```{r "sirina IZ int obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri prostem členu(intercept).", fig.height =4}
 sirine_intervalov = IZ_vse %>%
   mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - x2.lower) %>%
   select(alpha, gamma, velikost.vzorca, SI_int, SI_x1, SI_x2, metoda)
@@ -375,37 +376,89 @@ sirine_intervalov_trans = IZ_vse_trans %>%
 sirine_intervalov_trans = cbind(sirine_intervalov_trans, podatki = rep(c("klasična analiza(l.r.) - transformirani podatki", "bootstrap - transformirani podatki"), each=nrow(IZ_org_transf)))
 sirine_intervalov_trans$velikost.vzorca = factor(sirine_intervalov_trans$velikost.vzorca)
 
-ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+g1 = ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_point(aes(y = SI_int), shape = 16, size = 1.2) +
   geom_line(aes(y = SI_int)) +
   facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
              labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
+  labs(x = "velikost vzorca (n)", y = " ",
+       title = "ne transformirani podatki") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 10)) +
   theme_minimal()
+
+g2 = ggplot(sirine_intervalov_trans, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_point(aes(y = SI_int), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_int)) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ",
+       title = "transformirani podatki") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 10)) +
+  theme_minimal()
+
+library(patchwork)
+combined_plot = g1 + g2 + plot_layout(guides = "collect") & 
+  theme(legend.position = "bottom")
+combined_plot
 ```
 
-```{r "sirina x1 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x1(beta1)."}
-ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+```{r "sirina x1 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x1(beta1).", fig.height =4}
+g1 = ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_point(aes(y = SI_x1), shape = 16, size = 1.2) +
   geom_line(aes(y = SI_x1)) +
   facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
              labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
+  labs(x = "velikost vzorca (n)", y = " ",
+       title = "ne transformirani podatki") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 10)) +
   theme_minimal()
+
+g2 = ggplot(sirine_intervalov_trans, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_point(aes(y = SI_x1), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_x1)) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ",
+       title = "transformirani podatki") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 10)) +
+  theme_minimal()
+
+combined_plot = g1 + g2 + plot_layout(guides = "collect") & 
+  theme(legend.position = "bottom")
+combined_plot
 ```
 
 
-```{r "sirina x2 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x2(beta2)."}
-ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+```{r "sirina x2 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x2(beta2).",fig.height = 4}
+g1 = ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_point(aes(y = SI_x2), shape = 16, size = 1.2) +
   geom_line(aes(y = SI_x2)) +
   facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
              labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
+  labs(x = "velikost vzorca (n)", y = " ",
+       title = "ne transformirani podatki") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 10)) +
   theme_minimal()
+
+g2 = ggplot(sirine_intervalov_trans, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_point(aes(y = SI_x1), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_x1)) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ",
+       title = "transformirani podatki") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(size = 10)) +
+  theme_minimal()
+
+combined_plot = g1 + g2 + plot_layout(guides = "collect") & 
+  theme(legend.position = "bottom")
+combined_plot
 ```
 
 
