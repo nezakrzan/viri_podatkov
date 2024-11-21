@@ -25,6 +25,7 @@ library(ADGofTest)
 library(lmerTest)
 library(knitr)
 library(kableExtra)
+library(glue)
 
 # seme
 set.seed(2024)
@@ -240,7 +241,9 @@ custom_labeller <- labeller(
 ggplot(pod_int, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
   geom_point(aes(y = mean.int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  # facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
@@ -253,7 +256,8 @@ pod_x1$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 ggplot(pod_x1, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
   geom_point(aes(y = mean.x1), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
@@ -266,7 +270,8 @@ pod_x2$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 ggplot(pod_x2, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
   geom_point(aes(y = mean.x2), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
@@ -309,15 +314,11 @@ IZ_vse_trans = full_join(IZ_skupaj_transf, IZ_skupaj_coef_trans, by = c("velikos
 pod_int = IZ_vse_trans %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "mean.int","metoda"))
 pod_int$velikost.vzorca = factor(pod_int$velikost.vzorca)
 
-custom_labeller <- labeller(
-  alpha = function(x) paste("\u03b1 =", x),
-  gamma = function(x) paste("\u03b3 =", x)
-)
-
 ggplot(pod_int, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = T, 0.3)) + 
   geom_point(aes(y = mean.int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
@@ -330,7 +331,8 @@ pod_x1$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 ggplot(pod_x1, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
   geom_point(aes(y = mean.x1), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
@@ -343,7 +345,8 @@ pod_x2$velikost.vzorca = factor(pod_x1$velikost.vzorca)
 ggplot(pod_x2, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
   geom_point(aes(y = mean.x2), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
@@ -364,16 +367,19 @@ sirine_intervalov = IZ_vse %>%
   mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - x2.lower) %>%
   select(alpha, gamma, velikost.vzorca, SI_int, SI_x1, SI_x2, metoda)
 sirine_intervalov = cbind(sirine_intervalov, podatki = rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
+sirine_intervalov$velikost.vzorca = factor(sirine_intervalov$velikost.vzorca)
 
 sirine_intervalov_trans = IZ_vse_trans %>%
   mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - abs(x2.lower)) %>%
   select(alpha, gamma, velikost.vzorca, SI_int, SI_x1, SI_x2, metoda)
-sirine_intervalov_trans = cbind(sirine_intervalov_trans, podatki = rep(c("klasična analiza(l.r.) - transformirani podatki", "bootstrap - transformirani podatki"), each=nrow(IZ_vse_trans)))
+sirine_intervalov_trans = cbind(sirine_intervalov_trans, podatki = rep(c("klasična analiza(l.r.) - transformirani podatki", "bootstrap - transformirani podatki"), each=nrow(IZ_org_transf)))
+sirine_intervalov_trans$velikost.vzorca = factor(sirine_intervalov_trans$velikost.vzorca)
 
 ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_point(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
   geom_line(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5)) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
@@ -383,7 +389,8 @@ ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
 ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_point(aes(y = SI_x1), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
   geom_line(aes(y = SI_x1), position = position_dodge2(reverse = TRUE, 0.5)) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
@@ -394,9 +401,19 @@ ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
 ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   geom_point(aes(y = SI_x2), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
   geom_line(aes(y = SI_x2), position = position_dodge2(reverse = TRUE, 0.5)) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
+             labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
 ```
+
+
+# Zaključek
+
+Pri primerjavi intervalov zaupanja "klasične" metode (*linearne regresije*), ko so predpostavke te kršene, in metode ponovnega vzorčenja (*bootstrap*), nisva opazila drastičnih razlik. Intervali zaupanja so bili pri metodi ponovnega vzorčenja nekoliko ožji, največja razlika v širini intervala pa se opazi pri majhnem vzorcu ($n=20$). Enako analizo sva ponovila še na transponiranih podatkih, s čimer sva kršenje predpostavk linearne regresije odpravila ali pa vsaj zmanjšala. Vendar tudi v tem primeru so bili intervali zaupanja skoraj enaki. Največji vpliv na širino intervalov je imela velikost vzorcev.
+
+Glede na analizo bi težko rekla, da je ena metoda veliko boljša od druge. Vendar pa bi vseeno ob kršenju predpostavk uporabila metodo ponovnega vzorčenja, saj se je ta izkazala za malenkost boljšo in z velikim številom vzorev (vzorečenja) odstranimo ekstremne robne vrednosti. 
+
+
 
