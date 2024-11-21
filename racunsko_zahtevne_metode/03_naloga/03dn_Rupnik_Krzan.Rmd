@@ -398,44 +398,5 @@ ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
   labs(x = "velikost vzorca (n)", y = " ") +
   theme(legend.position = "bottom") +
   theme_minimal()
-
-# jst nevem al mava tole kej narobe, sam nevem a je to okej al ne...
 ```
 
-
-
-<!-- tole dvoje ne bo prsl v upostev verjetno...
-```{r "sirina IZ klr", fig.cap="Širina intervalov zaupanja za koeficient pri prostem členu(intercept) - klasična linearna regresija."}
-SI_int_klas_ana_1 <- sirine_intervalov[sirine_intervalov$podatki == "klasična analiza(linearna regresija)", 
-                                       c("alpha", "gamma", "SI_int","podatki", "velikost.vzorca")]
-SI_int_klas_ana_2 <- sirine_intervalov_trans[sirine_intervalov_trans$podatki == "klasična analiza(l.r.) - transformirani podatki", 
-                                             c("alpha", "gamma", "SI_int","podatki", "velikost.vzorca")]
-SI_int_klas_ana = rbind(SI_int_klas_ana_2, SI_int_klas_ana_1)
-
-ggplot(SI_int_klas_ana, aes(x=velikost.vzorca, col=podatki, group=podatki)) +
-  geom_point(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5)) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
-  theme_minimal()
-```
-
-```{r "sirina IZ boot", fig.cap="Širina intervalov zaupanja za koeficient pri prostem členu(intercept) - bootstrap."}
-SI_int_boot_1 <- sirine_intervalov[sirine_intervalov$podatki == "bootstrap", 
-                                   c("alpha", "gamma", "SI_int","podatki", "velikost.vzorca")]
-SI_int_boot_2 <- sirine_intervalov_trans[sirine_intervalov_trans$podatki == "bootstrap - transformirani podatki", 
-                                         c("alpha", "gamma", "SI_int","podatki", "velikost.vzorca")]
-SI_int_boot = rbind(SI_int_boot_1, SI_int_boot_2)
-
-ggplot(SI_int_boot, aes(x=velikost.vzorca, col=podatki, group=podatki)) +
-  geom_point(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5)) +
-  facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
-  theme_minimal()
-
-```
-
--->

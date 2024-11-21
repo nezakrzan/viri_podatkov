@@ -11,29 +11,35 @@ library(kableExtra)
 set.seed(2024)
 
 ########################## generiranje podatkov #############################
-# # funkcija za generiranje podatkov
-# 
-# generiranje.podatkov = function(stevilo.spremenljivk, velikost.skupin, stevilo.skupin, diff){
-#   # generiranje povprečij
-#   M = diag(stevilo.skupin)*diff 
-#   
-#   # neinformativne spremenljivke - same 0
-#   M = cbind(M, matrix(0, nrow=stevilo.skupin, ncol=stevilo.spremenljivk-stevilo.skupin)) 
-#   S = diag(stevilo.spremenljivk)
-#   
-#   X = NULL 
-#   # generamo podatke za vsako skupino posebaj
-#   for(i in 1:stevilo.skupin){
-#     iX = MASS::mvrnorm(n=velikost.skupin, mu = M[i,], Sigma = S)
-#     X = rbind(X,iX)
-#   }
-#   
-#   # dodamo se skupino
-#   X = cbind(X, skupina=rep(1:stevilo.skupin,each=velikost.skupin)) # clu = skupina
-#   return(X)
-# }
+generiranje.podatkov = function(
+    velikost.skupin, stevilo.skupin, stevilo.neinformativnih.sprem, diff, cor){
+  ## informativne spremenljivke
+  # povprecja
+  Mu = diag(stevilo.skupin)*diff
+  # sigma
+  st.spremenljivk = stevilo.skupin+stevilo.neinformativnih.sprem
+  Sigma = matrix(cor, ncol=st.spremenljivk, nrow=st.spremenljivk)
+  diag(Sigma) = 1
+  
+  ## neinformativne spremenljivke
+  # generiranje neinformativnih spremenljivk
+  non.infor = matrix(0, nrow=stevilo.skupin, ncol=stevilo.neinformativnih.sprem)
+  # zdruzimo
+  M = cbind(Mu, non.infor)
+  
+  # generamo podatke
+  X = NULL 
+  for(i in 1:stevilo.skupin){
+    iX = MASS::mvrnorm(n=velikost.skupin, mu = M[i,], Sigma = Sigma)
+    X = rbind(X,iX)
+  } 
+  
+  # dodava se skupine
+  X = cbind(X, skupina=rep(1:stevilo.skupin, each=velikost.skupin))
+  
+  return(X)
+}
 
-source("generiranje_podatkov.R")
 ################################## simulacija ##################################
 m = 100 # st. ponovitev
 
@@ -42,11 +48,6 @@ velikost.skupin.v = c(20, 100, 200)
 stevilo.skupin.v = c(4, 8, 14)
 diff.v = c(1, 2, 4, 10)
 cor.v = c(0, 0.2, 0.9)
-
-# stevilo.skupin.v = c(4, 8, 10)
-# velikost.skupin.v = c(20, 100, 200)
-# stevilo.spremenljivk.v = c(12, 24, 36)
-# diff.v = c(1, 2, 4, 10)
 
 # # parametri za test
 # m = 2

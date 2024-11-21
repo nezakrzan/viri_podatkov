@@ -46,11 +46,12 @@ for (alpha in unique(alpha.v)){
 }
 saveRDS(object = podatki, file="podatki.RDS")
 
+podatki = readRDS("podatki.RDS")
+podatki = data.frame(podatki)
 
 # ====================== primerjava IZ (brez transformacije) ===================
 
 # ------------------------------- klasicni test --------------------------------
-podatki = readRDS("podatki.RDS")
 intervali.zaupanja.org = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
                                     int.coef = numeric(), x1.coef = numeric(), x2.coef = numeric(),
                                     int.lower = numeric(), int.upper = numeric(),
@@ -90,6 +91,9 @@ for (alpha in unique(alpha.v)){
 }
 
 saveRDS(object = intervali.zaupanja.org, file="intervali.zaupanja.org.RDS")
+
+intervali.zaupanja.org = readRDS("intervali.zaupanja.org.RDS")
+intervali.zaupanja.org = data.frame(intervali.zaupanja.org)
 
 # --------------------------------- bootstrap ----------------------------------
 # bootstrap vzorci
@@ -169,7 +173,10 @@ for (alpha in unique(rezultati$alpha)){
 }
 
 saveRDS(object = intervali.zaupanja, file="intervali.zaupanja.RDS") 
-  
+ 
+intervali.zaupanja = readRDS("intervali.zaupanja.RDS")
+intervali.zaupanja = data.frame(intervali.zaupanja)
+
 # ====================== primerjava IZ (s transformacijo) ===================
 
 # ------------------------------- klasicni test --------------------------------
@@ -217,6 +224,9 @@ for (alpha in unique(alpha.v)){
 }
 
 saveRDS(object = intervali.zaupanja.org, file="intervali.zaupanja.org.transf.RDS")
+
+intervali.zaupanja.org = readRDS("intervali.zaupanja.org.RDS")
+intervali.zaupanja.org = data.frame(intervali.zaupanja.org)
 
 # --------------------------------- bootstrap ----------------------------------
 m = 1000
@@ -296,5 +306,180 @@ for (alpha in unique(rezultati$alpha)){
 
 saveRDS(object = intervali.zaupanja, file="intervali.zaupanja.transf.RDS") 
 
+intervali.zaupanja = readRDS("intervali.zaupanja.transf.RDS")
+intervali.zaupanja = data.frame(intervali.zaupanja)
+
+# ================================== pokritje =================================
+set.seed(2024)
+alpha.v = c(0.6, 1, 1.2)
+gamma.v = c(0.8, 1.4)
+n.v = c(20, 200, 500)
+m = 1000
+
+# -------------------------- brez transformacije -------------------------------
+df = readRDS("podatki.RDS")
+df = data.frame(df)
+
+int.org = 100
+x1.org = 3
+x2.org = 2
+
+alpha.iz = 0.05
+pokritje = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
+                      int.in = logical(), x1.in = logical(), x2.in = logical())
+
+for(i in 1:1000){ 
+  res = matrix(NA, nrow = m, ncol = 6)
+  for (alpha in unique(alpha.v)){
+    # alpha = 0.6
+    for (gamma in unique(gamma.v)){
+      # gamma = 0.8
+      for (n in unique(n.v)){
+        # n = 20
+        # izberem podatke
+        subset.res = df[c(df$alpha==alpha & df$gamma==gamma & df$velikost.vzorca==n),]
+        
+        for(j in 1:m){ #bootstrap
+          #j = 1
+          ind = sample(n, replace = T)
+          
+          # lm model
+          iFitLm = lm(y ~ x1 + x2, data=subset.res[ind,])
+          iEst = summary(iFitLm)$coef
+          
+          # shranimo rezultate
+          res[j, 1:3] = c(alpha, gamma, n)
+          res[j, 4:6] = iEst[,1]
+        }
+        
+        res = data.frame(res)
+        
+        # izračun intervalov zaupanja
+        int.iz  = quantile(res$X4, probs = c(alpha.iz/2, 1-alpha.iz/2))
+        x1.iz  = quantile(res$X5, probs = c(alpha.iz/2, 1-alpha.iz/2))
+        x2.iz  = quantile(res$X6, probs = c(alpha.iz/2, 1-alpha.iz/2))
+        
+        # ali so pravi parametri v IZ
+        int.in = (int.iz[1] <= int.org) & (int.org <= int.iz[2])
+        x1.in = (x1.iz[1] <= x1.org) & (x1.org <= int.iz[2])
+        x2.in = (x2.iz[1] <= x2.org) & (x2.org <= int.iz[2])
+        
+        pokritje = rbind(pokritje, 
+                         data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n,
+                                    int.in = int.in, x1.in = x1.in, x2.in = x2.in))
+      }
+    }
+  }
+  if(i%%10==0) cat("Iteration ", i, "/", 1000, "complete! \n")
+}
+
+saveRDS(pokritje, file="pokritje.RDS") 
 
 
+pokritje = readRDS("pokritje.RDS")
+df = data.frame(pokritje)
+
+pokritje.odst = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(), 
+                           int.pokritje = numeric(), x1.pokritje = numeric(), x2.pokritje = numeric())
+
+for (alpha in unique(pokritje$alpha)){
+  for (gamma in unique(pokritje$gamma)){
+    for (n in unique(pokritje$velikost.vzorca)){
+      # izberemo podatke
+      subset.res = df[c(df$alpha==alpha & df$gamma==gamma & df$velikost.vzorca==n),]
+      
+      # izračunamo povprečje
+      int.pokritje = round(mean(subset.res$int.in) * 100, 2)
+      x1.pokritje = mean(subset.res$x1.in)
+      x2.pokritje = mean(subset.res$x2.in)
+      
+      pokritje.odst = rbind(pokritje.odst, 
+                            data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n, 
+                                       int.pokritje = int.pokritje, x1.pokritje = x1.pokritje, x2.pokritje = x2.pokritje))
+    }
+  }
+}
+
+# -------------------------- s transformacijo -------------------------------
+df = readRDS("podatki.RDS")
+df = data.frame(df)
+
+int.org = 100
+x1.org = 3
+x2.org = 2
+
+alpha.iz = 0.05
+pokritje = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
+                      int.in = logical(), x1.in = logical(), x2.in = logical())
+
+for(i in 1:1000){ 
+  res = matrix(NA, nrow = m, ncol = 6)
+  for (alpha in unique(alpha.v)){
+    # alpha = 0.6
+    for (gamma in unique(gamma.v)){
+      # gamma = 0.8
+      for (n in unique(n.v)){
+        # n = 20
+        # izberem podatke
+        subset.res = df[c(df$alpha==alpha & df$gamma==gamma & df$velikost.vzorca==n),]
+        
+        for(j in 1:m){ #bootstrap
+          #j = 1
+          ind = sample(n, replace = T)
+          
+          # lm model
+          iFitLm = lm(y ~ x1 + x2, data=subset.res[ind,])
+          iEst = summary(iFitLm)$coef
+          
+          # shranimo rezultate
+          res[j, 1:3] = c(alpha, gamma, n)
+          res[j, 4:6] = iEst[,1]
+        }
+        
+        res = data.frame(res)
+        
+        # izračun intervalov zaupanja
+        int.iz  = quantile(res$X4, probs = c(alpha.iz/2, 1-alpha.iz/2))
+        x1.iz  = quantile(res$X5, probs = c(alpha.iz/2, 1-alpha.iz/2))
+        x2.iz  = quantile(res$X6, probs = c(alpha.iz/2, 1-alpha.iz/2))
+        
+        # ali so pravi parametri v IZ
+        int.in = (int.iz[1] <= int.org) & (int.org <= int.iz[2])
+        x1.in = (x1.iz[1] <= x1.org) & (x1.org <= int.iz[2])
+        x2.in = (x2.iz[1] <= x2.org) & (x2.org <= int.iz[2])
+        
+        pokritje = rbind(pokritje, 
+                         data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n,
+                                    int.in = int.in, x1.in = x1.in, x2.in = x2.in))
+      }
+    }
+  }
+  if(i%%10==0) cat("Iteration ", i, "/", 1000, "complete! \n")
+}
+
+saveRDS(pokritje, file="pokritje.RDS") 
+
+
+pokritje = readRDS("pokritje.RDS")
+df = data.frame(pokritje)
+
+pokritje.odst = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(), 
+                           int.pokritje = numeric(), x1.pokritje = numeric(), x2.pokritje = numeric())
+
+for (alpha in unique(pokritje$alpha)){
+  for (gamma in unique(pokritje$gamma)){
+    for (n in unique(pokritje$velikost.vzorca)){
+      # izberemo podatke
+      subset.res = df[c(df$alpha==alpha & df$gamma==gamma & df$velikost.vzorca==n),]
+      
+      # izračunamo povprečje
+      int.pokritje = round(mean(subset.res$int.in) * 100, 2)
+      x1.pokritje = mean(subset.res$x1.in)
+      x2.pokritje = mean(subset.res$x2.in)
+      
+      pokritje.odst = rbind(pokritje.odst, 
+                            data.frame(alpha = alpha, gamma = gamma, velikost.vzorca = n, 
+                                       int.pokritje = int.pokritje, x1.pokritje = x1.pokritje, x2.pokritje = x2.pokritje))
+    }
+  }
+}
