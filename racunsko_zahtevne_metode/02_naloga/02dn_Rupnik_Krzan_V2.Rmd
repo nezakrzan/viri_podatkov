@@ -180,7 +180,7 @@ V vseh kombinacijah faktorjev je možno videti, da vrednost ARI z naraščanje �
 Graf prikazuje spreminjanje ARI vrednosti v odvisnosti od števila skupin, pri čemer vrstice predstavljajo korelacijo med spremenljivkami, stolpci pa število neinformativnih spremenljivk.
 
 ```{r "risanje diff 2", fig.cap="Prikaz ARI vrednosti, ko je razlika povprečja skupin enaka 2."}
-# iz podatkov izbereva le diff=1
+# iz podatkov izbereva le diff=2
 pod_diff2 = resAgg_factor %>% filter(diff == 2)
 
 ggplot(pod_diff2, aes(y = value, x = stevilo.skupin,
@@ -279,7 +279,7 @@ Metodi bova primerjala s pomočjo ANOVA testa in linearnih mešanih modelov, kje
 
 ## ANOVA
 
-V spodnji tabeli lahko vidimo količina variabilnosti glede na faktorje, ki jih testiramo in informacijo o statistični značilnosti posameznih spremenljivk in njihovih kombinacij. Razvidno je, da so nekateri faktorji in kombinacije le teh statistično pomembi in razlike med različnimi vrednostmi faktorjev vplivajo na rezultate. Izrazito tako odstopata faktorji `diff` in `cor` ter njuna interakcija, kar bi lahko rekla, da vsa ugotovila že pri zgornji analizi. Prav tako nekoliko bolj na rezultate analize vplivajo interakcije z drugimi faktorji, kjer sta `diff` in `cor` tudi zraven(npr. interakcija `velikost.skupin:diff:cor`). Prav tako so vrednosti faktorja `stevilo.skupin` tud statistično pomembni in vplivajo bolj na rezultate analize, katera metoda za razvrščanje v skupine je boljša.
+V spodnji tabeli lahko vidimo količina variabilnosti glede na faktorje, ki jih testiramo in informacijo o statistični značilnosti posameznih spremenljivk in njihovih kombinacij. Razvidno je, da so nekateri faktorji in kombinacije le teh statistično pomembi in razlike med različnimi vrednostmi faktorjev vplivajo na rezultate. Izrazito tako odstopata faktorji `diff` in `cor` ter njuna interakcija, kar bi lahko rekla, da vsa ugotovila že pri zgornji analizi. Prav tako nekoliko bolj na rezultate analize vplivajo interakcije z drugimi faktorji, kjer sta `diff` in `cor` tudi zraven(npr. interakcija `velikost.skupin:diff:cor`). Prav tako so vrednosti faktorja `stevilo.skupin` tud statistično pomembni in vplivajo bolj na rezultate analize, katera metoda za razvrščanje v skupine je boljša. Pričakovano ima tudi faktor `method` pomembno vlogo, saj skupaj z interakcijam faktorjev `diff` in `cor` najbolj vpliva na rezultat.
 
 ```{r "anova"}
 resLongF = resLong

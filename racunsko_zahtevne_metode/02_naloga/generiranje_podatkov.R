@@ -8,27 +8,6 @@ stevilo.skupin = 4
 diff = 2
 cor = 0
 
-# njegov komentar:
-# Navodila pravijo, da morate v osnovi generirati podatke iz bivariatne normalne porazdelitve. 
-# Torej tisto, kar določa razlike med skupinami, morata biti dve spremenljivki.
-# Sicer morate potem preučevati dodajanje nepomembnih spremenljivk, a tega dejavnika vsaj jasno ne vidim tu.
-# Tudi če gledam kodo se mi zdi, da je bil cilj čim bom "uporabiti" kodo iz vaj, kot pa res narediti svojo simulacijo.
-
-# Moja ideja:
-# zgenerirava podatke iz bivar mult normalne(karkoli že je to) za določeno število spremenljivk in to pustiva skos fiksno?
-# potem pa dodajava neinformativne spremenljivke - torej da mava enkar podatke s 5 informativnimi spremenljivkami in 3 neinformativnimi, potem naslednjič s 5 informativnimi in 6 neinformativnimi
-# pač da je število informativnih skos enako, neinformativne pa spreminjava
-
-# njegov drugi komentar:
-# Dobro bi bilo, če bi preostale dejavnike (poleg v naprej določenega) izbrala tako, da bi 
-# vsaj kakšen tak, da bi pri eni strani pričakovali, da bo boljša ena metoda, pri drugi strani 
-# (min-max vrednosti) pa druga (oz. da bosta na eni strani enakovredni).
-# Recimo, metoda voditeljev predpostavlja okrogle skupine (korelacije 0) z enake variance med skupinami in 
-# spremenljivkami znotraj skupin,  Mclust pa ne.
-
-# Moja ideja:
-# torej rabva med skupinami neko korelacijo? Seprav rabva za sigmo po diagonali med neko korelacijo? Al? madonis sm zmedena hahah
-
 # generiram podatke za informativne spremenljivke
 generiranje.podatkov = function(
     velikost.skupin, stevilo.skupin, stevilo.neinformativnih.sprem, diff, cor){
