@@ -376,8 +376,8 @@ sirine_intervalov_trans = cbind(sirine_intervalov_trans, podatki = rep(c("klasi�
 sirine_intervalov_trans$velikost.vzorca = factor(sirine_intervalov_trans$velikost.vzorca)
 
 ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_point(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_int), position = position_dodge2(reverse = TRUE, 0.5)) +
+  geom_point(aes(y = SI_int), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_int)) +
   facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
              labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
@@ -387,8 +387,8 @@ ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
 
 ```{r "sirina x1 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x1(beta1)."}
 ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_point(aes(y = SI_x1), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_x1), position = position_dodge2(reverse = TRUE, 0.5)) +
+  geom_point(aes(y = SI_x1), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_x1)) +
   facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
              labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
@@ -399,8 +399,8 @@ ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
 
 ```{r "sirina x2 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x2(beta2)."}
 ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_point(aes(y = SI_x2), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_x2), position = position_dodge2(reverse = TRUE, 0.5)) +
+  geom_point(aes(y = SI_x2), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_x2)) +
   facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
              labeller = label_parsed, scales="free") +
   labs(x = "velikost vzorca (n)", y = " ") +
