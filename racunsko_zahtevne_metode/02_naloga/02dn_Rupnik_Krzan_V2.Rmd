@@ -293,7 +293,7 @@ names(resLongF) = sub('value', 'ari', names(resLongF))
 
 useOld_aov = T # uporabi ze izracunane podatke
 if(useOld_aov == F){
-  aov_vred = aov(ari ~ stevilo.neinformativnih.sprem*velikost.skupin*stevilo.skupin*diff*cor,
+  aov_vred = aov(ari ~ stevilo.neinformativnih.sprem*velikost.skupin*stevilo.skupin*diff*cor*method,
                    data = resLongF)
   anova_vred_aov = anova(aov_vred) 
   saveRDS(object = anova_vred_aov, file="aov_vrednosti.RDS")
@@ -316,7 +316,7 @@ Primerjajmo metodi še s pomočjo linearnih mešanih modelov, kjer je iz spodnje
 ```{r "lmer"}
 useOld_lmer = T # uporabi ze izracunane podatke
 if(useOld_lmer == F){
-  lmer_vred = lmer(ari ~ stevilo.neinformativnih.sprem*velikost.skupin*stevilo.skupin*diff*cor+(1|i),
+  lmer_vred = lmer(ari ~ stevilo.neinformativnih.sprem*velikost.skupin*stevilo.skupin*diff*cor+method+(1|i),
                    data = resLongF)
   anova_vred_lmer = anova(lmer_vred) 
   saveRDS(object = anova_vred_lmer, file="lmer_vrednosti.RDS")
