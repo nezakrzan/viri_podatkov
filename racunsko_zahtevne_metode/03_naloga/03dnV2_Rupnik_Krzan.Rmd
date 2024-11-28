@@ -143,3 +143,193 @@ Jasno nam torej je, da se na rezultate, pridobljene s podatki pred transformacij
 
 Na spodnjih grafih vidimo, da se intervazli z večanjem vzorca res manjšajo, razlike med intervali s klasično analizo in bootstrapom pa so minimalne, največja razlika v širini intervala se opazi pri majhnem vzorcu($n=20$).
 
+```{r "zdruzeni rezultati"}
+source("03dnV2_Rupnik_Krzan.R")
+
+# zdruziva rezultate
+podatki_skupaj = rbind(rezultati_klasicna, rezultati_bootstrap)
+# dodava metodo
+podatki_skupaj = cbind(podatki_skupaj, rep(c("klasicna", "bootstrap"), each=nrow(rezultati_klasicna)))
+colnames(podatki_skupaj)[ncol(podatki_skupaj)] = "metoda"
+
+podatki_skupaj$alpha = factor(podatki_skupaj$alpha)
+podatki_skupaj$velikost.vzorca = factor(podatki_skupaj$velikost.vzorca)
+```
+
+<!--Prikaz presecisce-->
+
+```{r "podatki za prikaz int"}
+pod_int = podatki_skupaj %>% 
+  select(c("alpha", "velikost.vzorca", "int.coef", "int.lower", "int.upper", "metoda"))
+
+agr_int_coef = aggregate(int.coef ~ alpha + velikost.vzorca + metoda, 
+                   data = pod_int, FUN = mean)
+agr_int_lower = aggregate(int.lower ~ alpha + velikost.vzorca + metoda, 
+                   data = pod_int, FUN = mean)
+agr_int_upper = aggregate(int.upper ~ alpha + velikost.vzorca + metoda, 
+                   data = pod_int, FUN = mean)
+
+int_skupaj = full_join(agr_int_coef, agr_int_lower)
+int_skupaj = full_join(int_skupaj, agr_int_upper)
+```
+
+```{r "graf int", fig.cap="Grafi intervalov zaupanja za prosti koeficient(Intercept)."}
+ggplot(int_skupaj, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = int.coef), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
+  # facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(factor(alpha, c("1.2", "1", "0.6"))~., 
+             labeller = label_parsed, scales = "free")  +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+```
+
+<!--Prikaz x1-->
+
+```{r "podatki za prikaz x1"}
+pod_x1 = podatki_skupaj %>% 
+  select(c("alpha", "velikost.vzorca", "x1.coef", "x1.lower", "x1.upper", "metoda"))
+
+agr_x1_coef = aggregate(x1.coef ~ alpha + velikost.vzorca + metoda, 
+                   data = pod_x1, FUN = mean)
+agr_x1_lower = aggregate(x1.lower ~ alpha + velikost.vzorca + metoda, 
+                   data = pod_x1, FUN = mean)
+agr_x1_upper = aggregate(x1.upper ~ alpha + velikost.vzorca + metoda, 
+                   data = pod_x1, FUN = mean)
+
+x1_skupaj = full_join(agr_x1_coef, agr_x1_lower)
+x1_skupaj = full_join(x1_skupaj, agr_x1_upper)
+```
+
+
+```{r "graf x1", fig.cap="Grafi intervalov zaupanja za koeficient pri x1(beta1)."}
+ggplot(x1_skupaj, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = x1.coef), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
+  # facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(factor(alpha, c("1.2", "1", "0.6"))~., 
+             labeller = label_parsed, scales = "free")  +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+```
+
+<!--Prikaz x2-->
+
+```{r "podatki za prikaz x2"}
+pod_x2 = podatki_skupaj %>% 
+  select(c("alpha", "velikost.vzorca", "x2.coef", "x2.lower", "x2.upper", "metoda"))
+
+agr_x2_coef = aggregate(x2.coef ~ alpha + velikost.vzorca + metoda, 
+                   data = pod_x2, FUN = mean)
+agr_x2_lower = aggregate(x2.lower ~ alpha + velikost.vzorca + metoda, 
+                   data = pod_x2, FUN = mean)
+agr_x2_upper = aggregate(x2.upper ~ alpha + velikost.vzorca + metoda, 
+                   data = pod_x2, FUN = mean)
+
+x2_skupaj = full_join(agr_x2_coef, agr_x2_lower)
+x2_skupaj = full_join(x2_skupaj, agr_x2_upper)
+```
+
+
+```{r "graf x2", fig.cap="Grafi intervalov zaupanja za koeficient pri x2(beta2)."}
+ggplot(x2_skupaj, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = x2.coef), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
+  # facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
+  facet_grid(factor(alpha, c("1.2", "1", "0.6"))~., 
+             labeller = label_parsed, scales = "free") +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
+```
+
+<!-- Pokritost -->
+
+```{r pokritost int}
+# stolpci v matriki: alpha, n, klasicna, bootstrap
+pokritost_int = matrix(NA, nrow = 9, ncol = 4)
+ind = 1
+for(alpha in c(0.6, 1, 1.2)){
+  for(n in c(20, 200, 500)){
+    pod_klasicna = podatki_skupaj %>%
+      filter(alpha==alpha, velikost.vzorca == n, metoda == "klasicna") %>%
+      select(c("int.lower", "int.upper"))
+    
+    pod_bootstrap = podatki_skupaj %>%
+      filter(alpha==alpha, velikost.vzorca == n, metoda == "bootstrap") %>%
+      select(c("int.lower", "int.upper"))
+    
+    pokritost_int[ind,] = c(alpha, n,
+                          mean(pod_klasicna$int.lower <= 100 & 100 <= pod_klasicna$int.upper),
+                          mean(pod_bootstrap$int.lower <= 100 & 100 <= pod_bootstrap$int.upper))
+    ind = ind + 1
+  }
+}
+```
+
+
+```{r pokritost x1}
+# stolpci v matriki: alpha, n, klasicna, bootstrap
+pokritost_x1 = matrix(NA, nrow = 9, ncol = 4)
+ind = 1
+for(alpha in c(0.6, 1, 1.2)){
+  for(n in c(20, 200, 500)){
+    pod_klasicna = podatki_skupaj %>%
+      filter(alpha==alpha, velikost.vzorca == n, metoda == "klasicna") %>%
+      select(c("x1.lower", "x1.upper"))
+    
+    pod_bootstrap = podatki_skupaj %>%
+      filter(alpha==alpha, velikost.vzorca == n, metoda == "bootstrap") %>%
+      select(c("x1.lower", "x1.upper"))
+    
+    pokritost_x1[ind,] = c(alpha, n,
+                          mean(pod_klasicna$x1.lower <= 3 & 3 <= pod_klasicna$x1.upper),
+                          mean(pod_bootstrap$x1.lower <= 3 & 3 <= pod_bootstrap$x1.upper))
+    ind = ind + 1
+  }
+}
+```
+
+
+```{r pokritost x2}
+# stolpci v matriki: alpha, n, klasicna, bootstrap
+pokritost_x2 = matrix(NA, nrow = 9, ncol = 4)
+ind = 1
+for(alpha in c(0.6, 1, 1.2)){
+  for(n in c(20, 200, 500)){
+    pod_klasicna = podatki_skupaj %>%
+      filter(alpha==alpha, velikost.vzorca == n, metoda == "klasicna") %>%
+      select(c("x2.lower", "x2.upper"))
+    
+    pod_bootstrap = podatki_skupaj %>%
+      filter(alpha==alpha, velikost.vzorca == n, metoda == "bootstrap") %>%
+      select(c("x2.lower", "x2.upper"))
+    
+    pokritost_x2[ind,] = c(alpha, n,
+                          mean(pod_klasicna$x2.lower <= 2 & 2 <= pod_klasicna$x2.upper),
+                          mean(pod_bootstrap$x2.lower <= 2 & 2 <= pod_bootstrap$x2.upper))
+    ind = ind + 1
+  }
+}
+```
+
+
+```{r "prikaz pokritost", results=T}
+
+df_pokritost = data.frame("alpha" = pokritost_int[,1], 
+                          "n" = pokritost_int[,2],
+                          "int_klasicna" = pokritost_int[,3],
+                          "int_bootstrap" = pokritost_int[,4],
+                          "x1_klasicna" = pokritost_x1[,3],
+                          "x1_bootstrap" = pokritost_x1[,4],
+                          "x2_klasicna" = pokritost_x2[,3],
+                          "x2_bootstrap" = pokritost_x2[,4])
+
+kable(df_pokritost, 
+      col.names = c("alpha", "velikost vzorca", rep(c("klasicna", "bootstrap"),3)),
+      align = "c", digits = 4) %>%
+  add_header_above(c(" " = 2, "intercept" = 2, "beta1" = 2, "beta2" = 2))
+```
+

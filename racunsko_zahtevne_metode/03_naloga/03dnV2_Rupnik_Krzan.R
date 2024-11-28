@@ -8,7 +8,7 @@ st.ponovitev = 1000
 # bootstrap vzorci
 m = 1000
 
-useOld = FALSE # ne uporabljal starega rezultata
+useOld = T # ne uporabljal starega rezultata
 
 # ============================ simulacija podatkov ============================
 # funkcija za generiranje podatkov
@@ -52,11 +52,11 @@ bootstrap = function(m, podatki, alpha, n){
 
 # ================================ simulacija ==================================
 settings = expand.grid(i = 1:st.ponovitev, alpha = rev(alpha.v), n=rev(n.v))
-m = 10
+# m = 10
 alpha.iz = 0.05
 
 if(useOld&&file.exists("bootstrapV2.RDS")){
-  rezultati = readRDS("bootstrapV2.RDS") 
+  rezultati_bootstrap = readRDS("bootstrapV2.RDS") 
 }else{
   library(foreach)
   library(doParallel)
@@ -74,7 +74,7 @@ if(useOld&&file.exists("bootstrapV2.RDS")){
     n = settings$n[i]
     data = generiranje_podatkov(beta0=100, beta1=3, beta2=2, alpha=alpha, n=n)
 
-    ## bo0tstrap
+    ## bootstrap
     res = bootstrap(m, data, alpha, n)
     
     # izračun intervalov zaupanja
@@ -94,7 +94,7 @@ if(useOld&&file.exists("bootstrapV2.RDS")){
     
   }
   rezultati = data.frame(alpha = res2[,1], velikost.vzorca = res2[,2], 
-                         int = res2[,3], x1 = res2[,4], x2 = res2[,5],
+                         int.coef = res2[,3], x1.coef = res2[,4], x2.coef = res2[,5],
                          int.lower = res2[,6], int.upper = res2[,7],
                          x1.lower = res2[,8], x1.upper = res2[,9],
                          x2.lower = res2[,10], x2.upper = res2[,11])
@@ -104,10 +104,11 @@ if(useOld&&file.exists("bootstrapV2.RDS")){
   stopCluster(cl)
 }
 
-rezultati = readRDS("bootstrapV2.RDS")
+rezultati_bootstrap = readRDS("bootstrapV2.RDS")
+rownames(rezultati_bootstrap) = 1:9000 # to je samo lepotno
 
 if(useOld&&file.exists("klasicna_metodaV2.RDS")){
-  rezultati = readRDS("klasicna_metodaV2.RDS") 
+  rezultati_klasicna = readRDS("klasicna_metodaV2.RDS") 
 }else{
   library(foreach)
   library(doParallel)
@@ -161,4 +162,4 @@ if(useOld&&file.exists("klasicna_metodaV2.RDS")){
   stopCluster(cl)
 }
 
-rezultati = readRDS("klasicna_metodaV2.RDS")
+rezultati_klasicna = readRDS("klasicna_metodaV2.RDS")

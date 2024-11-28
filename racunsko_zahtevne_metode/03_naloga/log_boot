@@ -109,3 +109,684 @@ Iteration  8700 / 9000 complete!
 Iteration  8800 / 9000 complete! 
 Iteration  8900 / 9000 complete! 
 Iteration  9000 / 9000 complete! 
+starting worker pid=88440 on localhost:11413 at 18:23:59.801
+starting worker pid=88454 on localhost:11413 at 18:23:59.909
+starting worker pid=88467 on localhost:11413 at 18:24:00.020
+starting worker pid=88480 on localhost:11413 at 18:24:00.127
+starting worker pid=88493 on localhost:11413 at 18:24:00.234
+starting worker pid=88506 on localhost:11413 at 18:24:00.349
+starting worker pid=88519 on localhost:11413 at 18:24:00.463
+starting worker pid=88532 on localhost:11413 at 18:24:00.570
+starting worker pid=88545 on localhost:11413 at 18:24:00.678
+starting worker pid=88558 on localhost:11413 at 18:24:00.784
+starting worker pid=88571 on localhost:11413 at 18:24:00.891
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Iteration  100 / 9000 complete! 
+Iteration  200 / 9000 complete! 
+Iteration  300 / 9000 complete! 
+Iteration  400 / 9000 complete! 
+Iteration  500 / 9000 complete! 
+Iteration  600 / 9000 complete! 
+Iteration  700 / 9000 complete! 
+Iteration  800 / 9000 complete! 
+Iteration  900 / 9000 complete! 
+Iteration  1000 / 9000 complete! 
+Iteration  1100 / 9000 complete! 
+Iteration  1200 / 9000 complete! 
+Iteration  1300 / 9000 complete! 
+Iteration  1400 / 9000 complete! 
+Iteration  1500 / 9000 complete! 
+Iteration  1600 / 9000 complete! 
+Iteration  1700 / 9000 complete! 
+Iteration  1800 / 9000 complete! 
+Iteration  1900 / 9000 complete! 
+Iteration  2000 / 9000 complete! 
+Iteration  2100 / 9000 complete! 
+Iteration  2200 / 9000 complete! 
+Iteration  2300 / 9000 complete! 
+Iteration  2400 / 9000 complete! 
+Iteration  2500 / 9000 complete! 
+Iteration  2600 / 9000 complete! 
+Iteration  2700 / 9000 complete! 
+Iteration  2800 / 9000 complete! 
+Iteration  2900 / 9000 complete! 
+Iteration  3000 / 9000 complete! 
+Iteration  3100 / 9000 complete! 
+Iteration  3200 / 9000 complete! 
+Iteration  3300 / 9000 complete! 
+Iteration  3400 / 9000 complete! 
+Iteration  3500 / 9000 complete! 
+Iteration  3600 / 9000 complete! 
+Iteration  3700 / 9000 complete! 
+Iteration  3800 / 9000 complete! 
+Iteration  3900 / 9000 complete! 
+Iteration  4000 / 9000 complete! 
+Iteration  4100 / 9000 complete! 
+Iteration  4200 / 9000 complete! 
+Iteration  4300 / 9000 complete! 
+Iteration  4400 / 9000 complete! 
+Iteration  4500 / 9000 complete! 
+Iteration  4600 / 9000 complete! 
+Iteration  4700 / 9000 complete! 
+Iteration  4800 / 9000 complete! 
+Iteration  4900 / 9000 complete! 
+Iteration  5000 / 9000 complete! 
+Iteration  5100 / 9000 complete! 
+Iteration  5200 / 9000 complete! 
+Iteration  5300 / 9000 complete! 
+Iteration  5400 / 9000 complete! 
+Iteration  5500 / 9000 complete! 
+Iteration  5600 / 9000 complete! 
+Iteration  5700 / 9000 complete! 
+Iteration  5800 / 9000 complete! 
+Iteration  5900 / 9000 complete! 
+Iteration  6000 / 9000 complete! 
+Iteration  6100 / 9000 complete! 
+Iteration  6200 / 9000 complete! 
+Iteration  6300 / 9000 complete! 
+Iteration  6400 / 9000 complete! 
+Iteration  6500 / 9000 complete! 
+Iteration  6600 / 9000 complete! 
+Iteration  6700 / 9000 complete! 
+Iteration  6800 / 9000 complete! 
+Iteration  6900 / 9000 complete! 
+Iteration  7000 / 9000 complete! 
+Iteration  7100 / 9000 complete! 
+Iteration  7200 / 9000 complete! 
+Iteration  7300 / 9000 complete! 
+Iteration  7400 / 9000 complete! 
+Iteration  7500 / 9000 complete! 
+Iteration  7600 / 9000 complete! 
+Iteration  7700 / 9000 complete! 
+Iteration  7800 / 9000 complete! 
+Iteration  7900 / 9000 complete! 
+Iteration  8000 / 9000 complete! 
+Iteration  8100 / 9000 complete! 
+Iteration  8200 / 9000 complete! 
+Iteration  8300 / 9000 complete! 
+Iteration  8400 / 9000 complete! 
+Iteration  8500 / 9000 complete! 
+Iteration  8600 / 9000 complete! 
+Iteration  8700 / 9000 complete! 
+Iteration  8800 / 9000 complete! 
+Iteration  8900 / 9000 complete! 
+Iteration  9000 / 9000 complete! 
+starting worker pid=88613 on localhost:11413 at 18:32:02.971
+starting worker pid=88626 on localhost:11413 at 18:32:03.079
+starting worker pid=88639 on localhost:11413 at 18:32:03.195
+starting worker pid=88652 on localhost:11413 at 18:32:03.303
+starting worker pid=88665 on localhost:11413 at 18:32:03.421
+starting worker pid=88678 on localhost:11413 at 18:32:03.534
+starting worker pid=88691 on localhost:11413 at 18:32:03.646
+starting worker pid=88704 on localhost:11413 at 18:32:03.759
+starting worker pid=88717 on localhost:11413 at 18:32:03.868
+starting worker pid=88730 on localhost:11413 at 18:32:03.983
+starting worker pid=88743 on localhost:11413 at 18:32:04.093
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Iteration  100 / 9000 complete! 
+Iteration  200 / 9000 complete! 
+Iteration  300 / 9000 complete! 
+Iteration  400 / 9000 complete! 
+Iteration  500 / 9000 complete! 
+Iteration  600 / 9000 complete! 
+Iteration  700 / 9000 complete! 
+Iteration  800 / 9000 complete! 
+Iteration  900 / 9000 complete! 
+Iteration  1000 / 9000 complete! 
+Iteration  1100 / 9000 complete! 
+Iteration  1200 / 9000 complete! 
+Iteration  1300 / 9000 complete! 
+Iteration  1400 / 9000 complete! 
+Iteration  1500 / 9000 complete! 
+Iteration  1600 / 9000 complete! 
+Iteration  1700 / 9000 complete! 
+Iteration  1800 / 9000 complete! 
+Iteration  1900 / 9000 complete! 
+Iteration  2000 / 9000 complete! 
+Iteration  2100 / 9000 complete! 
+Iteration  2200 / 9000 complete! 
+Iteration  2300 / 9000 complete! 
+Iteration  2400 / 9000 complete! 
+Iteration  2500 / 9000 complete! 
+Iteration  2600 / 9000 complete! 
+Iteration  2700 / 9000 complete! 
+Iteration  2800 / 9000 complete! 
+Iteration  2900 / 9000 complete! 
+Iteration  3000 / 9000 complete! 
+Iteration  3100 / 9000 complete! 
+Iteration  3200 / 9000 complete! 
+Iteration  3300 / 9000 complete! 
+Iteration  3400 / 9000 complete! 
+Iteration  3500 / 9000 complete! 
+Iteration  3600 / 9000 complete! 
+Iteration  3700 / 9000 complete! 
+Iteration  3800 / 9000 complete! 
+Iteration  3900 / 9000 complete! 
+Iteration  4000 / 9000 complete! 
+Iteration  4100 / 9000 complete! 
+Iteration  4200 / 9000 complete! 
+Iteration  4300 / 9000 complete! 
+Iteration  4400 / 9000 complete! 
+Iteration  4500 / 9000 complete! 
+Iteration  4600 / 9000 complete! 
+Iteration  4700 / 9000 complete! 
+Iteration  4800 / 9000 complete! 
+Iteration  4900 / 9000 complete! 
+Iteration  5000 / 9000 complete! 
+Iteration  5100 / 9000 complete! 
+Iteration  5200 / 9000 complete! 
+Iteration  5300 / 9000 complete! 
+Iteration  5400 / 9000 complete! 
+Iteration  5500 / 9000 complete! 
+Iteration  5600 / 9000 complete! 
+Iteration  5700 / 9000 complete! 
+Iteration  5800 / 9000 complete! 
+Iteration  5900 / 9000 complete! 
+Iteration  6000 / 9000 complete! 
+Iteration  6100 / 9000 complete! 
+Iteration  6200 / 9000 complete! 
+Iteration  6300 / 9000 complete! 
+Iteration  6400 / 9000 complete! 
+Iteration  6500 / 9000 complete! 
+Iteration  6600 / 9000 complete! 
+Iteration  6700 / 9000 complete! 
+Iteration  6800 / 9000 complete! 
+Iteration  6900 / 9000 complete! 
+Iteration  7000 / 9000 complete! 
+Iteration  7100 / 9000 complete! 
+Iteration  7200 / 9000 complete! 
+Iteration  7300 / 9000 complete! 
+Iteration  7400 / 9000 complete! 
+Iteration  7500 / 9000 complete! 
+Iteration  7600 / 9000 complete! 
+Iteration  7700 / 9000 complete! 
+Iteration  7800 / 9000 complete! 
+Iteration  7900 / 9000 complete! 
+Iteration  8000 / 9000 complete! 
+Iteration  8100 / 9000 complete! 
+Iteration  8200 / 9000 complete! 
+Iteration  8300 / 9000 complete! 
+Iteration  8400 / 9000 complete! 
+Iteration  8500 / 9000 complete! 
+Iteration  8600 / 9000 complete! 
+Iteration  8700 / 9000 complete! 
+Iteration  8800 / 9000 complete! 
+Iteration  8900 / 9000 complete! 
+Iteration  9000 / 9000 complete! 
+starting worker pid=88840 on localhost:11413 at 18:44:14.784
+starting worker pid=88853 on localhost:11413 at 18:44:14.895
+starting worker pid=88866 on localhost:11413 at 18:44:15.008
+starting worker pid=88879 on localhost:11413 at 18:44:15.120
+starting worker pid=88892 on localhost:11413 at 18:44:15.231
+starting worker pid=88905 on localhost:11413 at 18:44:15.339
+starting worker pid=88918 on localhost:11413 at 18:44:15.453
+starting worker pid=88931 on localhost:11413 at 18:44:15.559
+starting worker pid=88944 on localhost:11413 at 18:44:15.668
+starting worker pid=88957 on localhost:11413 at 18:44:15.779
+starting worker pid=88970 on localhost:11413 at 18:44:15.887
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Iteration  100 / 9000 complete! 
+Iteration  200 / 9000 complete! 
+Iteration  300 / 9000 complete! 
+Iteration  400 / 9000 complete! 
+Iteration  500 / 9000 complete! 
+Iteration  600 / 9000 complete! 
+Iteration  700 / 9000 complete! 
+Iteration  800 / 9000 complete! 
+Iteration  900 / 9000 complete! 
+Iteration  1000 / 9000 complete! 
+Iteration  1100 / 9000 complete! 
+Iteration  1200 / 9000 complete! 
+Iteration  1300 / 9000 complete! 
+Iteration  1400 / 9000 complete! 
+Iteration  1500 / 9000 complete! 
+Iteration  1600 / 9000 complete! 
+Iteration  1700 / 9000 complete! 
+Iteration  1800 / 9000 complete! 
+Iteration  1900 / 9000 complete! 
+Iteration  2000 / 9000 complete! 
+Iteration  2100 / 9000 complete! 
+Iteration  2200 / 9000 complete! 
+Iteration  2300 / 9000 complete! 
+Iteration  2400 / 9000 complete! 
+Iteration  2500 / 9000 complete! 
+Iteration  2600 / 9000 complete! 
+Iteration  2700 / 9000 complete! 
+Iteration  2800 / 9000 complete! 
+Iteration  2900 / 9000 complete! 
+Iteration  3000 / 9000 complete! 
+Iteration  3100 / 9000 complete! 
+Iteration  3200 / 9000 complete! 
+Iteration  3300 / 9000 complete! 
+Iteration  3400 / 9000 complete! 
+Iteration  3500 / 9000 complete! 
+Iteration  3600 / 9000 complete! 
+Iteration  3700 / 9000 complete! 
+Iteration  3800 / 9000 complete! 
+Iteration  3900 / 9000 complete! 
+Iteration  4000 / 9000 complete! 
+Iteration  4100 / 9000 complete! 
+Iteration  4200 / 9000 complete! 
+Iteration  4300 / 9000 complete! 
+Iteration  4400 / 9000 complete! 
+Iteration  4500 / 9000 complete! 
+Iteration  4600 / 9000 complete! 
+Iteration  4700 / 9000 complete! 
+Iteration  4800 / 9000 complete! 
+Iteration  4900 / 9000 complete! 
+Iteration  5000 / 9000 complete! 
+Iteration  5100 / 9000 complete! 
+Iteration  5200 / 9000 complete! 
+Iteration  5300 / 9000 complete! 
+Iteration  5400 / 9000 complete! 
+Iteration  5500 / 9000 complete! 
+Iteration  5600 / 9000 complete! 
+Iteration  5700 / 9000 complete! 
+Iteration  5800 / 9000 complete! 
+Iteration  5900 / 9000 complete! 
+Iteration  6000 / 9000 complete! 
+Iteration  6100 / 9000 complete! 
+Iteration  6200 / 9000 complete! 
+Iteration  6300 / 9000 complete! 
+Iteration  6400 / 9000 complete! 
+Iteration  6500 / 9000 complete! 
+Iteration  6600 / 9000 complete! 
+Iteration  6700 / 9000 complete! 
+Iteration  6800 / 9000 complete! 
+Iteration  6900 / 9000 complete! 
+Iteration  7000 / 9000 complete! 
+Iteration  7100 / 9000 complete! 
+Iteration  7200 / 9000 complete! 
+Iteration  7300 / 9000 complete! 
+Iteration  7400 / 9000 complete! 
+Iteration  7500 / 9000 complete! 
+Iteration  7600 / 9000 complete! 
+Iteration  7700 / 9000 complete! 
+Iteration  7800 / 9000 complete! 
+Iteration  7900 / 9000 complete! 
+Iteration  8000 / 9000 complete! 
+Iteration  8100 / 9000 complete! 
+Iteration  8200 / 9000 complete! 
+Iteration  8300 / 9000 complete! 
+Iteration  8400 / 9000 complete! 
+Iteration  8500 / 9000 complete! 
+Iteration  8600 / 9000 complete! 
+Iteration  8700 / 9000 complete! 
+Iteration  8800 / 9000 complete! 
+Iteration  8900 / 9000 complete! 
+Iteration  9000 / 9000 complete! 
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+Error in unserialize(node$con) : error reading from connection
+Calls: <Anonymous> ... doTryCatch -> recvData -> recvData.SOCKnode -> unserialize
+Execution halted
+starting worker pid=89199 on localhost:11413 at 18:45:47.745
+starting worker pid=89212 on localhost:11413 at 18:45:47.854
+starting worker pid=89225 on localhost:11413 at 18:45:47.967
+starting worker pid=89238 on localhost:11413 at 18:45:48.079
+starting worker pid=89251 on localhost:11413 at 18:45:48.184
+starting worker pid=89264 on localhost:11413 at 18:45:48.290
+starting worker pid=89277 on localhost:11413 at 18:45:48.397
+starting worker pid=89290 on localhost:11413 at 18:45:48.503
+starting worker pid=89303 on localhost:11413 at 18:45:48.608
+starting worker pid=89317 on localhost:11413 at 18:45:48.714
+starting worker pid=89330 on localhost:11413 at 18:45:48.826
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Iteration  100 / 9000 complete! 
+Iteration  200 / 9000 complete! 
+Iteration  300 / 9000 complete! 
+Iteration  400 / 9000 complete! 
+Iteration  500 / 9000 complete! 
+Iteration  600 / 9000 complete! 
+Iteration  700 / 9000 complete! 
+Iteration  800 / 9000 complete! 
+Iteration  900 / 9000 complete! 
+Iteration  1000 / 9000 complete! 
+Iteration  1100 / 9000 complete! 
+Iteration  1200 / 9000 complete! 
+Iteration  1300 / 9000 complete! 
+Iteration  1400 / 9000 complete! 
+Iteration  1500 / 9000 complete! 
+Iteration  1600 / 9000 complete! 
+Iteration  1700 / 9000 complete! 
+Iteration  1800 / 9000 complete! 
+Iteration  1900 / 9000 complete! 
+Iteration  2000 / 9000 complete! 
+Iteration  2100 / 9000 complete! 
+Iteration  2200 / 9000 complete! 
+Iteration  2300 / 9000 complete! 
+Iteration  2400 / 9000 complete! 
+Iteration  2500 / 9000 complete! 
+Iteration  2600 / 9000 complete! 
+Iteration  2700 / 9000 complete! 
+Iteration  2800 / 9000 complete! 
+Iteration  2900 / 9000 complete! 
+Iteration  3000 / 9000 complete! 
+Iteration  3100 / 9000 complete! 
+Iteration  3200 / 9000 complete! 
+Iteration  3300 / 9000 complete! 
+Iteration  3400 / 9000 complete! 
+Iteration  3500 / 9000 complete! 
+Iteration  3600 / 9000 complete! 
+Iteration  3700 / 9000 complete! 
+Iteration  3800 / 9000 complete! 
+Iteration  3900 / 9000 complete! 
+Iteration  4000 / 9000 complete! 
+Iteration  4100 / 9000 complete! 
+Iteration  4200 / 9000 complete! 
+Iteration  4300 / 9000 complete! 
+Iteration  4400 / 9000 complete! 
+Iteration  4500 / 9000 complete! 
+Iteration  4600 / 9000 complete! 
+Iteration  4700 / 9000 complete! 
+Iteration  4800 / 9000 complete! 
+Iteration  4900 / 9000 complete! 
+Iteration  5000 / 9000 complete! 
+Iteration  5100 / 9000 complete! 
+Iteration  5200 / 9000 complete! 
+Iteration  5300 / 9000 complete! 
+Iteration  5400 / 9000 complete! 
+Iteration  5500 / 9000 complete! 
+Iteration  5600 / 9000 complete! 
+Iteration  5700 / 9000 complete! 
+Iteration  5800 / 9000 complete! 
+Iteration  5900 / 9000 complete! 
+Iteration  6000 / 9000 complete! 
+Iteration  6100 / 9000 complete! 
+Iteration  6200 / 9000 complete! 
+Iteration  6300 / 9000 complete! 
+Iteration  6400 / 9000 complete! 
+Iteration  6500 / 9000 complete! 
+Iteration  6600 / 9000 complete! 
+Iteration  6700 / 9000 complete! 
+Iteration  6800 / 9000 complete! 
+Iteration  6900 / 9000 complete! 
+Iteration  7000 / 9000 complete! 
+Iteration  7100 / 9000 complete! 
+Iteration  7200 / 9000 complete! 
+Iteration  7300 / 9000 complete! 
+Iteration  7400 / 9000 complete! 
+Iteration  7500 / 9000 complete! 
+Iteration  7600 / 9000 complete! 
+Iteration  7700 / 9000 complete! 
+Iteration  7800 / 9000 complete! 
+Iteration  7900 / 9000 complete! 
+Iteration  8000 / 9000 complete! 
+Iteration  8100 / 9000 complete! 
+Iteration  8200 / 9000 complete! 
+Iteration  8300 / 9000 complete! 
+Iteration  8400 / 9000 complete! 
+Iteration  8500 / 9000 complete! 
+Iteration  8600 / 9000 complete! 
+Iteration  8700 / 9000 complete! 
+Iteration  8800 / 9000 complete! 
+Iteration  8900 / 9000 complete! 
+Iteration  9000 / 9000 complete! 
+starting worker pid=89868 on localhost:11413 at 19:40:55.145
+starting worker pid=89881 on localhost:11413 at 19:40:55.255
+starting worker pid=89894 on localhost:11413 at 19:40:55.368
+starting worker pid=89907 on localhost:11413 at 19:40:55.477
+starting worker pid=89920 on localhost:11413 at 19:40:55.584
+starting worker pid=89933 on localhost:11413 at 19:40:55.689
+starting worker pid=89946 on localhost:11413 at 19:40:55.798
+starting worker pid=89959 on localhost:11413 at 19:40:55.908
+starting worker pid=89972 on localhost:11413 at 19:40:56.015
+starting worker pid=89985 on localhost:11413 at 19:40:56.122
+starting worker pid=89998 on localhost:11413 at 19:40:56.230
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Iteration  100 / 9000 complete! 
+Iteration  200 / 9000 complete! 
+Iteration  300 / 9000 complete! 
+Iteration  400 / 9000 complete! 
+Iteration  500 / 9000 complete! 
+Iteration  600 / 9000 complete! 
+Iteration  700 / 9000 complete! 
+Iteration  800 / 9000 complete! 
+Iteration  900 / 9000 complete! 
+Iteration  1000 / 9000 complete! 
+Iteration  1100 / 9000 complete! 
+Iteration  1200 / 9000 complete! 
+Iteration  1300 / 9000 complete! 
+Iteration  1400 / 9000 complete! 
+Iteration  1500 / 9000 complete! 
+Iteration  1600 / 9000 complete! 
+Iteration  1700 / 9000 complete! 
+Iteration  1800 / 9000 complete! 
+Iteration  1900 / 9000 complete! 
+Iteration  2000 / 9000 complete! 
+Iteration  2100 / 9000 complete! 
+Iteration  2200 / 9000 complete! 
+Iteration  2300 / 9000 complete! 
+Iteration  2400 / 9000 complete! 
+Iteration  2500 / 9000 complete! 
+Iteration  2600 / 9000 complete! 
+Iteration  2700 / 9000 complete! 
+Iteration  2800 / 9000 complete! 
+Iteration  2900 / 9000 complete! 
+Iteration  3000 / 9000 complete! 
+Iteration  3100 / 9000 complete! 
+Iteration  3200 / 9000 complete! 
+Iteration  3300 / 9000 complete! 
+Iteration  3400 / 9000 complete! 
+Iteration  3500 / 9000 complete! 
+Iteration  3600 / 9000 complete! 
+Iteration  3700 / 9000 complete! 
+Iteration  3800 / 9000 complete! 
+Iteration  3900 / 9000 complete! 
+Iteration  4000 / 9000 complete! 
+Iteration  4100 / 9000 complete! 
+Iteration  4200 / 9000 complete! 
+Iteration  4300 / 9000 complete! 
+Iteration  4400 / 9000 complete! 
+Iteration  4500 / 9000 complete! 
+Iteration  4600 / 9000 complete! 
+Iteration  4700 / 9000 complete! 
+Iteration  4800 / 9000 complete! 
+Iteration  4900 / 9000 complete! 
+Iteration  5000 / 9000 complete! 
+Iteration  5100 / 9000 complete! 
+Iteration  5200 / 9000 complete! 
+Iteration  5300 / 9000 complete! 
+Iteration  5400 / 9000 complete! 
+Iteration  5500 / 9000 complete! 
+Iteration  5600 / 9000 complete! 
+Iteration  5700 / 9000 complete! 
+Iteration  5800 / 9000 complete! 
+Iteration  5900 / 9000 complete! 
+Iteration  6000 / 9000 complete! 
+Iteration  6100 / 9000 complete! 
+Iteration  6200 / 9000 complete! 
+Iteration  6300 / 9000 complete! 
+Iteration  6400 / 9000 complete! 
+Iteration  6500 / 9000 complete! 
+Iteration  6600 / 9000 complete! 
+Iteration  6700 / 9000 complete! 
+Iteration  6800 / 9000 complete! 
+Iteration  6900 / 9000 complete! 
+Iteration  7000 / 9000 complete! 
+Iteration  7100 / 9000 complete! 
+Iteration  7200 / 9000 complete! 
+Iteration  7300 / 9000 complete! 
+Iteration  7400 / 9000 complete! 
+Iteration  7500 / 9000 complete! 
+Iteration  7600 / 9000 complete! 
+Iteration  7700 / 9000 complete! 
+Iteration  7800 / 9000 complete! 
+Iteration  7900 / 9000 complete! 
+Iteration  8000 / 9000 complete! 
+Iteration  8100 / 9000 complete! 
+Iteration  8200 / 9000 complete! 
+Iteration  8300 / 9000 complete! 
+Iteration  8400 / 9000 complete! 
+Iteration  8500 / 9000 complete! 
+Iteration  8600 / 9000 complete! 
+Iteration  8700 / 9000 complete! 
+Iteration  8800 / 9000 complete! 
+Iteration  8900 / 9000 complete! 
+Iteration  9000 / 9000 complete! 
