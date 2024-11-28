@@ -54,18 +54,58 @@ bootstrap = function(m, podatki, alpha, n){
 settings = expand.grid(i = 1:st.ponovitev, alpha = rev(alpha.v), n=rev(n.v))
 m = 10
 
-if(useOld&&file.exists(c("bootstrapV2.RDS", "intervali.zaupanja.orgV2.RDS"))){
-  rezultati = readRDS(c("bootstrapV2.RDS", "intervali.zaupanja.orgV2.RDS")) 
+if(useOld&&file.exists("bootstrapV2.RDS")){
+  rezultati = readRDS("bootstrapV2.RDS") 
 }else{
-  intervali.zaupanja.org = data.frame(alpha = numeric(), gamma = numeric(), velikost.vzorca = numeric(),
-                                      int.coef = numeric(), x1.coef = numeric(), x2.coef = numeric(),
-                                      int.lower = numeric(), int.upper = numeric(),
-                                      x1.lower = numeric(), x1.upper = numeric(), 
-                                      x2.lower = numeric(), x2.upper = numeric())
-  rezultati = matrix(ncol = 5)
-  colnames(rezultati) = c("alpha", "velikost.vzorca", "int", "x1", "x2")
-  for(i in 1:nrow(settings)){
-    # i = 2
+  library(foreach)
+  library(doParallel)
+  library(doRNG)
+  # parallel computing
+  nc = detectCores()-1 
+  cl = makeCluster(nc, outfile="log_boot") # shranjujemo konzolo
+  registerDoParallel(cl)
+  
+  set.seed(2024)
+  
+  res2 = foreach(i = 1:nrow(settings), .combine=rbind) %dorng%{ 
+    # generiranje podatkov
+    alpha = settings$alpha[i]
+    n = settings$n[i]
+    data = generiranje_podatkov(beta0=100, beta1=3, beta2=2, alpha=alpha, n=n)
+
+    ## botstrap
+    res = bootstrap(m, data, alpha, n)
+    
+    # kje se nahaja zanka
+    if(i%%100==0) cat("Iteration ", i, "/", nrow(settings), "complete! \n")
+    
+    return(res)
+    
+  }
+  rezultati = data.frame(alpha = res2[,1], velikost.vzorca = res2[,2], 
+                         int = res2[,3], x1 = res2[,4], x2 = res2[,5])
+  # Shranjevanje rezultatov
+  saveRDS(object = rezultati, file = "bootstrapV2.RDS")
+  
+  stopCluster(cl)
+}
+
+rezultati = readRDS("bootstrapV2.RDS")
+
+if(useOld&&file.exists("klasicna_metodaV2.RDS")){
+  rezultati = readRDS("klasicna_metodaV2.RDS") 
+}else{
+  library(foreach)
+  library(doParallel)
+  library(doRNG)
+  # parallel computing
+  nc = detectCores()-1 
+  cl = makeCluster(nc, outfile="log_klasicna_metoda") # shranjujemo konzolo
+  registerDoParallel(cl)
+  
+  set.seed(2024)
+  
+  res2 = foreach(i = 1:nrow(settings), .combine=rbind) %dorng%{ 
     # generiranje podatkov
     alpha = settings$alpha[i]
     n = settings$n[i]
@@ -83,26 +123,28 @@ if(useOld&&file.exists(c("bootstrapV2.RDS", "intervali.zaupanja.orgV2.RDS"))){
     x1.iz = confint(model)[2,]
     x2.iz = confint(model)[3,]
     # shranjevanj
-    intervali.zaupanja.org = rbind(intervali.zaupanja.org, 
-                                   data.frame(alpha = alpha, velikost.vzorca = n,
+    intervali.zaupanja = data.frame(alpha = alpha, velikost.vzorca = n,
                                               int.coef = int, x1.coef = x1, x2.coef = x2,
                                               int.lower = int.iz[1], int.upper = int.iz[2],
                                               x1.lower = x1.iz[1], x1.upper = x1.iz[2],
-                                              x2.lower = x2.iz[1], x2.upper = x2.iz[2]))
-
-    ## botstrap
-    res = bootstrap(m, data, alpha, n)
-    # shranjevanje
-    rezultati = rbind(rezultati, res)
+                                              x2.lower = x2.iz[1], x2.upper = x2.iz[2])
+    
     
     # kje se nahaja zanka
     if(i%%100==0) cat("Iteration ", i, "/", nrow(settings), "complete! \n")
+    
+    return(intervali.zaupanja)
+    
   }
-  # shranjevanje
-  rezultati <- rezultati[-1, ]
-  saveRDS(object = rezultati, file="bootstrapV2.RDS")
-  saveRDS(object = intervali.zaupanja.org, file="intervali.zaupanja.orgV2.RDS")
+  intervali.zaupanja.org = data.frame(alpha = res2[,1], velikost.vzorca = res2[,2], 
+                                      int.coef = res2[,3], x1.coef = res2[,4], x2.coef = res2[,5],
+                                      int.lower = res2[,6], int.upper = res2[,7], 
+                                      x1.lower = res2[,8], x1.upper = res2[,9],
+                                      x2.lower = res2[,10], x2.upper = res2[,11])
+  # Shranjevanje rezultatov
+  saveRDS(object = intervali.zaupanja.org, file = "klasicna_metodaV2.RDS")
+  
+  stopCluster(cl)
 }
 
-
-
+rezultati = readRDS("klasicna_metodaV2.RDS")
