@@ -46,41 +46,39 @@ Sam, ne razumem cist dobr, al morva spreminjat tud neki kar bi vplival na bootst
 Tom16: ja jst sm tako razumel, da je najna osnovna metoda lin. reg. ampak ker zaradi krsenja predpostavk ni dobra metoda primerjava še z bootstrap metodo. 
 Zdej se mi zdi da spreminjava dovolj faktorjev k imava še velikost vzorca...sicer pa ja heteroskedastičnost se lepo vidi, ta nelinernost je pa bolj boga haha-->
 
-Želiva preučiti uporabo metode ponovnega vzorčenja, v primeru ko klasičnimi testom ne moremo popolno zaupati zaradi kršenja predpostavk. Generirala bova podatke, na katerih bova izračunala intervale zaupanja koeficientov linearne regresije. 
+Želiva preučiti uporabo metode ponovnega vzorčenja _bootstrap_, v primeru ko klasičnimi testom ne moremo popolno zaupati zaradi kršenja predpostavk. Analizirati želiva primer, kjer klasična statistična metoda, v najinem primeru je to linearna regresija, ni popolnoma primerna za ocenjevanje koeficientov napovednih spremenljivk in njihovih intervalov zaupanja, zaradi kršitve predpostavk statističnega modela(tj. linearna regresija). 
+
+Generirala bova podatke, na katerih bova izračunala intervale zaupanja koeficientov linearne regresije. 
 
 Za uporabno linearne regresije je potrebno izpolniti določene predpostavke, da imamo veljaven model. Te so:
 
 - linearna odvisnost: _obstoj linearne povezanosti med napovednimi (pojasnjevalnimi) spremenljivkami in odzivno (ciljno) spremenljivko_,
 - normalna porazdeljenost napak in neodvisnost napak,
 - homoskedastičnost: _varianca napak mora biti konstantna_,
-- brez multikolinearnosti: _neodvisne spremenljivke ne smejo biti preveč povezane med seboj_,
+- brez popolne multikolinearnosti: _neodvisne spremenljivke ne smejo biti preveč povezane med seboj_,
 - zadostno število podatkov.
 
-
-Podatke bova generirala tako, da bodo nekatere izmed teh predpostavk kršene(opisano v naslednjem poglavju) in zaradi tega bova s pomočjo testa `boxCox` izvedla primerno transformacijo odzivne spremenljivke (ta bo v vseh primerih `log` transformacija). Na koncu bova med seboj primerjala intervale zaupanja dobljene z linearno regresijo (`lm`) in metodo ponovnega vzorčenja(bootstrap in permutacijski test).<!--Tom16: bova tudi permutacijski test baredila?--> Primerjavo bova naredila tako na rezultatih pred in po transformaciji, vendar pa moramo paziti, saj rezultati pred in po transformaciji med seboj niso primerljivi. 
-
-Pričakujeva, da bomo z metodo ponovnega vzorčenja dobili boljše rezultate.
+Podatke bova generirala tako, da bodo nekatere izmed teh predpostavk kršene(opisano v naslednjem poglavju) ter bova med seboj primerjala intervale zaupanja dobljene z linearno regresijo (`lm`) in metodo ponovnega vzorčenja(_bootstrap_).<!--Tom16: bova tudi permutacijski test baredila?--> 
 
 # Generiranje podatkov
 
-Podatke sva generirala tako, da je v linearnem regresiji kršena predpostavka linearne odvisnosti odzivne spremenljivke od napovednih in kršena homoskedastičnost (konstantna varianca napak). Enačba, ki sva jo uporabila za generiranje odzivne spremenljivke je enaka:
+Podatke sva generirala tako, da je v linearnem regresiji kršena predpostavka homoskedastičnost (konstantna varianca napak). Enačba, ki sva jo uporabila za generiranje odzivne spremenljivke je enaka:
 
-$$y_i = \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i}^\gamma + \epsilon_i$$
+$$y_i = \beta_0 + \beta_1 \cdot x_{1i} + \beta_2 \cdot x_{2i} + \epsilon_i$$
 pri čemer:
 
 * $\beta_0$-konstanta enaka $100$,
 * $\beta_1$-koeficient spremenljivke $x_1$ enak $3$,
 * $\beta_2$-koeficient spremenljivke $x_2$ enak $2$,
-* $\gamma$-eksponent, ki ga bova spreminjala (določa nelinearno zvezo),
 * $\epsilon$-napaka, ki generirana iz porazdelitve $N(0,x_1\cdot\alpha)$ ($\alpha$ določa povezanost s spremenljivko $x_1$),
 
 torej
 
 $$
-y_i = 100 + 3 \cdot x_{1i} + 2 \cdot x_{2i}^\gamma + \epsilon_i.
+y_i = 100 + 3 \cdot x_{1i} + 2 \cdot x_{2i} + \epsilon_i.
 $$
 
-Kot sva že omenila bova spreminjala faktorja $\gamma$ in $\alpha$. S faktorjem $\gamma$ bomo kršili prespostavko o linearni zvezi, saj bo ta zavzel vrednosti $0.8$ in $1.4$. S faktorjem $\alpha$ pa bomo kršili predpostavko konstantne variance napak, saj se ta z večanjem vrednosti $x_1$ povečuje. Ta zavzame vrednosti $\alpha\in\{0.6, 1, 1.2\}$. 
+Kot sva že omenila bova spreminjala faktor $\alpha$ in s tem kršila predpostavko konstantne variance napak, saj se ta z večanjem vrednosti $x_1$ povečuje ali pa je konstantna. Ta zavzame vrednosti $\alpha\in\{0.6, 1, 1.2\}$. 
 
 Velikost vzorca pa enak  $n = (20, 200, 500)$, ker naju zanima kako se bo bootstrap metoda obnesla tudi na zelo majhnem vzorcu - s tem je tudi kršena predpostavka o dovolj velikem vzorcu pri linearni regresiji.
 
@@ -90,383 +88,58 @@ Pri generiranju posameznih vrednosti v enačbi linearne regresije($x_{1i}, x_{2i
 set.seed(2024)
 n = 500 # velikost vzorca
 
-generiranje_podatkov <- function(beta0, beta1, beta2, alpha, gamma, n) {
+generiranje_podatkov <- function(beta0, beta1, beta2, alpha, n) {
   # generiranje vrednosti za x1 in x2
   x1 <- runif(n, 20, 60)
   x2 <- runif(n, 2, 10)
   
   # generiranje napake
-  epsilon <- rnorm(n, 0,x1*alpha) # dodava heteroskedasticnost
+  epsilon <- rnorm(n, 0,x1^alpha) # dodava heteroskedasticnost
   
   # izračun napovedne spremenljivke za model (parametri = vhodni argumenti) 
-  y <- beta0 + beta1 * x1 + beta2 * x2^gamma + epsilon # z ^gamma dodava nelinearni del
+  y <- beta0 + beta1 * x1 + beta2 * x2 + epsilon # z ^gamma dodava nelinearni del
   
   # podatke spravimo v podatkovni okvir in vrnemo kot rezultat funkcije
   data.frame(x1 = x1, x2 = x2, y = y) 
 }
 
 # izracun vrednosti vzorca
-vzorec06_08 = generiranje_podatkov(100, 3, 2, 0.6, 0.8, n)
-vzorec06_14 = generiranje_podatkov(100, 3, 2, 0.6, 1.4, n)
-vzorec1_08 = generiranje_podatkov(100, 3, 2, 1, 0.8, n)
-vzorec1_14 = generiranje_podatkov(100, 3, 2, 1, 1.4, n)
-vzorec12_08 = generiranje_podatkov(100, 3, 2, 1.2, 0.8, n)
-vzorec12_14 = generiranje_podatkov(100, 3, 2, 1.2, 1.4, n)
-
+vzorec06 = generiranje_podatkov(100, 3, 2, 0.6, n)
+vzorec1 = generiranje_podatkov(100, 3, 2, 1,  n)
+vzorec12 = generiranje_podatkov(100, 3, 2, 1.2, n)
 
 # modeli (brez transformacije)
-model06_08 = lm(y ~ x1 + x2, vzorec06_08)
-model06_14 = lm(y ~ x1 + x2, vzorec06_14)
-model1_08 = lm(y ~ x1 + x2, vzorec1_08)
-model1_14 = lm(y ~ x1 + x2, vzorec1_14)
-model12_08 = lm(y ~ x1 + x2, vzorec12_08)
-model12_14 = lm(y ~ x1 + x2, vzorec12_14)
+model06 = lm(y ~ x1 + x2, vzorec06)
+model1 = lm(y ~ x1 + x2, vzorec1)
+model12 = lm(y ~ x1 + x2, vzorec12)
 
-# modeli (s transformacijo)
-model06_08_log = lm(log(y) ~ x1 + x2, vzorec06_08)
-model06_14_log = lm(log(y) ~ x1 + x2, vzorec06_14)
 ```
 
 Narišimo grafe ostankov za nekaj kombinacij faktorjev, da se prepričamo o kršenju predpostavk, velikost vzorca je v *vseh* primerih nastavljena na $500$.
 
-```{r "graf ostankov 0.6 in 0.8", fig.dim=c(5,3), fig.cap="Grafi ostankov pri paramatrih alpha=0,6 in gamma=0,8."}
+```{r "graf ostankov 0.6 in 0.8", fig.dim=c(5,3), fig.cap="Grafi ostankov pri paramatrih alpha=0,6."}
 par(mfrow=c(1,2))
-plot(model06_08, which = c(1,3))
+plot(model06, which = c(1,3))
 ```
 
-```{r "graf ostankov 1.2 in 1.4", fig.dim=c(5,3), fig.cap="Grafi ostankov pri paramatrih alpha=1,2 in gamma=1,4."}
+```{r "graf ostankov 1.2 in 1.4", fig.dim=c(5,3), fig.cap="Grafi ostankov pri paramatrih alpha=1,2."}
 par(mfrow=c(1,2))
-plot(model12_14, which = c(1,3))
+plot(model12, which = c(1,3))
 ```
-<!-- sori ampak jst tega ne vidim čist tko kt nsi ti napisu hah, sploh za levi graf, na katerih robovih točno? Jst bi rajs kej tko napisala za levi graf da pač je vidno da se varibilnost med podatki več ko gremo čez graf od leve proti desni v obeh primerih, pa da je za manjši gamma to večanje variabilnosti pač večje oziroma, da je bolj opazno no?
-Tom16: tudi jst ne opazim vec tega na levem grafu haha ne k sva povecala vzorec se ne vidi vec tega k sm pisal za levi graf...bom zdej popravil neki na to foro k si napisala-->
+
 V obeh primerih lahko na desnem grafu opazimo, da se z večanjem vrednosti povečuje tudi variabilnost napak (naraščajoč trend). To lahko opazimo, tudi iz levega grafa, saj se od leve proti desni s povečevanjem vrednosti, povečuje tudi variabilnost ostankov. Prav tako je vidna razlika, ko povečamo vrednost parametra $\alpha$, saj se vrednosti ostankov povečajo (variabilnost se poveča).  
-
-Kot sva že napisala zgoraj, bova zaradi kršenja dveh predpostavk(linerana odvisnost in homoskedastičnost) podatke ustrezno transformirala. Za tako kršene predpostavke ponavadi uporabljamo logaritemske transformacije podatkov.\
-Za izbiro primerne transformacije si bova pomagala s `boxCox` testom - za vsako kombinacijo parametrov preverimo ali se vrednost $\lambda=0$ (`log` transformacija) nahaja znotraj 95% intervala optimalnega parametra $\lambda$, ki ga vrne funkija `powerTransform`. V spodnji tabeli lahko vidimo, da je $\lambda=0$ res vsebovana v vseh 95% intervalih zaupanja, razen v zadnjem primeru, torej je primerna transformacija podatkov logaritemska. Pri zadnjem primeru, pa je spodnja meja 95% intervala zaupanja tako blizu vrendosti $0$, da prav tako lahko uporabimo logaritemsko transformacijo, ker bomo dobili boljše rezultate in bodo predopstavke bolje izpolnjene.
-
-```{r lambda vrednsoti, results=T, }
-spodnja = c(summary(powerTransform(model06_08))$result[3],
-            summary(powerTransform(model06_14))$result[3],
-            summary(powerTransform(model1_08))$result[3],
-            summary(powerTransform(model1_14))$result[3],
-            summary(powerTransform(model12_08))$result[3],
-            summary(powerTransform(model12_14))$result[3])
-
-zgornja = c(summary(powerTransform(model06_08))$result[4],
-            summary(powerTransform(model06_14))$result[4],
-            summary(powerTransform(model1_08))$result[4],
-            summary(powerTransform(model1_14))$result[4],
-            summary(powerTransform(model12_08))$result[4],
-            summary(powerTransform(model12_14))$result[4])
-
-opt_lambda = data.frame("alpha" = c(0.6, 0.6, 1, 1, 1.2, 1.2),
-                        "gamma" = c(rep(c(0.8, 1.4), 3)), 
-                        "spodnji" = round(spodnja, 3),
-                        "zgornji" = round(zgornja,3))
-
-kable(opt_lambda, align = "c", col.names = c("alpha", "gamma", "spodnja meja IZ", "zgornja meja IZ")) %>%
-  kable_styling(position = "center")
-```
-
-Če si sedaj ponovno pogledamo grafe ostankov transformiranih podatkov z istimi kombinacijami faktorjev kot na zgornjih grafih ostankov, vidimo, da so ostanki na grafih razpršeni naključno, torej predpostavki(linearna odvisnost in homoskedastičnost) nista kršeni.
-
-```{r "graf ostankov 0.6 in 0.8 + trans", fig.dim=c(5,3), fig.cap="Grafi ostankov transformiranih podatkov pri paramatrih alpha=0,6 in gamma=0,8."}
-# modeli (brez transformacije)
-model06_08_log = lm(log(y) ~ x1 + x2, vzorec06_08)
-model06_14_log = lm(log(y) ~ x1 + x2, vzorec06_14)
-
-par(mfrow=c(1,2))
-plot(model06_08_log, which = c(1,3))
-```
-
-```{r "graf ostankov 0.6 in 1.4 + trans", fig.dim=c(5,3), fig.cap="Grafi ostankov transformiranih podatkov pri paramatrih alpha=0,6 in gamma=1,4."}
-par(mfrow=c(1,2))
-plot(model06_14_log, which = c(1,3))
-```
 
 # Klasični test in metoda ponovnega vzorčenja
 
 Pri ponovnem vzorčenju bova uporabila metodo bootstrap, pri kateri bo število bootstrap vzorcev enako $m=1000$. 
 
-Za vsako kombinacijo faktorjev( _alpha_, _gamma_ in _velikost vzorca_) sva generirala podatke, na katerih sva za vsako kombinacijo faktorjev torej izvedla linearno regresijo in poračunala intervale zaupanja za vse tri koeficiente(`Intercept`, `x1`, `x2`). \
-Enak postopek sva ponovila z metodo ponovnega vzorčenja bootstrap - naključno sva iz generiranih podatkov za vse kombinacije faktorjev izbrala podatke, na katerih sva potem izvedla linearno regresijo in izračunala intervale zaupanja za vse tri koeficiente (`Intercept`, `x1`, `x2`). Tak postopek ponovnega vzorčenja sva ponovila $m = 1000$, zato smo torej imeli $1000$ bootstrap vzorcev.
+Za vsako kombinacijo faktorjev( _alpha_ in _velikost vzorca_) sva generirala podatke, na katerih sva za vsako kombinacijo faktorjev izvedla linearno regresijo in poračunala intervale zaupanja za vse tri koeficiente(`Intercept`, `x1`, `x2`). \
+Enak postopek sva ponovila z metodo ponovnega vzorčenja bootstrap - naključno sva iz generiranih podatkov za vse kombinacije faktorjev izbrala podatke, na katerih sva potem izvedla linearno regresijo in izračunala intervale zaupanja za vse tri koeficiente (`Intercept`, `x1`, `x2`). Tak postopek ponovnega vzorčenja sva ponovila $m = 1000$, zato smo torej imeli $1000$ bootstrap vzorcev. \
+Ves ta postopek sva ponovila $1000$-krat in zaradi (predvsem) počasnosti _bootstrap_ metode uporabila in uporabila t.i. paralelno računanje(angl. *parallel computing*).
 
-## Analiza rezultatov podatkov brez transformacije
+## Analiza rezultatov podatkov
 
-Jasno nam torej je, da se na rezultate, pridobljene s podatki pred transformacijo ne moremo ravno zanesti, saj kršenje predpostavk pri linearni regresiji močno vpliva na intervale zaupanja(tudi na ocene koeficientov). Pri majhnem vzorcu($n = 20$) seveda pričakujemo najširše intervale zaupanja, ki pa se potem z večanjem vzorca ožajo. Verjetno bodo intervali zaupanja pri obeh metodah približno enako široki. 
+Jasno nam torej je, da se na rezultate, pridobljene s podatki pred transformacijo ne moremo ravno zanesti, saj kršenje predpostavk pri linearni regresiji močno vpliva na intervale zaupanja(tudi na ocene koeficientov). Pri majhnem vzorcu($n = 20$) seveda pričakujemo najširše intervale zaupanja, ki pa se potem z večanjem vzorca ožajo. Verjetno bodo intervali zaupanja pri obeh metodah približno enako široki.
 
 Na spodnjih grafih vidimo, da se intervazli z večanjem vzorca res manjšajo, razlike med intervali s klasično analizo in bootstrapom pa so minimalne, največja razlika v širini intervala se opazi pri majhnem vzorcu($n=20$).
-
-<!-- misls da bi mogla v intervale dodat se ocene za koeficiente? pac a nismo to delal pr linearnih modelih da smo gledal kam pade v IZ ocena koeficienta? pa bi pr bootstrapu dala pac povprecje vseh ocen v vseh vzorcih?
-
-Nevem kaj nej sploh napisem za razlike glede na alho pa gammo....-->
-
-```{r}
-IZ_org = readRDS("intervali.zaupanja.org.RDS") %>% 
-  select(-c("int.coef", "x1.coef", "x2.coef"))
-IZ_bootstrap = readRDS("intervali.zaupanja.RDS")
-
-IZ_skupaj = rbind(IZ_org, IZ_bootstrap)
-IZ_skupaj = cbind(IZ_skupaj, rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
-colnames(IZ_skupaj)[10] = "metoda"
-
-# povprečja koeficientov
-IZ_org_koef = readRDS("intervali.zaupanja.org.RDS")
-IZ_bootstrap_koef = readRDS("bootstrap.RDS")
-IZ_bootstrap_koef = data.frame(IZ_bootstrap_koef)
-koef.mean.org = IZ_org_koef %>% group_by(velikost.vzorca, alpha, gamma) %>%
-  summarise(mean(int.coef), mean(x1.coef), mean(x2.coef))
-koef.mean.org = cbind(koef.mean.org, rep(c("klasična analiza(linearna regresija)"), nrow(koef.mean.org)))
-colnames(koef.mean.org) = c("velikost.vzorca", "alpha", "gamma", "mean.int", "mean.x1", "mean.x2", "metoda")
-
-koef.mean.boot = IZ_bootstrap_koef %>% group_by(velikost.vzorca, alpha, gamma) %>%
-  summarise(mean(int), mean(x1), mean(x2))
-koef.mean.boot = cbind(koef.mean.boot, rep(c("bootstrap"), nrow(koef.mean.boot)))
-colnames(koef.mean.boot) = c("velikost.vzorca", "alpha", "gamma", "mean.int", "mean.x1", "mean.x2", "metoda")
-
-IZ_skupaj_coef = rbind(koef.mean.org, koef.mean.boot)
-IZ_vse = full_join(IZ_skupaj, IZ_skupaj_coef, by = c("velikost.vzorca", "alpha", "gamma", "metoda"))
-```
-
-```{r "risanje IZ pred transformacijo int", fig.cap="Grafi intervalov zaupanja za prosti koeficient(Intercept) - podatki brez transformacije."}
-pod_int = IZ_vse %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "mean.int", "metoda"))
-pod_int$velikost.vzorca = factor(pod_int$velikost.vzorca)
-
-custom_labeller <- labeller(
-  alpha = function(x) paste("\u03b1 =", x),
-  gamma = function(x) paste("\u03b3 =", x)
-)
-
-ggplot(pod_int, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
-  geom_point(aes(y = mean.int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  # facet_grid(alpha~gamma, scales="free", labeller = custom_labeller) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
-  theme_minimal()
-```
-
-```{r "risanje IZ pred transformacijo x1", fig.cap="Grafi intervalov zaupanja za koeficient pri x1(beta1) - podatki brez transformacije."}
-pod_x1 = IZ_vse %>% select(c("alpha", "gamma", "velikost.vzorca", "x1.lower", "x1.upper", "mean.x1","metoda"))
-pod_x1$velikost.vzorca = factor(pod_x1$velikost.vzorca)
-
-ggplot(pod_x1, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
-  geom_point(aes(y = mean.x1), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
-  theme_minimal()
-```
-
-```{r "risanje IZ pred transformacijo x2", fig.cap="Grafi intervalov zaupanja za koeficient pri x2(beta2) - podatki brez transformacije."}
-pod_x2 = IZ_vse %>% select(c("alpha", "gamma", "velikost.vzorca", "x2.lower", "x2.upper", "mean.x2","metoda"))
-pod_x2$velikost.vzorca = factor(pod_x1$velikost.vzorca)
-
-ggplot(pod_x2, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
-  geom_point(aes(y = mean.x2), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
-  theme_minimal()
-```
-
-## Analiza rezultatov transformiranih podatkov
-
-Ker so podatki transformirani z ustrezno transformacijo(logaritemska) pričakujemo, da so rezultati linearne regresije pravilni in zanesljivi, torej dobimo pravile intervale zaupanja. Ponovno pričakujeva, da se bodo intervali zaupanja ožali z večanjem vzorca in da bo zožitev intervala zaupanja zelo majhna med velikostjo vzorca $n = 200$ in $n = 500$. Razlika med metodama se bo verjetno opazno razlikovala le pri majhnem vzorcu($n=20$). 
-
-Na spodnjih grafih opazimo točno to, kar smo pričakovali - ožanje intervalov z večanjem vzorca in opazne razlike med metodama pri majhnem številu podatkov($n=20$). 
-
-```{r}
-IZ_org_transf = readRDS("intervali.zaupanja.org.transf.RDS") %>% 
-  select(-c("int.coef", "x1.coef", "x2.coef"))
-IZ_bootstrap_transf = readRDS("intervali.zaupanja.transf.RDS")
-
-IZ_skupaj_transf = rbind(IZ_org_transf, IZ_bootstrap_transf)
-IZ_skupaj_transf = cbind(IZ_skupaj_transf, rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
-colnames(IZ_skupaj_transf)[10] = "metoda"
-
-# povprečja koeficientov
-IZ_org_koef_trans = readRDS("intervali.zaupanja.org.transf.RDS")
-IZ_bootstrap_koef_trans  = readRDS("bootstrap.transformirano.RDS")
-IZ_bootstrap_koef_trans  = data.frame(IZ_bootstrap_koef_trans)
-koef.mean.org_trans  = IZ_org_koef_trans  %>% group_by(velikost.vzorca, alpha, gamma) %>%
-  summarise(mean(int.coef), mean(x1.coef), mean(x2.coef))
-koef.mean.org_trans  = cbind(koef.mean.org_trans, rep(c("klasična analiza(linearna regresija)"), nrow(koef.mean.org_trans)))
-colnames(koef.mean.org_trans) = c("velikost.vzorca", "alpha", "gamma", "mean.int", "mean.x1", "mean.x2", "metoda")
-
-koef.mean.boot_trans = IZ_bootstrap_koef_trans  %>% group_by(velikost.vzorca, alpha, gamma) %>%
-  summarise(mean(int), mean(x1), mean(x2))
-koef.mean.boot_trans = cbind(koef.mean.boot_trans, rep(c("bootstrap"), nrow(koef.mean.boot_trans)))
-colnames(koef.mean.boot_trans) = c("velikost.vzorca", "alpha", "gamma", "mean.int", "mean.x1", "mean.x2", "metoda")
-
-IZ_skupaj_coef_trans = rbind(koef.mean.org_trans, koef.mean.boot_trans)
-IZ_vse_trans = full_join(IZ_skupaj_transf, IZ_skupaj_coef_trans, by = c("velikost.vzorca", "alpha", "gamma", "metoda"))
-```
-
-```{r "risanje IZ po transformacijo int", fig.cap="Grafi intervalov zaupanja za prosti koeficient(Intercept) - transformirani podatki."}
-pod_int = IZ_vse_trans %>% select(c("alpha", "gamma", "velikost.vzorca", "int.lower", "int.upper", "mean.int","metoda"))
-pod_int$velikost.vzorca = factor(pod_int$velikost.vzorca)
-
-ggplot(pod_int, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = T, 0.3)) + 
-  geom_point(aes(y = mean.int), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
-  theme_minimal()
-```
-
-```{r "risanje IZ po transformacijo x1", fig.cap="Grafi intervalov zaupanja za koeficient pri x1(beta1) - transformirani podatki."}
-pod_x1 = IZ_vse_trans %>% select(c("alpha", "gamma", "velikost.vzorca", "x1.lower", "x1.upper", "mean.x1","metoda"))
-pod_x1$velikost.vzorca = factor(pod_x1$velikost.vzorca)
-
-ggplot(pod_x1, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
-  geom_point(aes(y = mean.x1), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
-  theme_minimal()
-```
-
-```{r "risanje IZ po transformacijo x2", fig.cap="Grafi intervalov zaupanja za koeficient pri x2(beta2) - transformirani podatki."}
-pod_x2 = IZ_vse_trans %>% select(c("alpha", "gamma", "velikost.vzorca", "x2.lower", "x2.upper", "mean.x2","metoda"))
-pod_x2$velikost.vzorca = factor(pod_x1$velikost.vzorca)
-
-ggplot(pod_x2, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
-  geom_point(aes(y = mean.x2), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ") +
-  theme(legend.position = "bottom") +
-  theme_minimal()
-```
-
-
-## Primerjava
-
-Ker smo pri zgornji analizi opazili, da so intervali zaupaja različno široki glede na vzorec, si poglejmo njihove širine tudi glede na metodo in vrsto podatkov(ne transformirani ali transformirani podatki). 
-
-Na spodnjem grafu je še bolj opazna razlika v širini intervala pri majhnem vzorcu podatkov($n = 20$) glede na metodo, opazimo pa tudi to kako linearna odvisnot($\gamma$) vpliva na podatke oz. posamezne koeficiente linearne regresije - npr. pri koeficientu prostega člena($\beta_0$ oz. `Intercept`) je razlika v širini intervalov glede na metodo opazna še posebaj pri majhnem vzorcu podatkov($n = 20$), s tem ko za ostala dva koeficienta težko rečemo, da faktor linerne odvisnosti($\gamma$) ali heteroskedastičnost($\alpha$) glede na metodo kako značilno vpliva na širino intervala. Pri le-tem dvem koeficientu je tudi širina intervala zaupanja dokaj podobna glede na metodo. \
-Opazimo pa, da so širine intervalov pri transformiranih podatkih dokaj podobne, z izjemo pri nekaterih vrednostih $\alpha$, $\gamma$ in majhnem vzorcu($n=20$), vendar to je poledica kršenja predpostavke o dovolj velikem vzorcu pri linearno regresiji.
-
-<!-- sm razmislla da bi primerjala sirino intervala glede na transformirane in ne transformirane podatke
-sm hotla z grafom pa sm ugotovila, da so vrednosti ne tranformiranih ful velike ane tiste druge so pa logaritmirane in so ful majhne-->
-
-```{r "sirina IZ int obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri prostem členu(intercept).", fig.height =4}
-sirine_intervalov = IZ_vse %>%
-  mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - x2.lower) %>%
-  select(alpha, gamma, velikost.vzorca, SI_int, SI_x1, SI_x2, metoda)
-sirine_intervalov = cbind(sirine_intervalov, podatki = rep(c("klasična analiza(linearna regresija)", "bootstrap"), each=nrow(IZ_org)))
-sirine_intervalov$velikost.vzorca = factor(sirine_intervalov$velikost.vzorca)
-
-sirine_intervalov_trans = IZ_vse_trans %>%
-  mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - abs(x2.lower)) %>%
-  select(alpha, gamma, velikost.vzorca, SI_int, SI_x1, SI_x2, metoda)
-sirine_intervalov_trans = cbind(sirine_intervalov_trans, podatki = rep(c("klasična analiza(l.r.) - transformirani podatki", "bootstrap - transformirani podatki"), each=nrow(IZ_org_transf)))
-sirine_intervalov_trans$velikost.vzorca = factor(sirine_intervalov_trans$velikost.vzorca)
-
-g1 = ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_point(aes(y = SI_int), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_int)) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ",
-       title = "ne transformirani podatki") +
-  theme(legend.position = "bottom",
-        plot.title = element_text(size = 10)) +
-  theme_minimal()
-
-g2 = ggplot(sirine_intervalov_trans, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_point(aes(y = SI_int), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_int)) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ",
-       title = "transformirani podatki") +
-  theme(legend.position = "bottom",
-        plot.title = element_text(size = 10)) +
-  theme_minimal()
-
-library(patchwork)
-combined_plot = g1 + g2 + plot_layout(guides = "collect") & 
-  theme(legend.position = "bottom")
-combined_plot
-```
-
-```{r "sirina x1 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x1(beta1).", fig.height =4}
-g1 = ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_point(aes(y = SI_x1), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_x1)) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ",
-       title = "ne transformirani podatki") +
-  theme(legend.position = "bottom",
-        plot.title = element_text(size = 10)) +
-  theme_minimal()
-
-g2 = ggplot(sirine_intervalov_trans, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_point(aes(y = SI_x1), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_x1)) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ",
-       title = "transformirani podatki") +
-  theme(legend.position = "bottom",
-        plot.title = element_text(size = 10)) +
-  theme_minimal()
-
-combined_plot = g1 + g2 + plot_layout(guides = "collect") & 
-  theme(legend.position = "bottom")
-combined_plot
-```
-
-
-```{r "sirina x2 obe metodi", fig.cap="Širina intervalov zaupanja za koeficient pri koeficientu x2(beta2).",fig.height = 4}
-g1 = ggplot(sirine_intervalov, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_point(aes(y = SI_x2), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_x2)) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ",
-       title = "ne transformirani podatki") +
-  theme(legend.position = "bottom",
-        plot.title = element_text(size = 10)) +
-  theme_minimal()
-
-g2 = ggplot(sirine_intervalov_trans, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
-  geom_point(aes(y = SI_x1), shape = 16, size = 1.2) +
-  geom_line(aes(y = SI_x1)) +
-  facet_grid(glue('alpha*" = {alpha}"') ~ glue('gamma*" = {gamma}"'), 
-             labeller = label_parsed, scales="free") +
-  labs(x = "velikost vzorca (n)", y = " ",
-       title = "transformirani podatki") +
-  theme(legend.position = "bottom",
-        plot.title = element_text(size = 10)) +
-  theme_minimal()
-
-combined_plot = g1 + g2 + plot_layout(guides = "collect") & 
-  theme(legend.position = "bottom")
-combined_plot
-```
-
-
-# Zaključek
-
-Pri primerjavi intervalov zaupanja "klasične" metode (*linearne regresije*), ko so predpostavke te kršene, in metode ponovnega vzorčenja (*bootstrap*), nisva opazila drastičnih razlik. Intervali zaupanja so bili pri metodi ponovnega vzorčenja nekoliko ožji, največja razlika v širini intervala pa se opazi pri majhnem vzorcu ($n=20$). Enako analizo sva ponovila še na transponiranih podatkih, s čimer sva kršenje predpostavk linearne regresije odpravila ali pa vsaj zmanjšala. Vendar tudi v tem primeru so bili intervali zaupanja skoraj enaki. Največji vpliv na širino intervalov je imela velikost vzorcev.
-
-Glede na analizo bi težko rekla, da je ena metoda veliko boljša od druge. Vendar pa bi vseeno ob kršenju predpostavk uporabila metodo ponovnega vzorčenja, saj se je ta izkazala za malenkost boljšo in z velikim številom vzorev (vzorečenja) odstranimo ekstremne robne vrednosti. 
-
-
 
