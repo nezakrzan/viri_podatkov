@@ -53,6 +53,7 @@ bootstrap = function(m, podatki, alpha, n){
 # ================================ simulacija ==================================
 settings = expand.grid(i = 1:st.ponovitev, alpha = rev(alpha.v), n=rev(n.v))
 m = 10
+alpha.iz = 0.05
 
 if(useOld&&file.exists("bootstrapV2.RDS")){
   rezultati = readRDS("bootstrapV2.RDS") 
@@ -73,17 +74,30 @@ if(useOld&&file.exists("bootstrapV2.RDS")){
     n = settings$n[i]
     data = generiranje_podatkov(beta0=100, beta1=3, beta2=2, alpha=alpha, n=n)
 
-    ## botstrap
+    ## bo0tstrap
     res = bootstrap(m, data, alpha, n)
+    
+    # izračun intervalov zaupanja
+    int.iz  = quantile(res[,3], probs = c(alpha.iz/2, 1-alpha.iz/2))
+    x1.iz  = quantile(res[,4], probs = c(alpha.iz/2, 1-alpha.iz/2))
+    x2.iz  = quantile(res[,5], probs = c(alpha.iz/2, 1-alpha.iz/2))
+    
+    res.temp = c(alpha, n, mean(res[,3]), mean(res[,4]), mean(res[,5]),
+                 int.iz[[1]], int.iz[[2]],
+                 x1.iz[[1]], x1.iz[[2]],
+                 x2.iz[[1]], x2.iz[[2]])
     
     # kje se nahaja zanka
     if(i%%100==0) cat("Iteration ", i, "/", nrow(settings), "complete! \n")
     
-    return(res)
+    return(res.temp)
     
   }
   rezultati = data.frame(alpha = res2[,1], velikost.vzorca = res2[,2], 
-                         int = res2[,3], x1 = res2[,4], x2 = res2[,5])
+                         int = res2[,3], x1 = res2[,4], x2 = res2[,5],
+                         int.lower = res2[,6], int.upper = res2[,7],
+                         x1.lower = res2[,8], x1.upper = res2[,9],
+                         x2.lower = res2[,10], x2.upper = res2[,11])
   # Shranjevanje rezultatov
   saveRDS(object = rezultati, file = "bootstrapV2.RDS")
   
