@@ -1,0 +1,246 @@
+starting worker pid=94147 on localhost:11788 at 16:54:53.421
+starting worker pid=94160 on localhost:11788 at 16:54:53.529
+starting worker pid=94173 on localhost:11788 at 16:54:53.638
+starting worker pid=94186 on localhost:11788 at 16:54:53.747
+starting worker pid=94199 on localhost:11788 at 16:54:53.855
+starting worker pid=94212 on localhost:11788 at 16:54:53.966
+starting worker pid=94225 on localhost:11788 at 16:54:54.077
+starting worker pid=94238 on localhost:11788 at 16:54:54.185
+starting worker pid=94251 on localhost:11788 at 16:54:54.290
+starting worker pid=94264 on localhost:11788 at 16:54:54.397
+starting worker pid=94277 on localhost:11788 at 16:54:54.507
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Iteration  100 / 9000 complete! 
+Iteration  200 / 9000 complete! 
+Iteration  300 / 9000 complete! 
+Iteration  400 / 9000 complete! 
+Iteration  500 / 9000 complete! 
+Iteration  600 / 9000 complete! 
+Iteration  700 / 9000 complete! 
+Iteration  800 / 9000 complete! 
+Iteration  900 / 9000 complete! 
+Iteration  1000 / 9000 complete! 
+Iteration  1100 / 9000 complete! 
+Iteration  1200 / 9000 complete! 
+Iteration  1300 / 9000 complete! 
+Iteration  1400 / 9000 complete! 
+Iteration  1500 / 9000 complete! 
+Iteration  1600 / 9000 complete! 
+Iteration  1700 / 9000 complete! 
+Iteration  1800 / 9000 complete! 
+Iteration  1900 / 9000 complete! 
+Iteration  2000 / 9000 complete! 
+Iteration  2100 / 9000 complete! 
+Iteration  2200 / 9000 complete! 
+Iteration  2300 / 9000 complete! 
+Iteration  2400 / 9000 complete! 
+Iteration  2500 / 9000 complete! 
+Iteration  2600 / 9000 complete! 
+Iteration  2700 / 9000 complete! 
+Iteration  2800 / 9000 complete! 
+Iteration  2900 / 9000 complete! 
+Iteration  3000 / 9000 complete! 
+Iteration  3100 / 9000 complete! 
+Iteration  3200 / 9000 complete! 
+Iteration  3300 / 9000 complete! 
+Iteration  3400 / 9000 complete! 
+Iteration  3500 / 9000 complete! 
+Iteration  3600 / 9000 complete! 
+Iteration  3700 / 9000 complete! 
+Iteration  3800 / 9000 complete! 
+Iteration  3900 / 9000 complete! 
+Iteration  4000 / 9000 complete! 
+Iteration  4100 / 9000 complete! 
+Iteration  4200 / 9000 complete! 
+Iteration  4300 / 9000 complete! 
+Iteration  4400 / 9000 complete! 
+Iteration  4500 / 9000 complete! 
+Iteration  4600 / 9000 complete! 
+Iteration  4700 / 9000 complete! 
+Iteration  4800 / 9000 complete! 
+Iteration  4900 / 9000 complete! 
+Iteration  5000 / 9000 complete! 
+Iteration  5100 / 9000 complete! 
+Iteration  5200 / 9000 complete! 
+Iteration  5300 / 9000 complete! 
+Iteration  5400 / 9000 complete! 
+Iteration  5500 / 9000 complete! 
+Iteration  5600 / 9000 complete! 
+Iteration  5700 / 9000 complete! 
+Iteration  5800 / 9000 complete! 
+Iteration  5900 / 9000 complete! 
+Iteration  6000 / 9000 complete! 
+Iteration  6100 / 9000 complete! 
+Iteration  6200 / 9000 complete! 
+Iteration  6300 / 9000 complete! 
+Iteration  6400 / 9000 complete! 
+Iteration  6500 / 9000 complete! 
+Iteration  6600 / 9000 complete! 
+Iteration  6700 / 9000 complete! 
+Iteration  6800 / 9000 complete! 
+Iteration  6900 / 9000 complete! 
+Iteration  7000 / 9000 complete! 
+Iteration  7100 / 9000 complete! 
+Iteration  7200 / 9000 complete! 
+Iteration  7300 / 9000 complete! 
+Iteration  7400 / 9000 complete! 
+Iteration  7500 / 9000 complete! 
+Iteration  7600 / 9000 complete! 
+Iteration  7700 / 9000 complete! 
+Iteration  7800 / 9000 complete! 
+Iteration  7900 / 9000 complete! 
+Iteration  8000 / 9000 complete! 
+Iteration  8100 / 9000 complete! 
+Iteration  8200 / 9000 complete! 
+Iteration  8300 / 9000 complete! 
+Iteration  8400 / 9000 complete! 
+Iteration  8500 / 9000 complete! 
+Iteration  8600 / 9000 complete! 
+Iteration  8700 / 9000 complete! 
+Iteration  8800 / 9000 complete! 
+Iteration  8900 / 9000 complete! 
+Iteration  9000 / 9000 complete! 
+starting worker pid=95194 on localhost:11788 at 18:24:43.367
+starting worker pid=95207 on localhost:11788 at 18:24:43.478
+starting worker pid=95220 on localhost:11788 at 18:24:43.590
+starting worker pid=95233 on localhost:11788 at 18:24:43.699
+starting worker pid=95246 on localhost:11788 at 18:24:43.808
+starting worker pid=95259 on localhost:11788 at 18:24:43.915
+starting worker pid=95272 on localhost:11788 at 18:24:44.021
+starting worker pid=95285 on localhost:11788 at 18:24:44.126
+starting worker pid=95298 on localhost:11788 at 18:24:44.235
+starting worker pid=95311 on localhost:11788 at 18:24:44.344
+starting worker pid=95324 on localhost:11788 at 18:24:44.454
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: foreach
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Loading required package: rngtools
+Iteration  100 / 9000 complete! 
+Iteration  200 / 9000 complete! 
+Iteration  300 / 9000 complete! 
+Iteration  400 / 9000 complete! 
+Iteration  500 / 9000 complete! 
+Iteration  600 / 9000 complete! 
+Iteration  700 / 9000 complete! 
+Iteration  800 / 9000 complete! 
+Iteration  900 / 9000 complete! 
+Iteration  1000 / 9000 complete! 
+Iteration  1100 / 9000 complete! 
+Iteration  1200 / 9000 complete! 
+Iteration  1300 / 9000 complete! 
+Iteration  1400 / 9000 complete! 
+Iteration  1500 / 9000 complete! 
+Iteration  1600 / 9000 complete! 
+Iteration  1700 / 9000 complete! 
+Iteration  1800 / 9000 complete! 
+Iteration  1900 / 9000 complete! 
+Iteration  2000 / 9000 complete! 
+Iteration  2100 / 9000 complete! 
+Iteration  2200 / 9000 complete! 
+Iteration  2300 / 9000 complete! 
+Iteration  2400 / 9000 complete! 
+Iteration  2500 / 9000 complete! 
+Iteration  2600 / 9000 complete! 
+Iteration  2700 / 9000 complete! 
+Iteration  2800 / 9000 complete! 
+Iteration  2900 / 9000 complete! 
+Iteration  3000 / 9000 complete! 
+Iteration  3100 / 9000 complete! 
+Iteration  3200 / 9000 complete! 
+Iteration  3300 / 9000 complete! 
+Iteration  3400 / 9000 complete! 
+Iteration  3500 / 9000 complete! 
+Iteration  3600 / 9000 complete! 
+Iteration  3700 / 9000 complete! 
+Iteration  3800 / 9000 complete! 
+Iteration  3900 / 9000 complete! 
+Iteration  4000 / 9000 complete! 
+Iteration  4100 / 9000 complete! 
+Iteration  4200 / 9000 complete! 
+Iteration  4300 / 9000 complete! 
+Iteration  4400 / 9000 complete! 
+Iteration  4500 / 9000 complete! 
+Iteration  4600 / 9000 complete! 
+Iteration  4700 / 9000 complete! 
+Iteration  4800 / 9000 complete! 
+Iteration  4900 / 9000 complete! 
+Iteration  5000 / 9000 complete! 
+Iteration  5100 / 9000 complete! 
+Iteration  5200 / 9000 complete! 
+Iteration  5300 / 9000 complete! 
+Iteration  5400 / 9000 complete! 
+Iteration  5500 / 9000 complete! 
+Iteration  5600 / 9000 complete! 
+Iteration  5700 / 9000 complete! 
+Iteration  5800 / 9000 complete! 
+Iteration  5900 / 9000 complete! 
+Iteration  6000 / 9000 complete! 
+Iteration  6100 / 9000 complete! 
+Iteration  6200 / 9000 complete! 
+Iteration  6300 / 9000 complete! 
+Iteration  6400 / 9000 complete! 
+Iteration  6500 / 9000 complete! 
+Iteration  6600 / 9000 complete! 
+Iteration  6700 / 9000 complete! 
+Iteration  6800 / 9000 complete! 
+Iteration  6900 / 9000 complete! 
+Iteration  7000 / 9000 complete! 
+Iteration  7100 / 9000 complete! 
+Iteration  7200 / 9000 complete! 
+Iteration  7300 / 9000 complete! 
+Iteration  7400 / 9000 complete! 
+Iteration  7500 / 9000 complete! 
+Iteration  7600 / 9000 complete! 
+Iteration  7700 / 9000 complete! 
+Iteration  7800 / 9000 complete! 
+Iteration  7900 / 9000 complete! 
+Iteration  8000 / 9000 complete! 
+Iteration  8100 / 9000 complete! 
+Iteration  8200 / 9000 complete! 
+Iteration  8300 / 9000 complete! 
+Iteration  8400 / 9000 complete! 
+Iteration  8500 / 9000 complete! 
+Iteration  8600 / 9000 complete! 
+Iteration  8700 / 9000 complete! 
+Iteration  8800 / 9000 complete! 
+Iteration  8900 / 9000 complete! 
+Iteration  9000 / 9000 complete! 
