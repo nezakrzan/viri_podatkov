@@ -1,0 +1,35 @@
+---
+title: "Domača naloga 4"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+output:
+  pdf_document:
+    fig_caption: true
+    number_sections: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =4, fig.width = 6.5)
+
+# potrebne knjižnice
+library(ggplot2)
+library(car)
+library(tidyr)
+library(dplyr)
+library(ADGofTest)
+library(lmerTest)
+library(knitr)
+library(kableExtra)
+library(glue)
+
+# seme
+set.seed(2024)
+```
+
+
+
