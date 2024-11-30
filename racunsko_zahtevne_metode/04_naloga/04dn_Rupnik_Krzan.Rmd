@@ -31,5 +31,17 @@ library(glue)
 set.seed(2024)
 ```
 
+<!--
+Navodila:
+Analizirajte realne podatke (lahko izberete katerikoli podatki), ki vsebujejo zadostno število manjkajočih vrednosti, in uporabite katerokoli metodo (v osnovi multivariatno), ki jo želite uporabiti. Zadostno število manjkajočih enot pomeni, da bi pri uporabi izbrane metode na popolnih enotah (seznamno brisanje) iz podatkov odstranili vsaj 30 % enot. Tukaj manjkajočih vrednosti ne smete ustvariti sami; manjkajoče vrednosti morajo že obstajati v izvirnih podatkih. Pri podatkih s področja družboslovja je velik delež pogosto nepopoln zaradi "občutljivih" spremenljivk, npr. "dohodka". 
 
+- Ocenite (na podlagi katere analize, testa in poznavanja področja/podatkov), kakšen je mehanizem manjkajočih vrednosti (po Rubinu). 
+
+- Ocenite, katera metoda za obravnavo manjkajočih vrednosti je najprimernejša. Uporabiti morate vsaj:
+      - metodo, ki se vam zdi najprimernejša,
+      - vsaj eno metodo ignoriranja manjkajočih vrednosti (analiza na podlagi razpoložljivih ali popolnih enot),
+      - in vsaj eno drugo metodo za obravnavo manjkajočih vrednosti (morda metodo, ki se vam zdi druga najprimernejša).
+      
+Ne glede na to, katera metoda se vam zdi najprimernejša, morate uporabiti vsaj eno metodo, ki sem jo v predavanjih/slajdih označil kot priporočeno - Slajd 19. Interpretirajte rezultate. Prav tako komentirajte, kaj vam podobnosti ali razlike v rezultatih različnih metod povedo o mehanizmu manjkajočih vrednosti. Na koncu morate obvezno navesti, katera metoda se vam zdi v danem primeru najprimernejša.
+-->
 
