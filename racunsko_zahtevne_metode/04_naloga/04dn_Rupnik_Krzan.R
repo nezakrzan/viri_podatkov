@@ -19,5 +19,8 @@ missing_data
 # https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database
 
 
+complete_df <- data[complete.cases(data), ]
+missing_data2 = (colSums(is.na(complete_df)) / nrow(complete_df)) * 100 
+missing_data2
 
-
+nrow(complete_df)/nrow(data)
