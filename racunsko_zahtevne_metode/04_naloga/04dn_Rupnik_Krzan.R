@@ -8,6 +8,9 @@ library(tidyr)
 library(dplyr)
 library(knitr)
 library(kableExtra)
+library(multiUS)
+library(mice)
+library(arm)
 
 # ============================== uvoz podatkov =================================
 
@@ -256,4 +259,48 @@ prop.table(table(is.na(data$Glucose), data$Class), 2) # večja verjetnost, da bo
 prop.table(table(is.na(data$BMI), data$Class), 2) # večja verjetnost, da bo manjkala pri puncah, ki nimajo diabetes
 
 # ======================= dealing with missing values ==========================
+
+# formula ki jo uporabiva v vsakem logističnem modelu
+
+f <- formula(Class ~ .)
+
+# ___________ originalni podatki (brez spreminjanja)
+
+model_org <- glm(f, data=data, family = binomial(link="logit"))
+# 376 enot izbrisanih zaradi manjkajočih podatkov
+
+# __________ podatki brez manjkajocih vrednosti
+
+brez_na <- complete.cases(data)
+model_brez_na <- glm(f, data=data[brez_na,], family = binomial(link="logit"))
+
+# ___________ k-najbližjih sosedov
+
+dataKNN <- KNNimp(data=data, scale=TRUE)
+model_knn <- glm(f, data=dataKNN, family = binomial(link="logit"))
+
+
+# ____________ Multiple imputation
+# tabela manjkajočih vrednosti
+md.pattern(data, rotate.names=TRUE)
+
+# izračun manjkajočih vrednosti
+if(file.exists("data_mice.RDS")){
+  data_mice <- readRDS("data_mice.RDS")
+} else {
+  data_mice <- mice(data, m=40, maxit=50)
+  saveRDS(data_mice, "data_mice.RDS")
+}
+
+
+# narisemo mean/sd...skonvergira?
+plot(data_mice, layout=c(2, 5))
+
+# naredimo model
+model_mice = with(data=data_mice, expr=glm(Class ~ Pregnant + Glucose + BloodPressure + SkinThickness +
+                                             Insulin + BMI + DiabetesPedigree + Age,
+                                           family = binomial(link="logit")))
+# zdruzimo podatke
+mice_zdruzeno = pool(model_mice)
+mice_summary = summary(mice_zdruzeno)
 
