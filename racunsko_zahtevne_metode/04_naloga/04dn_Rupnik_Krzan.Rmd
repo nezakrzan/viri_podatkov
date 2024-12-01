@@ -1,5 +1,5 @@
 ---
-title: "Domača naloga 4"
+title: "Domaca naloga 4"
 author: "Neža Kržan, Tom Rupnik Medjedovič"
 output:
   pdf_document:
@@ -9,23 +9,23 @@ header-includes:
 - \usepackage[slovene]{babel}
 - \usepackage{float}
 - \usepackage[T1]{fontenc}
-editor_options: 
+editor_options:
   chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =4, fig.width = 6.5)
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =3, fig.width = 5)
 
 # potrebne knjižnice
 library(ggplot2)
-library(car)
 library(tidyr)
 library(dplyr)
-library(ADGofTest)
-library(lmerTest)
 library(knitr)
 library(kableExtra)
-library(glue)
+library(gridExtra)
+library(psych) #describe
+library(corrplot)
+library(VIM)
 
 # seme
 set.seed(2024)
@@ -44,4 +44,231 @@ Analizirajte realne podatke (lahko izberete katerikoli podatki), ki vsebujejo za
       
 Ne glede na to, katera metoda se vam zdi najprimernejša, morate uporabiti vsaj eno metodo, ki sem jo v predavanjih/slajdih označil kot priporočeno - Slajd 19. Interpretirajte rezultate. Prav tako komentirajte, kaj vam podobnosti ali razlike v rezultatih različnih metod povedo o mehanizmu manjkajočih vrednosti. Na koncu morate obvezno navesti, katera metoda se vam zdi v danem primeru najprimernejša.
 -->
+
+```{r}
+# uvoz podatkov
+data = read.csv("pima_indians_diabetes_dataset.csv", header = TRUE, sep = ",", na.strings = c(""))
+```
+
+
+# Cilj naloge
+
+Analizirali bomo podatke o diabetesu Nacionalnega inštituta za diabetes, prebavne in ledvične bolezni, kateri vsebujejo več medicinskih napovednih spremenljivk in eno ciljno spremenljivko. Podatki imajo veliko mankajočih enot(več kot 30\%), zato bova v nalgo definirala oz. ocenila, kakšen je mehanizem mankajočih vrednosti(po Rubinu) in obravnavala mankajoče vrednosti po treh različnih metodah. \
+Zanima naju torej mehanizem mankajočih vrednosti(zakaj in kako manjkajo podatki v podatkovnem nizu), ker ti mehanizmi vplivajo na izbiro ustreznih metod za obravnavo manjkajočih vrednosti, kar pa bova delala v drugem delu naloge. 
+
+<!--
+Tuki je treba dopisat katere modele te metode bova uporabila...
+Za obravavo mankajočih vrednosti bova uporabila metodo **multiple(stohastične) imputacija**....
+-->
+
+# Podatki
+Izbrala sva si zdravstvene podatke žensk indijanskega plemena Pima, ki so starejše od 21 let. Glavni cilj tega niza je napovedati, ali ima posameznica diabetes, na podlagi različnih medicinskih spremenljivk:
+
+- `Pregnancy` (število nosečnosti): Število nosečnosti, ki jih je imela ženska.
+- `Glucose` (glukoza v krvi): Raven glukoze v krvi po 2 urah oralnega glukoznega testa.
+- `BloodPressure` (krvni tlak): Krvni tlak (v mmHg).
+- `SkinThickness` (debelo tkivo): Debelina kožnega gubca (v mm) na tricepsu, merjeno za testiranje telesne maščobe.
+- `Insulin` (inzulin): Raven inzulina (v $\mu$U/ml) v krvi.
+- `BMI` (Body Mass Index): Indeks telesne mase (BMI).
+- `DiabetesPedigree` (genetska nagnjenost): Indikator, ki kaže, koliko je posameznica nagnjena k razvoju diabetesa na podlagi dednosti. 
+- `Age` (starost): Starost posameznice v letih.
+- `Class` (diabetes diagnoza): Ciljna spremenljivka, ki označuje, ali ima posameznica diabetes (1) ali ne (0). To je binarna spremenljivka, ki jo želimo napovedati na podlagi drugih spremenljivk.
+
+Poglejmo si osnovne statistike podatkov, iz katerih vidimo nekatere izjemne vrednosti, kot so npr. število nosečnosti 17, vrednost inzulina 846, debelost kože 99, ... Ker naju zanima analiza mankajočih vrednosti, podatkov podrobneje ne bova analizirala.
+
+```{r, results="hold"}
+selected_stats = describe(data) %>% 
+  dplyr::select(-kurtosis, -skew, -trimmed, -mad, -range)
+kable(selected_stats,
+      align = "c", digits = 2,
+      caption = "Opisne statistike podatkov.") %>%
+kable_styling( full_width = F, 
+                position = "center")
+```
+
+\vspace{55mm}
+
+Podatkovni niz vsebuje `nrow(data)` primerov in torej vsak primer vključuje 8 merjenih spremenljivk in diagnozo(`Class`). Podatki vsebujejo veliko količino mankajočih vrednosti, kar lahko vidimo na spdnjem grafu.
+
+```{r, results=T, fig.cap="Odstotek mankajočih vrednosti pri posamezni spremenljivki in vizualizacija.", fig.height =5}
+library(naniar)
+vis_miss(data)
+```
+
+Za lažjo predstavo si poglejmo grafe spremenljivk v naših podatkih, iz katerih vidimo, da je večina spremenljivk asimetričnih v desno.
+
+```{r include=FALSE, results=FALSE}
+data$Class = as.factor(data$Class)
+g1 <- ggplot(data, aes(x=Pregnant)) + 
+    geom_density() + 
+    theme_bw()+
+    labs(y = "gostota") 
+g2 <- ggplot(data, aes(x=Pregnant, fill=Class)) + 
+    geom_density(alpha=0.4) + 
+    theme_bw()+
+    labs(y = "gostota") 
+g_1 = grid.arrange(g1, g2, ncol=2, top = paste("spremenljivka Pregnant"))
+  
+g1 <- ggplot(data, aes(x=Glucose)) + 
+    geom_density() + 
+    theme_bw()+
+    labs(y = "gostota") 
+g2 <- ggplot(data, aes(x=Glucose, fill=Class)) + 
+    geom_density(alpha=0.4) + 
+    theme_bw()+
+    labs(y = "gostota") 
+g_2 = grid.arrange(g1, g2, ncol=2, top = paste("spremenljivka Glucose"))
+
+g1 <- ggplot(data, aes(x=BloodPressure)) + 
+    geom_density() + 
+    theme_bw()+
+    labs(y = "gostota") 
+g2 <- ggplot(data, aes(x=BloodPressure, fill=Class)) + 
+    geom_density(alpha=0.4) + 
+    theme_bw()+
+    labs(y = "gostota") 
+g_3 = grid.arrange(g1, g2, ncol=2, top = paste("spremenljivka BloodPressure"))
+
+g1 <- ggplot(data, aes(x=SkinThickness)) + 
+    geom_density() + 
+    theme_bw()+
+    labs(y = "gostota") 
+g2 <- ggplot(data, aes(x=SkinThickness, fill=Class)) + 
+    geom_density(alpha=0.4) + 
+    theme_bw()+
+    labs(y = "gostota") 
+g_4 = grid.arrange(g1, g2, ncol=2, top = paste("spremenljivka SkinThickness"))
+
+g1 <- ggplot(data, aes(x=Insulin)) + 
+    geom_density() + 
+    theme_bw()+
+    labs(y = "gostota") 
+g2 <- ggplot(data, aes(x=Insulin, fill=Class)) + 
+    geom_density(alpha=0.4) + 
+    theme_bw()+
+    labs(y = "gostota") 
+g_5 = grid.arrange(g1, g2, ncol=2, top = paste("spremenljivka Insulin"))
+
+g1 <- ggplot(data, aes(x=BMI)) + 
+    geom_density() + 
+    theme_bw()+
+    labs(y = "gostota") 
+g2 <- ggplot(data, aes(x=BMI, fill=Class)) + 
+    geom_density(alpha=0.4) + 
+    theme_bw()+
+    labs(y = "gostota") 
+g_6 = grid.arrange(g1, g2, ncol=2, top = paste("spremenljivka BMI"))
+
+g1 <- ggplot(data, aes(x=DiabetesPedigree)) + 
+    geom_density() + 
+    theme_bw()+
+    labs(y = "gostota") 
+g2 <- ggplot(data, aes(x=DiabetesPedigree, fill=Class)) + 
+    geom_density(alpha=0.4) + 
+    theme_bw()+
+    labs(y = "gostota") 
+g_7 = grid.arrange(g1, g2, ncol=2, top = paste("spremenljivka DiabetesPedigree"))
+
+g1 <- ggplot(data, aes(x=Age)) + 
+    geom_density() + 
+    theme_bw()+
+    labs(y = "gostota") 
+g2 <- ggplot(data, aes(x=Age, fill=Class)) + 
+    geom_density(alpha=0.4) + 
+    theme_bw()+
+    labs(y = "gostota") 
+g_8 = grid.arrange(g1, g2, ncol=2, top = paste("spremenljivka Age"))
+```
+
+```{r, fig.cap="Porazdelitev spremenljivke v podatkovnem nizu, kjer je  Class ciljna spremenljivka, ki označuje, ali ima posameznica diabetes (1) ali ne (0).", results=T, fig.height = 15, fig.width = 8}
+grid.arrange(g_1, g_2, g_3, g_4, g_5, g_6, g_7, g_8, nrow=8, ncol = 2)
+```
+
+# Mehanizem mankajočih vrednosti
+
+Za začetek si poglejmo korelacije med mankajočimi vrednostmi na spodnji korelacijski matriki. Opazimo nekaj pozitivnih korelacij, kar pomeni, da če imamo mankajočo vrednost pri eni spremenljivki, obstaja večja verjetnost, da bo tudi pri drugi. \
+Torej če imamo mankajočo vrednost pri spremenljivki `Insulin`, potem obstaja večja verjetnost, da bomo imeli mankajočo vrednost tudi pri spremenljivki `SkinThickness`(tudi pri `BloodPressure`).  Če imamo mankajočo vrednost pri spremenljivki `SkinThickness`, obstaja večja verjetnost, da bomo imeli mankajočo vrednost še pri `BloodPressure`. Če pa bomo imeli mankajočo vrednost pr spremenljivki `BMI`, potem obstaja večja verjetnost, da bomo imeli mankajočo vrednost tudi pri spremenljivki `BloodPressure`. Iz tega bi lahko sklepali, da bo  t-test, ki ga uporabljamo za MAR testiranje(_miising at random_), pokazal, da odsotnost podatkov pri spremenljivkah `SkinThickness`, `Insulin`, `BloodPressure` in `BMI` ni naključno, saj vidimo, da je odsotnost podatkov pri določenih spremenljivkah povezano.
+
+```{r fig.cap="Korelacije med mankajočimi vrednostmi.", fig.height=3, fig.width=5, results=T}
+# Korelacije med mankajočimi vrednostmi
+isMiss = is.na(data[,2:6])
+missCor = cor(isMiss)
+rownames(missCor) = colnames(missCor) = colnames(data[,2:6])
+missCor[is.na(missCor)] = 0
+corrplot(missCor, method = 'number') 
+```
+
+Poglejmo si še vzorce mankajočih vrednosti. \
+Najprej si poglejmo glede razvrstitev spremenljivk, kjer imamo največ mankajočih vrednosti, torej spremenljivki `SkinThickness` in `Insulin`. Iz vzorev na spodnjih grafih bi lahko rekli, da če imamo vrednost pri spremenljivki `Insulin`, jo imamo tudi pri drugih spremenljivkah(le dve izjemi), če pa nimamo vrednosti pri spremenljivi `SkinThickness`, jo nimamo tudi pri spremenljivki `Insulin` in obstaja velika verjetnost, da je ne bomo imeli tudi pri spremenljivki `BloodPressure`.
+
+```{r, results=T, fig.caption="Razvrstitev mankajočih vrednosti glede na spremenljivko SkinThickness(levo) in Insulin(desno).", fig.height =4, fig.width = 8}
+par(mfrow=c(1,2))
+matrixplot(data, sortby="SkinThickness", cex.axis = 0.6) # ce manka SkinThickness pol manka tud Insulin 
+matrixplot(data, sortby="Insulin", cex.axis = 0.6) # Ce je insulin potem mamo vse podatke, razn dveh izjem
+```
+
+
+Ker je večina mankajočih vrednostih pri spremenljivkah `SkinThickness` in `Insulin`, nas sicer zanimajo predvsem razvrstitve glede na druge spremenljivke, zato so to tudi oglejmo. 
+
+Iz spodnjega grafa imamo občutek, da obstaja večja verjetnost mankajočega podatka pri spremenljvkah `Insuline` in `SkinThickness` ob določenem številu nosečnostih pri ženskah. Pri razvrstitvi glede na spremenljivko `Glucose` ne zaznamo nekega vzorca.
+
+```{r, results=T, fig.caption="Razvrstitev mankajočih vrednosti glede na spremenljivko Pregnant(levo) in Glucose(desno).", fig.height =4, fig.width = 8}
+par(mfrow=c(1,2))
+matrixplot(data, sortby="Pregnant", cex.axis = 0.6) # Večje število nosečnosti, večja verjetnost mankajočega podatka pri Insuline oziroma pri nekaterih vrednostih Pregnant tudi mankajoča vrednost Insulin(imava kr neki rdečih "kvadratkov"), mogoce tudi SkinThickness 
+matrixplot(data, sortby="Glucose", cex.axis = 0.6)
+```
+
+Iz spodnjega grafa se nam zdi, da če imamo mankajočo vrednost pri spremenljivki BloodPressure, potem obstaja velika verjetnost, da bomo imali mankajoče vrednosti tudi pri spremenljivkah `SkinThickness` in `Insulin`. Prav tako obstaja večja verjetnost mankajoče vrednosti pri teh dveh spremenljivkah in še pri spremenljivki `BlodPressure`, če imamo mankajočo vrednost pri spremenljivki `BMI`.
+
+```{r, results=T, fig.caption="Razvrstitev mankajočih vrednosti glede na spremenljivko BloodPressure(levo) in BMI(desno).", fig.height =4, fig.width = 8}
+par(mfrow=c(1,2))
+matrixplot(data, sortby="BloodPressure", cex.axis = 0.6) # aha neki vidm, ce manka BloodPressure, pol manka tud SkinThickness pa Insulin(mogoce to mer ena oseba pa je en dan ni blo v sluzbo :))
+matrixplot(data, sortby="BMI", cex.axis = 0.6) # ce ni BMI potem obstaja velika verjetnost, da imamo mankajočo vrednost tudi pri spremenljivkah Insulin, SkinThickness, BloodPressure
+```
+
+Na spodnjih treh grafih pa lahko vidimo, da je pri manjših vrednostih spremenljivke DiabetesPedigree in višji starosti več mankajočih vrednosti spremenljivke Insulin.
+
+```{r, results=T, fig.caption="Razvrstitev mankajočih vrednosti glede na spremenljivko DiabetesPedigree(levo), Age(sredina) in Class(desno).", fig.height =4, fig.width = 8}
+par(mfrow=c(1,3))
+matrixplot(data, sortby="DiabetesPedigree", cex.axis = 0.6) # mogoče se mi zdi: pri manjših vrednostih spremenljivke DiabetesPedigree več mankajočih vrednosti pri spremenljivki Insulin
+matrixplot(data, sortby="Age") # Pri visoki starosti večja verjetnost mankajočih vrednosti pri spremenljivkah Insulin in SkinThickness
+matrixplot(data, sortby="Class", cex.axis = 0.6)# ni vzorca
+```
+
+V nadaljevanju sva izvedla več t-testov za preverjanje ali je odsotnost podatkov pri določenih spremenljivkah MAR(_missing at random_) ali ne. S testom sva testirala ali je povprečje posamezne spremenljivke v obeh skupinah(1. skupina so podatki, ki imajo vrednost druge spremenljivke, 2. skupina papodatki, ki nimajo vrednost neke druge spremenljivke) enako, primer ničelne hipoteze, ki sva jo testirala
+
+$H_0$ : Povprečji sprem. BMI v obeh skupinah (tistih, ki imajo podatke za Insulin in tistih, ki nimajo podatkov za Insulin) sta enaki.
+
+S pomočjo testov sva ugotovila, da mankajoči podatki pri spremenljivki `Insulin` niso naključni, saj rezultati testov nakazujejo, da so mankajoče vrednosti povezane s številom nosečnosti, da obstaja večja verjetnost mankajočega podatka pri starejših ženskah, pri tistih z višjim krvnim tlakom(`BloodPressure`) in nižjimi vrednostmi spremenljivke `DiabetesPedigree`.  Mankajoči podatki pri spremenljivki so verjetno MAR(_missing at random_) ali celo NMAR(_not missing at random_), ker so torej odvisne od drugih spremenljivk(ki načeloma ne manjkajo) in od mankajočih vrednosti. \
+Prav tako je odsotnost podatkov pri spremenljivki `SkinThickness` povezana z vrednostmi pri spremenljivki `Pregnant` in višjim krvnim tlakom(sprem. `BloodPressure`) - povprečne vrednosti krvnega tlaka so v skupini z manjkajočimi podatki `SkinThickness` višje. Poleg tega so mankajoči podatki `SkinThickness` povezani še z višjo povprečno starostjo(`Age`) in nižjimi vrednostmi `DiabetesPedigree`. Torej odsotnos podatkov v spremenljivki morda je MAR(_missing at random_) ali celo NMAR(_not missing at random_), ker so torej odvisne od drugih spremenljivk(ki načeloma ne manjkajo) in od mankajočih vrednosti. \
+Pri mankajočih vrednostih spremenljivke smo testriali, ali na mankajoče rednosti kaj vpliva prisotnost/odsotnost podatko spremenljivk `BMI` in `SkinThickness` - glede na zgornjo korelacijski matriko. Ugotovila sva, da so manjkajoči podatki za sprem. `BloodPressure` verjetno MCAR(Missing Completely At Random), saj prisotnost manjkajočih podatkov ni povezana z vrednostmi `BMI` ali `SkinThickness`.\
+Prav tako sva pri mankajočih vrednostih spremenljivke `Glucose` ugotovila, da so verjetno MCAR(Missing Completely At Random), saj prisotnost manjkajočih podatkov ni povezana z vrednostmi nobene druge spremenljivke.
+
+Poleg tega sva prišla do zaključka, da je verjetnost za mankajočo vrednost pri posamezni spremenljivki(z izjemo sprem. `BMI`) večja pri ženskah, ki imajo diabetes, kot pri tistih, ki ga nimajo.
+
+S pomočjo $\chi^2$-testa, ki preučuje ali obstaja statistično značilna povezava med manjkajočimi vrednostmi v posamezni spremenljivki in razredi v spremenljivki `Class`, sva ugotovila, da mankajoče vrednosti pri spremenljivkah niso statistično povezane z razredom `Class`. Razred, ki označujej prisotnost ali odsotnost sladkorne bolezni, torej ne vpliva na to, ali manjkajo podatki za spremenljivke.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
