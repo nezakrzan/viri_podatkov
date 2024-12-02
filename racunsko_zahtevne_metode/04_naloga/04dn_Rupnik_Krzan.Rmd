@@ -29,6 +29,7 @@ library(VIM)
 library(multiUS)
 library(mice)
 library(arm)
+library(randomForest)
 
 # seme
 set.seed(2024)
@@ -254,7 +255,7 @@ S pomočjo $\chi^2$-testa, ki preučuje ali obstaja statistično značilna povez
 
 # Logistična regresija
 
-S pomočjo logistične regresije bova na podlagi različnih medicinskih spremenljivk (meritev) poskusila napovedati, ali ima posameznica diabetes. Pri tem bova uporabila različne metode za obravnavo mankajočih vrednosti.
+S pomočjo logistične regresije (`glm()`) bova na podlagi različnih medicinskih spremenljivk (meritev) poskusila napovedati, ali ima posameznica diabetes. Pri tem bova uporabila različne metode za obravnavo mankajočih vrednosti. Najprej bova preverila kakšne vrednosti koeficientov dobimo v primeru, da uporabimo podate takše kakršni so (originalne). Nato bova s pomočjo metode `listwise deletion` ohranila le tiste statistične enote, ki imajo zabeležene podatke vseh spremenljivk. Manjkajoče vrednosti (`NA`) bova z metodo *odločitvenih dreves* (`random forest`) izračunala oz. "zapolnila" ter naredila logistično regresijo. Za konec pa bova preverila kakšne rezultate dobimo v primeru uporabe metode *multiple imputacije preko verižnih enačb* (`MICE`).
 
 ```{r "formula za logisticno regresijo"}
  f <- formula(Class ~ .)
@@ -276,7 +277,7 @@ selected_stats = describe(podatki_model) %>%
   dplyr::select(-kurtosis, -skew, -trimmed, -mad, -range)
 kable(selected_stats,
       align = "c", digits = 2,
-      caption = "Opisne statistike podatkov.") %>%
+      caption = "Opisne statistike podatkov (prvotni podatki).") %>%
 kable_styling( full_width = F, 
                 position = "center")
 ```
@@ -291,20 +292,24 @@ model_brez_na <- glm(f, data=data[brez_na,], family = binomial(link="logit"))
 ```
 
 
-# Metoda k-najbližjih sosedov
+## Odločitvena drevesa
 
-Za to metodo sva se odločila, saj za izračun manjkajoče vrednosti uporabi tudi preostale vrednosti in poskusi najti najprimernejšo vrednost za nadomestitev manjkajoče vrednosti.
+Kot naslednjo metodo, s katero bova nadomestila manjkajoče vrednosti v podatkih, sva si izbrala metodo odločitvenih dreves. Gre za metodo, ki dobro deluje na velikih podatkih, je robustna za nelinearnost, dobro deluje tudi v primeru osamelcev in jo lahko uporabimo tako na številskih kot tudi kategoričnih spremenljivkah. 
 
-```{r "logisticna regresija KNN metoda", results="hold"}
-dataKNN <- KNNimp(data=data, scale=TRUE)
+```{r "priprava podatkov random forest"}
+dataRF <- rfImpute(f, data, iter=10)
 
-model_knn <- glm(f, data=dataKNN, family = binomial(link="logit"))
+model_RF <- glm(f, data=dataRF, family = binomial(link="logit"))
 
-selected_stats = describe(dataKNN) %>% 
+```
+
+
+```{r "logisticna regresija random forest", results="hold"}
+selected_stats = describe(dataRF) %>% 
   dplyr::select(-kurtosis, -skew, -trimmed, -mad, -range)
 kable(selected_stats,
       align = "c", digits = 2,
-      caption = "Opisne statistike podatkov.") %>%
+      caption = "Opisne statistike podatkov (metoda odločitvena drevesa).") %>%
 kable_styling( full_width = F, 
                 position = "center")
 ```
@@ -312,9 +317,9 @@ kable_styling( full_width = F,
 
 Tokrat lahko vidimo, da smo z izračunom nadomestili manjkajoče vrednosti (število vrednosti v vsakem stolpcu (spremenljivki) je enako 768). Pričakovano so se spremenile vrednosti opisnih spremenljivk, predvsem pa opazimo razliko oz. zmanjšanje standardnega odklona (`sd`).
 
-# Multiple imputacije preko verižnih enačb
+## Multiple imputacije preko verižnih enačb
 
-Najprej si oglejmo tabelo manjkajočih vrednosti. Leva stran predstavlja število spremenljivk z manjkajočimi vrednostmi, desna stran pomeni število enot, ter spodaj imamo število enot z manjkajočimi vrednostmi.
+Najprej si oglejmo tabelo manjkajočih vrednosti. Desna stran predstavlja število spremenljivk z manjkajočimi vrednostmi, leva stran pomeni število enot, ter spodaj imamo število enot z manjkajočimi vrednostmi.
 
 ```{r "priprava podatkov MICE", fig.height=7, fig.width=7}
 md.pattern(data, rotate.names=TRUE)
@@ -326,6 +331,8 @@ if(file.exists("data_mice.RDS")){
     saveRDS(data_mice, "data_mice.RDS")
   }
 ```
+
+Enotam z manjkajočimi vrednostmi najpogosteje manjkajo vrednosti 1, 2 ali 3 spremenljivke. Prav tako skoraj v vseh primerih je vrednost spremenljivke `Insulin` manjkajoča vrednost (le dve enoti imata manjkajoče vrednosti in ta ni pri spremenljivki `Insulin`).
 
 Za izračun manjkajočih vrednosti sva uporabila funkcijo `mice()`, kjer sva za vrednosti prametrov izbrala `m` = 40 (pravilo palca pravi da izberemo `m` glede na % manjkajočih vrednosti) in `maxit` = 50 (nekoliko višja vrednost, da vrednosti zagotovo skonvergirajo).
 
@@ -353,10 +360,10 @@ mice_summary = summary(mice_zdruzeno)
 par(mar=c(0, 7, 0, 0))
 coefplot(model_org, main="Ocene regresijskih koeficientov")
 coefplot(model_brez_na, add=TRUE, col="red", offset=-0.2)
-coefplot(model_knn, add=TRUE, col="blue", offset=-0.1)
+coefplot(model_RF, add=TRUE, col="blue", offset=-0.1)
 coefplot.default(coefs=mice_summary[-1, "estimate"], sds=mice_summary[-1, "std.error"],
                  add=TRUE, col="green", offset=0.2)
-legend("bottomright", c("Originalni", "Listwise", "KNN", "MICE"), lty=1, col=c("black", "red", "blue", "green"))
+legend("bottomright", c("Originalni", "Listwise", "random forest", "MICE"), lty=1, col=c("black", "red", "blue", "green"))
 ```
 
 

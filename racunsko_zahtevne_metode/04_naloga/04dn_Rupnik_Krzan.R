@@ -11,6 +11,7 @@ library(kableExtra)
 library(multiUS)
 library(mice)
 library(arm)
+library(randomForest)
 
 # ============================== uvoz podatkov =================================
 
@@ -274,10 +275,10 @@ model_org <- glm(f, data=data, family = binomial(link="logit"))
 brez_na <- complete.cases(data)
 model_brez_na <- glm(f, data=data[brez_na,], family = binomial(link="logit"))
 
-# ___________ k-najbližjih sosedov
+# ___________ random forest
 
-dataKNN <- KNNimp(data=data, scale=TRUE)
-model_knn <- glm(f, data=dataKNN, family = binomial(link="logit"))
+dataRF <- rfImpute(f, data, niter=10)
+model_RF <- glm(f, data=dataRF, family = binomial(link="logit"))
 
 
 # ____________ Multiple imputation
