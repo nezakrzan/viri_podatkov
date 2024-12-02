@@ -81,9 +81,9 @@ Izbrala sva si zdravstvene podatke žensk indijanskega plemena Pima, ki so stare
 Poglejmo si osnovne statistike podatkov, iz katerih vidimo nekatere izjemne vrednosti, kot so npr. število nosečnosti 17, vrednost inzulina 846, debelost kože 99, ... Ker naju zanima analiza mankajočih vrednosti, podatkov podrobneje ne bova analizirala.
 
 ```{r, results="hold"}
-selected_stats = describe(data) %>% 
-  dplyr::select(-kurtosis, -skew, -trimmed, -mad, -range)
-kable(selected_stats,
+selected_stats_org = describe(data) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range)
+kable(selected_stats_org,
       align = "c", digits = 2,
       caption = "Opisne statistike podatkov.") %>%
 kable_styling( full_width = F, 
@@ -191,7 +191,7 @@ grid.arrange(g_1, g_2, g_3, g_4, g_5, g_6, g_7, g_8, nrow=8, ncol = 2)
 # Mehanizem mankajočih vrednosti
 
 Za začetek si poglejmo korelacije med mankajočimi vrednostmi na spodnji korelacijski matriki. Opazimo nekaj pozitivnih korelacij, kar pomeni, da če imamo mankajočo vrednost pri eni spremenljivki, obstaja večja verjetnost, da bo tudi pri drugi. \
-Torej če imamo mankajočo vrednost pri spremenljivki `Insulin`, potem obstaja večja verjetnost, da bomo imeli mankajočo vrednost tudi pri spremenljivki `SkinThickness`(tudi pri `BloodPressure`).  Če imamo mankajočo vrednost pri spremenljivki `SkinThickness`, obstaja večja verjetnost, da bomo imeli mankajočo vrednost še pri `BloodPressure`. Če pa bomo imeli mankajočo vrednost pr spremenljivki `BMI`, potem obstaja večja verjetnost, da bomo imeli mankajočo vrednost tudi pri spremenljivki `BloodPressure`. Iz tega bi lahko sklepali, da bo  t-test, ki ga uporabljamo za MAR testiranje(_miising at random_), pokazal, da odsotnost podatkov pri spremenljivkah `SkinThickness`, `Insulin`, `BloodPressure` in `BMI` ni naključno, saj vidimo, da je odsotnost podatkov pri določenih spremenljivkah povezano.
+Torej če imamo mankajočo vrednost pri spremenljivki `Insulin`, potem obstaja večja verjetnost, da bomo imeli mankajočo vrednost tudi pri spremenljivki `SkinThickness`(tudi pri `BloodPressure`).  Če imamo mankajočo vrednost pri spremenljivki `SkinThickness`, obstaja večja verjetnost, da bomo imeli mankajočo vrednost še pri `BloodPressure`. Če pa bomo imeli mankajočo vrednost pr spremenljivki `BMI`, potem obstaja večja verjetnost, da bomo imeli mankajočo vrednost tudi pri spremenljivki `BloodPressure`. Iz tega bi lahko sklepali, da bo  t-test, ki ga uporabljamo za MAR testiranje(_missing at random_), pokazal, da odsotnost podatkov pri spremenljivkah `SkinThickness`, `Insulin`, `BloodPressure` in `BMI` ni naključno, saj vidimo, da je odsotnost podatkov pri določenih spremenljivkah povezano.
 
 ```{r fig.cap="Korelacije med mankajočimi vrednostmi.", fig.height=3, fig.width=5, results=T}
 # Korelacije med mankajočimi vrednostmi
@@ -210,7 +210,6 @@ par(mfrow=c(1,2))
 matrixplot(data, sortby="SkinThickness", cex.axis = 0.6) # ce manka SkinThickness pol manka tud Insulin 
 matrixplot(data, sortby="Insulin", cex.axis = 0.6) # Ce je insulin potem mamo vse podatke, razn dveh izjem
 ```
-
 
 Ker je večina mankajočih vrednostih pri spremenljivkah `SkinThickness` in `Insulin`, nas sicer zanimajo predvsem razvrstitve glede na druge spremenljivke, zato so to tudi oglejmo. 
 
@@ -264,7 +263,8 @@ S pomočjo logistične regresije (`glm()`) bova na podlagi različnih medicinski
 
 ## Originalni (prvotni podatki)
 
-Najprej preverimo kakšne vrednosti koeficientov in pripadajočih 95% intervalov zaupanja dobimo v primeru, da za modeliranje uporabimo originalne (nespremenjene podatke).
+Najprej preverimo kakšne vrednosti koeficientov in pripadajočih 95% intervalov zaupanja dobimo v primeru, da za modeliranje uporabimo originalne (nespremenjene podatke). Pri izvajanju tega sva ugotovila, da funkcija za logistično regresijo `glm()` ne sprejema mankajočih vrednosti in že sama po sebi izvaja metodo `listwise deletion`. 
+<!--Neza02: sm dopisala, sej skos na vajah govori, da mu je všeč če kej ugotovimo...-->
 
 ```{r "logisticna regresija org podatki", results="hold"}
 model_org <- glm(f, data=data, family = binomial(link="logit"))
@@ -274,54 +274,56 @@ model_org <- glm(f, data=data, family = binomial(link="logit"))
 podatki_model = model_org$model
 
 selected_stats = describe(podatki_model) %>% 
-  dplyr::select(-kurtosis, -skew, -trimmed, -mad, -range)
-kable(selected_stats,
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+selected_stats_org = selected_stats_org %>% dplyr::select(-median, -min, -max)
+selected_stats_org <- rbind(selected_stats_org[nrow(selected_stats_org), ], selected_stats_org[-nrow(selected_stats_org), ])
+opisne_statistik = cbind(selected_stats, selected_stats_org) 
+kable(opisne_statistik,
       align = "c", digits = 2,
-      caption = "Opisne statistike podatkov (prvotni podatki).") %>%
-kable_styling( full_width = F, 
-                position = "center")
+      caption = "Osnovne opisne statistike podatkov.") %>%
+kable_styling(full_width = F, 
+                position = "center") %>%
+  add_header_above(c(" " = 1, "listwise deletion" = 4, "izvirni podatki" = 4))
 ```
 
-Če natančneje pogledamo zgornjo tabelo opisnih statistik lahko opazimo, da se ta razlikuje od tabele opisnih statistik, ki smo jo naredili na začetku. Funkcija `glm()` sama po sebi odstrani vse vrstice, ki vsebujejo vsaj eno `NA` vrednost. To je enako kot bi naredili _listwise deletion_. To lahko opazimi tudi iz stolpca, ki prikazuje število enot, na katerih so izračunane opisne statistike (vse vrednosti so enake $392$).
+Če natančneje pogledamo zgornjo tabelo opisnih statistik lahko opazimo, da so razlike med statistikami, ki smo jih naredili na začetku. Funkcija `glm()` sama po sebi odstrani vse vrstice, ki vsebujejo vsaj eno `NA` vrednost. To je enako kot bi naredili _listwise deletion_. To lahko opazimi tudi iz stolpca, ki prikazuje število enot, na katerih so izračunane opisne statistike (vse vrednosti so enake $392$).
 
-Ker bi ne glede na to katero preprosto metodo, bi uporabila za obravnavo mankajočih vrednosti (*listwise deletion* ali *pairwise deletion*), bili rezultati identični zgornjim, tema dvema metodama ne bova posvečala velike pozornosti, bova pa prikazala rezultate metode kot eno izmed možnosti.
+Ker bi, ne glede na to katero preprosto metodo bi uporabila za obravnavo mankajočih vrednosti (*listwise deletion* ali *pairwise deletion*), bili rezultati identični zgornjim, tema dvema metodama ne bova posvečala velike pozornosti, bova pa prikazala rezultate metode kot eno izmed možnosti.
 
 ```{r "logisticna regresija podatki brez NA (listwise deletion)"}
 brez_na <- complete.cases(data)
 model_brez_na <- glm(f, data=data[brez_na,], family = binomial(link="logit"))
 ```
 
-
 ## Odločitvena drevesa
 
-Kot naslednjo metodo, s katero bova nadomestila manjkajoče vrednosti v podatkih, sva si izbrala metodo odločitvenih dreves. Gre za metodo, ki dobro deluje na velikih podatkih, je robustna za nelinearnost, dobro deluje tudi v primeru osamelcev in jo lahko uporabimo tako na številskih kot tudi kategoričnih spremenljivkah. 
+Kot naslednjo metodo, s katero bova nadomestila manjkajoče vrednosti v podatkih, sva si izbrala metodo odločitvenih dreves. Gre za metodo, ki dobro deluje na velikih podatkih, je robustna za nelinearnost, dobro deluje tudi v primeru osamelcev in jo lahko uporabimo tako na številskih kot tudi kategoričnih spremenljivkah. Občutek imava, glede na najine podatke, da bo to dobra metoda, ker imava velik nabor podatkov, večino številske spremenljivke in nekaj ekstremnih vrednosti, ki so osamelci(lahko vidimo v tabeli opisnih statistik podatkov na začetku). Odločila sva se za deterministični pristop vstavjanja mankajočih vrednosti, torej, da vstavljava le napovedi(brez slučajne napake modela).
 
 ```{r "priprava podatkov random forest"}
 dataRF <- rfImpute(f, data, iter=10)
-
 model_RF <- glm(f, data=dataRF, family = binomial(link="logit"))
-
 ```
-
 
 ```{r "logisticna regresija random forest", results="hold"}
 selected_stats = describe(dataRF) %>% 
-  dplyr::select(-kurtosis, -skew, -trimmed, -mad, -range)
-kable(selected_stats,
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+opisne_statistik = cbind(selected_stats, selected_stats_org) 
+kable(opisne_statistik,
       align = "c", digits = 2,
-      caption = "Opisne statistike podatkov (metoda odločitvena drevesa).") %>%
+      caption = "Opisne statistike podatkov.") %>%
 kable_styling( full_width = F, 
-                position = "center")
+                position = "center") %>%
+  add_header_above(c(" " = 1, "odločitvena drevesa" = 4, "izvirni podatki" = 4))
 ```
 
 
-Tokrat lahko vidimo, da smo z izračunom nadomestili manjkajoče vrednosti (število vrednosti v vsakem stolpcu (spremenljivki) je enako 768). Pričakovano so se spremenile vrednosti opisnih spremenljivk, predvsem pa opazimo razliko oz. zmanjšanje standardnega odklona (`sd`).
+Tokrat lahko vidimo, da smo z izračunom nadomestili manjkajoče vrednosti (število vrednosti v vsakem stolpcu (spremenljivki) je enako 768, tako kot na izvirnih podatkih). Pričakovano so se spremenile vrednosti opisnih spremenljivk, predvsem pa opazimo razliko oz. zmanjšanje standardnega odklona (`sd`) pri vseh spremenljivkah, opaziva tudi, da so zmanjšanja/večanja opisnih statistik bolj izrazita pri spremenljivkah, ki so imele v izvirnih podatkih več mankajočih vrednosti(npr. `Insulin`), kar je seveda logično, saj moramo vstaviti več mankajočih vrednosti.
 
-## Multiple imputacije preko verižnih enačb
+## Multiple(stohastične) imputacije preko verižnih enačb
 
 Najprej si oglejmo tabelo manjkajočih vrednosti. Desna stran predstavlja število spremenljivk z manjkajočimi vrednostmi, leva stran pomeni število enot, ter spodaj imamo število enot z manjkajočimi vrednostmi.
 
-```{r "priprava podatkov MICE", fig.height=7, fig.width=7}
+```{r "priprava podatkov MICE", fig.height=5, fig.width=5, fig.cap="Tabela mankajočih vrednosti."}
 md.pattern(data, rotate.names=TRUE)
 
 if(file.exists("data_mice.RDS")){
@@ -332,17 +334,23 @@ if(file.exists("data_mice.RDS")){
   }
 ```
 
-Enotam z manjkajočimi vrednostmi najpogosteje manjkajo vrednosti 1, 2 ali 3 spremenljivke. Prav tako skoraj v vseh primerih je vrednost spremenljivke `Insulin` manjkajoča vrednost (le dve enoti imata manjkajoče vrednosti in ta ni pri spremenljivki `Insulin`).
+Enotam z manjkajočimi vrednostmi najpogosteje manjkajo vrednosti spremenljivk `Insulin`(1), `SkinThickness`(2) ali `BloodPressure`(3), kar smo ugotovili že pri mehanizmu mankajočih vrednosti in analizi podatkov. Prav tako skoraj v vseh primerih je vrednost spremenljivke `Insulin` manjkajoča vrednost (le dve enoti v podatkih imata manjkajoče vrednosti in ta ni pri spremenljivki `Insulin`, ampak pri sprem. `BMI` in `Glucose`).
 
-Za izračun manjkajočih vrednosti sva uporabila funkcijo `mice()`, kjer sva za vrednosti prametrov izbrala `m` = 40 (pravilo palca pravi da izberemo `m` glede na % manjkajočih vrednosti) in `maxit` = 50 (nekoliko višja vrednost, da vrednosti zagotovo skonvergirajo).
+```{r}
+odstotek = nrow(na.omit(data))/nrow(data) * 100
+```
+
+
+Za izračun manjkajočih vrednosti sva uporabila funkcijo `mice()`, kjer sva za vrednosti prametrov izbrala `m` = 40 (pravilo palca pravi da izberemo `m` glede na % manjkajočih vrednosti - imamo `round(odstotek,2)`\% mankajočih enot) in `maxit` = 50 (nekoliko višja vrednost, da vrednosti zagotovo skonvergirajo).
+<!--Neza02: ma kaj se ti ne bi zdel bols mogoce m = 45 in maxit=55? glede na to, da je nekih 50% mankajocih?-->
 
 Poglejmo si grafe povprečja in standarednega odklona za spremenljivke z manjkajočimi vrednostmi, da se prepričamo ali vrednosti res skonvergirajo.
 
-```{r "konvergenca MICE", fig.height=6, fig.width=6}
+```{r "konvergenca MICE", fig.height=6, fig.width=6, fig.cap="Grafi povprečja in standardnega odklona spremenljivk z mankajočimi vrednostmi."}
 plot(data_mice, layout=c(2, 5))
 ```
 
-Glede na zgornje grafe, bi lahko rekli, da smo izbrali prave vrednosti parametrov (vrednosti pri vseh spremenljivkah se ustalijo).
+Glede na zgornje grafe, bi lahko rekli, da smo izbrali prave vrednosti parametrov (vrednosti pri vseh spremenljivkah z iteracijami ustalijo - gledamo grafe od leve proti desni).
 
 ```{r "logisticna regresija MICE"}
 # izracun vrednosti za vse izračunane podatkovne okvirje
@@ -353,23 +361,35 @@ mice_zdruzeno = pool(model_mice)
 mice_summary = summary(mice_zdruzeno)
 ```
 
-
 # Primerjava regresijskih koeficientov in intervalov zaupanja
 
-```{r "primerjava graficno"}
+Poglejmo si sedaj katera metoda imputacije mankajočih vrednosti se je odrezala najbolje glede na ocene regresijskih koeficientov in njihovih intervalov zaupanja. 
+
+Takoj opazimo, da sta original in listwise metodi enaki, kar se tiče intervalov zaupanja in ocen koeficientov, kar je logično, saj funkcija linearne regresije deluje po principu listwise metode. 
+
+```{r "primerjava graficno", fig.cap="Prikaz ocen regresijskih koeficientov in intervalov zaupanja za vse metode imputacij mankajočih vrednosti.", fig.width=8, fig.height=5}
 par(mar=c(0, 7, 0, 0))
 coefplot(model_org, main="Ocene regresijskih koeficientov")
-coefplot(model_brez_na, add=TRUE, col="red", offset=-0.2)
-coefplot(model_RF, add=TRUE, col="blue", offset=-0.1)
+coefplot(model_brez_na, add=TRUE, col="red", offset=-0.4)
+coefplot(model_RF, add=TRUE, col="blue", offset=-0.2)
 coefplot.default(coefs=mice_summary[-1, "estimate"], sds=mice_summary[-1, "std.error"],
                  add=TRUE, col="green", offset=0.2)
-legend("bottomright", c("Originalni", "Listwise", "random forest", "MICE"), lty=1, col=c("black", "red", "blue", "green"))
+legend("bottomright", c("Originalni", "Listwise", "odločitvena drevesa", "MICE"), lty=1, col=c("black", "red", "blue", "green"))
 ```
 
+Podrobneje si poglejmo metodi imputacije mankajočih vrednosti odločitvena drevesa in multiple(stohastične) imputacije(MICE) na spodnjem grafu. Vidno je, da sta si metodi zelo podobni oziroma ni večjih razlik med njima.
 
+```{r "primerjava graficno RF mice", fig.cap="Prikaz ocen regresijskih koeficientov in intervalov zaupanja za dve metodi imputacij mankajočih vrednosti.", fig.height = 5, fig.width=8}
+par(mar=c(0, 7, 0, 0))
+coefplot(model_RF, main="Ocene regresijskih koeficientov", col="blue")
+coefplot.default(coefs=mice_summary[-1, "estimate"], sds=mice_summary[-1, "std.error"],
+                 add=TRUE, col="green", offset=0.2)
+legend("bottomright", c("odločitvena drevesa", "MICE"), lty=1, col=c("blue", "green"))
+```
 
+Pri spremenljivkah, ki so imele največ mankajočih vrednosti, npr `Insulin` ali `SkinThickness` ne vidimo večjih razlik v ocenah regresijskih koeficientov, tudi intervali zaupanja so dokaj ozki.
 
-
+<!--Nrza02: ja kaj zakljuek, da je dost vseen kaj uporabis al kaj? hah-->
 
 
 
