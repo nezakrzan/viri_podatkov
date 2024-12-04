@@ -295,6 +295,34 @@ brez_na <- complete.cases(data)
 model_brez_na <- glm(f, data=data[brez_na,], family = binomial(link="logit"))
 ```
 
+## Vstavljanje srednje vrednosti
+
+Pri tej metodi na mesto manjkajočih vrednosti (`NA`) vstavimo srednjo vrednost spremenljivke izračunano na podatkih, ki jih imamo na voljo. Za metodo *vstavljanje srednje vrednosti* sva se odločila, saj pričakujeva da bo slabše delovala, vendar naju zanima koliko se bo zares razlikovala od preostalih vrednosti. Gre sicer za dokaj preprosto metodo, ki ni računsko zahtevna in manjkajoče vrednosti nadomestimo na dokaj lahek način. 
+
+```{r "Central value imputation"}
+dataCVI = data
+for (i in colnames(data)) {
+  dataCVI[is.na(data[, i]), i] <- mean(data[, i], na.rm=TRUE)
+}
+
+model_CVI = glm(f, data=dataCVI, family = binomial(link="logit"))
+```
+
+```{r "tabela Central value imputation", results="hold"}
+selected_stats = describe(dataCVI) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+selected_stats = rbind(selected_stats[nrow(selected_stats),],
+                       selected_stats[-nrow(selected_stats),])
+opisne_statistik = cbind(selected_stats, selected_stats_org) 
+kable(opisne_statistik,
+      align = "c", digits = 2,
+      caption = "Opisne statistike podatkov.") %>%
+kable_styling( full_width = F, 
+                position = "center") %>%
+  add_header_above(c(" " = 1, "vstavljanje srednje vrednosti" = 4, "izvirni podatki" = 4))
+```
+
+
 ## Odločitvena drevesa
 
 Kot naslednjo metodo, s katero bova nadomestila manjkajoče vrednosti v podatkih, sva si izbrala metodo odločitvenih dreves. Gre za metodo, ki dobro deluje na velikih podatkih, je robustna za nelinearnost, dobro deluje tudi v primeru osamelcev in jo lahko uporabimo tako na številskih kot tudi kategoričnih spremenljivkah. Občutek imava, glede na najine podatke, da bo to dobra metoda, ker imava velik nabor podatkov, večino številske spremenljivke in nekaj ekstremnih vrednosti, ki so osamelci(lahko vidimo v tabeli opisnih statistik podatkov na začetku). Odločila sva se za deterministični pristop vstavjanja mankajočih vrednosti, torej, da vstavljava le napovedi(brez slučajne napake modela).
@@ -372,9 +400,10 @@ par(mar=c(0, 7, 0, 0))
 coefplot(model_org, main="Ocene regresijskih koeficientov")
 coefplot(model_brez_na, add=TRUE, col="red", offset=-0.4)
 coefplot(model_RF, add=TRUE, col="blue", offset=-0.2)
+coefplot(model_CVI, add=TRUE, col="darkgoldenrod1", offset=0.2)
 coefplot.default(coefs=mice_summary[-1, "estimate"], sds=mice_summary[-1, "std.error"],
-                 add=TRUE, col="green", offset=0.2)
-legend("bottomright", c("Originalni", "Listwise", "odločitvena drevesa", "MICE"), lty=1, col=c("black", "red", "blue", "green"))
+                 add=TRUE, col="green", offset=0.4)
+legend("bottomright", c("Originalni", "Listwise", "Odločitvena drevesa", "Vstavljanje srednje vrednosti","MICE"), lty=1, col=c("black", "red", "blue", "darkgoldenrod1", "green"))
 ```
 
 Podrobneje si poglejmo metodi imputacije mankajočih vrednosti odločitvena drevesa in multiple(stohastične) imputacije(MICE) na spodnjem grafu. Vidno je, da sta si metodi zelo podobni oziroma ni večjih razlik med njima.
@@ -384,14 +413,63 @@ par(mar=c(0, 7, 0, 0))
 coefplot(model_RF, main="Ocene regresijskih koeficientov", col="blue")
 coefplot.default(coefs=mice_summary[-1, "estimate"], sds=mice_summary[-1, "std.error"],
                  add=TRUE, col="green", offset=0.2)
-legend("bottomright", c("odločitvena drevesa", "MICE"), lty=1, col=c("blue", "green"))
+legend("bottomright", c("Odločitvena drevesa", "MICE"), lty=1, col=c("blue", "green"))
 ```
 
 Pri spremenljivkah, ki so imele največ mankajočih vrednosti, npr `Insulin` ali `SkinThickness` ne vidimo večjih razlik v ocenah regresijskih koeficientov, tudi intervali zaupanja so dokaj ozki.
 
 <!--Nrza02: ja kaj zakljuek, da je dost vseen kaj uporabis al kaj? hah-->
 
+<!--Tom: jst sm mislu tko nekak razdelit graf ker drugac je skala velika in se skor nic ne vidi-->
 
+```{r "risanje koef", fig.width=8, fig.height=4}
+df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 5),
+                     metoda = rep(c("Originalni", "Listwise", "Odločitvena drevesa",
+                                    "Vstavljanje srednje vrednosti","MICE"), each=8),
+                     vred = c(model_org$coefficients[2:9],
+                              model_brez_na$coefficients[2:9],
+                              model_RF$coefficients[2:9],
+                              model_CVI$coefficients[2:9],
+                              mice_summary[-1, "estimate"]),
+                     lower = c(confint(model_org)[2:9,1],
+                              confint(model_brez_na)[2:9,1],
+                              confint(model_RF)[2:9,1],
+                              confint(model_CVI)[2:9,1],
+                              mice_summary[-1,"estimate"]-1.96*mice_summary[-1, "std.error"]),
+                     upper = c(confint(model_org)[2:9,2],
+                              confint(model_brez_na)[2:9,2],
+                              confint(model_RF)[2:9,2],
+                              confint(model_CVI)[2:9,2],
+                              mice_summary[-1,"estimate"]+1.96*mice_summary[-1, "std.error"])
+                     )
+
+vrstni_red = c("Originalni", "Listwise", "Odločitvena drevesa",
+                                    "Vstavljanje srednje vrednosti","MICE")
+
+df_errorbar$koef = factor(df_errorbar$koef)
+df_errorbar$metoda = factor(df_errorbar$metoda, levels=vrstni_red)
+indeks = which(df_errorbar$koef=="DiabetesPedigree")
+df_errorbar_brez = df_errorbar[-indeks,]
+
+# vsi koeficienti
+ggplot(df_errorbar, aes(x=vred, y=koef, colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal()
+
+
+# brez DiabetesPedigree
+ggplot(df_errorbar_brez, aes(x=vred, y=koef,colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal()
+
+
+```
 
 
 
