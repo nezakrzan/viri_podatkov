@@ -1,5 +1,13 @@
 set.seed(2024)
 
+library(ggplot2)
+library(car)
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(glue)
+
 # =============================== faktorji ====================================
 alpha.v = c(0.6, 1, 1.2)
 n.v = c(20, 200, 500)
@@ -132,5 +140,137 @@ if(useOld&&file.exists("bootstrapV2.RDS")&&file.exists("klasicna_metodaV2.RDS"))
   stopCluster(cl)
 }
 
-rezultati_bootstrap = readRDS("bootstrapV2.RDS")
-rezultati_klasicna = readRDS("klasicna_metodaV2.RDS")
+rezultati_bootstrap = readRDS("V2_bootstrap.RDS")
+rezultati_klasicna = readRDS("V2_klasicna_metodaV2.RDS")
+
+# -------------------------- graficni prikazi ----------------------------------
+# zdruziva rezultate
+podatki_skupaj = rbind(rezultati_klasicna, rezultati_bootstrap)
+# dodava metodo
+podatki_skupaj = cbind(podatki_skupaj, rep(c("klasicna analiza(LR)", "bootstrap"), each=nrow(rezultati_klasicna)))
+colnames(podatki_skupaj)[ncol(podatki_skupaj)] = "metoda"
+
+IZ_skupaj = podatki_skupaj %>% group_by(alpha, velikost.vzorca, metoda) %>%
+  summarise(int.coef = mean(int.coef), x1.coef = mean(x1.coef), x2.coef = mean(x2.coef),
+            int.lower = mean(int.lower), int.upper = mean(int.upper),
+            x1.lower = mean(x1.lower), x1.upper = mean(x1.upper),
+            x2.lower = mean(x2.lower), x2.upper = mean(x2.upper))
+
+IZ_skupaj$alpha = factor(IZ_skupaj$alpha)
+IZ_skupaj$velikost.vzorca = factor(IZ_skupaj$velikost.vzorca)
+
+# sirine intervalov
+sirine_intervalov = IZ_skupaj %>%
+  mutate(SI_int = abs(int.upper) - abs(int.lower), SI_x1 = abs(x1.upper) - abs(x1.lower), SI_x2 = abs(x2.upper) - x2.lower) %>%
+  select(alpha, velikost.vzorca, SI_int, SI_x1, SI_x2, metoda)
+sirine_intervalov = cbind(sirine_intervalov, podatki = rep(c("klasicna analiza(LR)", "bootstrap"), each=9))
+sirine_intervalov$velikost.vzorca = factor(sirine_intervalov$velikost.vzorca)
+
+# Grafi intervalov zaupanja(levo) in širine intervalov zaupanja(desno) za prosti koeficient(Intercept).
+custom_labeller <- labeller(
+  alpha = function(x) paste("\u03b1 =", x)
+)
+
+tabela_risanje = IZ_skupaj %>%
+  inner_join(sirine_intervalov, by = c("alpha", "velikost.vzorca", "metoda"))
+tabela_risanje$metoda <- factor(tabela_risanje$metoda)
+
+g1 = ggplot(tabela_risanje, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = int.lower, ymax = int.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = int.coef), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
+  facet_grid(forcats::fct_inorder(glue('alpha*" = {alpha}"')) ~., labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme_minimal() + theme(legend.position = "none") +
+  labs(color = "metoda")
+
+g2 = ggplot(tabela_risanje, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_point(aes(y = SI_int), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_int)) +
+  facet_grid(forcats::fct_inorder(glue('alpha*" = {alpha}"')) ~., labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme_minimal() + theme(legend.position = "right") +
+  labs(color = "metoda")
+library(patchwork)
+combined_plot = g1 + g2 + plot_layout(guides = "collect")
+combined_plot
+
+# Grafi intervalov zaupanja(levo) in širine intervalov zaupanja(desno) za koeficient pri x1(beta1).
+g1 = ggplot(tabela_risanje, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = x1.lower, ymax = x1.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = x1.coef), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
+  facet_grid(forcats::fct_inorder(glue('alpha*" = {alpha}"')) ~., labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme_minimal() + theme(legend.position = "none") +
+  labs(color = "metoda")
+
+g2 = ggplot(tabela_risanje, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_point(aes(y = SI_x1), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_x1)) +
+  facet_grid(forcats::fct_inorder(glue('alpha*" = {alpha}"')) ~., labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme_minimal() + theme(legend.position = "right") +
+  labs(color = "metoda")
+library(patchwork)
+combined_plot = g1 + g2 + plot_layout(guides = "collect")
+combined_plot
+
+# Grafi intervalov zaupanja(levo) in širine intervalov zaupanja(desno) za koeficient pri x2(beta2).
+g1 = ggplot(tabela_risanje, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_errorbar(aes(ymin = x2.lower, ymax = x2.upper), width=0.5, position = position_dodge2(reverse = TRUE, 0.3)) + 
+  geom_point(aes(y = x2.coef), position = position_dodge2(reverse = TRUE, 0.5), shape = 16, size = 1) +
+  facet_grid(forcats::fct_inorder(glue('alpha*" = {alpha}"')) ~., labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme_minimal() + theme(legend.position = "none") +
+  labs(color = "metoda")
+
+g2 = ggplot(tabela_risanje, aes(x=velikost.vzorca, col=metoda, group=metoda)) +
+  geom_point(aes(y = SI_x2), shape = 16, size = 1.2) +
+  geom_line(aes(y = SI_x2)) +
+  facet_grid(forcats::fct_inorder(glue('alpha*" = {alpha}"')) ~., labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme_minimal() + theme(legend.position = "right") +
+  labs(color = "metoda")
+library(patchwork)
+combined_plot = g1 + g2 + plot_layout(guides = "collect")
+combined_plot
+
+# pokritost izracun
+pokritost = podatki_skupaj %>% group_by(alpha, velikost.vzorca, metoda) %>%
+  summarise(pokritost_int = mean(int.lower <= 100 & 100 <= int.upper),
+            pokritost_x1 = mean(x1.lower <= 3 & 3 <= x1.upper),
+            pokritost_x2 = mean(x2.lower <= 2 & 2 <= x2.upper))
+
+pokritost_bootstrap = pokritost %>% filter(metoda == "bootstrap")
+pokritost_klasicna = pokritost %>% filter(metoda == "klasicna analiza(LR)")
+
+df_pokritost = data.frame("alpha" = pokritost_bootstrap$alpha, 
+                          "n" = pokritost_bootstrap$velikost.vzorca,
+                          "int_klasicna" = pokritost_klasicna$pokritost_int,
+                          "int_bootstrap" = pokritost_bootstrap$pokritost_int,
+                          "x1_klasicna" = pokritost_klasicna$pokritost_x1,
+                          "x1_bootstrap" = pokritost_bootstrap$pokritost_x1,
+                          "x2_klasicna" = pokritost_klasicna$pokritost_x2,
+                          "x2_bootstrap" = pokritost_bootstrap$pokritost_x2)
+
+kable(df_pokritost, 
+      col.names = c("alpha", "velikost vzorca", rep(c("klasicna", "bootstrap"),3)),
+      align = "c", digits = 4, caption = "Pokritost pri posameznih koeficientih in kombinacijah alphe in velikosti vzorca(n).") %>%
+  add_header_above(c(" " = 2, "intercept" = 2, "beta1" = 2, "beta2" = 2))
+
+# Graf pokritosti za vse tri koeficiente.
+pokritostLong = pivot_longer(pokritost, cols =matches("^(pokritost)."),
+                       values_to = "value",
+                       names_to = c("metric"),
+                       names_pattern = ".(int|x1|x2)") 
+
+pokritostLong$metric = factor(pokritostLong$metric, levels = c("int", "x1", "x2"),
+                              labels = c("Int", "beta1", "beta2"))
+
+ggplot(pokritostLong, aes(x = factor(velikost.vzorca), y = value, col=metoda, group=metoda)) +
+  geom_line() + geom_hline(yintercept = 0.95, size = 0.15) +
+  geom_point() +
+  # facet_grid(alpha~metric, scales="free", labeller = custom_labeller) +
+  facet_grid(forcats::fct_inorder(glue('alpha*" = {alpha}"')) ~ metric, labeller = label_parsed, scales="free") +
+  labs(x = "velikost vzorca (n)", y = " ") +
+  theme(legend.position = "bottom") +
+  theme_minimal()
