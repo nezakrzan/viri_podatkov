@@ -297,7 +297,7 @@ model_brez_na <- glm(f, data=data[brez_na,], family = binomial(link="logit"))
 
 ## Vstavljanje srednje vrednosti
 
-Pri tej metodi na mesto manjkajočih vrednosti (`NA`) vstavimo srednjo vrednost spremenljivke izračunano na podatkih, ki jih imamo na voljo. Za metodo *vstavljanje srednje vrednosti* sva se odločila, saj pričakujeva da bo slabše delovala, vendar naju zanima koliko se bo zares razlikovala od preostalih vrednosti. Gre sicer za dokaj preprosto metodo, ki ni računsko zahtevna in manjkajoče vrednosti nadomestimo na dokaj lahek način. 
+Pri tej metodi na mesto manjkajočih vrednosti (`NA`) vstavimo srednjo vrednost spremenljivke (povprečje) izračunano na podatkih, ki jih imamo na voljo. Za metodo *vstavljanje srednje vrednosti* sva se odločila, saj zaradi vstavitve le ene vrednosti na vsa manjkajoča mesta v spremneljivki, pričakujeva da bo slabše delovala. Vendar naju vseeno zanima koliko se bo zares razlikovala od preostalih metod. Gre sicer za dokaj preprosto metodo, ki ni računsko zahtevna in manjkajoče vrednosti nadomestimo na dokaj lahek način. 
 
 ```{r "Central value imputation"}
 dataCVI = data
@@ -322,6 +322,7 @@ kable_styling( full_width = F,
   add_header_above(c(" " = 1, "vstavljanje srednje vrednosti" = 4, "izvirni podatki" = 4))
 ```
 
+Iz tabela lahko razberemo, da smo res nadomestili vse manjkajoče vrednosti (število vrednosti v vsaki spremenljivki je enako 768). Prav tako se povprečja na novih in originalnih podatkih ujemata, kar je pričakovano, saj smo ravno povprečje vrednosti spremenljivke uporabili za nadomestitev manjkajočih vrednosti. Poleg spremembe števila vrednosti v spremenljivki, opazimo tudi spremembo standardnega odklona pri spremenljivkah z manjkajočimi vrednostmi (*SkinThickness*, *Insulin*,...)
 
 ## Odločitvena drevesa
 
@@ -357,7 +358,7 @@ md.pattern(data, rotate.names=TRUE)
 if(file.exists("data_mice.RDS")){
   data_mice <- readRDS("data_mice.RDS")
   } else {
-    data_mice <- mice(data, m=40, maxit=50)
+    data_mice <- mice(data, m=50, maxit=55)
     saveRDS(data_mice, "data_mice.RDS")
   }
 ```
@@ -369,7 +370,7 @@ odstotek = nrow(na.omit(data))/nrow(data) * 100
 ```
 
 
-Za izračun manjkajočih vrednosti sva uporabila funkcijo `mice()`, kjer sva za vrednosti prametrov izbrala `m` = 40 (pravilo palca pravi da izberemo `m` glede na % manjkajočih vrednosti - imamo `round(odstotek,2)`\% mankajočih enot) in `maxit` = 50 (nekoliko višja vrednost, da vrednosti zagotovo skonvergirajo).
+Za izračun manjkajočih vrednosti sva uporabila funkcijo `mice()`, kjer sva za vrednosti prametrov izbrala `m` = 50 (pravilo palca pravi da izberemo `m` glede na % manjkajočih vrednosti - imamo `r round(odstotek,2)`\% mankajočih enot) in `maxit` = 55 (nekoliko višja vrednost, da vrednosti zagotovo skonvergirajo).
 <!--Neza02: ma kaj se ti ne bi zdel bols mogoce m = 45 in maxit=55? glede na to, da je nekih 50% mankajocih?-->
 
 Poglejmo si grafe povprečja in standarednega odklona za spremenljivke z manjkajočimi vrednostmi, da se prepričamo ali vrednosti res skonvergirajo.
@@ -424,7 +425,7 @@ Pri spremenljivkah, ki so imele največ mankajočih vrednosti, npr `Insulin` ali
 
 ```{r "risanje koef", fig.width=8, fig.height=4}
 df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 5),
-                     metoda = rep(c("Originalni", "Listwise", "Odločitvena drevesa",
+                     metoda = rep(c("Originalni", "Listwise", "Odlocitvena drevesa",
                                     "Vstavljanje srednje vrednosti","MICE"), each=8),
                      vred = c(model_org$coefficients[2:9],
                               model_brez_na$coefficients[2:9],
@@ -443,7 +444,7 @@ df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 5),
                               mice_summary[-1,"estimate"]+1.96*mice_summary[-1, "std.error"])
                      )
 
-vrstni_red = c("Originalni", "Listwise", "Odločitvena drevesa",
+vrstni_red = c("Originalni", "Listwise", "Odlocitvena drevesa",
                                     "Vstavljanje srednje vrednosti","MICE")
 
 df_errorbar$koef = factor(df_errorbar$koef)
@@ -472,6 +473,13 @@ ggplot(df_errorbar_brez, aes(x=vred, y=koef,colour = metoda)) +
 ```
 
 
+# Zaključek
+
+Glede na rezultate najne analize bi lahko metode razdelila v dve skupini. V prvi skupini je uporaba funckije `glm()` na originalnih podatkih in uporaba *listwise* oziroma *pairwise* metode. Za naštete primere sva pričakovala nekoliko slabše rezultate, saj pri oblikovanju logističnega modela uporabijo le podatke, ki so na voljo. S tem lahko pričakujemo drugačne vrednosti mer središčnosti in nekoliko višje mere razpršenosti, kar pa vpliva tudi na oceno koeficientov z losgistično regresijo. To se je izkazalo res tudi v najnem primeru, saj so se ocene koeficientov in 95% intervalov zaupanja znotraj skupine popolnoma ujemali. To pa tudi posledica delovanja funkcije `glm()`, saj pred modeliranje odstrani vse vrstice z manjkajočimi vrednostmi. \
+V drugo skupino pa bi lahko uvrstila vse preostale metode, ki sva jih še analizirala. To so *Odlocitvena drevesa*, *Vstavljanje srednje vrednosti* in *Multiple(stohastične) imputacije preko verižnih enačb*. Vse tri metode za obravnavo manjkajočih vrednosti so pri modeliranju dala podobne ocene koeficientov in njihovih 95% intervalov zaupanja. Mogoče bi lahko izpostavila nekoliko ožje intervale zaupanja pri metodi *Vstavljanje srednje vrednosti*, vendar je to tudi pričakovano, saj manjkajoče vrednosti nadomestimo s srednjo vrednosto spremenljivke. S tem podcenimo variabilnost, saj v primeru velikega števila manjkajočih vrednosti spremneljivke, bo večina vrednosti enakih, torej precej podcenimo variabilnost. 
+
+Po zgornji analizi bi za nadomestitev, manjkajočih vrednosti uporabila metodo *Odlocitvena drevesa* ali *Multiple(stohastične) imputacije preko verižnih enačb*. 
+<!--Tom: tuki pa nevem kaj tocno mu argumentirat...-->
 
 
 
