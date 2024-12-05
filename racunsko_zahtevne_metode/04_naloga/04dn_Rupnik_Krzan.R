@@ -1,7 +1,3 @@
-# https://github.com/ashishpatel26/Pima-Indians-Diabetes-Dataset-Missing-Value-Imputation/blob/master/Readme.md
-# https://www.kaggle.com/code/faelk8/diabetes-eda-missing-values
-# https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database
-
 library(psych)
 library(ggplot2)
 library(tidyr)
@@ -12,6 +8,7 @@ library(multiUS)
 library(mice)
 library(arm)
 library(randomForest)
+library(patchwork)
 
 # ============================== uvoz podatkov =================================
 
@@ -260,48 +257,257 @@ prop.table(table(is.na(data$Glucose), data$Class), 2) # večja verjetnost, da bo
 prop.table(table(is.na(data$BMI), data$Class), 2) # večja verjetnost, da bo manjkala pri puncah, ki nimajo diabetes
 
 # ======================= dealing with missing values ==========================
-
-# formula ki jo uporabiva v vsakem logističnem modelu
-
+# --------------------------- logisticna regresija -----------------------------
+## formula za logisticno regresijo
 f <- formula(Class ~ .)
 
-# ___________ originalni podatki (brez spreminjanja)
-
+## logisticna regresija original podatki
 model_org <- glm(f, data=data, family = binomial(link="logit"))
-# 376 enot izbrisanih zaradi manjkajočih podatkov
+# funkcija glm sama po sebi izbrise vrstice z mankajočimi podatki (376 vrstic)
 
-# __________ podatki brez manjkajocih vrednosti
+# podatki uporabljeni za izracun koef in IZ
+podatki_model = model_org$model
+# Osnovne opisne statistike podatkov.
+selected_stats = describe(podatki_model) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+selected_stats_org = selected_stats_org %>% dplyr::select(-median, -min, -max)
+selected_stats_org <- rbind(selected_stats_org[nrow(selected_stats_org), ], selected_stats_org[-nrow(selected_stats_org), ])
+opisne_statistik = cbind(selected_stats, selected_stats_org) 
+kable(opisne_statistik,
+      align = "c", digits = 2,
+      caption = "Osnovne opisne statistike podatkov.") %>%
+  kable_styling(full_width = F, 
+                position = "center") %>%
+  add_header_above(c(" " = 1, "listwise deletion" = 4, "izvirni podatki" = 4))
 
+# ----------------------------- listwise deletion ------------------------------
+# logisticna regresija podatki brez NA (listwise deletion)
 brez_na <- complete.cases(data)
 model_brez_na <- glm(f, data=data[brez_na,], family = binomial(link="logit"))
 
-# ___________ random forest
+# --------------------------- odlocitvena drevesa ------------------------------
+## priprava podatkov random forest
+# dve iteraciji
+dataRF_dve <- rfImpute(f, data, iter=2)
+model_RF_dve <- glm(f, data=dataRF_dve, family = binomial(link="logit"))
 
-dataRF <- rfImpute(f, data, niter=10)
-model_RF <- glm(f, data=dataRF, family = binomial(link="logit"))
+# pet iteracij
+dataRF_pet <- rfImpute(f, data, iter=5)
+model_RF_pet <- glm(f, data=dataRF_pet, family = binomial(link="logit"))
 
+# deset iteracij
+dataRF_deset <- rfImpute(f, data, iter=10)
+model_RF_deset <- glm(f, data=dataRF_deset, family = binomial(link="logit"))
 
-# ____________ Multiple imputation
-# tabela manjkajočih vrednosti
+## Opsine statistike
+# dve iteraciji
+selected_stats_dve = describe(dataRF_dve) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+opisne_statistik_dve = cbind(selected_stats_dve, selected_stats_org) 
+kable(opisne_statistik_dve,
+      align = "c", digits = 2,
+      caption = "Opisne statistike podatkov pri dveh iteracijah.") %>%
+  kable_styling( full_width = F, 
+                 position = "center") %>%
+  add_header_above(c(" " = 1, "odločitvena drevesa" = 4, "izvirni podatki" = 4))
+
+# pet iteracij
+selected_stats_pet = describe(dataRF_pet) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+opisne_statistik_pet = cbind(selected_stats_pet, selected_stats_org) 
+kable(opisne_statistik_pet,
+      align = "c", digits = 2,
+      caption = "Opisne statistike podatkov pri petih iteracijah.") %>%
+  kable_styling( full_width = F, 
+                 position = "center") %>%
+  add_header_above(c(" " = 1, "odločitvena drevesa" = 4, "izvirni podatki" = 4))
+
+# deset iteracij
+selected_stats_deset = describe(dataRF_deset) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+opisne_statistik_deset = cbind(selected_stats_deset, selected_stats_org) 
+kable(opisne_statistik_deset,
+      align = "c", digits = 2,
+      caption = "Opisne statistike podatkov pri desetih iteracijah.") %>%
+  kable_styling( full_width = F, 
+                 position = "center") %>%
+  add_header_above(c(" " = 1, "odločitvena drevesa" = 4, "izvirni podatki" = 4))
+
+## Grafični prikaz
+# Prikaz ocen regresijskih koeficientov in intervalov zaupanja za metodo odločitvenih dreves imputacij mankajočih vrednosti za različne iteracije(brez spremenljivke DiabetesPedigree levo in z desno).
+df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 3),
+                         metoda = rep(c("Dve iteraiciji", "Pet iteracij", "Deset iteracij"), each=8),
+                         vred = c(model_RF_dve$coefficients[2:9],
+                                  model_RF_pet$coefficients[2:9],
+                                  model_RF_deset$coefficients[2:9]),
+                         lower = c(confint(model_RF_dve)[2:9,1],
+                                   confint(model_RF_pet)[2:9,1],
+                                   confint(model_RF_deset)[2:9,1]),
+                         upper = c(confint(model_RF_dve)[2:9,2],
+                                   confint(model_RF_pet)[2:9,2],
+                                   confint(model_RF_deset)[2:9,2]))
+
+vrstni_red = c("Dve iteraiciji", "Pet iteracij", "Deset iteracij")
+
+df_errorbar$koef = factor(df_errorbar$koef)
+df_errorbar$metoda = factor(df_errorbar$metoda, levels=vrstni_red)
+indeks = which(df_errorbar$koef=="DiabetesPedigree")
+df_errorbar_brez = df_errorbar[-indeks,]
+
+# brez DiabetesPedigree
+g1 = ggplot(df_errorbar_brez, aes(x=vred, y=koef,colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal() + theme(legend.position = "none")
+g2 = ggplot(df_errorbar, aes(x=vred, y=koef, colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal() + theme(legend.position = "right") +
+  labs(y = " ")
+combined_plot = g1 + g2 + plot_layout(guides = "collect")
+
+# -------- Multiple(stohastične) imputacije preko verižnih enačb ~ MICE -------
+## priprava podatkov MICE
+# Tablea mankajočih vrednosti.
 md.pattern(data, rotate.names=TRUE)
-
-# izračun manjkajočih vrednosti
 if(file.exists("data_mice.RDS")){
   data_mice <- readRDS("data_mice.RDS")
 } else {
-  data_mice <- mice(data, m=40, maxit=50)
+  data_mice <- mice(data, m=50, maxit=55)
   saveRDS(data_mice, "data_mice.RDS")
 }
 
-
-# narisemo mean/sd...skonvergira?
+# Grafi povprečja in standardnega odklona spremenljivk z mankajočimi vrednostmi.
 plot(data_mice, layout=c(2, 5))
 
-# naredimo model
+## logisticna regresija MICE
+# izracun vrednosti za vse izračunane podatkovne okvirje
 model_mice = with(data=data_mice, expr=glm(Class ~ Pregnant + Glucose + BloodPressure + SkinThickness +
-                                             Insulin + BMI + DiabetesPedigree + Age,
-                                           family = binomial(link="logit")))
-# zdruzimo podatke
+                                             Insulin + BMI + DiabetesPedigree + Age, family = binomial(link="logit")))
 mice_zdruzeno = pool(model_mice)
 mice_summary = summary(mice_zdruzeno)
+
+# ======== Primerjava regresijskih koeficientov in intervalov zaupanja ========
+# Prikaz ocen regresijskih koeficientov in intervalov zaupanja za vse metode imputacij mankajočih vrednosti(brez spremenljivke DiabetesPedigree).
+df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 4),
+                         metoda = rep(c("Originalni", "Listwise", "Odlocitvena drevesa","MICE"), each=8),
+                         vred = c(model_org$coefficients[2:9],
+                                  model_brez_na$coefficients[2:9],
+                                  model_RF_deset$coefficients[2:9],
+                                  mice_summary[-1, "estimate"]),
+                         lower = c(confint(model_org)[2:9,1],
+                                   confint(model_brez_na)[2:9,1],
+                                   confint(model_RF_deset)[2:9,1],
+                                   mice_summary[-1,"estimate"]-1.96*mice_summary[-1, "std.error"]),
+                         upper = c(confint(model_org)[2:9,2],
+                                   confint(model_brez_na)[2:9,2],
+                                   confint(model_RF_deset)[2:9,2],
+                                   mice_summary[-1,"estimate"]+1.96*mice_summary[-1, "std.error"]))
+vrstni_red = c("Originalni", "Listwise", "Odlocitvena drevesa","MICE")
+df_errorbar$koef = factor(df_errorbar$koef)
+df_errorbar$metoda = factor(df_errorbar$metoda, levels=vrstni_red)
+indeks = which(df_errorbar$koef=="DiabetesPedigree")
+df_errorbar_brez = df_errorbar[-indeks,]
+
+ggplot(df_errorbar_brez, aes(x=vred, y=koef,colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal()
+
+# Prikaz ocen regresijskih koeficientov in intervalov zaupanja za vse metode imputacij mankajočih vrednosti(z spremenljivke DiabetesPedigree).
+# vsi koeficienti
+ggplot(df_errorbar, aes(x=vred, y=koef, colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal()
+
+# ======================= Vstavljanje srednje vrednosti ========================
+dataCVI = data
+for (i in colnames(data)) {
+  dataCVI[is.na(data[, i]), i] <- mean(data[, i], na.rm=TRUE)
+}
+model_CVI = glm(f, data=dataCVI, family = binomial(link="logit"))
+
+## Opisne statistike
+selected_stats = describe(dataCVI) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+selected_stats = rbind(selected_stats[nrow(selected_stats),],
+                       selected_stats[-nrow(selected_stats),])
+opisne_statistik = cbind(selected_stats, selected_stats_org) 
+kable(opisne_statistik,
+      align = "c", digits = 2,
+      caption = "Opisne statistike podatkov.") %>%
+  kable_styling( full_width = F, 
+                 position = "center") %>%
+  add_header_above(c(" " = 1, "vstavljanje srednje vrednosti" = 4, "izvirni podatki" = 4))
+
+# ======== Primerjava regresijskih koeficientov in intervalov zaupanja ========
+# Prikaz ocen regresijskih koeficientov in intervalov zaupanja za vse metode imputacij mankajočih vrednosti(brez spremenljivke DiabetesPedigree).
+df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 5),
+                         metoda = rep(c("Originalni", "Listwise", "Odlocitvena drevesa",
+                                        "Vstavljanje srednje vrednosti","MICE"), each=8),
+                         vred = c(model_org$coefficients[2:9],
+                                  model_brez_na$coefficients[2:9],
+                                  model_RF_deset$coefficients[2:9],
+                                  model_CVI$coefficients[2:9],
+                                  mice_summary[-1, "estimate"]),
+                         lower = c(confint(model_org)[2:9,1],
+                                   confint(model_brez_na)[2:9,1],
+                                   confint(model_RF_deset)[2:9,1],
+                                   confint(model_CVI)[2:9,1],
+                                   mice_summary[-1,"estimate"]-1.96*mice_summary[-1, "std.error"]),
+                         upper = c(confint(model_org)[2:9,2],
+                                   confint(model_brez_na)[2:9,2],
+                                   confint(model_RF_deset)[2:9,2],
+                                   confint(model_CVI)[2:9,2],
+                                   mice_summary[-1,"estimate"]+1.96*mice_summary[-1, "std.error"]))
+vrstni_red = c("Originalni", "Listwise", "Odlocitvena drevesa", "Vstavljanje srednje vrednosti","MICE")
+df_errorbar$koef = factor(df_errorbar$koef)
+df_errorbar$metoda = factor(df_errorbar$metoda, levels=vrstni_red)
+indeks = which(df_errorbar$koef=="DiabetesPedigree")
+df_errorbar_brez = df_errorbar[-indeks,]
+
+# brez DiabetesPedigree
+ggplot(df_errorbar_brez, aes(x=vred, y=koef,colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal()
+
+# Prikaz ocen regresijskih koeficientov in intervalov zaupanja za vse metode imputacij mankajočih vrednosti(z spremenljivke DiabetesPedigree).
+# vsi koeficienti
+ggplot(df_errorbar, aes(x=vred, y=koef, colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

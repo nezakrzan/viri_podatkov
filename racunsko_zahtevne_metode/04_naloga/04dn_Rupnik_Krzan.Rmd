@@ -9,8 +9,6 @@ header-includes:
 - \usepackage[slovene]{babel}
 - \usepackage{float}
 - \usepackage[T1]{fontenc}
-editor_options:
-  chunk_output_type: inline
 ---
 
 ```{r setup, include=FALSE}
@@ -58,12 +56,8 @@ data = read.csv("pima_indians_diabetes_dataset.csv", header = TRUE, sep = ",", n
 # Cilj naloge
 
 Analizirali bomo podatke o diabetesu Nacionalnega inštituta za diabetes, prebavne in ledvične bolezni, kateri vsebujejo več medicinskih napovednih spremenljivk in eno ciljno spremenljivko. Podatki imajo veliko mankajočih enot(več kot 30\%), zato bova v nalgi definirala oz. ocenila, kakšen je mehanizem mankajočih vrednosti(po Rubinu) in obravnavala mankajoče vrednosti po treh različnih metodah. \
-Zanima naju torej mehanizem mankajočih vrednosti(zakaj in kako manjkajo podatki v podatkovnem nizu), ker ti mehanizmi vplivajo na izbiro ustreznih metod za obravnavo manjkajočih vrednosti, kar pa bova delala v drugem delu naloge. 
+Zanima naju torej mehanizem mankajočih vrednosti(zakaj in kako manjkajo podatki v podatkovnem nizu), da bova potem ustrezno izbrala metodo imputacije in jo primerjala še z drugima dvema metodama, ki se nama bosta zdeli primerni.
 
-<!--
-Tuki je treba dopisat katere modele te metode bova uporabila...
-Za obravavo mankajočih vrednosti bova uporabila metodo **multiple(stohastične) imputacija**....
--->
 
 # Podatki
 Izbrala sva si zdravstvene podatke žensk indijanskega plemena Pima, ki so starejše od 21 let. Glavni cilj tega niza je napovedati, ali ima posameznica diabetes, na podlagi različnih medicinskih spremenljivk:
@@ -87,12 +81,10 @@ kable(selected_stats_org,
       align = "c", digits = 2,
       caption = "Opisne statistike podatkov.") %>%
 kable_styling( full_width = F, 
-                position = "center")
+                position = "center", latex_options = "H")
 ```
 
-\vspace{55mm}
-
-Podatkovni niz vsebuje `r nrow(data)` primerov in torej vsak primer vključuje 8 merjenih spremenljivk in diagnozo(`Class`). Podatki vsebujejo veliko količino mankajočih vrednosti, kar lahko vidimo na spodnjem grafu.
+Podatkovni niz vsebuje `r nrow(data)` primerov in torej vsak primer vključuje 8 merjenih spremenljivk in diagnozo(`Class`) - oseba ima diabetes(vrednost 1), oseba nima diabetesa(vrednost 0). Podatki vsebujejo veliko količino mankajočih vrednosti, kar lahko vidimo na spodnjem grafu glede na posamezno spremenljivko. Vidimo, da spremenljivke, kot so starost(`Age`), število nosečnosti(`Pregnant`), diagnoza(`Class`) in genetska nagnjenost(`DiabetesPedigree`) nimajo mankajočih vrednosti, torej imamo mankajoče vrednosti samo pri spremenljivkah, ki so bile verjetno izmerjene s strani medicinskega osebja.
 
 ```{r, results=T, fig.cap="Odstotek mankajočih vrednosti pri posamezni spremenljivki in vizualizacija.", fig.height =5}
 library(naniar)
@@ -252,9 +244,9 @@ Poleg tega sva prišla do zaključka, da je verjetnost za mankajočo vrednost pr
 
 S pomočjo $\chi^2$-testa, ki preučuje ali obstaja statistično značilna povezava med manjkajočimi vrednostmi v posamezni spremenljivki in razredi v spremenljivki `Class`, sva ugotovila, da mankajoče vrednosti pri spremenljivkah niso statistično povezane z razredom `Class`. Razred, ki označujej prisotnost ali odsotnost sladkorne bolezni, torej ne vpliva na to, ali manjkajo podatki za spremenljivke.
 
-# Logistična regresija
+# Logistična regresija in imputacija mankajočih vrednosti
 
-S pomočjo logistične regresije (`glm()`) bova na podlagi različnih medicinskih spremenljivk (meritev) poskusila napovedati, ali ima posameznica diabetes. Pri tem bova uporabila različne metode za obravnavo mankajočih vrednosti. Najprej bova preverila kakšne vrednosti koeficientov dobimo v primeru, da uporabimo podate takše kakršni so (originalne). Nato bova s pomočjo metode `listwise deletion` ohranila le tiste statistične enote, ki imajo zabeležene podatke vseh spremenljivk. Manjkajoče vrednosti (`NA`) bova z metodo *odločitvenih dreves* (`random forest`) izračunala oz. "zapolnila" ter naredila logistično regresijo. Za konec pa bova preverila kakšne rezultate dobimo v primeru uporabe metode *multiple imputacije preko verižnih enačb* (`MICE`).
+S pomočjo logistične regresije (`glm()`) bova na podlagi različnih medicinskih spremenljivk (meritev) poskusila napovedati, ali ima posameznica diabetes. Pri tem bova uporabila različne metode za obravnavo mankajočih vrednosti. Najprej bova preverila kakšne vrednosti koeficientov dobimo v primeru, da uporabimo podate takše kakršni so (originalne). Nato bova s pomočjo metode `listwise deletion` ohranila le tiste statistične enote, ki imajo zabeležene podatke vseh spremenljivk. Manjkajoče vrednosti (`NA`) bova z metodo *odločitvenih dreves* (`random forest`) izračunala oz. "zapolnila" ter naredila logistično regresijo. Za konec pa bova preverila kakšne rezultate dobimo v primeru uporabe metode *multiple(stohastične) imputacije preko verižnih enačb* (`MICE`).
 
 ```{r "formula za logisticno regresijo"}
  f <- formula(Class ~ .)
@@ -264,7 +256,6 @@ S pomočjo logistične regresije (`glm()`) bova na podlagi različnih medicinski
 ## Originalni (prvotni podatki)
 
 Najprej preverimo kakšne vrednosti koeficientov in pripadajočih 95% intervalov zaupanja dobimo v primeru, da za modeliranje uporabimo originalne (nespremenjene podatke). Pri izvajanju tega sva ugotovila, da funkcija za logistično regresijo `glm()` ne sprejema mankajočih vrednosti in že sama po sebi izvaja metodo `listwise deletion`. 
-<!--Neza02: sm dopisala, sej skos na vajah govori, da mu je všeč če kej ugotovimo...-->
 
 ```{r "logisticna regresija org podatki", results="hold"}
 model_org <- glm(f, data=data, family = binomial(link="logit"))
@@ -282,7 +273,7 @@ kable(opisne_statistik,
       align = "c", digits = 2,
       caption = "Osnovne opisne statistike podatkov.") %>%
 kable_styling(full_width = F, 
-                position = "center") %>%
+                position = "center", latex_options = "H") %>%
   add_header_above(c(" " = 1, "listwise deletion" = 4, "izvirni podatki" = 4))
 ```
 
@@ -295,64 +286,110 @@ brez_na <- complete.cases(data)
 model_brez_na <- glm(f, data=data[brez_na,], family = binomial(link="logit"))
 ```
 
-## Vstavljanje srednje vrednosti
-
-Pri tej metodi na mesto manjkajočih vrednosti (`NA`) vstavimo srednjo vrednost spremenljivke (povprečje) izračunano na podatkih, ki jih imamo na voljo. Za metodo *vstavljanje srednje vrednosti* sva se odločila, saj zaradi vstavitve le ene vrednosti na vsa manjkajoča mesta v spremneljivki, pričakujeva da bo slabše delovala. Vendar naju vseeno zanima koliko se bo zares razlikovala od preostalih metod. Gre sicer za dokaj preprosto metodo, ki ni računsko zahtevna in manjkajoče vrednosti nadomestimo na dokaj lahek način. 
-
-```{r "Central value imputation"}
-dataCVI = data
-for (i in colnames(data)) {
-  dataCVI[is.na(data[, i]), i] <- mean(data[, i], na.rm=TRUE)
-}
-
-model_CVI = glm(f, data=dataCVI, family = binomial(link="logit"))
-```
-
-```{r "tabela Central value imputation", results="hold"}
-selected_stats = describe(dataCVI) %>% 
-  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
-selected_stats = rbind(selected_stats[nrow(selected_stats),],
-                       selected_stats[-nrow(selected_stats),])
-opisne_statistik = cbind(selected_stats, selected_stats_org) 
-kable(opisne_statistik,
-      align = "c", digits = 2,
-      caption = "Opisne statistike podatkov.") %>%
-kable_styling( full_width = F, 
-                position = "center") %>%
-  add_header_above(c(" " = 1, "vstavljanje srednje vrednosti" = 4, "izvirni podatki" = 4))
-```
-
-Iz tabela lahko razberemo, da smo res nadomestili vse manjkajoče vrednosti (število vrednosti v vsaki spremenljivki je enako 768). Prav tako se povprečja na novih in originalnih podatkih ujemata, kar je pričakovano, saj smo ravno povprečje vrednosti spremenljivke uporabili za nadomestitev manjkajočih vrednosti. Poleg spremembe števila vrednosti v spremenljivki, opazimo tudi spremembo standardnega odklona pri spremenljivkah z manjkajočimi vrednostmi (*SkinThickness*, *Insulin*,...)
-
 ## Odločitvena drevesa
 
 Kot naslednjo metodo, s katero bova nadomestila manjkajoče vrednosti v podatkih, sva si izbrala metodo odločitvenih dreves. Gre za metodo, ki dobro deluje na velikih podatkih, je robustna za nelinearnost, dobro deluje tudi v primeru osamelcev in jo lahko uporabimo tako na številskih kot tudi kategoričnih spremenljivkah. Občutek imava, glede na najine podatke, da bo to dobra metoda, ker imava velik nabor podatkov, večino številske spremenljivke in nekaj ekstremnih vrednosti, ki so osamelci(lahko vidimo v tabeli opisnih statistik podatkov na začetku). Odločila sva se za deterministični pristop vstavjanja mankajočih vrednosti, torej, da vstavljava le napovedi(brez slučajne napake modela).
 
+Metoda deluje iterativno - pri vsakem koraku izboljša imputirane vrednosti na osnovi modela, ki ga gradi z uporabo predhodno imputiranih podatkov. Z večanjem števila iteracij običajno dobimo boljše rezultate. Izvedla sva imputacije na podlagi 1 iteracije, petih in desetih. Ker najin nabr podatkov ni tako zelo ogromno velik, kot so ponavadi podatki pri strojnem učenju(kamor spadajo odločitvena drevesa), se nama zdi, da bo 10 iteracij več kot dovolj, pri dveh iteracijah pa se verjetno imputirane vrednosti še ne bodo stabilizirale.
+
+V spodnjih tabelah lahko vidimo primerjavo med osnovnimi statistikami pri originalnih podatkih in podatkih z imputiranimi mankajočimi vrednostmi.
+
 ```{r "priprava podatkov random forest"}
-dataRF <- rfImpute(f, data, iter=10)
-model_RF <- glm(f, data=dataRF, family = binomial(link="logit"))
+# dve iteraciji
+dataRF_dve <- rfImpute(f, data, iter=2)
+model_RF_dve <- glm(f, data=dataRF_dve, family = binomial(link="logit"))
+
+# pet iteracij
+dataRF_pet <- rfImpute(f, data, iter=5)
+model_RF_pet <- glm(f, data=dataRF_pet, family = binomial(link="logit"))
+
+# deset iteracij
+dataRF_deset <- rfImpute(f, data, iter=10)
+model_RF_deset <- glm(f, data=dataRF_deset, family = binomial(link="logit"))
 ```
 
 ```{r "logisticna regresija random forest", results="hold"}
-selected_stats = describe(dataRF) %>% 
+# dve iteraciji
+selected_stats_dve = describe(dataRF_dve) %>% 
   dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
-opisne_statistik = cbind(selected_stats, selected_stats_org) 
-kable(opisne_statistik,
+opisne_statistik_dve = cbind(selected_stats_dve, selected_stats_org) 
+kable(opisne_statistik_dve,
       align = "c", digits = 2,
-      caption = "Opisne statistike podatkov.") %>%
+      caption = "Opisne statistike podatkov pri dveh iteracijah.") %>%
 kable_styling( full_width = F, 
-                position = "center") %>%
+                position = "center", latex_options = "H") %>%
+  add_header_above(c(" " = 1, "odločitvena drevesa" = 4, "izvirni podatki" = 4))
+
+# pet iteracij
+selected_stats_pet = describe(dataRF_pet) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+opisne_statistik_pet = cbind(selected_stats_pet, selected_stats_org) 
+kable(opisne_statistik_pet,
+      align = "c", digits = 2,
+      caption = "Opisne statistike podatkov pri petih iteracijah.") %>%
+kable_styling(full_width = F, 
+                position = "center", latex_options = "H") %>%
+  add_header_above(c(" " = 1, "odločitvena drevesa" = 4, "izvirni podatki" = 4))
+
+# deset iteracij
+selected_stats_deset = describe(dataRF_deset) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+opisne_statistik_deset = cbind(selected_stats_deset, selected_stats_org) 
+kable(opisne_statistik_deset,
+      align = "c", digits = 2,
+      caption = "Opisne statistike podatkov pri desetih iteracijah.") %>%
+kable_styling( full_width = F, 
+                position = "center", latex_options = "H") %>%
   add_header_above(c(" " = 1, "odločitvena drevesa" = 4, "izvirni podatki" = 4))
 ```
 
+Tokrat lahko vidimo, da smo z izračunom nadomestili manjkajoče vrednosti (število vrednosti v vsakem stolpcu (spremenljivki) je enako 768, tako kot na izvirnih podatkih) pri vseh iteracijah seveda. Pričakovano so se spremenile vrednosti opisnih spremenljivk, predvsem pa opazimo razliko oz. zmanjšanje standardnega odklona (`sd`) pri vseh spremenljivkah, opaziva tudi, da so zmanjšanja/večanja opisnih statistik bolj izrazita pri spremenljivkah, ki so imele v izvirnih podatkih več mankajočih vrednosti(npr. `Insulin`), kar je seveda logično, saj moramo vstaviti več mankajočih vrednosti. Večjih razlik med številom iteracij pa ni, kar lahko vidimo tudi na spodnjih dveh grafih, zato je morda privzeta vrednost(deset iteracij) najboljša izbira.
 
-Tokrat lahko vidimo, da smo z izračunom nadomestili manjkajoče vrednosti (število vrednosti v vsakem stolpcu (spremenljivki) je enako 768, tako kot na izvirnih podatkih). Pričakovano so se spremenile vrednosti opisnih spremenljivk, predvsem pa opazimo razliko oz. zmanjšanje standardnega odklona (`sd`) pri vseh spremenljivkah, opaziva tudi, da so zmanjšanja/večanja opisnih statistik bolj izrazita pri spremenljivkah, ki so imele v izvirnih podatkih več mankajočih vrednosti(npr. `Insulin`), kar je seveda logično, saj moramo vstaviti več mankajočih vrednosti.
+```{r "primerjava graficno iteracije", fig.cap="Prikaz ocen regresijskih koeficientov in intervalov zaupanja za metodo odločitvenih dreves imputacij mankajočih vrednosti za različne iteracije(brez spremenljivke DiabetesPedigree levo in z desno).", fig.width=14, fig.height=8}
+df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 3),
+                     metoda = rep(c("Dve iteraiciji", "Pet iteracij", "Deset iteracij"), each=8),
+                     vred = c(model_RF_dve$coefficients[2:9],
+                              model_RF_pet$coefficients[2:9],
+                              model_RF_deset$coefficients[2:9]),
+                     lower = c(confint(model_RF_dve)[2:9,1],
+                              confint(model_RF_pet)[2:9,1],
+                              confint(model_RF_deset)[2:9,1]),
+                     upper = c(confint(model_RF_dve)[2:9,2],
+                              confint(model_RF_pet)[2:9,2],
+                              confint(model_RF_deset)[2:9,2]))
+
+vrstni_red = c("Dve iteraiciji", "Pet iteracij", "Deset iteracij")
+
+df_errorbar$koef = factor(df_errorbar$koef)
+df_errorbar$metoda = factor(df_errorbar$metoda, levels=vrstni_red)
+indeks = which(df_errorbar$koef=="DiabetesPedigree")
+df_errorbar_brez = df_errorbar[-indeks,]
+
+g1 = ggplot(df_errorbar_brez, aes(x=vred, y=koef,colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal() + theme(legend.position = "none")
+
+g2 = ggplot(df_errorbar, aes(x=vred, y=koef, colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal() + theme(legend.position = "right") +
+  labs(y = " ")
+
+library(patchwork)
+combined_plot = g1 + g2 + plot_layout(guides = "collect")
+combined_plot
+```
 
 ## Multiple(stohastične) imputacije preko verižnih enačb
 
 Najprej si oglejmo tabelo manjkajočih vrednosti. Desna stran predstavlja število spremenljivk z manjkajočimi vrednostmi, leva stran pomeni število enot, ter spodaj imamo število enot z manjkajočimi vrednostmi.
 
-```{r "priprava podatkov MICE", fig.height=5, fig.width=5, fig.cap="Tabela mankajočih vrednosti."}
+```{r "priprava podatkov MICE", fig.height=5, fig.width=7, fig.cap="Tabela mankajočih vrednosti."}
 md.pattern(data, rotate.names=TRUE)
 
 if(file.exists("data_mice.RDS")){
@@ -392,94 +429,146 @@ mice_summary = summary(mice_zdruzeno)
 
 # Primerjava regresijskih koeficientov in intervalov zaupanja
 
-Poglejmo si sedaj katera metoda imputacije mankajočih vrednosti se je odrezala najbolje glede na ocene regresijskih koeficientov in njihovih intervalov zaupanja. 
+Poglejmo si sedaj katera metoda imputacije mankajočih vrednosti se je odrezala najbolje glede na ocene regresijskih koeficientov in njihovih intervalov zaupanja. Na enem grafu bomo prikazali spremenljivko `DiabetesPedigree`, na drugem pa ostale spremenljivke zaradi boljšega pregleda.
 
-Takoj opazimo, da sta original in listwise metodi enaki, kar se tiče intervalov zaupanja in ocen koeficientov, kar je logično, saj funkcija linearne regresije deluje po principu listwise metode. 
+Takoj opazimo, da sta original in listwise metodi enaki, kar se tiče intervalov zaupanja in ocen koeficientov, kar je logično, saj funkcija linearne regresije deluje po principu listwise metode. Opazno je tudi, da je širina intervalov pri vseh spremenljivkah ožja pri metodi imputacije z odločitvenimi drevesi in MICE. Vse tri metode so si sicer dokaj podobne, še posebaj pri spremenljivki Insulin, kjer smo imeli največ mankajočih vrednosti, pri spremenljivki SkinThickness je vseeno razlika med metodo listwise in odločitvenimi drevesi ali metodo MICE.\
+Pri spremenljivkah, ki so imele največ mankajočih vrednosti, npr `Insulin` ali `SkinThickness` torej ne vidimo večjih razlik v ocenah regresijskih koeficientov, tudi intervali zaupanja so dokaj ozki glede na metode imputacije mankajočih vrednosti. S tem ko pri spremenljivkah, ki pa niso imele mankajoče vrednosti, pa dobimo ožje intervale zaupanja če v linearni regresiji uporabimo podatke, kjer smo imputirali mankajoče vrednosti pri drugih spremenljivkah s pomočjo metode odločitvenih dreves in MICE. Torej metodi pozitivno prispevata k ocenjevanju koeficientov pri linearni regresiji in njihovim intervalom zaupanja.
 
-```{r "primerjava graficno", fig.cap="Prikaz ocen regresijskih koeficientov in intervalov zaupanja za vse metode imputacij mankajočih vrednosti.", fig.width=8, fig.height=5}
-par(mar=c(0, 7, 0, 0))
-coefplot(model_org, main="Ocene regresijskih koeficientov")
-coefplot(model_brez_na, add=TRUE, col="red", offset=-0.4)
-coefplot(model_RF, add=TRUE, col="blue", offset=-0.2)
-coefplot(model_CVI, add=TRUE, col="darkgoldenrod1", offset=0.2)
-coefplot.default(coefs=mice_summary[-1, "estimate"], sds=mice_summary[-1, "std.error"],
-                 add=TRUE, col="green", offset=0.4)
-legend("bottomright", c("Originalni", "Listwise", "Odločitvena drevesa", "Vstavljanje srednje vrednosti","MICE"), lty=1, col=c("black", "red", "blue", "darkgoldenrod1", "green"))
-```
-
-Podrobneje si poglejmo metodi imputacije mankajočih vrednosti odločitvena drevesa in multiple(stohastične) imputacije(MICE) na spodnjem grafu. Vidno je, da sta si metodi zelo podobni oziroma ni večjih razlik med njima.
-
-```{r "primerjava graficno RF mice", fig.cap="Prikaz ocen regresijskih koeficientov in intervalov zaupanja za dve metodi imputacij mankajočih vrednosti.", fig.height = 5, fig.width=8}
-par(mar=c(0, 7, 0, 0))
-coefplot(model_RF, main="Ocene regresijskih koeficientov", col="blue")
-coefplot.default(coefs=mice_summary[-1, "estimate"], sds=mice_summary[-1, "std.error"],
-                 add=TRUE, col="green", offset=0.2)
-legend("bottomright", c("Odločitvena drevesa", "MICE"), lty=1, col=c("blue", "green"))
-```
-
-Pri spremenljivkah, ki so imele največ mankajočih vrednosti, npr `Insulin` ali `SkinThickness` ne vidimo večjih razlik v ocenah regresijskih koeficientov, tudi intervali zaupanja so dokaj ozki.
-
-<!--Nrza02: ja kaj zakljuek, da je dost vseen kaj uporabis al kaj? hah-->
-
-<!--Tom: jst sm mislu tko nekak razdelit graf ker drugac je skala velika in se skor nic ne vidi-->
-
-```{r "risanje koef", fig.width=8, fig.height=4}
-df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 5),
-                     metoda = rep(c("Originalni", "Listwise", "Odlocitvena drevesa",
-                                    "Vstavljanje srednje vrednosti","MICE"), each=8),
+```{r "primerjava graficno brez CV", fig.cap="Prikaz ocen regresijskih koeficientov in intervalov zaupanja za vse metode imputacij mankajočih vrednosti(brez spremenljivke DiabetesPedigree levo in z desno).", fig.width=14, fig.height=8}
+df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 4),
+                     metoda = rep(c("Originalni", "Listwise", "Odlocitvena drevesa","MICE"), each=8),
                      vred = c(model_org$coefficients[2:9],
                               model_brez_na$coefficients[2:9],
-                              model_RF$coefficients[2:9],
-                              model_CVI$coefficients[2:9],
+                              model_RF_deset$coefficients[2:9],
+                              #model_CVI$coefficients[2:9],
                               mice_summary[-1, "estimate"]),
                      lower = c(confint(model_org)[2:9,1],
                               confint(model_brez_na)[2:9,1],
-                              confint(model_RF)[2:9,1],
-                              confint(model_CVI)[2:9,1],
+                              confint(model_RF_deset)[2:9,1],
+                              #confint(model_CVI)[2:9,1],
                               mice_summary[-1,"estimate"]-1.96*mice_summary[-1, "std.error"]),
                      upper = c(confint(model_org)[2:9,2],
                               confint(model_brez_na)[2:9,2],
-                              confint(model_RF)[2:9,2],
-                              confint(model_CVI)[2:9,2],
+                              confint(model_RF_deset)[2:9,2],
+                              #confint(model_CVI)[2:9,2],
                               mice_summary[-1,"estimate"]+1.96*mice_summary[-1, "std.error"])
                      )
 
-vrstni_red = c("Originalni", "Listwise", "Odlocitvena drevesa",
-                                    "Vstavljanje srednje vrednosti","MICE")
+vrstni_red = c("Originalni", "Listwise", "Odlocitvena drevesa","MICE")
 
 df_errorbar$koef = factor(df_errorbar$koef)
 df_errorbar$metoda = factor(df_errorbar$metoda, levels=vrstni_red)
 indeks = which(df_errorbar$koef=="DiabetesPedigree")
 df_errorbar_brez = df_errorbar[-indeks,]
 
-# vsi koeficienti
-ggplot(df_errorbar, aes(x=vred, y=koef, colour = metoda)) +
+g1 = ggplot(df_errorbar_brez, aes(x=vred, y=koef,colour = metoda)) +
   geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
   geom_errorbarh(aes(xmin=lower, xmax=upper),
                  position = position_dodge2(reverse = TRUE, 0.8),
                  height=0.9, size=0.5) +
-  theme_minimal()
+  theme_minimal() + theme(legend.position = "none")
 
-
-# brez DiabetesPedigree
-ggplot(df_errorbar_brez, aes(x=vred, y=koef,colour = metoda)) +
+g2 = ggplot(df_errorbar, aes(x=vred, y=koef, colour = metoda)) +
   geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
   geom_errorbarh(aes(xmin=lower, xmax=upper),
                  position = position_dodge2(reverse = TRUE, 0.8),
                  height=0.9, size=0.5) +
-  theme_minimal()
+  theme_minimal() + theme(legend.position = "right") +
+  labs(y = " ")
 
-
+library(patchwork)
+combined_plot = g1 + g2 + plot_layout(guides = "collect")
+combined_plot
 ```
 
+# Vstavljanje srednje vrednosti
+
+Med tem, da odstranimo vse enote z mankajočimi vrednostmi v katerem koli stolpcu in tem, da jih imputiramo s pomočjo dveh ustreznih metod sicer obstaja razlika. Ampak zgolj iz radovednosti pa naju zanima ali sta metodi odločitvenih dreves in MICE res dobri oziroma boljši od npr. vstavljanja srednje vrednosti(povprečja), ki sicer ni primerna metoda praktično nikoli, saj podcenjuje variabilnost in korelacijo med podatki. Je pa sicer metoda, ki je dokaj preprosta, ni računsko zahtevna in manjkajoče vrednosti nadomestimo na dokaj lahek način. 
+
+Pri tej metodi na mesto manjkajočih vrednosti (`NA`) vstavimo srednjo vrednost spremenljivke (povprečje) izračunano na podatkih, ki jih imamo na voljo. Za metodo *vstavljanje srednje vrednosti* sva se odločila, saj zaradi vstavitve le ene vrednosti na vsa manjkajoča mesta v spremneljivki, pričakujeva da bo delovala najslabše, vendar naju vseeno zanima koliko se bo zares razlikovala od preostalih metod. 
+
+```{r "Central value imputation"}
+dataCVI = data
+for (i in colnames(data)) {
+  dataCVI[is.na(data[, i]), i] <- mean(data[, i], na.rm=TRUE)
+}
+
+model_CVI = glm(f, data=dataCVI, family = binomial(link="logit"))
+```
+
+```{r "tabela Central value imputation", results="hold"}
+selected_stats = describe(dataCVI) %>% 
+  dplyr::select(-vars, -kurtosis, -skew, -trimmed, -mad, -range, -median, -min, -max)
+selected_stats = rbind(selected_stats[nrow(selected_stats),],
+                       selected_stats[-nrow(selected_stats),])
+opisne_statistik = cbind(selected_stats, selected_stats_org) 
+kable(opisne_statistik,
+      align = "c", digits = 2,
+      caption = "Opisne statistike podatkov.") %>%
+kable_styling( full_width = F, 
+                position = "center", latex_options = "H") %>%
+  add_header_above(c(" " = 1, "vstavljanje srednje vrednosti" = 4, "izvirni podatki" = 4))
+```
+
+Iz tabela lahko razberemo, da smo res nadomestili vse manjkajoče vrednosti (število vrednosti v vsaki spremenljivki je enako 768). Prav tako se povprečja na novih in originalnih podatkih ujemata, kar je pričakovano, saj smo ravno povprečje vrednosti spremenljivke uporabili za nadomestitev manjkajočih vrednosti. Poleg spremembe števila vrednosti v spremenljivki, opazimo tudi veliko spremembo standardnega odklona pri spremenljivkah z veliko manjkajočimi vrednostmi kot sta `SkinThickness`, `Insulin`, pri ostalih pa sprememba ni tako zelo velika. 
+
+Na spodnjem grafu(ponovno je prikaz ločen najprej za izbrane spremenljivke in potem še za vse, da je bolj pregledno) pa se na prvi pogled zdi, da metoda ni tako zelo slaba, ker ima dokaj ozke intervale zaupanja(tudi ožje kot ostale metode), ampak to pričakujemo, predvsem pri spremenljivkah z veliko mankajočimi vrednostmi, ker bo potem veliko enot imelo enako vrednost in s tem odstranimo variabilnost; enako sicer lahko opazimo tudi pri spremenljivkah z malo mankajočimi vrednostmi. Torej to, kljub ozkim intervalom zaupanja, ni najboljša metoda imputacije mankajočih vrednosti.
+
+```{r "primerjava graficno se CVI", fig.cap="Prikaz ocen regresijskih koeficientov in intervalov zaupanja za vse metode imputacij mankajočih vrednosti(brez spremenljivke DiabetesPedigree levo in z desno).", fig.width=14, fig.height=8}
+df_errorbar = data.frame(koef = rep(colnames(data)[1:(ncol(data)-1)], 5),
+                     metoda = rep(c("Originalni", "Listwise", "Odlocitvena drevesa",
+                                    "Vstavljanje srednje vrednosti","MICE"), each=8),
+                     vred = c(model_org$coefficients[2:9],
+                              model_brez_na$coefficients[2:9],
+                              model_RF_deset$coefficients[2:9],
+                              model_CVI$coefficients[2:9],
+                              mice_summary[-1, "estimate"]),
+                     lower = c(confint(model_org)[2:9,1],
+                              confint(model_brez_na)[2:9,1],
+                              confint(model_RF_deset)[2:9,1],
+                              confint(model_CVI)[2:9,1],
+                              mice_summary[-1,"estimate"]-1.96*mice_summary[-1, "std.error"]),
+                     upper = c(confint(model_org)[2:9,2],
+                              confint(model_brez_na)[2:9,2],
+                              confint(model_RF_deset)[2:9,2],
+                              confint(model_CVI)[2:9,2],
+                              mice_summary[-1,"estimate"]+1.96*mice_summary[-1, "std.error"])
+                     )
+
+vrstni_red = c("Originalni", "Listwise", "Odlocitvena drevesa", "Vstavljanje srednje vrednosti","MICE")
+
+df_errorbar$koef = factor(df_errorbar$koef)
+df_errorbar$metoda = factor(df_errorbar$metoda, levels=vrstni_red)
+indeks = which(df_errorbar$koef=="DiabetesPedigree")
+df_errorbar_brez = df_errorbar[-indeks,]
+
+g1 = ggplot(df_errorbar_brez, aes(x=vred, y=koef,colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal() + theme(legend.position = "none")
+
+g2 = ggplot(df_errorbar, aes(x=vred, y=koef, colour = metoda)) +
+  geom_point(position = position_dodge2(reverse = TRUE, 0.9), size=0.8) +
+  geom_errorbarh(aes(xmin=lower, xmax=upper),
+                 position = position_dodge2(reverse = TRUE, 0.8),
+                 height=0.9, size=0.5) +
+  theme_minimal() + theme(legend.position = "right") +
+  labs(y = " ")
+
+library(patchwork)
+combined_plot = g1 + g2 + plot_layout(guides = "collect")
+combined_plot
+```
 
 # Zaključek
 
-Glede na rezultate najne analize bi lahko metode razdelila v dve skupini. V prvi skupini je uporaba funckije `glm()` na originalnih podatkih in uporaba *listwise* oziroma *pairwise* metode. Za naštete primere sva pričakovala nekoliko slabše rezultate, saj pri oblikovanju logističnega modela uporabijo le podatke, ki so na voljo. S tem lahko pričakujemo drugačne vrednosti mer središčnosti in nekoliko višje mere razpršenosti, kar pa vpliva tudi na oceno koeficientov z losgistično regresijo. To se je izkazalo res tudi v najnem primeru, saj so se ocene koeficientov in 95% intervalov zaupanja znotraj skupine popolnoma ujemali. To pa tudi posledica delovanja funkcije `glm()`, saj pred modeliranje odstrani vse vrstice z manjkajočimi vrednostmi. \
-V drugo skupino pa bi lahko uvrstila vse preostale metode, ki sva jih še analizirala. To so *Odlocitvena drevesa*, *Vstavljanje srednje vrednosti* in *Multiple(stohastične) imputacije preko verižnih enačb*. Vse tri metode za obravnavo manjkajočih vrednosti so pri modeliranju dala podobne ocene koeficientov in njihovih 95% intervalov zaupanja. Mogoče bi lahko izpostavila nekoliko ožje intervale zaupanja pri metodi *Vstavljanje srednje vrednosti*, vendar je to tudi pričakovano, saj manjkajoče vrednosti nadomestimo s srednjo vrednosto spremenljivke. S tem podcenimo variabilnost, saj v primeru velikega števila manjkajočih vrednosti spremneljivke, bo večina vrednosti enakih, torej precej podcenimo variabilnost. 
+Glede na rezultate najne analize bi lahko metode razdelila v dve skupini. V prvi skupini je uporaba funckije `glm()` na originalnih podatkih in uporaba *listwise* oziroma *pairwise* metode. Za naštete primere sva pričakovala nekoliko slabše rezultate, saj pri oblikovanju logističnega modela uporabijo le podatke, ki so na voljo. S tem lahko pričakujemo drugačne vrednosti mer središčnosti in nekoliko višje mere razpršenosti, kar pa vpliva tudi na oceno koeficientov z losgistično regresijo. To se je izkazalo res tudi v najnem primeru, saj so se ocene koeficientov in 95% intervalov zaupanja znotraj skupine popolnoma ujemali. To pa tudi posledica delovanja funkcije `glm()`, saj pred modeliranje odstrani vse vrstice z manjkajočimi vrednostmi, torej sta to torej enaki metodi. \
+V drugo skupino pa bi lahko uvrstila vse preostale metode, ki sva jih še analizirala. To so *Odlocitvena drevesa*, *Vstavljanje srednje vrednosti* in *Multiple(stohastične) imputacije preko verižnih enačb*. Vse tri metode za obravnavo manjkajočih vrednosti so pri modeliranju dala podobne ocene koeficientov in njihovih 95% intervalov zaupanja(predvsem odločitvena drevesa in MICE). Res imamo ožje intervale zaupanji pri metodi vstavljanja srednje vrednosti, vendar se to ne izkaže za dobro, saj pri spremenljivkah z veliko mankajočimi vrednostmi vstavimo veliko enakih vrednosti, kar zmanjša variabilnost oz. jo s tem podcenimo.
 
-Po zgornji analizi bi za nadomestitev, manjkajočih vrednosti uporabila metodo *Odlocitvena drevesa* ali *Multiple(stohastične) imputacije preko verižnih enačb*. 
-<!--Tom: tuki pa nevem kaj tocno mu argumentirat...-->
+Po zgornji analizi bi, na podlagi grafov in rezultatov, za nadomestitev manjkajočih vrednosti uporabila metodo *Odlocitvena drevesa* ali *Multiple(stohastične) imputacije preko verižnih enačb*. Obe metodi se nama zdita primerni za najine podatke. 
+
 
 
 
