@@ -1,0 +1,13 @@
+MCMC data generation, probability and simulation
+
+"Using MCMC methods, generate values ​​from a distribution with a density proportional to:
+f(x,y) = x^2 * y^2 * e^(-x) * e^(-y) * e^(-xy) if x and y are strictly positive.
+and 0 otherwise
+
+Display the distribution with scatter plots or density plots (whatever you find more appropriate).
+
+Hint: most (but not all) values ​​are less than 5. This can be especially useful for determining the initial value.
+
+Estimate the probability that both values ​​are less than 1.
+
+Find the distribution of this proportion on samples of size 100 units. Also estimate the coverage of the 95\% confidence interval for this proportion. The problem here is that you don't know the true value. You can solve the problem by first generating a ""population"" (say 100,000 units) and taking the proportion calculated on it as the true value. You then calculate proportions for samples (of size 100) taken from this population."
