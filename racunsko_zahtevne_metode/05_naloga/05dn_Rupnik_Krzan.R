@@ -101,6 +101,30 @@ manjsiOd1 = function(vrednosti){
 
 trueProp = manjsiOd1(vzorec_velik) # 0.091%
 
+# podatki za tabelo
+skupine = function(data, kateri){
+  res = matrix(NA, nrow = length(data), ncol=1)
+  ind1 = which(data<1)
+  ind2 = which(1 <= data & data<2)
+  ind3 = which(2 <= data)
+  res[ind1] = paste(kateri,"<1", sep = "")
+  res[ind2] = paste("1<",kateri,"<2", sep = "")
+  res[ind3] = paste(kateri,">2", sep = "")
+  return(res)
+}
+
+if(file.exists("skupine.RDS")){
+  df_skupine = readRDS("skupine.RDS") 
+} else {
+  set.seed(2024)
+  df_skupine =  data.frame(x = skupine(vzorec_velik[,1], "X"),
+                           y = skupine(vzorec_velik[,2], "Y"))
+  saveRDS(object = df_skupine, file = "skupine.RDS")
+}
+
+table(df_skupine$x, df_skupine$y)
+
+
 # ______________ simulacija (vzorci velikosti 100)
 
 # porazdelitev
@@ -120,6 +144,19 @@ porazdelitev = simulacija_porazdelitev(10000)
 # normalna porazdelitev s parametroma
 round(c(mean(porazdelitev), sd(porazdelitev)),5)
 
+if(file.exists("parametri.RDS")){
+  parametri = readRDS("parametri.RDS") 
+} else {
+  set.seed(2024)
+  parametri = matrix(NA, nrow=10, ncol=2)
+  for(i in 1:10){
+    porazdelitev = simulacija_porazdelitev(10000)
+    parametri[i,] = round(c(mean(porazdelitev), sd(porazdelitev)),4)
+  }
+  saveRDS(object = parametri, file = "parametri.RDS")
+}
+
+parametri = readRDS("parametri.RDS") 
 
 # pokritost
 
@@ -150,5 +187,15 @@ simulacija_pokritost = function(st_ponovitev, st_vzorcev){
   return(res2)
 }
 
-mean(simulacija_pokritost(100, 1000))
+# mean(simulacija_pokritost(100, 1000))
 
+
+if(file.exists("pokritost.RDS")){
+  pokritost = readRDS("pokritost.RDS") 
+} else {
+  set.seed(2024)
+  pokritost = mean(simulacija_pokritost(1000, 1000))
+  saveRDS(object = pokritost, file = "pokritost.RDS")
+}
+
+pokritost = readRDS("pokritost.RDS") 

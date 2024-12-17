@@ -1,0 +1,246 @@
+---
+title: "Domača naloga 5"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+output:
+  pdf_document:
+    fig_caption: true
+    number_sections: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =3, fig.width = 5)
+
+# potrebne knjižnice
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+
+# seme
+set.seed(2024)
+```
+
+
+# Cilj naloge
+
+Imava dano pogojno porazdelitev oz. gostoto porazdelitve, iz katere ne moreva vzorčiti z običajnimi metodami. V ta namen bova uporabila algoritem Metropolis-Hastings, s pomočjo katerega bova vzorčila iz dane porazdelitve (z uporabo gostote). V najnem primeru je potrebno generirati koordinate točk, torej pare $(x_i,y_i)$. Na začetku si izberemo neki začetni vrednosti $x_0$ in $y_0$, za kateri mora veljati, da je gostota večja od 0 (je možen izid). Nato na vsakem koraku s pomočjo gostote porazdelitve $g(X_{p}|X_i=x_i)$ predlagamo novo vrednost ($x_{p}$) pogojno na predhodnjo vrednost ($x_i$). Vendar pa še ne vemo ali predlagano vrednost ($x_p$) zares sprejmemo. Zato izračunamo verjetnost $\alpha=min\left(\frac{f(x_p)g(x_i|x_p)}{f(x_i)g(x_p|x_i)},1\right)$, ki nam pove verjetnost sprejema nove vrednosti, $(1-\alpha)$ pa verjetnost za ohranitev predhodnje na sledeč način
+
+$$
+x_{i+1} = 
+  \begin{cases}
+    x_p,  \text{ z verjetnostjo } \alpha\\
+    x_i,  \text{ z verjetnostjo } 1-\alpha
+  \end{cases}\\
+$$
+
+Nato bova še preverila kakšna je verjetnost, da velja $(x_i,y_i)\leq(1,1)$, za vzorce velikosti 100 in izračunala pokritost 95% intervala zaupanja za to verjetnost.
+
+# Generiranje vrednosti
+
+Z uporabo algoritma Metropolis-Hastings bova generirala vrednosti iz porazdelitve, ki ima gostoto proporcionalno 
+
+$$
+f(x,y) = 
+  \begin{cases}
+    x^2  y^2 e^{-x} e^{-y}  e^{-xy},  \text{ kjer } x>0 \text{ in } y>0\\
+    0,  \text{ sicer}
+  \end{cases}\\
+$$
+
+Po že zgoraj opisanem postopku sledimo korakom algoritma. Pri tem sva za predlaganje novih vrednosti izbrala 
+
+$$
+\begin{aligned}
+x_p &= N(x_i, 1) \\
+y_p &= N(y_i, 1)
+\end{aligned}
+$$
+
+ter za gostoto porazdelitve 
+
+$$
+g((x_p,y_p)|(x_i, y_i)) = f_{N(x_i, 1)}(x_p)\cdot f_{N(y_i, 1)}(y_p),
+$$
+kjer sta $f_{N(x_i, 1)}$ in $f_{N(x_i, 1)}$ gostoti $X_i=x_i$ in $Y_i=y_i$ ter s standardnim odklonom $1$.
+
+```{r "osnovne funkcije"}
+# funkcija gostote
+gostota = function(x, y){
+  if(x > 0 & y > 0){
+    vred = x^2 * y^2 * exp(-x) * exp(-y) * exp(-x*y)
+    return(vred)
+  } else {
+    return(0)
+  }
+}
+
+# generiranje tock
+predlagane = function(x_stari, y_stari){
+  xP = rnorm(1, x_stari, 1)
+  yP = rnorm(1, y_stari, 1)
+  return(c(xP, yP))
+}
+
+# gostota porazdelitve (pogojno)
+g = function(x_stari, y_stari, x_novi, y_novi){
+  return(dnorm(x_novi, mean=x_stari, sd=1)*dnorm(y_novi, mean=y_stari, sd=1))
+}
+```
+
+```{r "MH alogoritem"}
+# Metropolis-Hastings algorithm
+MH_algorithm = function(n, burnIn, step, x0, y0){
+  set.seed(2024)
+  res = matrix(NA, nrow=n, ncol=2)
+  
+  for(i in 1:(n*step + burnIn)){
+    prop = predlagane(x0, y0)
+    xP = prop[1]
+    yP = prop[2]
+    
+    alpha = gostota(xP, yP)*g(xP, yP, x0, y0)/(gostota(x0, y0)*g(x0, y0, xP, yP))
+    alpha = min(alpha, 1)
+    
+    if(runif(1)<alpha){
+      x0 = xP
+      y0 = yP
+    } 
+    if(i > burnIn & (i- burnIn)%%step==0){
+      j = (i- burnIn)/step
+      res[j,] = c(x0, y0)
+    }
+    if(i %% 100000 == 0){
+      print(paste(round(i/(n*step + burnIn), 3), "%", sep=""))
+    }
+  }
+  return(res)
+}
+
+# primer generiranja vrednosti
+n = 1000
+burnIn = 100
+step = 100
+
+vzorec = MH_algorithm(n, burnIn, step, 2, 2)
+```
+
+Pri generiranju podatkov moramo nasatviti še vrednosti parametrov `burn in` in `step`.\ Parameter `burn in` nam določi koliko začetnih vrednosti izpustimo iz vzorca (jih ne vključimo). Vrednost tega sva nastavila na 100, saj vrednost dokaj hitro skonvergira. To lahko preverimo tudi grafično. Prikazala sva gibanje vrednosti za prvih 300 vrednosti iz vzorca.
+
+```{r "graf konvergenca"}
+par(mfrow=c(1,2))
+plot(vzorec[1:300,1], type="l", ylab="", main="vrednosti X")
+plot(vzorec[1:300,2], type="l", ylab="", main="vrednosti Y")
+```
+
+Res lahko vidimo, da se vrednosti gibljejo znotraj pričakovanega območja (ni prisotnega naraščanja oz. padanja). 
+
+Paramater `step` nam določi koliko zaporednih vrednosti ne vključimo v vzorec. S spreminjanjem te vrednosti želimo izločiti avtokorelacijo med zaporednimi elementi v vzorcu. To vrednost sva nastavila na 100, saj je bila v vzorcu prisotna visoka avtokorelacija. Tudi to lahko preverimo grafično z avtokorelogramom. 
+
+```{r}
+par(mfrow=c(1,2))
+acf(vzorec[,1], main="vrednosti X")
+acf(vzorec[,2], main="vrednosti Y")
+```
+
+Res so skoraj vse vrednosti znotraj 95% intervala. 
+
+## Prikaz vrednosti vzorca
+
+```{r "risanje MH"}
+# graficni prikazi
+X = data.frame(vzorec)
+
+ggplot(X, aes(x = X1, y = X2, asp=1))  +
+  geom_point() + coord_fixed() +
+  geom_density_2d() + 
+  stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha=0.5)
+```
+
+Vidimo, da je večina vrednosti tako za $X$ kot tudi $Y$ zgočenih na intervalu $[0,3]$. To je tudi nekako pričakovano, saj gostota porazdelitve nekoliko spominja na gostoto eksponentne porazdelitve in so temu primerno razporejene tudi točke. 
+
+# Verjetnost
+
+Želimo oceniti verjetnost, da sta obe vrednosti ($X$ in $Y$) manjši od 1. Na dovolj velikem vzorcu lahko to vrednost ocenimo kot delež točk, ki se nahajajo znotraj območja $[0,1]\times[0,1]$. Ker je generiranje velikih vzorcev časnovno zahtevni proces, sva zgenerirala vzorec velikosti 1000000. 
+
+```{r "funkcije za izracun verjetnosti"}
+vzorec_velik = readRDS("vzorec_velik.RDS") 
+
+manjsiOd1 = function(vrednosti){
+  res = mean(vrednosti[,1]<=1 & vrednosti[,2]<=1)
+  return(res)
+}
+```
+
+Na tem (velikem) vzorcu, sva izračunala željeni delež (obe vrednosti sta manjši od 1) in dobila vrednost `r round(manjsiOd1(vzorec_velik),3)`. Ker se nam ta vrednost zdi dokaj majhna glede na zgornji graf vrednosti, si oglejmo naslednjo tabelo.
+
+
+```{r "tabela vrednosti", results=T}
+df_skupine = readRDS("skupine.RDS") 
+df_skupine$x = factor(df_skupine$x, levels = c("X<1", "1<X<2", "X>2"),
+                      labels = c("X<1", "1<X<2", "X>2"))
+df_skupine$y = factor(df_skupine$y, levels = c("Y<1", "1<Y<2", "Y>2"),
+                      labels = c("Y<1", "1<Y<2", "Y>2"))
+kable(table(df_skupine$x, df_skupine$y), align = "c")
+```
+
+Vidimo, da je res velik delež vrednosti, ko je vsaj ena od vrednosti ($x$ ali $y$) nekoliko višja od $1$. 
+
+## Vzorci velikosti 100
+
+Poglejmo si kakšna je porazdelitev zgornjega deleža v primeru, da imamo vzorce velikosti le 100. Generiramo veliko število vzorcev (npr. 10000) velikosti 100, na vsakem izračunamo verjetnost da sta tako $X$ kot $Y$ manjša od $1$ in narišemo histogram.
+
+```{r "porazdelitev vzorci 100"}
+# porazdelitev
+simulacija_porazdelitev = function(n){
+  res = c()
+  for(i in 1:n){
+    indeksi = sample(1:nrow(vzorec_velik), 100)
+    vzorec = vzorec_velik[indeksi,]
+    delez = mean(vzorec[,1]<=1 & vzorec[,2]<=1)
+    res[i] = delez
+  }
+  return(res)
+}
+
+# za 10000 vzorcev velikosti 100
+porazdelitev = simulacija_porazdelitev(10000)
+```
+
+```{r "graf vzorci 100"}
+hist(porazdelitev)
+```
+
+Vidimo lahko da se vrednosti porazdeljujejo po normalni porazdelitvi. V našem primeru imata parametra vrednosti $\mu$=`r round(mean(porazdelitev),4)` in $\sigma$=`r round(sd(porazdelitev),4)`. 
+
+Da se prepričamo o pravilnosti vrednosti parametrov postopek ponovimo 10-krat in rezultate prikazemo v tabeli.
+
+```{r "tabela parametri"}
+parametri = readRDS("parametri.RDS") 
+
+kable(parametri, col.names = c("povprecje", "standardni odklon"), align = "c")
+```
+
+Vidimo, da so si vrednosti med seboj zelo podobne, zato smo s tem zadovoljni. 
+
+### Pokritost
+
+Izračunajmo še pokritost 95% intervala zaupanja za to vrednost. Interval zaupanja za povprečje porazdelitve oziroma verjetnosti, da sta tako $X$ kot $Y$ manjša od $1$, bomo izračunali po običajni formuli $\left[\hat\mu - 1.96\frac{\hat{s}}{\sqrt{n}},\ \hat\mu + 1.96\frac{\hat{s}}{\sqrt{n}}\right]$. Vendar pa nastopi problem, saj ne poznamo "prave" vrednosti verjetnosti, saj ne poznamo parametrov porazdelitve oziroma vrednosti populacije. To lahko rešimo tako, da za "pravo" vrednost vzamemo verjetnosti delež izračunan na velikem vzorcu (v našem primeru ima 1000000 enot). 
+
+Prava vrednost deleža je enaka `r round(manjsiOd1(vzorec_velik),5)`.
+
+V ta namen bomo naredili simulacijo kjer določimo število ponovitev (korakov simulacije) in števila vzorcev velikosti 100. V najnem primeru sva izbrala 1000 kot vrednost obeh parametrov. Po izvedeni simulaciji je vrednost pokritja 95% intervala zaupanja enaka `r readRDS("pokritost.RDS")`
+
+# Zaključek
+
+
+
+
+
+
+
