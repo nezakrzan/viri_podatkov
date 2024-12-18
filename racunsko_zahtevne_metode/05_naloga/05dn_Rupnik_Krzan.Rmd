@@ -29,17 +29,9 @@ set.seed(2024)
 
 # Cilj naloge
 
-Imava dano pogojno porazdelitev oz. gostoto porazdelitve, iz katere ne moreva vzorčiti z običajnimi metodami. V ta namen bova uporabila algoritem Metropolis-Hastings, s pomočjo katerega bova vzorčila iz dane porazdelitve (z uporabo gostote). V najnem primeru je potrebno generirati koordinate točk, torej pare $(x_i,y_i)$. Na začetku si izberemo neki začetni vrednosti $x_0$ in $y_0$, za kateri mora veljati, da je gostota večja od 0 (je možen izid). Nato na vsakem koraku s pomočjo gostote porazdelitve $g(X_{p}|X_i=x_i)$ predlagamo novo vrednost ($x_{p}$) pogojno na predhodnjo vrednost ($x_i$). Vendar pa še ne vemo ali predlagano vrednost ($x_p$) zares sprejmemo. Zato izračunamo verjetnost $\alpha=min\left(\frac{f(x_p)g(x_i|x_p)}{f(x_i)g(x_p|x_i)},1\right)$, ki nam pove verjetnost sprejema nove vrednosti, $(1-\alpha)$ pa verjetnost za ohranitev predhodnje na sledeč način
+Imava dano pogojno porazdelitev oz. gostoto porazdelitve, iz katere ne moreva vzorčiti z običajnimi metodami. V ta namen bova uporabila algoritem Metropolis-Hastings, s pomočjo katerega bova vzorčila iz dane porazdelitve (z uporabo gostote). V najnem primeru je potrebno generirati koordinate točk, torej pare $(x_i,y_i)$. 
 
-$$
-x_{i+1} = 
-  \begin{cases}
-    x_p,  \text{ z verjetnostjo } \alpha\\
-    x_i,  \text{ z verjetnostjo } 1-\alpha
-  \end{cases}\\
-$$
-
-Nato bova še preverila kakšna je verjetnost, da velja $(x_i,y_i)\leq(1,1)$, za vzorce velikosti 100 in izračunala pokritost 95% intervala zaupanja za to verjetnost.
+Nato bova še preverila kakšna je verjetnost, da velja $(x_i,y_i)\leq(1,1)$, za vzorce velikosti 100 in izračunala pokritost 95% intervala zaupanja za to verjetnost. S tem želiva preveriti ali tudi z manjšimi vzorci (velikosti 100) dovolj dobro opišemo dano porazdelitev.
 
 # Generiranje vrednosti
 
@@ -53,7 +45,18 @@ f(x,y) =
   \end{cases}\\
 $$
 
-Po že zgoraj opisanem postopku sledimo korakom algoritma. Pri tem sva za predlaganje novih vrednosti izbrala 
+Algoritem je sestavljen iz naslednjih korakov:\
+Na začetku si izberemo neki začetni vrednosti $x_0$ in $y_0$, za kateri mora veljati, da je gostota večja od 0 (je možen izid). Nato na vsakem koraku s pomočjo gostote porazdelitve $g(X_{p}|X_i=x_i)$ predlagamo novo vrednost ($x_{p}$) pogojno na predhodnjo vrednost ($x_i$). Vendar pa še ne vemo ali predlagano vrednost ($x_p$) zares sprejmemo. Zato izračunamo verjetnost $\alpha=min\left(\frac{f(x_p)g(x_i|x_p)}{f(x_i)g(x_p|x_i)},1\right)$, ki nam pove verjetnost sprejema nove vrednosti, $(1-\alpha)$ pa verjetnost za ohranitev predhodnje na sledeč način
+
+$$
+x_{i+1} = 
+  \begin{cases}
+    x_p,  \text{ z verjetnostjo } \alpha\\
+    x_i,  \text{ z verjetnostjo } 1-\alpha
+  \end{cases}\\
+$$
+
+Za predlaganje novih vrednosti sva si izbrala
 
 $$
 \begin{aligned}
@@ -130,43 +133,47 @@ step = 100
 vzorec = MH_algorithm(n, burnIn, step, 2, 2)
 ```
 
-Pri generiranju podatkov moramo nasatviti še vrednosti parametrov `burn in` in `step`.\ Parameter `burn in` nam določi koliko začetnih vrednosti izpustimo iz vzorca (jih ne vključimo). Vrednost tega sva nastavila na 100, saj vrednost dokaj hitro skonvergira. To lahko preverimo tudi grafično. Prikazala sva gibanje vrednosti za prvih 300 vrednosti iz vzorca.
+Pri generiranju podatkov moramo določiti še začetno vrednost (izbrala sva $(x_0,y_0)=(2,2)$) in vrednosti parametrov `burn in` in `step`.\ Parameter `burn in` nam določi koliko začetnih vrednosti izpustimo iz vzorca (jih ne vključimo). Vrednost tega sva določila na 100, saj vrednost dokaj hitro skonvergira. To lahko preverimo tudi grafično. Oglejmo si gibanje vrednosti za prvih 300 vrednosti iz vzorca.
 
-```{r "graf konvergenca"}
+```{r "graf konvergenca", fig.cap= "Graf gibanja prvih 300 vrednosti za X in Y"}
 par(mfrow=c(1,2))
 plot(vzorec[1:300,1], type="l", ylab="", main="vrednosti X")
 plot(vzorec[1:300,2], type="l", ylab="", main="vrednosti Y")
 ```
 
-Res lahko vidimo, da se vrednosti gibljejo znotraj pričakovanega območja (ni prisotnega naraščanja oz. padanja). 
+Res lahko vidimo, da se vrednosti gibljejo znotraj pričakovanega območja (večina vrednosti je na intervalu $(0,5)$). Pravzaprav nas v tem primeru zanima bolj ali so se vrednosti že ustalile oz. če v začetnih vrednostih ni drastičnega naraščanja ali padanja.
 
-Paramater `step` nam določi koliko zaporednih vrednosti ne vključimo v vzorec. S spreminjanjem te vrednosti želimo izločiti avtokorelacijo med zaporednimi elementi v vzorcu. To vrednost sva nastavila na 100, saj je bila v vzorcu prisotna visoka avtokorelacija. Tudi to lahko preverimo grafično z avtokorelogramom. 
+Paramater `step` nam določi koliko zaporednih vrednosti ne vključimo v vzorec. S spreminjanjem te vrednosti želimo izločiti avtokorelacijo med zaporednimi elementi v vzorcu. To vrednost sva določila na 100, saj je bila v vzorcu prisotna visoka avtokorelacija. Tudi to lahko preverimo grafično z avtokorelogramom. 
 
-```{r}
+```{r "avtokorelacija", fig.cap= "Graf avtokorelacije za X in Y"}
 par(mfrow=c(1,2))
 acf(vzorec[,1], main="vrednosti X")
 acf(vzorec[,2], main="vrednosti Y")
 ```
 
-Res so skoraj vse vrednosti znotraj 95% intervala. 
+Vidimo, da je nekaj vrednosti izven 95% intervala zaupanja, vendar se te pojavijo pri kasnejših odlogih, kar nas zares ne skrbi. Z izbrano vrednostjo parametra `step` sva odstranila avtokorelacijo med zaporednimi členi vzorca. 
 
 ## Prikaz vrednosti vzorca
 
-```{r "risanje MH"}
+```{r "risanje MH", fig.cap="Prikaz vrednosti iz porazdelitve za vzorec velikosti 1000"}
 # graficni prikazi
 X = data.frame(vzorec)
 
 ggplot(X, aes(x = X1, y = X2, asp=1))  +
   geom_point() + coord_fixed() +
   geom_density_2d() + 
-  stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha=0.5)
+  stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha=0.5) 
 ```
 
 Vidimo, da je večina vrednosti tako za $X$ kot tudi $Y$ zgočenih na intervalu $[0,3]$. To je tudi nekako pričakovano, saj gostota porazdelitve nekoliko spominja na gostoto eksponentne porazdelitve in so temu primerno razporejene tudi točke. 
 
 # Verjetnost
 
-Želimo oceniti verjetnost, da sta obe vrednosti ($X$ in $Y$) manjši od 1. Na dovolj velikem vzorcu lahko to vrednost ocenimo kot delež točk, ki se nahajajo znotraj območja $[0,1]\times[0,1]$. Ker je generiranje velikih vzorcev časnovno zahtevni proces, sva zgenerirala vzorec velikosti 1000000. 
+```{r "slika vzorec 1000000", out.width="0.75\\linewidth", include=TRUE, fig.align="center", fig.cap=c("Vrednosti za vzorec velikosti 1000000 z oznacenim obmocjem [0,1]x[0,1]"), results=T}
+knitr::include_graphics("slika.png")
+```
+
+Želimo oceniti verjetnost, da sta obe vrednosti ($X$ in $Y$) manjši od 1. Na dovolj velikem vzorcu lahko to vrednost ocenimo kot delež točk, ki se nahajajo znotraj območja $[0,1]\times[0,1]$. Ker je generiranje velikih vzorcev časovno zahtevni proces, sva zgenerirala vzorec velikosti 1000000. Ta vzorec bova uporabila kot "populacijo" iz katere bova izbrala naključne vrednosti in ustvarila manjše vzorce za potrebe simulacij.
 
 ```{r "funkcije za izracun verjetnosti"}
 vzorec_velik = readRDS("vzorec_velik.RDS") 
@@ -179,14 +186,13 @@ manjsiOd1 = function(vrednosti){
 
 Na tem (velikem) vzorcu, sva izračunala željeni delež (obe vrednosti sta manjši od 1) in dobila vrednost `r round(manjsiOd1(vzorec_velik),3)`. Ker se nam ta vrednost zdi dokaj majhna glede na zgornji graf vrednosti, si oglejmo naslednjo tabelo.
 
-
 ```{r "tabela vrednosti", results=T}
 df_skupine = readRDS("skupine.RDS") 
-df_skupine$x = factor(df_skupine$x, levels = c("X<1", "1<X<2", "X>2"),
-                      labels = c("X<1", "1<X<2", "X>2"))
-df_skupine$y = factor(df_skupine$y, levels = c("Y<1", "1<Y<2", "Y>2"),
-                      labels = c("Y<1", "1<Y<2", "Y>2"))
-kable(table(df_skupine$x, df_skupine$y), align = "c")
+df_skupine$x = factor(df_skupine$x, levels = c("X<1", "1<=X<2", "2<=X<3", "3<=X"),
+                      labels = c("X<1", "1<=X<2", "2<=X<3", "3<=X"))
+df_skupine$y = factor(df_skupine$y, levels = c("Y<1", "1<=Y<2", "2<=Y<3", "3<=Y"),
+                      labels = c("Y<1", "1<=Y<2", "2<=Y<3", "3<=Y"))
+kable(table(df_skupine$x, df_skupine$y), align = "c", caption = "Tabela razporeditev vrednosti glede na X in Y")
 ```
 
 Vidimo, da je res velik delež vrednosti, ko je vsaj ena od vrednosti ($x$ ali $y$) nekoliko višja od $1$. 
@@ -212,18 +218,19 @@ simulacija_porazdelitev = function(n){
 porazdelitev = simulacija_porazdelitev(10000)
 ```
 
-```{r "graf vzorci 100"}
+```{r "graf vzorci 100", fig.cap = "Histogram porazdelitve verjetnosti X<1 in Y<1"}
 hist(porazdelitev)
 ```
 
-Vidimo lahko da se vrednosti porazdeljujejo po normalni porazdelitvi. V našem primeru imata parametra vrednosti $\mu$=`r round(mean(porazdelitev),4)` in $\sigma$=`r round(sd(porazdelitev),4)`. 
+Vidimo lahko da se vrednosti porazdeljujejo zelo podobno normalni porazdelitvi. V našem primeru imata parametra vrednosti $\mu$=`r round(mean(porazdelitev),4)` in $\sigma$=`r round(sd(porazdelitev),4)`. 
 
 Da se prepričamo o pravilnosti vrednosti parametrov postopek ponovimo 10-krat in rezultate prikazemo v tabeli.
 
-```{r "tabela parametri"}
+```{r "tabela parametri", results=T}
 parametri = readRDS("parametri.RDS") 
 
-kable(parametri, col.names = c("povprecje", "standardni odklon"), align = "c")
+kable(parametri, col.names = c("povprecje", "standardni odklon"), align = "c",
+      caption = "Tabela vrednosti parametrov za 10000 vzorcev velikosti 100")
 ```
 
 Vidimo, da so si vrednosti med seboj zelo podobne, zato smo s tem zadovoljni. 
@@ -238,7 +245,7 @@ V ta namen bomo naredili simulacijo kjer določimo število ponovitev (korakov s
 
 # Zaključek
 
-
+Z algoritmom Metropolis-Hastings lahko dobro generiramo vrednosti iz pogojne porazdelitve. Za izračun potrebujemo le gostoto želene porazdelitve. Pri tem moramo paziti le na pravilno izbiro začenih vrednosti (v najnem primeru $(x_0, y_0)$) in parametrov `burn in` ter `step`. Tudi v primeru manjših vzorecev (velikosti 100) dovolj dobro opišemo dano porazdelitev. To sva dodatno preverila s simulacijami, kjer smo ocenjevali verjetnost, da sta obe vrednosti manjši od $1$. Pokritost 95% intervala je bila zelo blizu željeni vrednosti (izračunana vrednost je enaka `r readRDS("pokritost.RDS")`), torej smo z izidom zadovoljni. 
 
 
 

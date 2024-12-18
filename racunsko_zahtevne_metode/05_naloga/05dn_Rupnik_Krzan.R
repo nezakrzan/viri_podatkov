@@ -1,6 +1,6 @@
 library(ggplot2)
-library(rgl)
-source("plot3d.R")
+# library(rgl)
+# source("plot3d.R")
 
 set.seed(2024)
 
@@ -79,7 +79,7 @@ ggplot(X, aes(x = X1, y = X2, asp=1))  +
   stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha=0.5)
 
 
-hist3d(X, nclass = 20, scale = 200)
+# hist3d(X, nclass = 20, scale = 200)
 
 # ocenjena verjetnost, da sta x in y manjsa od 1 (ena ponovitev-velik vzorec)
 n = 1000000
@@ -101,15 +101,25 @@ manjsiOd1 = function(vrednosti){
 
 trueProp = manjsiOd1(vzorec_velik) # 0.091%
 
+# risanje
+# X = data.frame(vzorec_velik)
+# 
+# graf = ggplot(X, aes(x = X1, y = X2, asp=1))  +
+#   geom_point() + coord_fixed() +
+#   geom_density_2d() + 
+#   stat_density_2d(aes(fill = ..level..), geom = "polygon", alpha=0.5) 
+
 # podatki za tabelo
 skupine = function(data, kateri){
   res = matrix(NA, nrow = length(data), ncol=1)
   ind1 = which(data<1)
-  ind2 = which(1 <= data & data<2)
-  ind3 = which(2 <= data)
+  ind2 = which(1 <= data & data < 2)
+  ind3 = which(2 <= data & data < 3)
+  ind4 = which(3 <= data)
   res[ind1] = paste(kateri,"<1", sep = "")
-  res[ind2] = paste("1<",kateri,"<2", sep = "")
-  res[ind3] = paste(kateri,">2", sep = "")
+  res[ind2] = paste("1<=",kateri,"<2", sep = "")
+  res[ind3] = paste("2<=",kateri,"<3", sep = "")
+  res[ind4] = paste("3<=", kateri, sep = "")
   return(res)
 }
 
@@ -184,17 +194,17 @@ simulacija_pokritost = function(st_ponovitev, st_vzorcev){
       return(0)
     }
   }
-  return(res2)
+  return(mean(res2))
 }
 
-# mean(simulacija_pokritost(100, 1000))
+# simulacija_pokritost(100, 1000)
 
 
 if(file.exists("pokritost.RDS")){
   pokritost = readRDS("pokritost.RDS") 
 } else {
   set.seed(2024)
-  pokritost = mean(simulacija_pokritost(1000, 1000))
+  pokritost = simulacija_pokritost(1000, 1000)
   saveRDS(object = pokritost, file = "pokritost.RDS")
 }
 
