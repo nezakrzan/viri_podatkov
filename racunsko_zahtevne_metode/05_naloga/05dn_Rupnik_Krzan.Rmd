@@ -76,8 +76,9 @@ kjer sta $f_{N(x_i, 1)}$ in $f_{N(x_i, 1)}$ gostoti $X_i=x_i$ in $Y_i=y_i$, s po
 
 Velikost vzorca, ki ga generiramo, pa je enaka 10000(`n`).
 
-Pri generiranju podatkov moramo določiti še začetno vrednost (izbrala sva $(x_0,y_0)=(5,5)$, ker je večin vrednosti manjših od 5) in vrednosti parametrov `burn in` in `step`.\ <!-- Neza21: kle sm spremenila na 5, ker v navodilih piše da je večina vrednosti manjša od 5 in da nam to pomaga pr določitvi začetnih vrednosti, misls da je okej?-->
-Parameter `burn in` nam določi koliko začetnih vrednosti izpustimo iz vzorca (jih ne vključimo). Vrednost tega sva po prvem tesu algoritma določila, na podlagi spodnjih grafov, na 1000. Oglejmo si gibanje vrednosti za prvih 50, 200 in 1000 vrednosti iz vzorca, kjer smo imeli `burn in = 1` in `step = 100`.
+Pri generiranju podatkov moramo določiti še začetno vrednost (izbrala sva $(x_0,y_0)=(5,5)$, ker je večina vrednosti manjših od 5) in vrednosti parametrov `burn in` in `step`. \newline <!-- Neza21: kle sm spremenila na 5, ker v navodilih piše da je večina vrednosti manjša od 5 in da nam to pomaga pr določitvi začetnih vrednosti, misls da je okej?
+Tom22: ja je cist ok sej vazno, da je neka pozitivna vrednost (verjetnost > 0)-->
+Parameter `burn in` nam določi koliko začetnih vrednosti izpustimo iz vzorca (jih ne vključimo). Vrednost tega sva po prvem tesu algoritma določila, na podlagi spodnjih grafov, na 100. Oglejmo si gibanje vrednosti za prvih 50, 200 in 1000 vrednosti iz vzorca, kjer smo imeli `burn in = 1` in `step = 100`.
 
 ```{r "graf konvergenca", fig.cap= "Graf gibanja prvih 150, 200 in 1000 vrednosti za X in Y.", fig.height=6, fig.width=5}
 vzorec_test = readRDS("MH_algorithm_test.RDS")
@@ -91,7 +92,8 @@ plot(vzorec_test[1:1000,2], type="l", ylab="vrednosti Y", main=" ")
 ```
 
 Res lahko vidimo, da se vrednosti gibljejo znotraj pričakovanega območja (večina vrednosti je na intervalu $(0,5)$). Pravzaprav nas v tem primeru zanima bolj ali so se vrednosti že ustalile oz. če v začetnih vrednostih ni drastičnega naraščanja ali padanja. Na prvih dveh grafih vidimo, da se vrednosti $X$ in $Y$ niso še ustalile, pri grafičnem prikazu prvih 200 vrednosti pa bi lahko rekli, da so že nekaj časa ustaljene. 
-<!--Neza21: jst sm kle mal v precepu, al je ta burn in sam ene 100 al je pa 1000, ker na zacetku zgleda kr okej ane sam pol pa pr 500 kr dost zaniha, sploh Y... od 1000 naprej pa res zgledata okej, sam začetne vrednosti mava pa dokaj smiselne ane, zato se mi zdi 1000 mal velik, kaj misls? Sm pa povecala vzorec ker mam zapisan v vajah da mormo delat na velikih vzorcih...-->
+<!--Neza21: jst sm kle mal v precepu, al je ta burn in sam ene 100 al je pa 1000, ker na zacetku zgleda kr okej ane sam pol pa pr 500 kr dost zaniha, sploh Y... od 1000 naprej pa res zgledata okej, sam začetne vrednosti mava pa dokaj smiselne ane, zato se mi zdi 1000 mal velik, kaj misls? Sm pa povecala vzorec ker mam zapisan v vajah da mormo delat na velikih vzorcih...
+Tom22: jst bi reku da je kr uredu ker se mi zdi da bi bil bolj problem ce bi na zacetku samo padal oz narascal neki casa...je pa tud mene to mal zmotilo ko sm delal ampak se mi zdi da ne glede na kok povecas burn in bojo te ekstremni prisotni-->
 
 Paramater `step` nam določi koliko zaporednih vrednosti ne vključimo v vzorec. S spreminjanjem te vrednosti želimo izločiti avtokorelacijo med zaporednimi elementi v vzorcu. 
 Na spodnjih avtokorelogramih lahko vidimo, da če imamo v algoritmu `step = 10` in `burn in = 100`, je v vzorcu prisotno še kar nekaj avokorelacije, če pa nastavimo `step = 100` pa vidimo, da noben koeficient avtokorelacije ne sega iz 95\% intervala zaupanja na avtokorelogramu(vodoravni modri črti).
@@ -126,7 +128,8 @@ ggplot(X, aes(x = X1, y = X2, asp=1))  +
 
 # Verjetnost $P(x < 1 \text{ in } y < 1)$
 
-<!--Neza21: kle sm samo spremenila da je x < 1, y < 1 in ne enak, ker pise v navodilih da sta less than 1, ne pa equal...pomojem da je to pol tko, kaj misls?-->
+<!--Neza21: kle sm samo spremenila da je x < 1, y < 1 in ne enak, ker pise v navodilih da sta less than 1, ne pa equal...pomojem da je to pol tko, kaj misls?
+Tom22: tudi jst nism vedu a 1 se stet zravn al ne...ampak je cist ok pa tud vrednost se vrjetno ne spremeni kej dosti...-->
 
 Želimo oceniti verjetnost, da sta obe vrednosti ($X$ in $Y$) manjši od 1. Na dovolj velikem vzorcu lahko to vrednost ocenimo kot delež točk, ki se nahajajo znotraj območja $(0,1)\times(0,1)$(primer območja lahko vidimo na spodnjem grafu). Ker je generiranje velikih vzorcev časovno zahtevni proces, sva zgenerirala vzorec velikosti 1000000. Ta vzorec bova uporabila kot "populacijo" iz katere bova izbrala naključne vrednosti in ustvarila manjše vzorce za potrebe simulacij.
 
@@ -218,7 +221,7 @@ p1 = ggplot(parametri, aes(indeks, X1)) +
   theme_minimal()+
   xlab("ponovitev") + ylab(" ") +
   ylim(0.0904, 0.0923) +
-  ggtitle("povprečja")
+  ggtitle("povprecja")
 
 p2 = ggplot(parametri, aes(indeks, X2)) + 
   geom_point() + 

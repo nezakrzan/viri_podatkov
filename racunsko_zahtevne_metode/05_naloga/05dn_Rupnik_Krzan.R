@@ -144,7 +144,7 @@ if(file.exists("vzorec_velik.RDS")){
   vzorec_velik = readRDS("vzorec_velik.RDS") 
 } else {
   set.seed(2024)
-  vzorec_velik = MH_algorithm(n, burnIn, step, 2, 2)
+  vzorec_velik = MH_algorithm(n, burnIn, step, x0, y0)
   saveRDS(object = vzorec_velik, file = "vzorec_velik.RDS")
 }
 
