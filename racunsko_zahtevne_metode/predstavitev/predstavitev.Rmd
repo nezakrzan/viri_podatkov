@@ -53,7 +53,7 @@ Based on the results of our analysis, we can divide the methods into two groups.
 
 The second group includes all other methods we analyzed: Decision Trees, Imputation using Mean Values, and Multiple Imputation via Chained Equations (MICE). All three methods yielded similar coefficient estimates and their 95% confidence intervals (particularly Decision Trees and MICE). Although the method of imputing mean values produced narrower confidence intervals, this is not ideal, as it introduces many identical values for variables with many missing entries, reducing variability and potentially underestimating it.
 
-Based on the above analysis, we would recommend using either Decision Trees or Multiple Imputation via Chained Equations (MICE) for handling missing values, as both methods appear suitable for our data.
+Based on the above analysis, we would recommend using either Decision Trees or Multiple Imputation via Chained Equations (MICE) for handling missing values, as both methods appear suitable for our data. Although both methods had almost the same results, theory says different. With Decision Trees we underestimate variability and overestimate connectivity, so that is why Multiple Imputation via Chained Equations (MICE) is the most suitable method. 
 <!--Kle morva popravt, ker baje je po teoriji ena boljša zarad variabilnosti, men se zdi da decision tree ampak nism zih-->
 
 
