@@ -1,0 +1,255 @@
+---
+title: "Domača naloga 5"
+author: "Neža Kržan, Tom Rupnik Medjedovič"
+output:
+  pdf_document:
+    fig_caption: true
+    number_sections: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.pos = "H", message = FALSE, warning = FALSE, results = F, fig.height =3, fig.width = 5)
+
+# potrebne knjižnice
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+
+# seme
+set.seed(2024)
+```
+
+
+# Cilj naloge
+
+Želiva preučiti Metropolis-Hastingsov algoritem pri vzorčenju iz dvorasežne porazdelitve, katere poznava funkcijo gostote. Gre za nestandardno porazdelitev(kot so npr. Beta, Gamma, normalna,...), zato je vzorčenje z običajnimi metodami nemogoče. V ta namen bova torej uporabila Metropolis-Hastings, s pomočjo katerega bova vzorčila iz dane porazdelitve (z uporabo gostote). V najnem primeru je potrebno generirati koordinate točk, torej pare $(x_i,y_i)$. 
+
+Ocenila bova verjetnost, da sta oba parametra manjša od $1$($P(x < 1 \text{ in } y < 1)$) in analizirala porazdelitev te verjetnosti. Želiva preučiti ali tudi z manjšimi vzorci (velikosti 100) dovolj dobro opišemo dano porazdelitev, zato bova  izračunala pokritost 95% intervala zaupanja za to verjetnost.
+
+# Generiranje vrednosti
+
+Z uporabo algoritma Metropolis-Hastings bova generirala vrednosti iz porazdelitve, ki ima gostoto proporcionalno 
+
+$$
+f(x,y) = 
+  \begin{cases}
+    x^2  y^2 e^{-x} e^{-y}  e^{-xy},  \text{ kjer } x>0 \text{ in } y>0\\
+    0,  \text{ sicer}
+  \end{cases}\\
+$$
+
+in večina vrednosti manjših od 5.
+
+Algoritem je sestavljen iz naslednjih korakov:\
+Na začetku si izberemo neki začetni vrednosti $x_0$ in $y_0$, za kateri mora veljati, da je gostota večja od 0 (je možen izid). Nato na vsakem koraku s pomočjo gostote porazdelitve $g(X_{p}|X_i=x_i)$ predlagamo novo vrednost ($x_{p}$) pogojno na predhodnjo vrednost ($x_i$). Vendar pa še ne vemo ali predlagano vrednost ($x_p$) zares sprejmemo. Zato izračunamo verjetnost $\alpha=min\left(\frac{f(x_p)g(x_i|x_p)}{f(x_i)g(x_p|x_i)},1\right)$, ki nam pove verjetnost sprejema nove vrednosti, $(1-\alpha)$ pa verjetnost za ohranitev predhodnje na sledeč način
+
+$$
+x_{i+1} = 
+  \begin{cases}
+    x_p,  \text{ z verjetnostjo } \alpha\\
+    x_i,  \text{ z verjetnostjo } 1-\alpha
+  \end{cases}.\\ 
+$$
+
+Za predlaganje novih vrednosti sva si izbrala
+
+$$
+\begin{aligned}
+x_p &= N(x_i, 1), \\
+y_p &= N(y_i, 1),
+\end{aligned}
+$$
+
+torej normalno porazdelitev ter za gostoto porazdelitve 
+
+$$
+g((x_p,y_p)|(x_i, y_i)) = f_{N(x_i, 1)}(x_p)\cdot f_{N(y_i, 1)}(y_p),
+$$
+kjer sta $f_{N(x_i, 1)}$ in $f_{N(x_i, 1)}$ gostoti $X_i=x_i$ in $Y_i=y_i$, s povrečjema $x_i$ in $y_i$(z $x_i$ in $y_i$, ki ju predlagamo) in s standardnim odklonom $1$. 
+
+Velikost vzorca, ki ga generiramo, pa je enaka 10000(`n`).
+
+Pri generiranju podatkov moramo določiti še začetno vrednost (izbrala sva $(x_0,y_0)=(4,4)$, ker je večina vrednosti manjših od 5 in izbereva nekoliko manj) in vrednosti parametrov `burn in` in `step`. \newline 
+
+Parameter `burn in` nam določi koliko začetnih vrednosti izpustimo iz vzorca (jih ne vključimo). Vrednost tega sva po prvem tesu algoritma določila, na podlagi spodnjih grafov, na 100. Oglejmo si gibanje vrednosti za prvih 50, 200 in 1000 vrednosti iz vzorca, kjer smo imeli `burn in = 1` in `step = 1`.
+
+```{r "graf konvergenca", fig.cap= "Graf gibanja prvih 150, 200 in 1000 vrednosti za X in Y.", fig.height=6, fig.width=5}
+vzorec_test = readRDS("V2_MH_algorithm_test.RDS")
+par(mfrow=c(3,2))
+plot(vzorec_test[1:50,1], type="l", ylab="vrednosti X", main="Prvih 50 vrednosti")
+plot(vzorec_test[1:50,2], type="l", ylab="vrednosti Y", main=" ")
+plot(vzorec_test[1:200,1], type="l", ylab="vrednosti X", main="Prvih 200 vrednosti")
+plot(vzorec_test[1:200,2], type="l", ylab="vrednosti Y", main=" ")
+plot(vzorec_test[1:1000,1], type="l", ylab="vrednosti X", main="Prvih 1000 vrednosti")
+plot(vzorec_test[1:1000,2], type="l", ylab="vrednosti Y", main=" ")
+```
+
+Res lahko vidimo, da se vrednosti gibljejo znotraj pričakovanega območja (večina vrednosti je na intervalu $(0,5)$). Pravzaprav nas v tem primeru zanima bolj ali so se vrednosti že ustalile oz. če v začetnih vrednostih ni drastičnega naraščanja ali padanja. Na prvih dveh grafih vidimo, da se vrednosti $X$ in $Y$ niso še ustalile(*prvih 50 vrednosti*), torej bi bilo potrebno nekaj prvih čelnov izpustiti - za to bova torej uporabila parameter `burn in = 100`.\
+Vidimo tudi, da vrednosti $X$ in $Y$ nekaj časa "ostaneta" v enakih vrednostih predno se "premakneta" naprej, torej morava izločiti avtokorelacijo med zaporednimi elementi v vzorcu. To nam določi parameter `step` - koliko zaporednih vrednosti ne vključimo v vzorec. S
+
+Na spodnjih avtokorelogramih lahko vidimo, da če imamo v algoritmu `step = 10` in `burn in = 100`, je v vzorcu prisotno še kar nekaj avokorelacije, če pa nastavimo `step = 100` pa vidimo, da noben koeficient avtokorelacije ne sega iz 95\% intervala zaupanja na avtokorelogramu(vodoravni modri črti). Tudi na 3. grafu pri `step = 10` vidimo negativno križno korelacijo - koef. so statistično pomembni, torej sta $X$ in $Y$ obratno povezana, kar pa nimamo več pri `step = 100`.
+<!--Neza19: tole krizno nevem iz kje je potegnu.. jst to nism nikjer nasla na slajdih da bi delal, razn ce sm blond, zdej sm neki dopisala sam nevem ce je okej-->
+
+```{r "avtokorelacija", fig.cap= "Graf avtokorelacije in križne avtokorelacije za X in Y pri step=10 in step=100.", fig.height=5, fig.width=6}
+vzorec1 = readRDS("V2_MH_algorithm_step1.RDS")
+vzorec = readRDS("V2_MH_algorithm_step2.RDS")
+par(mfrow=c(2,3))
+acf(vzorec1[,1], main="step=10", ylab="koef. avtokorelacije X")
+acf(vzorec1[,2], main=" ", ylab="koef. avtokorelacije Y")
+ccf(vzorec1[,1], vzorec1[,2], main=" ", ylab="krizna avtokorelacija")
+acf(vzorec[,1], main="step=100", ylab="koef. avtokorelacije X")
+acf(vzorec[,2], main=" ", ylab="koef. avtokorelacije Y")
+ccf(vzorec[,1], vzorec[,2], main=" ", ylab="krizna avtokorelacija")
+```
+
+Z izbrano vrednostjo parametra `step=100` sva torej odstranila avtokorelacijo med zaporednimi členi vzorca. 
+
+## Prikaz vrednosti vzorca
+
+Na spodnjem grafu lahko vidimo, da je večina vrednosti $x_i$ in $y_i$, $i = 1, \dots, 10000$ zgoščenih na intervalu $[0,3]$. To je tudi nekako pričakovano, saj gostota porazdelitve nekoliko spominja na gostoto eksponentne porazdelitve(kjer so točke bolj koncentrirane bližje začetku), in so temu primerno razporejene tudi točke. 
+
+```{r "risanje MH", fig.cap="Prikaz vrednosti iz porazdelitve za vzorec velikosti 10000."}
+# graficni prikazi
+X = data.frame(vzorec)
+
+ggplot(X, aes(x = X1, y = X2, asp=1))  +
+  geom_point() + coord_fixed() +
+  xlab("X") + ylab("Y") +
+  geom_density_2d() + 
+  stat_density_2d(aes(fill = after_stat(level)), geom = "polygon", alpha=0.5) +
+  theme_minimal()
+```
+
+# Verjetnost $P(x < 1 \text{ in } y < 1)$
+
+Želimo oceniti verjetnost, da sta obe vrednosti ($X$ in $Y$) manjši od 1. Na dovolj velikem vzorcu lahko to vrednost ocenimo kot delež točk, ki se nahajajo znotraj območja $(0,1)\times(0,1)$(primer območja lahko vidimo na spodnjem grafu). Ker je generiranje velikih vzorcev časovno zahtevni proces, sva zgenerirala vzorec velikosti 1000000. Ta vzorec bova uporabila kot "populacijo" iz katere bova izbrala naključne vrednosti in ustvarila manjše vzorce za potrebe simulacij.
+
+```{r "slika vzorec 1000000", fig.cap="Vrednosti za vzorec velikosti 10000 z označenim območjem (0,1)x(0,1).", results=T}
+ggplot(X, aes(x = X1, y = X2, asp = 1)) +
+  geom_point() + coord_fixed() +
+  xlab("X") + ylab("Y") +
+  geom_density_2d() +
+  stat_density_2d(aes(fill = after_stat(level)), geom = "polygon", alpha = 0.5) +
+  geom_rect(aes(xmin = 0, xmax = 1, ymin = 0, ymax = 1),
+            fill = NA, color = "red", linewidth = 0.7) +  
+  theme_minimal()
+```
+
+```{r "funkcije za izracun verjetnosti"}
+vzorec_velik = readRDS("V2_vzorec_velik.RDS") 
+manjsiOd1 = function(vrednosti){
+  res = mean(vrednosti[,1]<1 & vrednosti[,2]<1)
+  return(res)
+}
+```
+
+Na tem (velikem) vzorcu, sva izračunala željeni delež (obe vrednosti sta manjši od 1) in dobila vrednost `r round(manjsiOd1(vzorec_velik),3)`. Ker se nam ta vrednost zdi dokaj majhna glede na zgornji graf vrednosti, si oglejmo naslednjo tabelo. \
+Vidimo, da je res velik delež vrednosti, ko je vsaj ena od vrednosti ($x_i$ ali $y_i$) višja od $1$. 
+
+```{r "tabela vrednosti", results=T}
+df_skupine = readRDS("V2_skupine.RDS") 
+df_skupine$x = factor(df_skupine$x, levels = c("X<1", "1<=X<2", "2<=X<3", "3<=X"),
+                      labels = c("X<1", "1<=X<2", "2<=X<3", "3<=X"))
+df_skupine$y = factor(df_skupine$y, levels = c("Y<1", "1<=Y<2", "2<=Y<3", "3<=Y"),
+                      labels = c("Y<1", "1<=Y<2", "2<=Y<3", "3<=Y"))
+tabela = table(df_skupine$x, df_skupine$y)
+tabela = (tabela / 1000000) * 100
+tabela <- apply(round(tabela, 2), c(1, 2), function(x) paste0(x, "\\%"))
+colnames(tabela) = c("$Y < 1$", "$1 \\leq Y < 2$", "$2 \\leq Y < 3$", "$3 \\leq Y$")
+rownames(tabela) = c("$X < 1$", "$1 \\leq X < 2$", "$2 \\leq X < 3$", "$3 \\leq X$")
+kable(tabela, align = "c", 
+      caption = "Tabela razporeditev vrednosti glede na X in Y v populaciji.",
+      format = "latex", escape = FALSE) %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
+```
+
+## Vzorci velikosti 100
+
+```{r "porazdelitev vzorci 100"}
+# porazdelitev
+simulacija_porazdelitev = function(n){
+  res = c()
+  for(i in 1:n){
+    indeksi = sample(1:nrow(vzorec_velik), 100)
+    vzorec = vzorec_velik[indeksi,]
+    delez = mean(vzorec[,1]<=1 & vzorec[,2]<=1)
+    res[i] = delez
+  }
+  return(res)
+}
+porazdelitev = simulacija_porazdelitev(10000)
+```
+
+Poglejmo si kakšna je porazdelitev zgornjega deleža v primeru, da imamo vzorce velikosti le 100. Generiramo veliko število vzorcev (npr. 10000) velikosti 100, na vsakem izračunamo verjetnost da sta tako $x_i$ kot $y_i$ manjša od $1$ in narišemo histogram.
+
+Vidimo lahko, da se vrednosti porazdeljujejo zelo podobno normalni porazdelitvi, ampak asimetrično v levo, s parametroma $\mu$ =`r round(mean(porazdelitev),4)` in $\sigma$ =`r round(sd(porazdelitev),4)`.
+
+```{r "graf vzorci 100", fig.cap = "Histogram porazdelitve verjetnosti P(X<1 in Y<1)."}
+ggplot(data.frame(x = porazdelitev), aes(x = x)) + 
+  geom_histogram(binwidth = 0.01, fill = "blue", color = "black", alpha = 0.7) + 
+  labs(title = " ", x = " ", y = "Frequency") +
+  theme_minimal()
+```
+
+### Pokritost
+
+Izračunajmo še pokritost 95\% intervala zaupanja za to vrednost. Interval zaupanja za povprečje porazdelitve oziroma verjetnosti, da sta tako $X$ kot $Y$ manjša od $1$, bomo izračunali po formuli za intervale zaupanja iz funkcije `prop.test()`, in sicer ta uporablja asimptotski Waldov test za izračun intervalov zaupanja za deleže.  Interval zaupanja temelji na normalni aproksimaciji binomske porazdelitve, torej je metoda zanesljiva pri velikih vzorcih.
+
+Vendar pa nastopi problem, saj ne poznamo "prave" vrednosti verjetnosti, saj ne poznamo parametrov porazdelitve oziroma vrednosti populacije. To lahko rešimo tako, da za "pravo" vrednost vzamemo verjetnosti delež izračunan na velikem vzorcu (v našem primeru ima 1000000 enot). 
+
+Prava vrednost deleža je enaka `r round(manjsiOd1(vzorec_velik),5)`.
+
+```{r}
+# dodajanje indikatorja, če sta x in y manjša od 1
+populacija = readRDS("V2_vzorec_velik.RDS") 
+ind = ifelse(populacija[,1] < 1 & populacija[,2] < 1, 1, 0)
+populacija = cbind(populacija, ind)
+
+# prava verjetnost na populaciji
+trueProp = manjsiOd1(populacija)
+
+sample.size = 10000  # velikost vzorca
+n.sim = 10000  # število simulacij
+coverage.count = 0
+
+for (i in 1:n.sim) {
+  # Naključno izberemo vzorec velikosti 1000 iz populacije
+  sample = sample(ind, size = sample.size, replace = TRUE)
+  
+  # Izračunamo delež v vzorcu
+  sample_prop = mean(sample)
+  
+  # Izračunamo interval zaupanja za proporcijo
+  test_result = prop.test(sum(sample), sample.size, p = sample_prop, conf.level = 0.95)
+  
+  # Preverimo, če pravi delež leži v intervalu zaupanja
+  if (test_result$conf.int[1] <= trueProp && test_result$conf.int[2] >= trueProp) {
+    coverage.count = coverage.count + 1
+  }
+}
+
+# Pokritost: delež simulacij, kjer pravi delež leži v intervalu zaupanja
+coverage = coverage.count / n.sim
+coverage
+```
+
+
+Izvedla sva simulacijo s 10000 ponovitvami, kjer sva iz populacije vsakič izbrala nov vzorec velikosti 1000, na njem s pomočjo funkcije prop.test() izračunala interval zaupanja za verjetnost in pogledala ali vrednost deleža na populaciji pripada intervalu zaupanja. Po izvedeni simulaciji je vrednost pokritja 95% intervala zaupanja enaka `r coverage`.
+
+
+# Zaključek
+
+Z algoritmom Metropolis-Hastings lahko dobro generiramo vrednosti iz pogojne porazdelitve. Za izračun potrebujemo le gostoto želene porazdelitve. Pri tem moramo paziti le na pravilno izbiro začenih vrednosti (v najnem primeru $(x_0, y_0)$) in parametrov `burn in` ter `step`. Tudi v primeru manjših vzorecev (velikosti 100) dovolj dobro opišemo dano porazdelitev. To sva dodatno preverila s simulacijami, kjer smo ocenjevali verjetnost, da sta obe vrednosti manjši od $1$. Pokritost 95% intervala je bila zelo blizu željeni vrednosti (izračunana vrednost je enaka `r coverage`), torej smo z izidom zadovoljni. 
+
+
+
+
+
+
