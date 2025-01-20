@@ -215,12 +215,12 @@ populacija = cbind(populacija, ind)
 # prava verjetnost na populaciji
 trueProp = manjsiOd1(populacija)
 
-sample.size = 10000  # velikost vzorca
+sample.size = 100  # velikost vzorca
 n.sim = 10000  # število simulacij
 coverage.count = 0
 
 for (i in 1:n.sim) {
-  # Naključno izberemo vzorec velikosti 1000 iz populacije
+  # Naključno izberemo vzorec velikosti 100 iz populacije
   sample = sample(ind, size = sample.size, replace = TRUE)
   
   # Izračunamo delež v vzorcu
