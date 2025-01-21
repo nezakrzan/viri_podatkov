@@ -189,7 +189,7 @@ porazdelitev = simulacija_porazdelitev(10000)
 
 Poglejmo si kakšna je porazdelitev zgornjega deleža v primeru, da imamo vzorce velikosti le 100. Generiramo veliko število vzorcev (npr. 10000) velikosti 100, na vsakem izračunamo verjetnost da sta tako $x_i$ kot $y_i$ manjša od $1$ in narišemo histogram.
 
-Vidimo lahko, da se vrednosti porazdeljujejo zelo podobno normalni porazdelitvi, ampak asimetrično v levo, s parametroma $\mu$ =`r round(mean(porazdelitev),4)` in $\sigma$ =`r round(sd(porazdelitev),4)`.
+Vidimo lahko, da se vrednosti porazdeljujejo zelo podobno normalni porazdelitvi, ampak asimetrično v desno, s parametroma $\mu$ =`r round(mean(porazdelitev),4)` in $\sigma$ =`r round(sd(porazdelitev),4)`.
 
 ```{r "graf vzorci 100", fig.cap = "Histogram porazdelitve verjetnosti P(X<1 in Y<1)."}
 ggplot(data.frame(x = porazdelitev), aes(x = x)) + 
@@ -241,7 +241,7 @@ coverage
 ```
 
 
-Izvedla sva simulacijo s 10000 ponovitvami, kjer sva iz populacije vsakič izbrala nov vzorec velikosti 1000, na njem s pomočjo funkcije prop.test() izračunala interval zaupanja za verjetnost in pogledala ali vrednost deleža na populaciji pripada intervalu zaupanja. Po izvedeni simulaciji je vrednost pokritja 95% intervala zaupanja enaka `r coverage`.
+Izvedla sva simulacijo s 10000 ponovitvami, kjer sva iz populacije vsakič izbrala nov vzorec velikosti 100, na njem s pomočjo funkcije `prop.test()` pridobila interval zaupanja za verjetnost in pogledala ali vrednost deleža na populaciji pripada intervalu zaupanja. Po izvedeni simulaciji je vrednost pokritja 95% intervala zaupanja enaka `r coverage`.
 
 
 # Zaključek
