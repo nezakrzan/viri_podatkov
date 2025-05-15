@@ -1,0 +1,55 @@
+---
+title: "Seminar pri predmetu Načrtovanje kliničnih in epidemioloških raziskav"
+subtitle: "A 28- Day Ecological Momentary Assessment of Mental Health Among Psychiatric Outpatients With Suicidal Ideation"
+author: "Neža Kržan, Tom Rupnik"
+output:
+  pdf_document:
+    fig_caption: true
+    number_sections: true
+header-includes:
+- \usepackage[slovene]{babel}
+- \usepackage{float}
+- \usepackage[T1]{fontenc}
+---
+
+<!--
+Članek: https://onlinelibrary.wiley.com/doi/epdf/10.1111/jan.16894
+Protokol: https://pmc.ncbi.nlm.nih.gov/articles/PMC9303451/pdf/JAN-78-883.pdf
+-->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	fig.pos = "H",
+	message = FALSE,
+	warning = FALSE,
+	results = F, fig.height = 4, fig.width = 5
+)
+
+set.seed(2024)
+```
+
+# Raziskovalno vprašanje
+
+Samomor je od leta 2009 izziv javnega zdravstva v Južni Koreji, zato so preučili potrebo po razvoju sistema za sprotno spremljanje tveganja za samomor, še posebej med posamezniki, ki živijo v isti skupnosti. Analizirati so želeli 28-dnevni longitudinalni vzorec samomorilnega razmišljanja pri bolnikih psihiatrične ambulante, ki imajo samomorilske misli. \
+Osredotočili so se na tri glavna raziskovalna vprašanja: opisati demografske značilnosti in začetno duševno zdravstveno stanje odraslih z samomorilnim razmišljanjem, raziskati vzorce samomorilnega razmišljanja v dveh skupinah z različno stopnjo tveganja za samomor (visoko in nizko) ter opredeliti povezave med samomorilnim razmišljanjem in trenutnimi ravnmi depresije, anksioznosti ter stresa skozi čas, pri čemer so uporabili metodo EMA (angl. ecological momentary assessment). \
+Metoda EMA se v drugih študijah že uporablja za spremljanje nihanja v samomorilskem razmišljanju in dejavnikih, ki na to vplivajo (depresija, anksioznost in stres) in dokazuje, da negativna čustva in prisotnost stresa lahko napovedujejo povečano tveganje za samomorilne misli v kratkem časovnem okviru. Avtorji članka z 28 dnvenim spremljanjem, skupinami in vključevanjem oseb z poskusi samomora rešuje pomanljivosti preteklih raziskav.
+
+# Ciljna populacija
+
+Študija je zajemala 50 odraslih oseb, starih od 19 do 58 let, ki so bili bolniki v psihiatrični bolnišnici ali vpisani v National Suicide Prevention Center v Južni Koreji in so imeli nedavne samomorilne misli, ki so bile merjene z korejsko različico lestvice BSS (angl. Beck Scale for Suicide Ideation) in dosegli rezultat ena ali več. Morali so imeti pametni telefon, sposobnost govorjenja in pisanja v korejščini ter nošnje naprave za aktigrafijo (angl. actigraphy), sposobnost razumevanja in sodelovanja v študiji in prostovoljne privolitve v sodelovanje ter niso smeli sodelovati v drugih študijah. \
+Iz študije je bilo umaknjenih 5 oseb, zaradi hospitalizacije, narave študije (nošenje nosljive naprave), zaposiltve in osebne odločitve. Razdeljeni so bili v dve skupini. Visoko-rizična skupina je zajemala tiste, ki so imeli poskus samomora v zadnjih tednih, nizko-rizična skupina pa tiste, ki so imeli samomorilne misli, vendar niso izvedli poskusa samomora. Evidenca poskusov samomora je temeljila na odgovorih udeležencev. \
+Vzorec je izbran za raziskovanje psihiatričnih bolnikov z nedavnimi samomorilnimi mislimi in z določenimi kriteriji. Vendar zaradi majhnosti vzorca in specifičnosti skupine ni popolnoma reprezentativen za celotno populacijo z samomorilnimi mislimi, kar je pomembno upoštevati pri interpretaciji rezultatov.
+
+<!-- Kako ustrezen je vzorec? kako nej to vem hah -->
+
+
+
+
+
+
+
+
+ 
+
