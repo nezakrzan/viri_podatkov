@@ -32,18 +32,64 @@ set.seed(2024)
 
 # Raziskovalno vprašanje
 
-Samomor je od leta 2009 izziv javnega zdravstva v Južni Koreji, zato so preučili potrebo po razvoju sistema za sprotno spremljanje tveganja za samomor, še posebej med posamezniki, ki živijo v isti skupnosti. Analizirati so želeli 28-dnevni longitudinalni vzorec samomorilnega razmišljanja pri bolnikih psihiatrične ambulante, ki imajo samomorilske misli. \
-Osredotočili so se na tri glavna raziskovalna vprašanja: opisati demografske značilnosti in začetno duševno zdravstveno stanje odraslih z samomorilnim razmišljanjem, raziskati vzorce samomorilnega razmišljanja v dveh skupinah z različno stopnjo tveganja za samomor (visoko in nizko) ter opredeliti povezave med samomorilnim razmišljanjem in trenutnimi ravnmi depresije, anksioznosti ter stresa skozi čas, pri čemer so uporabili metodo EMA (angl. ecological momentary assessment). \
+Samomor je od leta 2009 izziv javnega zdravstva v Južni Koreji, zato so preučili potrebo po razvoju sistema za sprotno spremljanje tveganja za samomor. Raziskava je analizirala 28-dnevni vzorec samomorilnih misli pri psihiatričnih bolnikih z različnim tveganjem za samomor. Glavna vprašanja so bila: opis demografskih in duševnih značilnosti, primerjava vzorcev samomorilnih misli med visokorizičnimi in nizkorizičnimi skupinami ter ugotovitev povezav med samomorilnim razmišljanjem, depresijo, anksioznostjo in stresom skozi čas z metodo EMA. (angl. ecological momentary assessment). \
 Metoda EMA se v drugih študijah že uporablja za spremljanje nihanja v samomorilskem razmišljanju in dejavnikih, ki na to vplivajo (depresija, anksioznost in stres) in dokazuje, da negativna čustva in prisotnost stresa lahko napovedujejo povečano tveganje za samomorilne misli v kratkem časovnem okviru. Avtorji članka z 28 dnvenim spremljanjem, skupinami in vključevanjem oseb z poskusi samomora rešuje pomanljivosti preteklih raziskav.
 
 # Ciljna populacija
 
-Študija je zajemala 50 odraslih oseb, starih od 19 do 58 let, ki so bili bolniki v psihiatrični bolnišnici ali vpisani v National Suicide Prevention Center v Južni Koreji in so imeli nedavne samomorilne misli, ki so bile merjene z korejsko različico lestvice BSS (angl. Beck Scale for Suicide Ideation) in dosegli rezultat ena ali več. Morali so imeti pametni telefon, sposobnost govorjenja in pisanja v korejščini ter nošnje naprave za aktigrafijo (angl. actigraphy), sposobnost razumevanja in sodelovanja v študiji in prostovoljne privolitve v sodelovanje ter niso smeli sodelovati v drugih študijah. \
-Iz študije je bilo umaknjenih 5 oseb, zaradi hospitalizacije, narave študije (nošenje nosljive naprave), zaposiltve in osebne odločitve. Razdeljeni so bili v dve skupini. Visoko-rizična skupina je zajemala tiste, ki so imeli poskus samomora v zadnjih tednih, nizko-rizična skupina pa tiste, ki so imeli samomorilne misli, vendar niso izvedli poskusa samomora. Evidenca poskusov samomora je temeljila na odgovorih udeležencev. \
+Raziskava vključuje osebe, starejše od 19 let, ki imajo pametni telefon, lahko nosijo napravo za aktigrafijo, govorijo in pišejo korejsko, ter so v zadnjem tednu poročale o samomorilskih mislih ali vedenju, ki so bile merjene z korejsko različico lestvice BSS (angl. Beck Scale for Suicide Ideation) in dosegli rezultat ena ali več. Morajo razumeti namen raziskave, prostovoljno podati soglasje sodelovanja in ne smejo sodelovati v drugi študiji. \
+Izključeni so posamezniki z motnjami kognitivnega delovanja (po presoji psihiatra), osebe, stare 65 let ali več, z zmernimi do hudimi kognitivnimi težavami in tisti s psihotičnimi simptomi (npr. halucinacije, blodnje).
+
+<!-- Kako ustrezen je vzorec? kako nej to vem hah 
 Vzorec je izbran za raziskovanje psihiatričnih bolnikov z nedavnimi samomorilnimi mislimi in z določenimi kriteriji. Vendar zaradi majhnosti vzorca in specifičnosti skupine ni popolnoma reprezentativen za celotno populacijo z samomorilnimi mislimi, kar je pomembno upoštevati pri interpretaciji rezultatov.
+-->
 
-<!-- Kako ustrezen je vzorec? kako nej to vem hah -->
+# Načrt študije
+<!--e.	Opišite načrt študije (in kako pomaga odgovoriti na raziskovalno vprašanje)
+i.	Preiskovanci
+ii.	Spremenljivke (izidi in pojasnjevalne spremenljivke)
+iii.	Časovni okvir
+iv.	Vrsta študija
+-->
 
+<!-- Preisokvanci in vrsta študije
+Opazovalna: samo spremljali so stanje bolnikov
+Prospektivna: podatke so zbirali v prihodnjem obdobju 28 dni
+Longitudinalna: dlje časa
+-->
+Imamo opazovalno, prospektivno longitudilano študijo, ki je zajemala 50 odraslih oseb, starih od 19 do 58 let, ki so bili bolniki v psihiatrični bolnišnici ali vpisani v National Suicide Prevention Center v Južni Koreji in so imeli nedavne samomorilne misli. Iz študije je bilo umaknjenih 5 oseb, zaradi hospitalizacije, težav z nošenjem nosljive naprave, zaposiltve in osebne odločitve. Razdeljeni so bili v dve skupini. Visoko-rizična skupina (n = 40, 80%) je zajemala tiste, ki so imeli poskus samomora v zadnjih tednih, nizko-rizična skupina (n = 10, 20%) pa tiste, ki so imeli samomorilne misli, vendar niso izvedli poskusa samomora. Evidenca poskusov samomora je temeljila na odgovorih udeležencev. \
+<!-- Časovni okvir--> 
+Vsak od udeležencev je vsaj trikrat na dan v času 20 minut, vsak dan, preko spletne ankete, poročal o svojem razpoloženju, anksioznosti, strestu in samomorilnih mislih, v obdobju 28 dni, nosil zapestno napravo v obdobju 2 tednov in reševal vprašalnike v obdobju 4 tednov.\
+<!-- Spremenljivke (izidi in pojasnjevalne spremenljivke) 
+to nevem čist, ker v protokolu so neki primary outcoomes pa secondary outocmes...-->
+Glavni izid študije je vzorec samomorilskih misli in vzrok psihosocialnega stresa (*izid*). Pojasnili jih bodo preko opisa depresije, anksioznosti in stresa, zdravstvenega stanje, preteklih samomorilskih poskusov, duševnih težav, časa od prve psihiatrične diagnoze ter uporabo zdravil. Zbrani so tudi podatki o starosti, spolu, zakonskem stanju, izobrazbi, socialno-ekonomskem statusu, kajenju, telesni vadbi, spanju ter pridruženih telesnih in duševnih boleznih.
+
+# Statistične metode
+<!-- Hipoteza:-->
+**Glavna hipoteza:** Vzorci samomorilskih misli so povezani z psihološkimi dejavniki (depresija, anksioznost in stres).
+**Dodatne hipoteze:** Različni psihološki, socialno-demografski in telesni dejavniki vplivajo na intenzivnost samomorilskih misli; obstajajo razlike v vzorcih misli med skupinami z viskim in nizkim rizikom za samomor.\
+
+<!-- Velikost vzorca: 
+to se mi kle zdi tok brezveze šeenkrat pisat, ker je že tokrat omenjeno, sam nevem, kaj misls-->
+Ocenili so, da potrebujejo vzorec velikosti vsaj 150 oseb, kjer so upoštevali pričakovano stopnjo izstopov med študijo. Upoštevali so tudi naravo podatkov, saj imajo več meritev na udeleženca.
+
+<!-- Statistične metode za analizo: kle nevem al sm vse napisala al ne, ker je tok tega-->
+Za primerjavo razlik med skupinama z visokim in nizkim tveganjem glede sociodemografskih, zdravstvenih, psihiatričnih in duševnih značilnosti so uporabili neparametrični Wilcoxonov rang-sum test in hi-kvadrat analizo. Za opis EMA odgovorov uporabili deskriptivno statistiko z intraklasnimi korelacijskimi koeficienti (ICC) in korenom srednje kvadratne razlike zaporednih vrednosti (RMSSD), da bi preučili povezanost in spremenljivost posameznih odgovorov. Za identifikacijo razlik v EMA odgovorih med skupinama so uporabili t-test. Učinke trenutne depresije, anksioznosti in stresa na samomorilne misli so preučili z uporabo treh različnih panelnih mešanih (angl. panel mixed-effects) linearnih regresijskih modelov, v katere so bile vključene različne spremenljivke. Ustreznost modela je bila ocenjena z uporabo ICC in testa verjetnostnega razmerja (LR test). 
+
+# Rezultati in zaključki študije 
+<!--g.	Kaj so glavni rezultati? Ali so statistično/klinično pomembni (največ 1 odstavek)-->
+Študija kaže in s podatki analize podpira<!--h.	Kako so razprava in zaključki podprti s podatki?-->, da so dnevne spremembe v depresiji, anksioznosti in stresu (psihične težave) močno povezane z intenzivnostjo samomorilnih misli pri psihiatričnih bolnikih s samomorilskimi mislimi in poskusi. Mešani regresijski modeli so pokazali, da povečanje psihičnih težav pomembno napoveduje višjo stopnjo samomorilnih misli v realnem času. 
+Med skupinami z visokim in nizkim tveganjem za samomor so zaznali pomembne razlike predvsem pri anksioznosti in stresu. Depresija, anksioznost in stres so bili močno in statistično značilno povezani s samomorilnimi mislimi v obeh skupinah, pri čemer je depresija imela najmočnejši učinek. Visoko tveganje skupina je kazala manj nihanj v razpoloženju. Razlike med skupinami z visokim in nizkim tveganjem so statistično značilne.\
+EMA omogoča natančno spremljanje hitrih sprememb v duševnem stanju, kar je ključno za preprečevanje samomora, saj običajni tedenski ali mesečni pregledi lahko spregledajo te hitro spreminjajoče se vzorce. Rezultati kažejo, da bi lahko daljinsko spremljanje in uporaba EMA izboljšala klinične prakse ter omogočila bolj prilagojeno obravnavo bolnikov z visokim tveganjem za samomor.
+
+# Omejitve študije
+<!--i.	Ali opazite kakšne omejitve raziskave. -->
+Študija je imela več omejitev. Zaradi izvedbe med pandemijo COVID-19, je bilo težko nadzorovati vse vplive in zagotoviti zadostno število udeležencev. Študija je bila z bolniki psihiatrične ambulante s samomorilskimi mislimi ali vedenjem, zato ni nujno, da so rezultati posplošljivi. Prav tako se je študija zanašala na samo-poročanje o zgodovini samomorilnih poskusov, brez neodvisne klinične potrditve. Poleg tega so bili v analizo vključeni predvsem psihosocialni stresorji, medtem ko so bili zunanji dejavniki in drugi vplivi spregledani (npr. življenske okoliščinoe, zakonski stan, poklic,...). Zaradi majhnega vzorca in načina vzorčenja obstaja tudi tveganje pristranskosti. 
+
+# Velikost vzorca
+
+<!--a.	Kopirajte odstavek iz dokumenta/protokola, ki opisuje, kako je bila določena velikost vzorca.-->
+*Statistical software G- power 3.1 (Faul et al., 2009) will be used to calculate the sample size and compare the low risk of suicide group with the high risk of suicide group using independent t-test. With an effect size of .5, a two-tailed alpha of .05 and a power of 80%; a sample size of 128 is required. Considering the dropout rate of 15%, we will recruit at least 150 participants in total. We will recruit the participants who meet the selection criteria through the convenience sampling method from a suicide prevention centre and a psychiatric outpatient clinic in South Korea.*
 
 
 
