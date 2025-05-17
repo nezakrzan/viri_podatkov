@@ -10,6 +10,11 @@ header-includes:
 - \usepackage[slovene]{babel}
 - \usepackage{float}
 - \usepackage[T1]{fontenc}
+- \usepackage{longtable}
+- \usepackage{booktabs}
+- \usepackage{array}
+- \usepackage{makecell}
+- \renewcommand\cellalign{lt}
 ---
 
 <!--
@@ -59,7 +64,7 @@ Longitudinalna: dlje časa
 -->
 Imamo opazovalno, prospektivno longitudilano študijo, ki je zajemala 50 odraslih oseb, starih od 19 do 58 let, ki so bili bolniki v psihiatrični bolnišnici ali vpisani v National Suicide Prevention Center v Južni Koreji in so imeli nedavne samomorilne misli. Iz študije je bilo umaknjenih 5 oseb, zaradi hospitalizacije, težav z nošenjem nosljive naprave, zaposiltve in osebne odločitve. Razdeljeni so bili v dve skupini. Visoko-rizična skupina (n = 40, 80%) je zajemala tiste, ki so imeli poskus samomora v zadnjih tednih, nizko-rizična skupina (n = 10, 20%) pa tiste, ki so imeli samomorilne misli, vendar niso izvedli poskusa samomora. Evidenca poskusov samomora je temeljila na odgovorih udeležencev. \
 <!-- Časovni okvir--> 
-Vsak od udeležencev je vsaj trikrat na dan v času 20 minut, vsak dan, preko spletne ankete, poročal o svojem razpoloženju, anksioznosti, strestu in samomorilnih mislih, v obdobju 28 dni, nosil zapestno napravo v obdobju 2 tednov in reševal vprašalnike v obdobju 4 tednov.\
+Vsak od udeležencev je vsaj trikrat na dan v času 20 minut, vsak dan, preko spletne ankete, poročal o svojem razpoloženju, anksioznosti, strestu in samomorilnih mislih, v obdobju 28 dni, nosil zapestno napravo v obdobju 2 tednov in reševal vprašalnike v obdobju 4 tednov. Podatke so zbirali od maja 2021 do julija 2023.\
 <!-- Spremenljivke (izidi in pojasnjevalne spremenljivke) 
 to nevem čist, ker v protokolu so neki primary outcoomes pa secondary outocmes...-->
 Glavni izid študije je vzorec samomorilskih misli in vzrok psihosocialnega stresa (*izid*). Pojasnili jih bodo preko opisa depresije, anksioznosti in stresa, zdravstvenega stanje, preteklih samomorilskih poskusov, duševnih težav, časa od prve psihiatrične diagnoze ter uporabo zdravil. Zbrani so tudi podatki o starosti, spolu, zakonskem stanju, izobrazbi, socialno-ekonomskem statusu, kajenju, telesni vadbi, spanju ter pridruženih telesnih in duševnih boleznih.
@@ -91,8 +96,59 @@ EMA omogoča natančno spremljanje hitrih sprememb v duševnem stanju, kar je kl
 <!--a.	Kopirajte odstavek iz dokumenta/protokola, ki opisuje, kako je bila določena velikost vzorca.-->
 *Statistical software G- power 3.1 (Faul et al., 2009) will be used to calculate the sample size and compare the low risk of suicide group with the high risk of suicide group using independent t-test. With an effect size of .5, a two-tailed alpha of .05 and a power of 80%; a sample size of 128 is required. Considering the dropout rate of 15%, we will recruit at least 150 participants in total. We will recruit the participants who meet the selection criteria through the convenience sampling method from a suicide prevention centre and a psychiatric outpatient clinic in South Korea.*
 
+```{r, results='asis'}
+library(knitr)
+library(kableExtra)
 
+tabela <- data.frame(
+  kategorija = c(
+    "Statistična moč (power)",
+    "Stopnja značilnosti",
+    "Velikost učinka (effect size)",
+    "Načrtovana statistična analiza",
+    "Predpostavljeno število udeležencev",
+    "Dejanski vzorec",
+    "Metoda vzorčenja",
+    "Predpostavljena variabilnost",
+    "Minimalna klinično pomembna razlika",
+    "Predpostavljeno razmerje med skupinama"
+  ),
+  vsebina = c(
+    "80 %",
+    "0.05 (dvostranski test)",
+    "0.5 (srednje velik učinek)",
+    "Neodvisni t-test med visoko- in nizkorizično skupino",
+    "128 za zahtevano moč; načrtovanih 150 zaradi 15 % odpadov",
+    "50 (zaradi spremenjenega protokola)",
+    "convenience sampling",
+    "Ni eksplicitno opredeljena",
+    "Ni eksplicitno opredeljena",
+    "Na podlagi zgodovine poskusa samomora"
+  ),
+  utemeljitev = c(
+    "Navedena (G*Power 3.1, Faul et al., 2009)",
+    "Jasno navedena",
+    "Navedena, vendar ni dodatno utemeljena",
+    "Jasno navedena",
+    "Izračun z G*Power; predpostavljena stopnja odpadov",
+    "Spremenjeno zaradi COVID-19; Kim et al. (2022)",
+    "Omenjeno, brez statistične utemeljitve",
+    "Ni utemeljena",
+    "Ni utemeljena",
+    "Jasno opredeljeno"
+  )
+)
 
+kable(tabela, format = "latex",
+      caption = "Tabela: Predpostavke za določitev velikosti vzorca v raziskavi.",
+      col.names = c("Katergorija", "Vrednost", "Utemeljitev")) %>%
+  kable_styling(latex_options = c("bordered", "hold_position", "repeat_header"),
+                full_width = FALSE, position = "center") %>%
+  column_spec(1, width = "4cm") %>%
+  column_spec(2, width = "5cm", latex_valign = "m") %>%
+  column_spec(3, width = "6cm", latex_valign = "m") %>%
+  row_spec(0, bold = TRUE)
+```
 
 
 
