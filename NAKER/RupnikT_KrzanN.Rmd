@@ -47,6 +47,9 @@ Izključeni so posamezniki z motnjami kognitivnega delovanja (po presoji psihiat
 
 <!-- Kako ustrezen je vzorec? kako nej to vem hah 
 Vzorec je izbran za raziskovanje psihiatričnih bolnikov z nedavnimi samomorilnimi mislimi in z določenimi kriteriji. Vendar zaradi majhnosti vzorca in specifičnosti skupine ni popolnoma reprezentativen za celotno populacijo z samomorilnimi mislimi, kar je pomembno upoštevati pri interpretaciji rezultatov.
+
+Tom19: jst bi dodal se tole k je v protokolu pod Limitations
+Vzorec ni popolnoma ustrezen za posplošitev na splošno populacijo z samomorilnimi mislimi, saj je omejeno število sodelujočih (ustanov?) pri vzorčenju oseb. Zaradi priložnostnega vzorčenja (convenience sampling) se lahko pojavi pristranskost izbire za določeno skupino sodelujočih, saj smo vzorčili osebe, ki so bile na razpolago. Za namen ponovitve rezultatov raziskav, bi morali uporabiti stratificirano ali quoata vzorčenje. 
 -->
 
 # Načrt študije
@@ -62,9 +65,9 @@ Opazovalna: samo spremljali so stanje bolnikov
 Prospektivna: podatke so zbirali v prihodnjem obdobju 28 dni
 Longitudinalna: dlje časa
 -->
-Imamo opazovalno, prospektivno longitudilano študijo, ki je zajemala 50 odraslih oseb, starih od 19 do 58 let, ki so bili bolniki v psihiatrični bolnišnici ali vpisani v National Suicide Prevention Center v Južni Koreji in so imeli nedavne samomorilne misli. Iz študije je bilo umaknjenih 5 oseb, zaradi hospitalizacije, težav z nošenjem nosljive naprave, zaposiltve in osebne odločitve. Razdeljeni so bili v dve skupini. Visoko-rizična skupina (n = 40, 80%) je zajemala tiste, ki so imeli poskus samomora v zadnjih tednih, nizko-rizična skupina (n = 10, 20%) pa tiste, ki so imeli samomorilne misli, vendar niso izvedli poskusa samomora. Evidenca poskusov samomora je temeljila na odgovorih udeležencev. \
+Imamo opazovalno, prospektivno longitudilano študijo, ki je zajemala 50 odraslih oseb, starih od 19 do 58 let, ki so bili bolniki v psihiatrični bolnišnici ali vpisani v National Suicide Prevention Center v Južni Koreji in so imeli nedavne samomorilne misli. Sprva je v študiji sodelovalo 55 oseb, vendar je bilo 5 oseb umaknjenih, zaradi hospitalizacije, težav z nošenjem nosljive naprave, zaposiltve in osebne odločitve. Razdeljeni so bili v dve skupini. Visoko-rizična skupina (n = 40, 80%) je zajemala tiste, ki so imeli poskus samomora v zadnjih tednih, nizko-rizična skupina (n = 10, 20%) pa tiste, ki so imeli samomorilne misli, vendar niso izvedli poskusa samomora. Evidenca poskusov samomora je temeljila na odgovorih udeležencev. \
 <!-- Časovni okvir--> 
-Vsak od udeležencev je vsaj trikrat na dan v času 20 minut, vsak dan, preko spletne ankete, poročal o svojem razpoloženju, anksioznosti, strestu in samomorilnih mislih, v obdobju 28 dni, nosil zapestno napravo v obdobju 2 tednov in reševal vprašalnike v obdobju 4 tednov. Podatke so zbirali od maja 2021 do julija 2023.\
+Vsak od udeležencev je vsaj trikrat na dan v času 20 minut, vsak dan, preko spletne ankete, poročal o svojem razpoloženju, anksioznosti, strestu in samomorilnih mislih, v obdobju 28 dni, nosil zapestno napravo v obdobju 2 tednov (v obdobju 1. in 3. tedna opazovanja) in reševal vprašalnike v obdobju 4 tednov. Podatke so zbirali od maja 2021 do julija 2023.\
 <!-- Spremenljivke (izidi in pojasnjevalne spremenljivke) 
 to nevem čist, ker v protokolu so neki primary outcoomes pa secondary outocmes...-->
 Glavni izid študije je vzorec samomorilskih misli in vzrok psihosocialnega stresa (*izid*). Pojasnili jih bodo preko opisa depresije, anksioznosti in stresa, zdravstvenega stanje, preteklih samomorilskih poskusov, duševnih težav, časa od prve psihiatrične diagnoze ter uporabo zdravil. Zbrani so tudi podatki o starosti, spolu, zakonskem stanju, izobrazbi, socialno-ekonomskem statusu, kajenju, telesni vadbi, spanju ter pridruženih telesnih in duševnih boleznih.
@@ -75,11 +78,14 @@ Glavni izid študije je vzorec samomorilskih misli in vzrok psihosocialnega stre
 **Dodatne hipoteze:** Različni psihološki, socialno-demografski in telesni dejavniki vplivajo na intenzivnost samomorilskih misli; obstajajo razlike v vzorcih misli med skupinami z viskim in nizkim rizikom za samomor.\
 
 <!-- Velikost vzorca: 
-to se mi kle zdi tok brezveze šeenkrat pisat, ker je že tokrat omenjeno, sam nevem, kaj misls-->
-Ocenili so, da potrebujejo vzorec velikosti vsaj 150 oseb, kjer so upoštevali pričakovano stopnjo izstopov med študijo. Upoštevali so tudi naravo podatkov, saj imajo več meritev na udeleženca.
+to se mi kle zdi tok brezveze šeenkrat pisat, ker je že tokrat omenjeno, sam nevem, kaj misls
+Tom19: sm se mal dodal pa lahko kr notri pustiva ker ji je ta velikost vzorca zelo pomembna ceprou se se 10x ponovi...-->
+Ocenili so, da za primerjavo skupine z visokim in nizkim tveganjem z uporabo t-testa za dva neodvisna vzorca potrebujejo vzorec velikosti vsaj 150 oseb, kjer so upoštevali pričakovano stopnjo izstopov med študijo. Upoštevali so tudi naravo podatkov, saj imajo več meritev na udeleženca.
 
-<!-- Statistične metode za analizo: kle nevem al sm vse napisala al ne, ker je tok tega-->
-Za primerjavo razlik med skupinama z visokim in nizkim tveganjem glede sociodemografskih, zdravstvenih, psihiatričnih in duševnih značilnosti so uporabili neparametrični Wilcoxonov rang-sum test in hi-kvadrat analizo. Za opis EMA odgovorov uporabili deskriptivno statistiko z intraklasnimi korelacijskimi koeficienti (ICC) in korenom srednje kvadratne razlike zaporednih vrednosti (RMSSD), da bi preučili povezanost in spremenljivost posameznih odgovorov. Za identifikacijo razlik v EMA odgovorih med skupinama so uporabili t-test. Učinke trenutne depresije, anksioznosti in stresa na samomorilne misli so preučili z uporabo treh različnih panelnih mešanih (angl. panel mixed-effects) linearnih regresijskih modelov, v katere so bile vključene različne spremenljivke. Ustreznost modela je bila ocenjena z uporabo ICC in testa verjetnostnega razmerja (LR test). 
+
+<!-- Statistične metode za analizo: kle nevem al sm vse napisala al ne, ker je tok tega
+Tom19: ja ti je kr vse uspelo sm sel se enkrat vse pocasi cez...-->
+Za primerjavo razlik med skupinama z visokim in nizkim tveganjem glede sociodemografskih, zdravstvenih, psihiatričnih in duševnih značilnosti so uporabili neparametrični Wilcoxonov rang-sum test in hi-kvadrat analizo. Za opis EMA odgovorov uporabili deskriptivno statistiko z intraklasnimi korelacijskimi koeficienti (ICC) in korenom srednje kvadratne razlike zaporednih vrednosti (RMSSD), da bi preučili povezanost in spremenljivost posameznih odgovorov. Za identifikacijo razlik v EMA odgovorih med skupinama so uporabili t-test. Učinke trenutne depresije, anksioznosti in stresa na samomorilne misli so preučili z uporabo treh različnih panelnih mešanih (angl. panel mixed-effects) linearnih regresijskih modelov (za posamezno skupino tveganja), v katere so bile vključene različne spremenljivke. Ustreznost modela je bila ocenjena z uporabo ICC in testa verjetnostnega razmerja (LR test). 
 
 # Rezultati in zaključki študije 
 <!--g.	Kaj so glavni rezultati? Ali so statistično/klinično pomembni (največ 1 odstavek)-->
@@ -89,7 +95,7 @@ EMA omogoča natančno spremljanje hitrih sprememb v duševnem stanju, kar je kl
 
 # Omejitve študije
 <!--i.	Ali opazite kakšne omejitve raziskave. -->
-Študija je imela več omejitev. Zaradi izvedbe med pandemijo COVID-19, je bilo težko nadzorovati vse vplive in zagotoviti zadostno število udeležencev. Študija je bila z bolniki psihiatrične ambulante s samomorilskimi mislimi ali vedenjem, zato ni nujno, da so rezultati posplošljivi. Prav tako se je študija zanašala na samo-poročanje o zgodovini samomorilnih poskusov, brez neodvisne klinične potrditve. Poleg tega so bili v analizo vključeni predvsem psihosocialni stresorji, medtem ko so bili zunanji dejavniki in drugi vplivi spregledani (npr. življenske okoliščinoe, zakonski stan, poklic,...). Zaradi majhnega vzorca in načina vzorčenja obstaja tudi tveganje pristranskosti. 
+Študija je imela več omejitev. Zaradi izvedbe med pandemijo COVID-19, je bilo težko nadzorovati vse vplive in zagotoviti zadostno število udeležencev. Prvotno velikost vzorca 128 so bili zaradi razmer primorani zmanjšati na 50. Študija je bila z bolniki psihiatrične ambulante s samomorilskimi mislimi ali vedenjem, zato ni nujno, da so rezultati posplošljivi. Prav tako se je študija zanašala na samo-poročanje o zgodovini samomorilnih poskusov, brez neodvisne klinične potrditve. Poleg tega so bili v analizo vključeni predvsem psihosocialni stresorji, medtem ko so bili zunanji dejavniki in drugi vplivi spregledani (npr. življenske okoliščinoe, zakonski stan, poklic,...). Zaradi majhnega vzorca in načina vzorčenja obstaja tudi tveganje pristranskosti. 
 
 # Velikost vzorca
 
@@ -151,7 +157,24 @@ kable(tabela, format = "latex",
 ```
 
 
+# Ponovitev izračuna velikosti vzorca
 
+Za ponovni izračun velikosti vzorca, ki ga potrebujemo za primerjavo visoko-rizične in nizko-rizične skupine z neodvisnim t-testom, potrebujemo naslednje vrednosti:
+
+* statistična moč (power): $0.8$
+* stopnja značilnosti ($\alpha$): $0.05$
+* velikost učinka ($\frac{\delta}{\sigma}$): $0.5$
+* predpostavljamo enako veliki skupini ($m=1$)
+
+Velikost učinka (effect size) je definiran kot $d=\frac{\overline{x}_1-\overline{x}_2}{\hat{\sigma}} = \frac{\hat{\delta}}{\hat{\sigma}}$. V našem primeru je vrednost enaka $0.5$, zato si lahko izberemo vrednosti $\frac{\hat{\delta}}{\hat{\sigma}} = \frac{5}{10} = 0.5$. 
+
+Za izračun velikosti vzorca bomo uporabili program PS.
+
+```{r izracun velikosti vzorca, echo=FALSE, fig.cap="Izračun velikosti vzorca s programom PS", results='asis', fig.align = "center", fig.pos = "H",out.width="40%"}
+knitr::include_graphics("slika.png")
+```
+
+Kot rezultat dobimo velikost ene skupine enako $64$, torej je skupna veliksot vzorca enaka $2\cdot64=128$, kar je enaka vrednost, kot je zapisana v raziskavi.
 
  
 
