@@ -102,6 +102,8 @@ EMA omogoča natančno spremljanje hitrih sprememb v duševnem stanju, kar je kl
 <!--a.	Kopirajte odstavek iz dokumenta/protokola, ki opisuje, kako je bila določena velikost vzorca.-->
 *Statistical software G- power 3.1 (Faul et al., 2009) will be used to calculate the sample size and compare the low risk of suicide group with the high risk of suicide group using independent t-test. With an effect size of .5, a two-tailed alpha of .05 and a power of 80%; a sample size of 128 is required. Considering the dropout rate of 15%, we will recruit at least 150 participants in total. We will recruit the participants who meet the selection criteria through the convenience sampling method from a suicide prevention centre and a psychiatric outpatient clinic in South Korea.*
 
+<!-- Tom24: Se ti zdi da je v vrstici "Predpostavljeno razmerje med skupinama" bilo bolj misljeno kot stevilo oz razmerje da je 1:1 (s tem razmerjem se izide izracun v c) tocki), ceprou ni nikjer to posebej defnirano...in pa da je pol  "Na podlagi zgodovine poskusa samomora" bolj kot spremenljivka/vrednost na podalgi katere delimo stat. enote?-->
+
 ```{r, results='asis'}
 library(knitr)
 library(kableExtra)
@@ -137,7 +139,8 @@ tabela <- data.frame(
     "Navedena, vendar ni dodatno utemeljena",
     "Jasno navedena",
     "Izračun z G*Power; predpostavljena stopnja odpadov",
-    "Spremenjeno zaradi COVID-19; Kim et al. (2022)",
+    # "Spremenjeno zaradi COVID-19; Kim et al. (2022)",
+    "Spremenjeno zaradi COVID-19; Kim et al. (2022); ustreznost velikosti utemeljena z (Gutiérrez-Tobal et al. 2022)",
     "Omenjeno, brez statistične utemeljitve",
     "Ni utemeljena",
     "Ni utemeljena",
@@ -174,7 +177,22 @@ Za izračun velikosti vzorca bomo uporabili program PS.
 knitr::include_graphics("slika.png")
 ```
 
-Kot rezultat dobimo velikost ene skupine enako $64$, torej je skupna veliksot vzorca enaka $2\cdot64=128$, kar je enaka vrednost, kot je zapisana v raziskavi.
+Kot rezultat dobimo velikost ene skupine enako $64$, torej je skupna velikost vzorca enaka $2\cdot64=128$, kar je enaka vrednost, kot je zapisana v protokolu raziskave.
 
  
+# Načrt statistične analize in odstopanje od protokola
+
+Načrt statistične analize je dobro opisan v članku in protokolu raziskave. V protokolu lahko najdemo podatke kot so:
+
+* računalniški program, ki se bo uporabljal pri analizah
+* stopnja značilnosti ter informacija o uporabi dvostranskih testov
+* mere, ki jih uporabimo pri opisnih statistikah
+* kateri testi (s specificirano metdo če je to potrebno) bodo uporabljeni za testiranje posamezne hipoteze
+
+V članku pa so za posamezno hipotezo, ki jo preverjamo, zapisani tudi testi in koeficienti. Za opis EMA odgovorov je v primerjavi s protokolom dodatno zapisano, da so za preučevenje povezanost in spremenljivost posameznih odgovorov uporabili intraklasni korelacijski koeficient(ICC) in koren srednje kvadratne razlike zaporednih vrednosti (RMSSD). Prav tako so v članku za preučevanje učinkov trenutne depresije, anksioznosti in stresa na samomorilne misli dodatno definirani trije panelni mešani (angl. panel mixed-effects) linearni regresijski modeli  z navadenimi spremenljivkami, ki jih vsebujejo.
+
+Odstopanja v uporabi statističnih testov in analizi med protokolom in člankom ni bilo. Pojavilo se je le odstopanje pri velikosti vzorca, saj so bili primorani prvotno velikost vzorca 128 zmanjšatina na 50.
+
+
+
 
