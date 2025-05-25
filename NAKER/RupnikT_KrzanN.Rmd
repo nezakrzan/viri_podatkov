@@ -43,13 +43,11 @@ Metoda EMA se v drugih študijah že uporablja za spremljanje nihanja v samomori
 # Ciljna populacija
 
 Raziskava vključuje osebe, starejše od 19 let, ki imajo pametni telefon, lahko nosijo napravo za aktigrafijo, govorijo in pišejo korejsko, ter so v zadnjem tednu poročale o samomorilskih mislih ali vedenju, ki so bile merjene z korejsko različico lestvice BSS (angl. Beck Scale for Suicide Ideation) in dosegli rezultat ena ali več. Morajo razumeti namen raziskave, prostovoljno podati soglasje sodelovanja in ne smejo sodelovati v drugi študiji. \
-Izključeni so posamezniki z motnjami kognitivnega delovanja (po presoji psihiatra), osebe, stare 65 let ali več, z zmernimi do hudimi kognitivnimi težavami in tisti s psihotičnimi simptomi (npr. halucinacije, blodnje).
+Izključeni so posamezniki z motnjami kognitivnega delovanja (po presoji psihiatra), osebe, stare 65 let ali več, z zmernimi do hudimi kognitivnimi težavami in tisti s psihotičnimi simptomi (npr. halucinacije, blodnje). \
+Vzorec ni popolnoma ustrezen za posplošitev na splošno populacijo z samomorilnimi mislimi, saj je omejeno število sodelujočih pri vzorčenju oseb in vsebuje specifičnosti skupin. Zaradi priložnostnega vzorčenja (convenience sampling) se lahko pojavi pristranskost izbire za določeno skupino sodelujočih, saj smo vzorčili osebe, ki so bile na razpolago. Za namen ponovitve rezultatov raziskav, bi morali uporabiti stratificirano ali quoata vzorčenje.
 
 <!-- Kako ustrezen je vzorec? kako nej to vem hah 
 Vzorec je izbran za raziskovanje psihiatričnih bolnikov z nedavnimi samomorilnimi mislimi in z določenimi kriteriji. Vendar zaradi majhnosti vzorca in specifičnosti skupine ni popolnoma reprezentativen za celotno populacijo z samomorilnimi mislimi, kar je pomembno upoštevati pri interpretaciji rezultatov.
-
-Tom19: jst bi dodal se tole k je v protokolu pod Limitations
-Vzorec ni popolnoma ustrezen za posplošitev na splošno populacijo z samomorilnimi mislimi, saj je omejeno število sodelujočih (ustanov?) pri vzorčenju oseb. Zaradi priložnostnega vzorčenja (convenience sampling) se lahko pojavi pristranskost izbire za določeno skupino sodelujočih, saj smo vzorčili osebe, ki so bile na razpolago. Za namen ponovitve rezultatov raziskav, bi morali uporabiti stratificirano ali quoata vzorčenje. 
 -->
 
 # Načrt študije
@@ -102,7 +100,11 @@ EMA omogoča natančno spremljanje hitrih sprememb v duševnem stanju, kar je kl
 <!--a.	Kopirajte odstavek iz dokumenta/protokola, ki opisuje, kako je bila določena velikost vzorca.-->
 *Statistical software G- power 3.1 (Faul et al., 2009) will be used to calculate the sample size and compare the low risk of suicide group with the high risk of suicide group using independent t-test. With an effect size of .5, a two-tailed alpha of .05 and a power of 80%; a sample size of 128 is required. Considering the dropout rate of 15%, we will recruit at least 150 participants in total. We will recruit the participants who meet the selection criteria through the convenience sampling method from a suicide prevention centre and a psychiatric outpatient clinic in South Korea.*
 
-<!-- Tom24: Se ti zdi da je v vrstici "Predpostavljeno razmerje med skupinama" bilo bolj misljeno kot stevilo oz razmerje da je 1:1 (s tem razmerjem se izide izracun v c) tocki), ceprou ni nikjer to posebej defnirano...in pa da je pol  "Na podlagi zgodovine poskusa samomora" bolj kot spremenljivka/vrednost na podalgi katere delimo stat. enote?-->
+<!-- Tom24: Se ti zdi da je v vrstici "Predpostavljeno razmerje med skupinama" bilo bolj misljeno kot stevilo oz razmerje da je 1:1 (s tem razmerjem se izide izracun v c) tocki), ceprou ni nikjer to posebej defnirano...
+Neza25: a je sploh kje v protokolu definirano kako bi moral delit v skupine oz. kakšno mora bit razmerje? Ker jst ne najdem, samo po čem so jih delil. Sm sprenila v ni utemeljeno... misls da bi mogl bit kako drugac?
+
+in pa da je pol  "Na podlagi zgodovine poskusa samomora" bolj kot spremenljivka/vrednost na podalgi katere delimo stat. enote?
+Neza25: ja pomojem, ker tko so jih locl ane, nism vedla kaj nej tuki dam pac kot vrednost ane oz. kako nej to napišem da delil so jih sam nevem v kakšnem razmerju so hotl....-->
 
 ```{r, results='asis'}
 library(knitr)
@@ -144,7 +146,7 @@ tabela <- data.frame(
     "Omenjeno, brez statistične utemeljitve",
     "Ni utemeljena",
     "Ni utemeljena",
-    "Jasno opredeljeno"
+    "Ni utemeljeno"
   )
 )
 
@@ -184,12 +186,12 @@ Kot rezultat dobimo velikost ene skupine enako $64$, torej je skupna velikost vz
 
 Načrt statistične analize je dobro opisan v članku in protokolu raziskave. V protokolu lahko najdemo podatke kot so:
 
-* računalniški program, ki se bo uporabljal pri analizah
-* stopnja značilnosti ter informacija o uporabi dvostranskih testov
-* mere, ki jih uporabimo pri opisnih statistikah
-* kateri testi (s specificirano metdo če je to potrebno) bodo uporabljeni za testiranje posamezne hipoteze
+* računalniški program, ki se bo uporabljal pri analizah,
+* stopnja značilnosti ter informacija o uporabi dvostranskih testov,
+* mere, ki jih uporabimo pri opisnih statistikah,
+* kateri testi (s specificirano metodo, če je to potrebno) bodo uporabljeni za testiranje posamezne hipoteze.
 
-V članku pa so za posamezno hipotezo, ki jo preverjamo, zapisani tudi testi in koeficienti. Za opis EMA odgovorov je v primerjavi s protokolom dodatno zapisano, da so za preučevenje povezanost in spremenljivost posameznih odgovorov uporabili intraklasni korelacijski koeficient(ICC) in koren srednje kvadratne razlike zaporednih vrednosti (RMSSD). Prav tako so v članku za preučevanje učinkov trenutne depresije, anksioznosti in stresa na samomorilne misli dodatno definirani trije panelni mešani (angl. panel mixed-effects) linearni regresijski modeli  z navadenimi spremenljivkami, ki jih vsebujejo.
+V članku pa so za posamezno hipotezo, ki jo preverjamo, zapisani tudi testi in koeficienti. Za opis EMA odgovorov je v primerjavi s protokolom dodatno zapisano, da so za preučevenje povezanost in spremenljivost posameznih odgovorov uporabili intraklasni korelacijski koeficient (ICC) in koren srednje kvadratne razlike zaporednih vrednosti (RMSSD). Prav tako so v članku za preučevanje učinkov trenutne depresije, anksioznosti in stresa na samomorilne misli dodatno definirani trije panelni mešani (angl. panel mixed-effects) linearni regresijski modeli z navadenimi spremenljivkami, ki jih vsebujejo.
 
 Odstopanja v uporabi statističnih testov in analizi med protokolom in člankom ni bilo. Pojavilo se je le odstopanje pri velikosti vzorca, saj so bili primorani prvotno velikost vzorca 128 zmanjšatina na 50.
 
