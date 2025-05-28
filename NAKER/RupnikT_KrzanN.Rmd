@@ -37,7 +37,7 @@ set.seed(2024)
 
 # Raziskovalno vprašanje
 
-Samomor je od leta 2009 izziv javnega zdravstva v Južni Koreji, zato so preučili potrebo po razvoju sistema za sprotno spremljanje tveganja za samomor. Raziskava je analizirala 28-dnevni vzorec samomorilnih misli pri psihiatričnih bolnikih z različnim tveganjem za samomor. Glavna vprašanja so bila: opis demografskih in duševnih značilnosti, primerjava vzorcev samomorilnih misli med visokorizičnimi in nizkorizičnimi skupinami ter ugotovitev povezav med samomorilnim razmišljanjem, depresijo, anksioznostjo in stresom skozi čas z metodo EMA. (angl. ecological momentary assessment). \
+Samomor je od leta 2009 izziv javnega zdravstva v Južni Koreji, zato so preučili potrebo po razvoju sistema za sprotno spremljanje tveganja za samomor. Raziskava je analizirala 28-dnevni vzorec samomorilnih misli pri psihiatričnih bolnikih z različnim tveganjem za samomor. Glavna vprašanja so bila: opis demografskih in duševnih značilnosti, primerjava vzorcev samomorilnih misli med visokorizičnimi in nizkorizičnimi skupinami ter ugotovitev povezav med samomorilnim razmišljanjem, depresijo, anksioznostjo in stresom skozi čas z metodo EMA (angl. ecological momentary assessment). \
 Metoda EMA se v drugih študijah že uporablja za spremljanje nihanja v samomorilskem razmišljanju in dejavnikih, ki na to vplivajo (depresija, anksioznost in stres) in dokazuje, da negativna čustva in prisotnost stresa lahko napovedujejo povečano tveganje za samomorilne misli v kratkem časovnem okviru. Avtorji članka z 28 dnvenim spremljanjem, skupinami in vključevanjem oseb z poskusi samomora rešuje pomanljivosti preteklih raziskav.
 
 # Ciljna populacija
@@ -72,14 +72,13 @@ Glavni izid študije je vzorec samomorilskih misli in vzrok psihosocialnega stre
 
 # Statistične metode
 <!-- Hipoteza:-->
-**Glavna hipoteza:** Vzorci samomorilskih misli so povezani z psihološkimi dejavniki (depresija, anksioznost in stres).
+**Glavna hipoteza:** Vzorci samomorilskih misli so povezani z psihološkimi dejavniki (depresija, anksioznost in stres). \
 **Dodatne hipoteze:** Različni psihološki, socialno-demografski in telesni dejavniki vplivajo na intenzivnost samomorilskih misli; obstajajo razlike v vzorcih misli med skupinami z viskim in nizkim rizikom za samomor.\
 
 <!-- Velikost vzorca: 
 to se mi kle zdi tok brezveze šeenkrat pisat, ker je že tokrat omenjeno, sam nevem, kaj misls
 Tom19: sm se mal dodal pa lahko kr notri pustiva ker ji je ta velikost vzorca zelo pomembna ceprou se se 10x ponovi...-->
-Ocenili so, da za primerjavo skupine z visokim in nizkim tveganjem z uporabo t-testa za dva neodvisna vzorca potrebujejo vzorec velikosti vsaj 150 oseb, kjer so upoštevali pričakovano stopnjo izstopov med študijo. Upoštevali so tudi naravo podatkov, saj imajo več meritev na udeleženca.
-
+Ocenili so, da za primerjavo skupine z visokim in nizkim tveganjem z uporabo t-testa za dva neodvisna vzorca potrebujejo vzorec velikosti vsaj 128 oseb oz. 150 oseb, kjer so upoštevali pričakovano stopnjo izstopov med študijo. Upoštevali so tudi naravo podatkov, saj imajo več meritev na udeleženca.
 
 <!-- Statistične metode za analizo: kle nevem al sm vse napisala al ne, ker je tok tega
 Tom19: ja ti je kr vse uspelo sm sel se enkrat vse pocasi cez...-->
@@ -98,7 +97,7 @@ EMA omogoča natančno spremljanje hitrih sprememb v duševnem stanju, kar je kl
 # Velikost vzorca
 
 <!--a.	Kopirajte odstavek iz dokumenta/protokola, ki opisuje, kako je bila določena velikost vzorca.-->
-*Statistical software G- power 3.1 (Faul et al., 2009) will be used to calculate the sample size and compare the low risk of suicide group with the high risk of suicide group using independent t-test. With an effect size of .5, a two-tailed alpha of .05 and a power of 80%; a sample size of 128 is required. Considering the dropout rate of 15%, we will recruit at least 150 participants in total. We will recruit the participants who meet the selection criteria through the convenience sampling method from a suicide prevention centre and a psychiatric outpatient clinic in South Korea.*
+*Statistical software G- power 3.1 (Faul et al., 2009) will be used to calculate the sample size and compare the low risk of suicide group with the high risk of suicide group using independent t-test. With an effect size of .5, a two-tailed alpha of 0.05 and a power of 80%; a sample size of 128 is required. Considering the dropout rate of 15%, we will recruit at least 150 participants in total. We will recruit the participants who meet the selection criteria through the convenience sampling method from a suicide prevention centre and a psychiatric outpatient clinic in South Korea.*
 
 <!-- Tom24: Se ti zdi da je v vrstici "Predpostavljeno razmerje med skupinama" bilo bolj misljeno kot stevilo oz razmerje da je 1:1 (s tem razmerjem se izide izracun v c) tocki), ceprou ni nikjer to posebej defnirano...
 Neza25: a je sploh kje v protokolu definirano kako bi moral delit v skupine oz. kakšno mora bit razmerje? Ker jst ne najdem, samo po čem so jih delil. Sm sprenila v ni utemeljeno... misls da bi mogl bit kako drugac?
