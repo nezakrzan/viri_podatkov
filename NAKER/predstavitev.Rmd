@@ -34,13 +34,13 @@ set.seed(2024)
 
 Ker je samomor izziv javnega zdravstva v Južni Koreji, so analizirali 28-dnevni vzorec samomorilnih misli pri psihiatričnih bolnikih z različnim tveganjem za samomor. Glavna vprašanja so bila: opis demografskih in duševnih značilnosti, primerjava vzorcev samomorilnih misli med visokorizičnimi in nizkorizičnimi skupinami ter ugotovitev povezav med samomorilnim razmišljanjem, depresijo, anksioznostjo in stresom skozi čas z metodo EMA.
 
-Prevrjali so glavno hipotezo: \
-**Glavna hipoteza:** Vzorci samomorilskih misli so povezani z psihološkimi dejavniki (depresija, anksioznost in stres). 
+Preverjali so glavno hipotezo: \
+**Glavna hipoteza:** Vzorci samomorilskih misli so povezani s psihološkimi dejavniki (depresija, anksioznost in stres). 
 
 in dodatne hipoteze: \
-**Dodatne hipoteze:** Različni psihološki, socialno-demografski in telesni dejavniki vplivajo na intenzivnost samomorilskih misli; obstajajo razlike v vzorcih misli med skupinami z viskim in nizkim rizikom za samomor.\
+**Dodatne hipoteze:** Različni psihološki, socialno-demografski in telesni dejavniki vplivajo na intenzivnost samomorilskih misli; obstajajo razlike v vzorcih misli med skupinami z visokim in nizkim rizikom za samomor.\
 
-Zanimal jih je vzorec samomorilskih misli, ki naj bi ga pojsanili z opisom depresije, anksioznosti in stresa, zdravstvenega stanje, preteklih samomorilskih poskusov, duševnih težav, časa od prve psihiatrične diagnoze ter uporabo zdravil.
+Zanimal jih je vzorec samomorilskih misli, ki naj bi ga pojasnili z opisom depresije, anksioznosti in stresa, zdravstvenega stanje, preteklih samomorilskih poskusov, duševnih težav, časa od prve psihiatrične diagnoze ter uporabo zdravil.
 
 # Populacija
 
@@ -53,13 +53,13 @@ Raziskava vsebuje kar nekaj predpostavk za vključitev ljudi v vzorec raziskave 
 - so imeli samomorilske misli ali vedenje v zadnjem tednu,
 - morajo razumeti namen raziskave,
 - prostovoljno podati soglasje sodelovanja in 
-- ne smejo sodelovati v drugih raziksavah.
+- ne smejo sodelovati v drugih raziskavah.
 
-Ocenili so, da potrebujejo vzorec velikosti vsaj 128 oseb oz. 150 oseb, ker so pričakovali izstope iz raziskave. Zaradi izvedbe študije med pandemijo COVID-19, je bilo težko zagotoviti zadostno število udeležencev. Na koncu so imeli 50 oseb starih od 19 do 58 let; razdeljeni so bili v dve skupini, visoko in nizko rizična skupina, v razmerju 80% in 20%. Razlika med skupinama je v samomorilskem vedenju. Iz raziksave, je zaradi različnih razlogov, izstopilo 5 oseb. Nobeden od izključenih oseb v času raziskave pa ni izstopil zaradi uspešnega samomora.
+Ocenili so, da potrebujejo vzorec velikosti vsaj 128 oseb oz. 150 oseb, ker so pričakovali izstope iz raziskave. Zaradi izvedbe študije med pandemijo COVID-19, je bilo težko zagotoviti zadostno število udeležencev. Na koncu so imeli 50 oseb starih od 19 do 58 let; razdeljeni so bili v dve skupini, visoko in nizko rizična skupina, v razmerju 80% in 20%. Razlika med skupinama je v samomorilskem vedenju. Iz raziskave, je zaradi različnih razlogov, izstopilo 5 oseb. Nobeden od izključenih oseb v času raziskave pa ni izstopil zaradi uspešnega samomora.
 
 # Potek študije
 
-Vsak od udeležencev je 3x na dan, vsak dan, cca 20 minut poročal o svojem razpoloženju, anksioznosti, stresu in samomorilskih misli. To je delal 28 dni. Ampak v študiji sva našla, da je povprečje 25,1 dni, torej niso vsi reševali vseh 28 dni; razpon od 15 do 28 dni. Zato je zanimivo, da od oseb, ki so izstopili, rezultatov niso upoštevali.\
+Vsak od udeležencev je 3x na dan, vsak dan, cca 20 minut poročal o svojem razpoloženju, anksioznosti, stresu in samomorilskih misli. To je delal 28 dni. Ampak v študiji sva našla, da je povprečje 25,1 dni, torej niso vsi reševali vseh 28 dni; razpon od 15 do 28 dni. Zato je zanimivo, da od oseb, ki so izstopile, rezultatov niso upoštevali.\
 Prav tako niso rešili vseh vprašalnikov, saj so v 76% dokončali anketo. 
 
 Podatke so zbirali od maja 2021 do julija 2023. Konstantno pa v študiji poudarjajo, da rezultati niso posplošljivi, zaradi narave vzorca oseb.
@@ -70,7 +70,7 @@ bolj prilagojeno obravnavo bolnikov z visokim tveganjem za samomor.
 
 # Zaključek
 
-Raziskava sledi opisanemu protokolu, presenetil naju je podroben opis vseh metod dela, zbiranja podatkov in statističnih metod. V članku študije je tudi vedno jasno poudarjeno, da so določene stvari razložene in opisane v protokolu študije. Zato nisva imela večjih težav z razumevanjem strokovne terminologoje, kljub temu, da sva na tem podoročju popolnoma brez znanaja.
+Raziskava sledi opisanemu protokolu, presenetil naju je podroben opis vseh metod dela, zbiranja podatkov in statističnih metod. V članku študije je tudi vedno jasno poudarjeno, da so določene stvari razložene in opisane v protokolu študije. Zato nisva imela večjih težav z razumevanjem strokovne terminologije, kljub temu, da sva na tem področju popolnoma brez znanaja.
 
-Zaradi opisa preteklih študij in ozadja študije, ter poudarka, da rezultati niso posplošljivi na celotno populacijo, naju je presenetila sama izvedba raziskave. 28 - dnevno sprejmlajne in ločitev na dve skupini naj bi sicer rešilo pomankljivosti preteklih raziskav, ampak zaradi poudarka o neposplošljivosti ne vididva dodane vrednosti. Poleg tega, tudi ločitev na dve skupini ne veva kako kaj doprineseta, saj je ena skupina izjemno majhna(n=10).
+Zaradi opisa preteklih študij in ozadja študije, ter poudarka, da rezultati niso posplošljivi na celotno populacijo, naju je presenetila sama izvedba raziskave. 28 - dnevno sprejmlajne in ločitev na dve skupini naj bi sicer rešilo pomanjkljivosti preteklih raziskav, ampak zaradi poudarka o neposplošljivosti ne vidiva dodane vrednosti. Poleg tega, tudi ločitev na dve skupini ne veva kako kaj doprineseta, saj je ena skupina izjemno majhna(n=10).
 
